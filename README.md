@@ -1,7 +1,5 @@
 # GEM AI Toolkit
-This is the beta version of the toolkit for building feature prediction using facade images, for seismic risk assessment with AI. This toolkit allows analysis of images from Google Street View, using the Google API, and also supports images from the local device. The Graphic User Interface enables a fast assessment of the building, including an object detection module, to isolate the building of interest.
-
-![image](https://github.com/user-attachments/assets/e809d08e-fe5a-466d-bc86-b74b14c95796)
+This is the beta version of the toolkit for building feature prediction using facade images, for seismic risk assessment with AI. The Graphic User Interface enables a fast assessment of the building, including an object detection module, to isolate the building of interest.
 
 # How to use
 This guideline utilizes [Anaconda](https://www.anaconda.com/) to facilitate the configuration of the recommended virtual environment for working with AI. It can be downloaded for various operating systems from  
@@ -13,8 +11,6 @@ This guideline utilizes [Anaconda](https://www.anaconda.com/) to facilitate the 
 * Open Anaconda Prompt
 * *Create a virtual environment:* conda create -n MY_VIRTUAL_ENVIRONMENT_NAME python=3.9.13 (e.g., conda create -n GEM_AI python=3.9.13)
 
-  ![conda](https://github.com/user-attachments/assets/69da3746-5967-4f68-b6c8-37bd168313f9)
-
 ```bash
 conda create -n YOUR_VIRTUAL_ENVIRONMENT_NAME python=3.9.13
 ``` 
@@ -22,13 +18,11 @@ conda create -n YOUR_VIRTUAL_ENVIRONMENT_NAME python=3.9.13
 ```bash
 conda activate YOUR_VIRTUAL_ENVIRONMENT_NAME 
 ```
-![image](https://github.com/user-attachments/assets/c0d77e7f-931c-472f-a144-a1bb84cbb406)
 
 * Assign path to the cloned repository
 ```bash
 cd /d YOUR_REPO_PATH
 ```
-![image](https://github.com/user-attachments/assets/66ae8a6d-6855-4316-8c8e-1fc2557d8ce5)
 
 * Install dependencies
 ```bash
@@ -38,7 +32,6 @@ pip install -r requirements.txt
 ```bash
 python main.py
 ```
-![image](https://github.com/user-attachments/assets/caf7ec75-bd96-4406-a881-a3a97336b7ee)
 
 ### *MacOS*
 The process would be the same as the one executed for Windows, up until the activation of the virtual environment
