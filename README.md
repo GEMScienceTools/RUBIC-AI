@@ -23,7 +23,6 @@ conda activate YOUR_VIRTUAL_ENVIRONMENT_NAME
 ```bash
 cd /d YOUR_REPO_PATH
 ```
-![image](https://github.com/user-attachments/assets/66ae8a6d-6855-4316-8c8e-1fc2557d8ce5)
 
 * Install dependencies
 ```bash
@@ -33,7 +32,6 @@ pip install -r requirements.txt
 ```bash
 python main.py
 ```
-![image](https://github.com/user-attachments/assets/caf7ec75-bd96-4406-a881-a3a97336b7ee)
 
 ### *MacOS*
 The process would be the same as the one executed for Windows, up until the activation of the virtual environment
