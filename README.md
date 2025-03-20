@@ -54,7 +54,7 @@ python3 main.py
 ## 2. Inspection methods available
 ### 2.1 Polygon method
 #### *Currently unavailable*
-* Select the folder where the outputs will be saved by clicking the ***Project Folder*** button.
+* Select the folder where the outputs will be saved by clicking the <***Project Folder***> button.
 * Set the inspection method by clicking the ***Insp. Method*** button and choosing the polygon method
 * Click on the ***Set Coord.*** button and provide the input files. There are two options for this method:
   #### ***1. Rectangle by two points***
