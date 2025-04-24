@@ -52,9 +52,9 @@ pip3 install -r requirements.txt
 python3 main.py
 ```
 ## 2. Inspection methods available
-### Polygon method
+### 2.1 Polygon method
 #### *Currently unavailable*
-* Select the folder where the outputs will be saved by clicking the ***Project Folder*** button.
+* Select the folder where the outputs will be saved by clicking the <***Project Folder***> button.
 * Set the inspection method by clicking the ***Insp. Method*** button and choosing the polygon method
 * Click on the ***Set Coord.*** button and provide the input files. There are two options for this method:
   #### ***1. Rectangle by two points***
@@ -71,7 +71,7 @@ python3 main.py
 * The results will be saved with the name of the city and contry (e.g., Barranquilla_Colombia).
 * The saved file will contain all the building features, city, country, coordinates and the path to the building image. Furthermore, it will be uploaded when the GUI starts again, allowing the inspection process to continue from where it was finished. This is why it is important to save the inspection before closing the GUI.
   
-### Specific location method
+### 2.2 Specific location method
 #### *Currently unavailable*
 * Select the folder where the outputs will be saved by clicking the ***Project Folder*** button.
 * Set the inspection method by clicking the ***Insp. Method*** button and choosing the specific coordinates method
@@ -81,7 +81,7 @@ python3 main.py
 * Continue the process by clicking the ***Next Building*** button until the inspection is complete, or save your progress by clicking the ***Save Inspection*** button.
 * The results will be saved with the name given in the ***Output name*** cell, which by default is "Specific", in a *.csv file. This file will contain all the building features, city, country, coordinates and the path to the building image. Furthermore, it will be uploaded when the GUI starts again, allowing the inspection process to continue from where it was finished. This is why it is important to save the inspection before closing the GUI.
 
-### Local images method
+### 2.3 Local images method
 * Select the folder where the outputs will be saved by clicking the ***Project Folder*** button.
 * Set the inspection method by clicking the ***Insp. Method*** button and choosing the local method
 * Click on the ***Set Coord.*** button and provide the input files by clicking the Select ***Image Folder*** button and selecting the folder where the building images are stored on the local device. Then, by clicking the ***Upload Building Information*** button, the user should provide a *.csv file containing the ID and coordinates of the building images (as shown in polygon method). Finally, select the number of images available per location (1 to 3).
