@@ -1,4 +1,5 @@
 from geopy.distance import geodesic
+from collections import defaultdict
 
 # Function to calculate Geodesic distance (in km)
 def geodesic_distance(lat1, lon1, lat2, lon2):
@@ -26,7 +27,6 @@ def find_nearest_neighbors_geodesic(input_row, info_df, n_neighbors, neighbor_me
         # Add distance column to neighbor data
         neighbor_data['distance_km'] = distances.loc[nearest_indices].values
         
-        # neighbor_data = info_df.loc[nearest_indices]
         
     elif neighbor_method == 2:
         # Calculate geodesic distance for each row in reference DataFrame
@@ -48,23 +48,44 @@ def find_nearest_neighbors_geodesic(input_row, info_df, n_neighbors, neighbor_me
     
     return neighbor_data
 
-# Function to compute taxonomy probabilities and preserve full structure of info_df
+# Function to compute taxonomy probabilities using inverse-distance weighted soft voting
 def compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row):
-    # Get counts of Taxonomy (normalized to sum to 1 as probability)
-    taxonomy_counts = nearest_neighbors['Taxonomy'].value_counts(normalize=True)
-    
-    # Prepare list of rows to return
+    """
+    Computes taxonomy probabilities using weighted soft voting based on geodesic distance.
+
+    Parameters:
+    - nearest_neighbors: DataFrame containing the neighbors with 'Taxonomy' and 'distance_km' columns.
+    - input_row: The row of the input point.
+    - kernel: Kernel type ('inverse' or 'gaussian').
+    - bandwidth: Bandwidth for the Gaussian kernel.
+
+    Returns:
+    - List of dictionaries, each representing a taxonomy and its probability, along with extra metadata.
+    """
+    class_weights = defaultdict(float)
+
+    # Assign weights to each neighbor based on the chosen kernel
+    for _, row in nearest_neighbors.iterrows():
+        dist = row['distance_km']
+        label = row['Taxonomy']
+        
+        # Compute weight based on kernel
+        weight = 1 / (dist + 1e-6)  # Avoid division by zero
+        class_weights[label] += weight
+
+    # Normalize weights to create a probability distribution
+    total_weight = sum(class_weights.values())
+    probs = {label: weight / total_weight for label, weight in class_weights.items()}
+
+    # Prepare output rows
     distribution_rows = []
-    
-    # Loop through each unique Taxonomy found among nearest neighbors
-    for taxonomy, prob in taxonomy_counts.items():
-        # Take the first occurrence of this taxonomy in neighbors to extract corresponding categorical attributes
+    for taxonomy, prob in probs.items():
+        # Take a representative row (first one with the taxonomy)
         taxonomy_row = nearest_neighbors[nearest_neighbors['Taxonomy'] == taxonomy].iloc[0]
         
-        # Append row with all required columns
         distribution_rows.append({
-            'ID': input_row['ID'],  # From input file
-            'Latitude': input_row['latitude'],  # Use input coordinates
+            'ID': input_row['ID'],
+            'Latitude': input_row['latitude'],
             'Longitude': input_row['longitude'],
             'Country': taxonomy_row['Country'],
             'City': taxonomy_row['City'],
@@ -75,7 +96,7 @@ def compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row):
             'Occupancy': taxonomy_row['Occupancy'],
             'Block Position': taxonomy_row['Block Position'],
             'Taxonomy': taxonomy,
-            'Probability': prob  # Computed probability
+            'Probability': prob
         })
-    
+
     return distribution_rows

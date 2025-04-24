@@ -25,6 +25,8 @@ from dl_prediction_models import predict_llrs_img, predict_material_img, predict
 from dl_prediction_models import predict_occupancy_img, predict_block_position_img, predict_n_stories_img
 from get_building_orientation import get_street_view_image , get_road_orientation
 from bounding_box_manual import BoundingBoxWindow
+from epoch_construction import EpochSelectionDialog
+from help_window import HelpDialog
 from neighbor_building_extrapolation_feature import find_nearest_neighbors_geodesic, compute_taxonomy_distribution_full_structure
 
 class GUIMethods:
@@ -40,6 +42,7 @@ class GUIMethods:
         self.sw_insp = True             # Existing inspection swicth           
         self.save_id = True             # Existing inspection swicth      
         self.box_id = None              # Manual bounding box
+        self.epoch_const= True          # Epoch of construction
     ############ Folder Selection ################
     def select_folder(self):
         """Open a folder selection dialog and display the selected folder in a text output."""
@@ -225,6 +228,9 @@ class GUIMethods:
                                 "Number of Stories",
                                 "Occupancy",
                                 "Block Position",
+                                "Epoch of construction",
+                                "Roof shape",
+                                "Roof material",
                                 "Image Quality",
                                 "Taxonomy",
                                 "Image filename or link"]
@@ -1090,24 +1096,30 @@ class GUIMethods:
             self.data_ai.iloc[self.click_count * 3 , 8] = self.ui.n_stories_value_1.currentData()        # Number of Stories 
             self.data_ai.iloc[self.click_count * 3 , 9] = self.ui.occup_cb_1.currentData()               # Occupancy
             self.data_ai.iloc[self.click_count * 3 , 10] = self.ui.bck_pos_cb_1.currentData()            # Block Position
-            self.data_ai.iloc[self.click_count * 3 , 11] = self.ui.img_q_cb_1.currentData()              # Image Quality
+            self.data_ai.iloc[self.click_count * 3 , 11] = self.ui.epc_const_cb_1.currentText()          # Epoch of construction
+            self.data_ai.iloc[self.click_count * 3 , 12] = self.ui.roof_shape_cb_1.currentData()         # Roof shape
+            self.data_ai.iloc[self.click_count * 3 , 13] = self.ui.roof_material_cb_1.currentData()      # Roof material
+            self.data_ai.iloc[self.click_count * 3 , 14] = self.ui.img_q_cb_1.currentData()              # Image Quality
             
             try:
-                self.data_ai.iloc[self.click_count * 3 , 12] = (self.ui.material_cb_1.currentData()+"/"+self.ui.llrs_cb_1.currentData()
-                                                                +"/HEX:"+self.ui.n_stories_value_1.currentText()+"/"+
-                                                                "CODE:"+self.ui.age_cb_1.currentData())            # Taxonomy
+                self.data_ai.iloc[self.click_count * 3 , 15] = (self.ui.material_cb_1.currentData()+"/"+
+                                                                self.ui.llrs_cb_1.currentData()+"+"+
+                                                                self.ui.age_cb_1.currentData()+"/H:"+
+                                                                self.ui.n_stories_value_1.currentText()+"/"+
+                                                                self.ui.occup_cb_1.currentData()+"/"+
+                                                                self.ui.bck_pos_cb_1.currentData())            # Taxonomy
             except:
                 pass
             
             if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
                 if self.img_url[0]  != "":
-                    self.data_ai.iloc[self.click_count * 3 , 13] = self.img_url[0]                           # Image URL
+                    self.data_ai.iloc[self.click_count * 3 , 16] = self.img_url[0]                           # Image URL
                 else:
                     if isinstance(heading, int):
-                        self.data_ai.iloc[self.click_count * 3 , 13] = base_url + coord +"&heading="+str((heading+ 150) % 360)+"&pitch=5&fov=120"
+                        self.data_ai.iloc[self.click_count * 3 , 16] = base_url + coord +"&heading="+str((heading+ 150) % 360)+"&pitch=5&fov=120"
             
             elif self.ui.insp_method == 2:
-                self.data_ai.iloc[self.click_count * 3 , 13] = self.data_building.iloc[self.click_count * self.n_images_local , 0] 
+                self.data_ai.iloc[self.click_count * 3 , 16] = self.data_building.iloc[self.click_count * self.n_images_local , 0] 
                 
             # Central building image
             # AI values
@@ -1424,14 +1436,38 @@ class GUIMethods:
                     self.ui.bck_pos_cb_1.setCurrentText("Select Block Position")
                 else:
                     self.setComboBoxByData(self.ui.bck_pos_cb_1 , self.data_ai.iloc[self.click_count * 3 , 10])
+                    
+                # Epoch of construction
+                if self.data_ai.iloc[self.click_count * 3 , 11] is None :
+                    self.ui.epc_const_cb_1.setCurrentText("Select Epoch of Construction")
+                elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 11]) == True:
+                    self.ui.epc_const_cb_1.setCurrentText("Select Epoch of Construction")
+                else:
+                    self.setComboBoxByData(self.ui.epc_const_cb_1 , self.data_ai.iloc[self.click_count * 3 , 11])
+                    
+                # Roof Shape
+                if self.data_ai.iloc[self.click_count * 3 , 12] is None :
+                    self.ui.roof_shape_cb_1.setCurrentText("Select Roof Shape")
+                elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 12]) == True:
+                    self.ui.roof_shape_cb_1.setCurrentText("Select Roof Shape")
+                else:
+                    self.setComboBoxByData(self.ui.roof_shape_cb_1 , self.data_ai.iloc[self.click_count * 3 , 12])
+                    
+                # Roof Material
+                if self.data_ai.iloc[self.click_count * 3 , 13] is None :
+                    self.ui.roof_material_cb_1.setCurrentText("Select Roof Material")
+                elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 13]) == True:
+                    self.ui.roof_material_cb_1.setCurrentText("Select Roof Material")
+                else:
+                    self.setComboBoxByData(self.ui.roof_material_cb_1 , self.data_ai.iloc[self.click_count * 3 , 13])
         
                 # Image quality
-                if self.data_ai.iloc[self.click_count * 3 , 11] is None :
+                if self.data_ai.iloc[self.click_count * 3 , 14] is None :
                     self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 11]) == True:
+                elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 14]) == True:
                     self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
                 else:
-                    self.setComboBoxByData(self.ui.img_q_cb_1 , self.data_ai.iloc[self.click_count * 3 , 11])
+                    self.setComboBoxByData(self.ui.img_q_cb_1 , self.data_ai.iloc[self.click_count * 3 , 14])
                     
                     
                 # Restart default value of central building image
@@ -1482,14 +1518,38 @@ class GUIMethods:
                     self.ui.bck_pos_cb_2.setCurrentText("Select Block Position")
                 else:
                     self.setComboBoxByData(self.ui.bck_pos_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 10])
+                    
+                # Epoch of construction
+                if self.data_ai.iloc[self.click_count * 3 + 1 + 1 , 11] is None :
+                    self.ui.epc_const_cb_2.setCurrentText("Select Epoch of Construction")
+                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 +1 , 11]) == True:
+                    self.ui.epc_const_cb_2.setCurrentText("Select Epoch of Construction")
+                else:
+                    self.setComboBoxByData(self.ui.epc_const_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 + 1 , 11])
+                    
+                # Roof Shape
+                if self.data_ai.iloc[self.click_count * 3 + 1 , 12] is None :
+                    self.ui.roof_shape_cb_2.setCurrentText("Select Roof Shape")
+                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 12]) == True:
+                    self.ui.roof_shape_cb_2.setCurrentText("Select Roof Shape")
+                else:
+                    self.setComboBoxByData(self.ui.roof_shape_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 12])
+                    
+                # Roof Material
+                if self.data_ai.iloc[self.click_count * 3 + 1 , 13] is None :
+                    self.ui.roof_material_cb_2.setCurrentText("Select Roof Material")
+                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 13]) == True:
+                    self.ui.roof_material_cb_2.setCurrentText("Select Roof Material")
+                else:
+                    self.setComboBoxByData(self.ui.roof_material_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 13])
         
                 # Image quality
-                if self.data_ai.iloc[self.click_count * 3 + 1 , 11] is None :
+                if self.data_ai.iloc[self.click_count * 3 + 1 , 14] is None :
                     self.ui.img_q_cb_2.setCurrentText("Select Image Quality")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 11]) == True:
+                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 14]) == True:
                     self.ui.img_q_cb_2.setCurrentText("Select Image Quality")
                 else:
-                    self.setComboBoxByData(self.ui.img_q_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 11])
+                    self.setComboBoxByData(self.ui.img_q_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 14])
         
                 # Restart default value of right building image
                 # Material
@@ -1540,6 +1600,30 @@ class GUIMethods:
                 else:
                     self.setComboBoxByData(self.ui.bck_pos_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 10])
         
+                # Epoch of construction
+                if self.data_ai.iloc[self.click_count * 3 + 2 + 1 , 11] is None :
+                    self.ui.epc_const_cb_3.setCurrentText("Select Epoch of Construction")
+                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 +1 , 11]) == True:
+                    self.ui.epc_const_cb_3.setCurrentText("Select Epoch of Construction")
+                else:
+                    self.setComboBoxByData(self.ui.epc_const_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 + 1 , 11])
+                    
+                # Roof Shape
+                if self.data_ai.iloc[self.click_count * 3 + 2 , 12] is None :
+                    self.ui.roof_shape_cb_3.setCurrentText("Select Roof Shape")
+                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 12]) == True:
+                    self.ui.roof_shape_cb_3.setCurrentText("Select Roof Shape")
+                else:
+                    self.setComboBoxByData(self.ui.roof_shape_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 12])
+                    
+                # Roof Material
+                if self.data_ai.iloc[self.click_count * 3 + 2 , 13] is None :
+                    self.ui.roof_material_cb_3.setCurrentText("Select Roof Material")
+                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 13]) == True:
+                    self.ui.roof_material_cb_3.setCurrentText("Select Roof Material")
+                else:
+                    self.setComboBoxByData(self.ui.roof_material_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 13])
+                    
                 # Image quality
                 if self.data_ai.iloc[self.click_count * 3 + 2 , 11] is None :
                     self.ui.img_q_cb_3.setCurrentText("Select Image Quality")
@@ -2106,3 +2190,93 @@ class GUIMethods:
             saved_path = self.ui.output_folder_value.text()+"/"+self.ui.extrapolation_name+".csv"
             final_distribution_df_full.to_csv(saved_path, index=False)
             self.ui.method_progress.setText("Successful extrapolation process")
+            
+            
+    def epoch_construction(self):
+        path = self.ui.output_folder_value.text()+"/epoch_value.csv"
+        
+        try:
+            epoch = pd.read_csv(path)
+            if self.epoch_const == True:
+                self.epoch_const = False
+                for i in range(len(epoch)):
+                    self.ui.epc_const_cb_1.addItem(epoch.iloc[i,0])
+                    self.ui.epc_const_cb_2.addItem(epoch.iloc[i,0])
+                    self.ui.epc_const_cb_3.addItem(epoch.iloc[i,0])
+        except:
+            self.epoch_const = False
+            
+            # Message with special format
+            message = """
+            The construction epoch varies by country and is typically linked to the implementation 
+            of specific building code regulations. As a result, each country has its own relevant 
+            periods. <b><u>PLEASE SELECT AND ENTER THE APPROPRIATE CONSTRUCTION EPOCH FOR YOUR COUNTRY</u></b>.
+            """
+            
+            # Create a QMessageBox instance
+            msg_box = QMessageBox(self.ui)
+            msg_box.setTextFormat(QtCore.Qt.RichText)
+            msg_box.setText(message)
+            msg_box.setWindowTitle("Epoch of construction values")
+            
+            # Show the message box
+            msg_box.exec_()
+            
+            """Open the bounding box selection pop-up window."""
+            app = QApplication.instance()  # Ensure PyQt instance exists
+            if app is None:
+                app = QApplication([])
+                
+            # Called function where the user creates a manual bounding box by clicking four points, which is then displayed in the UI frame.
+            dialog = EpochSelectionDialog(parent=self.ui, main_window=self.ui)
+            dialog.exec_()  # Open the pop-up
+            epoch = dialog.get_epochs()
+            for i in range(len(epoch)):
+                self.ui.epc_const_cb_1.addItem(epoch[i])
+                self.ui.epc_const_cb_2.addItem(epoch[i])
+                self.ui.epc_const_cb_3.addItem(epoch[i])
+                
+            epoch = pd.DataFrame(epoch)
+            epoch.columns = ["Epochs"]
+            epoch.to_csv(path, index=False)
+            
+    def help_block_position(self):
+        # Paths to your example images for each roof shape 
+        self.images = {"Block position options": "help_img/block_position.png" }
+        
+        help_window = HelpDialog(self.images, w_size_width=720, w_size_height=500, w_title= "Block position - visual example",
+                                 img_width=640, img_height=480, parent=self.ui, main_window=self.ui)
+        help_window.exec_()
+        
+    def help_roof_shape(self):
+        # Paths to your example images for each roof shape 
+        self.images = {
+            "Flat": "help_img/flat_roof.png",
+            "Pitched with gable ends": "help_img/gable_roof.png",
+            "Pitched and hipped": "help_img/hipped_roof.png",
+            "Pitched with dormers": "help_img/dormes_roof.png",
+            "Monopitch": "help_img/monoslope_roof.png",
+            "Sawtooth": "help_img/Sawtooth_roof.png",
+            "Curved": "help_img/curved.png",
+            "Complex regular": "help_img/complex_regular.png",
+            "Complex irregular": "help_img/complex_irregular.png"
+        }
+        
+        help_window = HelpDialog(self.images, w_size_width=700, w_size_height=700, w_title= "Roof Shape - visual example",
+                                 img_width=180, img_height=180, parent=self.ui, main_window=self.ui)
+        help_window.exec_()
+        
+    def help_roof_material(self):
+        # Paths to your example images for each roof shape 
+        self.images = {
+            "Concrete": "help_img/concrete.jpg",
+            "Clay or concrete tile": "help_img/clay_tile.jpg",
+            "Metal or asbestos sheets": "help_img/asbesto.png",
+            "Wooden and asphalt shingles": "help_img/asphalt_shingles.jpg",
+            "Slate": "help_img/Slate.png",
+            "Solar panelled roofs": "help_img/solar_panel.png"
+        }
+        
+        help_window = HelpDialog(self.images, w_size_width=700, w_size_height=500, w_title= "Roof Material - visual example",
+                                 img_width=180, img_height=180, parent=self.ui, main_window=self.ui)
+        help_window.exec_()

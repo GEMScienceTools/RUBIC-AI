@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from PyQt5.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout
+from PyQt5.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QApplication
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import Qt
 
@@ -12,17 +12,27 @@ class BoundingBoxWindow(QDialog):
        
         """Initialize the pop-up window for manual bounding box selection."""
         super().__init__()
+        
+        # Get screen resolution
+        screen = QApplication.primaryScreen()
+        screen_geometry = screen.geometry()
+        screen_width = screen_geometry.width()
+        screen_height = screen_geometry.height()
+
+        # Scale the GUI based on resolution
+        sf_x = screen_width / 1920
+        sf_y = screen_height / 1080
 
         self.setWindowTitle("Manual Bounding Box Selection")
-        self.setGeometry(100, 100, 700, 600)  # Fixed window size
+        self.setGeometry(int(100*sf_x), int(100*sf_y), int(700*sf_x), int(600*sf_y))  # Fixed window size
         
         self.image_path = image_path
         self.insp_method = insp_method
         self.cropped_img_path = cropped_path
         self.image = None
         self.points = []  # Store clicked points
-        self.fixed_width = 640   # Fixed image width
-        self.fixed_height = 480  # Fixed image height
+        self.fixed_width = int(640*sf_x)   # Fixed image width
+        self.fixed_height = int(480*sf_y)  # Fixed image height
 
         # Layout
         self.layout = QVBoxLayout()
@@ -80,6 +90,9 @@ class BoundingBoxWindow(QDialog):
             print("Error: Unable to load image.")
             return
 
+        self.image_original = self.image.copy()
+        self.original_shape = self.image_original.shape
+        
         # Resize image to 480x640
         self.image = cv2.resize(self.image, (self.fixed_width, self.fixed_height))
         
@@ -312,6 +325,47 @@ class BoundingBoxWindow(QDialog):
         matrix = cv2.getPerspectiveTransform(np.array(sorted_pts, dtype=np.float32), dst_pts)
         # Apply the perspective transformation to obtain the cropped image
         cropped_image = cv2.warpPerspective(self.image_backup, matrix, (crop_width, crop_height))
+        
+    
+        # Expanded to the original size
+        # Scale points back to the original image resolution
+        scale_x = self.original_shape[1] / self.fixed_width  # Scale factor in x (width) direction
+        scale_y = self.original_shape[0] / self.fixed_height  # Scale factor in y (height) direction
+
+        # Apply the scaling factors to the sorted points to map them back to original resolution
+        sorted_pts_original_size = np.array([
+            [pt[0] * scale_x, pt[1] * scale_y] for pt in sorted_pts  # Scale each point individually
+        ], dtype=np.float32)
+
+        # Estimate the width of the cropped region in the original image
+        # Using average of top and bottom horizontal edges (between point 0-1 and point 2-3)
+        crop_width_original = int(((sorted_pts_original_size[1][0] - sorted_pts_original_size[0][0]) + 
+                                   (sorted_pts_original_size[3][0] - sorted_pts_original_size[2][0])) / 2)
+
+        # Estimate the height of the cropped region in the original image
+        # Using average of left and right vertical edges (between point 0-2 and point 1-3)
+        crop_height_original = int(((sorted_pts_original_size[2][1] - sorted_pts_original_size[0][1]) + 
+                                    (sorted_pts_original_size[3][1] - sorted_pts_original_size[1][1])) / 2)
+
+        # Define the destination points for the perspective transformation
+        # This is a rectangle of the estimated crop size, starting from top-left [0,0]
+        dst_pts_original = np.array([
+            [0, 0],  # top-left
+            [crop_width_original - 1, 0],  # top-right
+            [0, crop_height_original - 1],  # bottom-left
+            [crop_width_original - 1, crop_height_original - 1]  # bottom-right
+        ], dtype=np.float32)
+
+        # Compute the perspective transformation matrix from the original points to the destination rectangle
+        matrix_org = cv2.getPerspectiveTransform(sorted_pts_original_size, dst_pts_original)
+
+        # Apply the perspective warp to the original image to get the rectified and cropped region
+        cropped_image_original = cv2.warpPerspective(self.image_original, matrix_org, (crop_width_original, crop_height_original))
+
+        # Save the cropped image as an RGB JPEG file (convert to BGR format first for OpenCV compatibility)
+        cv2.imwrite(self.cropped_img_path, cv2.cvtColor(cropped_image_original, cv2.COLOR_RGB2BGR))
+
+       
         # Check the inspection method condition to determine whether to save or assign the image
         if self.insp_method != 2:
             # Store the cropped image for further processing
@@ -323,6 +377,8 @@ class BoundingBoxWindow(QDialog):
                 cv2.imwrite(save_path, cv2.cvtColor(cropped_image, cv2.COLOR_RGB2BGR))  # Convert RGB to BGR before saving
             else:
                 self.prediction_img = cropped_image
+                
+        
         # Return the cropped image
         return cropped_image
 

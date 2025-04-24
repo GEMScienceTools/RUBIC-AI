@@ -1,6 +1,6 @@
 # GUI pyqt5 libraries
 from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox, QApplication
 
 # Libries for shape and geopackage creation
 import geopandas as gpd
@@ -22,9 +22,19 @@ class PolygonSettingWindow(QDialog):
         self.main_window = main_window  # Reference to the main window (GUIInterface)
         self.gui_methods = gui_methods  # Reference to GUIMethods
         
-        # Window size
+        # Get screen resolution
+        screen = QApplication.primaryScreen()
+        screen_geometry = screen.geometry()
+        screen_width = screen_geometry.width()
+        screen_height = screen_geometry.height()
+
+        # Scale the GUI based on resolution
+        sf_x = screen_width / 1920
+        sf_y = screen_height / 1080
+        
+        # Set window size dynamically
         self.setWindowTitle("Setting Polygon Coordinates")
-        self.resize(612, 846)
+        self.resize(int(612 * sf_x), int(846 * sf_y))
 
         # Main widget
         self.coord_frame = QtWidgets.QWidget(self)
@@ -32,9 +42,9 @@ class PolygonSettingWindow(QDialog):
         
         # Title of the window
         self.w_tittle = QtWidgets.QLabel(self.coord_frame)
-        self.w_tittle.setGeometry(QtCore.QRect(170, 0, 301, 41))
+        self.w_tittle.setGeometry(QtCore.QRect(int(170* sf_x), int(0* sf_y), int(301* sf_x), int(41* sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setPointSize(int(12*sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.w_tittle.setFont(font)
@@ -43,9 +53,9 @@ class PolygonSettingWindow(QDialog):
         
         # Button for uploading the CSV file with coordinates
         self.csv_button = QtWidgets.QPushButton(self.coord_frame)
-        self.csv_button.setGeometry(QtCore.QRect(20, 305, 231, 31))
+        self.csv_button.setGeometry(QtCore.QRect(int(20 * sf_x), int(305 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(False)
         font.setWeight(50)
         self.csv_button.setFont(font)
@@ -53,28 +63,28 @@ class PolygonSettingWindow(QDialog):
         self.csv_button.setText("Upload polygon coordinates")  # Button text
         self.csv_button.clicked.connect(self.check_data_default)
         
-        # Input fields for the coordinates of points (latitude and longitude)
+        # Input fields for the coordinates of points (latitude and longitude) 
         self.coord_1 = QtWidgets.QLineEdit(self.coord_frame)
-        self.coord_1.setGeometry(QtCore.QRect(160, 116, 211, 31))
+        self.coord_1.setGeometry(QtCore.QRect(int(160 * sf_x), int(116 * sf_y), int(211 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         self.coord_1.setFont(font)
         self.coord_1.setObjectName("coord_1")
         self.coord_1.setText("(lat1 , lon1)")  # Placeholder text
         
         self.coord_2 = QtWidgets.QLineEdit(self.coord_frame)
-        self.coord_2.setGeometry(QtCore.QRect(160, 155, 211, 31))
+        self.coord_2.setGeometry(QtCore.QRect(int(160 * sf_x), int(155 * sf_y), int(211 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         self.coord_2.setFont(font)
         self.coord_2.setObjectName("coord_2")
         self.coord_2.setText("(lat2 , lon2)")  # Placeholder text
         
         # Label for "First Point"
         self.point_1 = QtWidgets.QLabel(self.coord_frame)
-        self.point_1.setGeometry(QtCore.QRect(20, 120, 101, 21))
+        self.point_1.setGeometry(QtCore.QRect(int(20 * sf_x), int(120 * sf_y), int(101 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.point_1.setFont(font)
@@ -83,16 +93,16 @@ class PolygonSettingWindow(QDialog):
         
         # Image placeholder for a squared image (if needed)
         self.img_squared = QtWidgets.QLabel(self.coord_frame)
-        self.img_squared.setGeometry(QtCore.QRect(420, 120, 151, 131))
+        self.img_squared.setGeometry(QtCore.QRect(int(420 * sf_x), int(120 * sf_y), int(151 * sf_x), int(131 * sf_y)))
         self.img_squared.setObjectName("img_squared")
         self.img_squared.setPixmap(QtGui.QPixmap("squared_coord.png"))
         self.img_squared.setScaledContents(True)
         
         # Button for saving the input and continuing
         self.save_button = QtWidgets.QPushButton(self.coord_frame)
-        self.save_button.setGeometry(QtCore.QRect(320, 800, 191, 31))
+        self.save_button.setGeometry(QtCore.QRect(int(320 * sf_x), int(800 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.save_button.setFont(font)
@@ -100,11 +110,11 @@ class PolygonSettingWindow(QDialog):
         self.save_button.setText("Save and continue")  # Button text
         self.save_button.clicked.connect(self.building_sample)
         
-        # Label for "Second Point"
+       # Label for "Second Point"
         self.point_2 = QtWidgets.QLabel(self.coord_frame)
-        self.point_2.setGeometry(QtCore.QRect(20, 155, 121, 31))
+        self.point_2.setGeometry(QtCore.QRect(int(20 * sf_x), int(155 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.point_2.setFont(font)
@@ -113,9 +123,9 @@ class PolygonSettingWindow(QDialog):
         
         # Label showing the CSV file path description
         self.label_csv_file = QtWidgets.QLabel(self.coord_frame)
-        self.label_csv_file.setGeometry(QtCore.QRect(20, 275, 531, 21))
+        self.label_csv_file.setGeometry(QtCore.QRect(int(20 * sf_x), int(275 * sf_y), int(531 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.label_csv_file.setFont(font)
@@ -124,49 +134,48 @@ class PolygonSettingWindow(QDialog):
         
         # Backgrounds
         self.backg_1 = QtWidgets.QLabel(self.coord_frame)
-        self.backg_1.setGeometry(QtCore.QRect(10, 80, 591, 261))
+        self.backg_1.setGeometry(QtCore.QRect(int(10 * sf_x), int(80 * sf_y), int(591 * sf_x), int(261 * sf_y)))
         self.backg_1.setStyleSheet("background-color: rgb(209, 255, 165);")
         self.backg_1.setText("")
         self.backg_1.setObjectName("backg_1")
         
         self.backg_2 = QtWidgets.QLabel(self.coord_frame)
-        self.backg_2.setGeometry(QtCore.QRect(10, 40, 591, 31))
-        # self.backg_2.setStyleSheet("background-color: rgb(255, 206, 253);")
+        self.backg_2.setGeometry(QtCore.QRect(int(10 * sf_x), int(40 * sf_y), int(591 * sf_x), int(31 * sf_y)))
         self.backg_2.setText("")
         self.backg_2.setObjectName("backg_2")
         
         self.backg_3 = QtWidgets.QLabel(self.coord_frame)
-        self.backg_3.setGeometry(QtCore.QRect(10, 350, 591, 121))
+        self.backg_3.setGeometry(QtCore.QRect(int(10 * sf_x), int(350 * sf_y), int(591 * sf_x), int(121 * sf_y)))
         self.backg_3.setStyleSheet("background-color: rgb(255, 224, 185);")
         self.backg_3.setText("")
         self.backg_3.setObjectName("backg_3")
         
         self.backg_4 = QtWidgets.QLabel(self.coord_frame)
-        self.backg_4.setGeometry(QtCore.QRect(10, 480, 591, 151))
+        self.backg_4.setGeometry(QtCore.QRect(int(10 * sf_x), int(480 * sf_y), int(591 * sf_x), int(151 * sf_y)))
         self.backg_4.setStyleSheet("background-color: rgb(157, 218, 255);")
         self.backg_4.setText("")
         self.backg_4.setObjectName("backg_4")
         
         self.backg_5 = QtWidgets.QLabel(self.coord_frame)
-        self.backg_5.setGeometry(QtCore.QRect(10, 640, 591, 151))
+        self.backg_5.setGeometry(QtCore.QRect(int(10 * sf_x), int(640 * sf_y), int(591 * sf_x), int(151 * sf_y)))
         self.backg_5.setStyleSheet("background-color: rgb(254, 255, 160);")
         self.backg_5.setText("")
         self.backg_5.setObjectName("backg_5")
         
         # Label for displaying the CSV file name
         self.label = QtWidgets.QLabel(self.coord_frame)
-        self.label.setGeometry(QtCore.QRect(270, 310, 291, 21))
+        self.label.setGeometry(QtCore.QRect(int(270 * sf_x), int(310 * sf_y), int(291 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         self.label.setFont(font)
         self.label.setObjectName("label")
         self.label.setText("filename.csv")  # Placeholder text for CSV filename
         
         # Label to show the selected method for inspection
         self.method_value = QtWidgets.QLabel(self.coord_frame)
-        self.method_value.setGeometry(QtCore.QRect(280, 45, 301, 21))
+        self.method_value.setGeometry(QtCore.QRect(int(280 * sf_x), int(45 * sf_y), int(301 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         self.method_value.setFont(font)
         self.method_value.setObjectName("method_value")
                
@@ -181,9 +190,9 @@ class PolygonSettingWindow(QDialog):
             
         # Label for displaying the selected method description
         self.method_label = QtWidgets.QLabel(self.coord_frame)
-        self.method_label.setGeometry(QtCore.QRect(20, 40, 251, 31))
+        self.method_label.setGeometry(QtCore.QRect(int(20 * sf_x), int(40 * sf_y), int(251 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setItalic(True)
         font.setUnderline(True)
@@ -194,9 +203,9 @@ class PolygonSettingWindow(QDialog):
         
         # Input fields and labels for "Default" method
         self.default_label = QtWidgets.QLabel(self.coord_frame)
-        self.default_label.setGeometry(QtCore.QRect(210, 80, 201, 31))
+        self.default_label.setGeometry(QtCore.QRect(int(210 * sf_x), int(80 * sf_y), int(201 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setItalic(True)
         font.setUnderline(True)
@@ -206,11 +215,11 @@ class PolygonSettingWindow(QDialog):
         self.default_label.setObjectName("default_label")
         self.default_label.setText("Polygon Method Input")  # Default input section title
         
-        # Labels and inputs for building count and sample size
+       # Labels and inputs for building count and sample size
         self.n_building_default = QtWidgets.QLabel(self.coord_frame)
-        self.n_building_default.setGeometry(QtCore.QRect(20, 200, 121, 31))
+        self.n_building_default.setGeometry(QtCore.QRect(int(20 * sf_x), int(200 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.n_building_default.setFont(font)
@@ -218,9 +227,9 @@ class PolygonSettingWindow(QDialog):
         self.n_building_default.setText("N° buildings:")  # Building count label
         
         self.sample_default = QtWidgets.QLabel(self.coord_frame)
-        self.sample_default.setGeometry(QtCore.QRect(20, 230, 121, 31))
+        self.sample_default.setGeometry(QtCore.QRect(int(20 * sf_x), int(230 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.sample_default.setFont(font)
@@ -228,26 +237,26 @@ class PolygonSettingWindow(QDialog):
         self.sample_default.setText("Sample size:")  # Sample size label
         
         self.building_value_default = QtWidgets.QLabel(self.coord_frame)
-        self.building_value_default.setGeometry(QtCore.QRect(160, 200, 211, 31))
+        self.building_value_default.setGeometry(QtCore.QRect(int(160 * sf_x), int(200 * sf_y), int(211 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10) 
+        font.setPointSize(int(10 * sf_x))
         self.building_value_default.setFont(font)
         self.building_value_default.setObjectName("building_value_default")
         self.building_value_default.setText("-")  # Default building count
         
         self.sample_size_default = QtWidgets.QLineEdit(self.coord_frame)
-        self.sample_size_default.setGeometry(QtCore.QRect(160, 230, 111, 31))
+        self.sample_size_default.setGeometry(QtCore.QRect(int(160 * sf_x), int(230 * sf_y), int(111 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         self.sample_size_default.setFont(font)
         self.sample_size_default.setObjectName("sample_size_default")
         self.sample_size_default.setText("10")  # Default sample size
         
         # Load button for determine building population
         self.load_button = QtWidgets.QPushButton(self.coord_frame)
-        self.load_button.setGeometry(QtCore.QRect(110, 800, 191, 31))
+        self.load_button.setGeometry(QtCore.QRect(int(110 * sf_x), int(800 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.load_button.setFont(font)
@@ -258,9 +267,9 @@ class PolygonSettingWindow(QDialog):
         
         # Input fields and labels for "Specific" method
         self.specific_label = QtWidgets.QLabel(self.coord_frame)
-        self.specific_label.setGeometry(QtCore.QRect(160, 355, 301, 21))
+        self.specific_label.setGeometry(QtCore.QRect(int(160 * sf_x), int(355 * sf_y), int(301 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setItalic(True)
         font.setUnderline(True)
@@ -271,17 +280,17 @@ class PolygonSettingWindow(QDialog):
         self.specific_label.setText("Specific Locations Method Input")  # Input section title
         
         self.specific_path = QtWidgets.QLabel(self.coord_frame)
-        self.specific_path.setGeometry(QtCore.QRect(270, 440, 291, 21))
+        self.specific_path.setGeometry(QtCore.QRect(int(270 * sf_x), int(440 * sf_y), int(291 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         self.specific_path.setFont(font)
         self.specific_path.setObjectName("specific_path")
         self.specific_path.setText("filename.csv")  # Placeholder text for CSV filename
         
         self.csv_button_specific = QtWidgets.QPushButton(self.coord_frame)
-        self.csv_button_specific.setGeometry(QtCore.QRect(20, 435, 231, 31))
+        self.csv_button_specific.setGeometry(QtCore.QRect(int(20 * sf_x), int(435 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(False)
         font.setWeight(50)
         self.csv_button_specific.setFont(font)
@@ -289,11 +298,10 @@ class PolygonSettingWindow(QDialog):
         self.csv_button_specific.setText("Upload building locations")  # Button text
         self.csv_button_specific.clicked.connect(self.check_data_specific)
 
-        
         self.local_label = QtWidgets.QLabel(self.coord_frame)
-        self.local_label.setGeometry(QtCore.QRect(190, 480, 251, 21))
+        self.local_label.setGeometry(QtCore.QRect(int(190 * sf_x), int(480 * sf_y), int(251 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setItalic(True)
         font.setUnderline(True)
@@ -304,9 +312,9 @@ class PolygonSettingWindow(QDialog):
         self.local_label.setText("Local Folder Images Method Input")  # Input section title
         
         self.csv_button_local = QtWidgets.QPushButton(self.coord_frame)
-        self.csv_button_local.setGeometry(QtCore.QRect(20, 590, 231, 31))
+        self.csv_button_local.setGeometry(QtCore.QRect(int(20 * sf_x), int(590 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(False)
         font.setWeight(50)
         self.csv_button_local.setFont(font)
@@ -315,17 +323,17 @@ class PolygonSettingWindow(QDialog):
         self.csv_button_local.clicked.connect(self.check_data_local)
         
         self.local_folder_path = QtWidgets.QLabel(self.coord_frame)
-        self.local_folder_path.setGeometry(QtCore.QRect(270, 555, 291, 21))
+        self.local_folder_path.setGeometry(QtCore.QRect(int(270 * sf_x), int(555 * sf_y), int(291 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         self.local_folder_path.setFont(font)
         self.local_folder_path.setObjectName("local_folder_path")
         self.local_folder_path.setText("---")  # Button text
         
         self.folder_local_button = QtWidgets.QPushButton(self.coord_frame)
-        self.folder_local_button.setGeometry(QtCore.QRect(20, 550, 231, 31))
+        self.folder_local_button.setGeometry(QtCore.QRect(int(20 * sf_x), int(550 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(False)
         font.setWeight(50)
         self.folder_local_button.setFont(font)
@@ -334,35 +342,35 @@ class PolygonSettingWindow(QDialog):
         self.folder_local_button.clicked.connect(self.check_data_local_folder)
         
         self.local_path = QtWidgets.QLabel(self.coord_frame)
-        self.local_path.setGeometry(QtCore.QRect(270, 595, 291, 21))
+        self.local_path.setGeometry(QtCore.QRect(int(270 * sf_x), int(595 * sf_y), int(291 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         self.local_path.setFont(font)
         self.local_path.setObjectName("local_path")
         self.local_path.setText("filename.csv")  # Placeholder text for CSV filename
         
         self.output_label_specific = QtWidgets.QLabel(self.coord_frame)
-        self.output_label_specific.setGeometry(QtCore.QRect(20, 390, 121, 31))
+        self.output_label_specific.setGeometry(QtCore.QRect(int(20 * sf_x), int(390 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.output_label_specific.setFont(font)
         self.output_label_specific.setObjectName("output_label_specific")
-        self.output_label_specific.setText("Output name:") 
+        self.output_label_specific.setText("Output name:")
         
         self.output_value_specific = QtWidgets.QLineEdit(self.coord_frame)
-        self.output_value_specific.setGeometry(QtCore.QRect(160, 390, 111, 31))
+        self.output_value_specific.setGeometry(QtCore.QRect(int(160 * sf_x), int(390 * sf_y), int(111 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         self.output_value_specific.setFont(font)
         self.output_value_specific.setObjectName("output_value_specific")
-        self.output_value_specific.setText("Specific") 
+        self.output_value_specific.setText("Specific")
         
         self.output_label_local = QtWidgets.QLabel(self.coord_frame)
-        self.output_label_local.setGeometry(QtCore.QRect(20, 510, 121, 31))
+        self.output_label_local.setGeometry(QtCore.QRect(int(20 * sf_x), int(510 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.output_label_local.setFont(font)
@@ -370,17 +378,17 @@ class PolygonSettingWindow(QDialog):
         self.output_label_local.setText("Output name:")
         
         self.output_value_local = QtWidgets.QLineEdit(self.coord_frame)
-        self.output_value_local.setGeometry(QtCore.QRect(160, 510, 111, 31))
+        self.output_value_local.setGeometry(QtCore.QRect(int(160 * sf_x), int(510 * sf_y), int(111 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         self.output_value_local.setFont(font)
         self.output_value_local.setObjectName("output_value_local")
         self.output_value_local.setText("Local")
         
         self.n_image_local_label = QtWidgets.QLabel(self.coord_frame)
-        self.n_image_local_label.setGeometry(QtCore.QRect(310, 510, 201, 31))
+        self.n_image_local_label.setGeometry(QtCore.QRect(int(310 * sf_x), int(510 * sf_y), int(201 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.n_image_local_label.setFont(font)
@@ -388,10 +396,10 @@ class PolygonSettingWindow(QDialog):
         self.n_image_local_label.setText("N° images per location:")
         
         self.n_image_local_value = QtWidgets.QComboBox(self.coord_frame)
-        self.n_image_local_value.setGeometry(QtCore.QRect(520, 511, 71, 31))
+        self.n_image_local_value.setGeometry(QtCore.QRect(int(520 * sf_x), int(511 * sf_y), int(71 * sf_x), int(31 * sf_y)))
         self.n_image_local_value.setObjectName("n_image_local_value")
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         self.n_image_local_value.setFont(font)
         self.n_image_local_value.addItem("1", 1)
         self.n_image_local_value.addItem("2", 2)
@@ -401,9 +409,9 @@ class PolygonSettingWindow(QDialog):
 ########################################################################################
 
         self.extrapolation_label = QtWidgets.QLabel(self.coord_frame)
-        self.extrapolation_label.setGeometry(QtCore.QRect(190, 640, 251, 21))
+        self.extrapolation_label.setGeometry(QtCore.QRect(int(190 * sf_x), int(640 * sf_y), int(251 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setItalic(True)
         font.setUnderline(True)
@@ -412,11 +420,11 @@ class PolygonSettingWindow(QDialog):
         self.extrapolation_label.setFont(font)
         self.extrapolation_label.setObjectName("extrapolation_label")
         self.extrapolation_label.setText("Extrapolation Method Input")
-
+        
         self.output_label_extra = QtWidgets.QLabel(self.coord_frame)
-        self.output_label_extra.setGeometry(QtCore.QRect(20, 670, 121, 31))
+        self.output_label_extra.setGeometry(QtCore.QRect(int(20 * sf_x), int(670 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.output_label_extra.setFont(font)
@@ -424,9 +432,9 @@ class PolygonSettingWindow(QDialog):
         self.output_label_extra.setText("Output name:")
         
         self.building_extra_button = QtWidgets.QPushButton(self.coord_frame)
-        self.building_extra_button.setGeometry(QtCore.QRect(20, 710, 231, 31))
+        self.building_extra_button.setGeometry(QtCore.QRect(int(20 * sf_x), int(710 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(False)
         font.setWeight(50)
         self.building_extra_button.setFont(font)
@@ -435,17 +443,17 @@ class PolygonSettingWindow(QDialog):
         self.building_extra_button.clicked.connect(self.check_data_extra_buildings)
         
         self.output_value_extra = QtWidgets.QLineEdit(self.coord_frame)
-        self.output_value_extra.setGeometry(QtCore.QRect(160, 670, 111, 31))
+        self.output_value_extra.setGeometry(QtCore.QRect(int(160 * sf_x), int(670 * sf_y), int(111 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         self.output_value_extra.setFont(font)
         self.output_value_extra.setObjectName("output_value_extra")
         self.output_value_extra.setText("Extrapolation")
         
         self.example_building_button = QtWidgets.QPushButton(self.coord_frame)
-        self.example_building_button.setGeometry(QtCore.QRect(20, 750, 231, 31))
+        self.example_building_button.setGeometry(QtCore.QRect(int(20 * sf_x), int(750 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(False)
         font.setWeight(50)
         self.example_building_button.setFont(font)
@@ -454,25 +462,25 @@ class PolygonSettingWindow(QDialog):
         self.example_building_button.clicked.connect(self.check_data_extra_neighbors)
         
         self.building_extra_path = QtWidgets.QLabel(self.coord_frame)
-        self.building_extra_path.setGeometry(QtCore.QRect(270, 720, 291, 21))
+        self.building_extra_path.setGeometry(QtCore.QRect(int(270 * sf_x), int(720 * sf_y), int(291 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         self.building_extra_path.setFont(font)
         self.building_extra_path.setObjectName("building_extra_path")
         self.building_extra_path.setText("filename.csv")
         
         self.example_building_path = QtWidgets.QLabel(self.coord_frame)
-        self.example_building_path.setGeometry(QtCore.QRect(270, 750, 291, 21))
+        self.example_building_path.setGeometry(QtCore.QRect(int(270 * sf_x), int(750 * sf_y), int(291 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         self.example_building_path.setFont(font)
         self.example_building_path.setObjectName("example_building_path")
         self.example_building_path.setText("filename.csv")
         
         self.extra_option_button = QtWidgets.QPushButton(self.coord_frame)
-        self.extra_option_button.setGeometry(QtCore.QRect(310, 670, 231, 31))
+        self.extra_option_button.setGeometry(QtCore.QRect(int(310 * sf_x), int(670 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(False)
         font.setWeight(50)
         self.extra_option_button.setFont(font)
@@ -951,6 +959,23 @@ class PolygonSettingWindow(QDialog):
             self.accept()
         elif self.population == False: # Local method
             self.accept()
+            
+            if self.main_window.insp_method == 3:
+                # Message with special format
+                message = """
+                When using the neighbor extrapolation option, no images will be displayed. Please just press 
+                the <b><u>Next Building button</u></b>, and your results will be saved to the selected path. 
+                """
+                
+                # Create a QMessageBox instance
+                msg_box = QMessageBox(self.main_window)
+                msg_box.setTextFormat(QtCore.Qt.RichText)
+                msg_box.setText(message)
+                msg_box.setWindowTitle("Neighbor Extrapolation Usage")
+                
+                # Show the message box
+                msg_box.exec_()
+            
         elif self.population != None:  # Polygon method
             # Extract a random subset 
             GUI_geofiles.extract_random_subset(self.main_window, self.sample_size_default.text())
@@ -1030,6 +1055,8 @@ class PolygonSettingWindow(QDialog):
                 elif dialog.neighbor_method == 2:
                     self.main_window.distance = dialog.distance_value.text()
                     self.main_window.n_neighbor = dialog.building_value_op2.text()
+                    
+        
                     
 
                     

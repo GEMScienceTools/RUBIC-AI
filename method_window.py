@@ -1,21 +1,32 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QDialog, QMessageBox
 
-
 class InspectionSetting(QDialog):
     def __init__(self, parent=None, main_window=None):
         super().__init__(parent)
         self.main_window = main_window  # Reference to the main window (GUIInterface)
+        
+        # Get screen resolution
+        screen = QtWidgets.QApplication.primaryScreen()
+        screen_geometry = screen.geometry()
+        screen_width = screen_geometry.width()
+        screen_height = screen_geometry.height()
+
+        # Scale the GUI based on resolution
+        sf_x = screen_width / 1920
+        sf_y = screen_height / 1080
+
+        # Window Title
         self.setWindowTitle("Selects Inspection Method")
-        self.resize(808, 800)
+        self.resize(int(808*sf_x), int(800*sf_y))
         
         # Main widget
         self.method_frame = QtWidgets.QWidget(self)
-        # Tittle
+        # Title
         self.w_tittle = QtWidgets.QLabel(self.method_frame)
-        self.w_tittle.setGeometry(QtCore.QRect(270, 0, 301, 41))
+        self.w_tittle.setGeometry(QtCore.QRect(int(270 * sf_x), int(0 * sf_y), int(301 * sf_x), int(41 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setPointSize(int(12 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.w_tittle.setFont(font)
@@ -24,9 +35,9 @@ class InspectionSetting(QDialog):
         
         # Save Button
         self.save_button = QtWidgets.QPushButton(self.method_frame)
-        self.save_button.setGeometry(QtCore.QRect(310, 760, 191, 31))
+        self.save_button.setGeometry(QtCore.QRect(int(310 * sf_x), int(760 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.save_button.setFont(font)
@@ -36,20 +47,21 @@ class InspectionSetting(QDialog):
         
         # Background polygon
         self.backg_1 = QtWidgets.QLabel(self.method_frame)
-        self.backg_1.setGeometry(QtCore.QRect(10, 40, 791, 171))
+        self.backg_1.setGeometry(QtCore.QRect(int(10 * sf_x), int(40 * sf_y), int(791 * sf_x), int(171 * sf_y)))
         self.backg_1.setStyleSheet("background-color: rgb(255, 224, 185);")
         self.backg_1.setText("")
         self.backg_1.setObjectName("backg_1")
         
         # Default (Polygon method) image
         self.dafault_img = QtWidgets.QLabel(self.method_frame)
-        self.dafault_img.setGeometry(QtCore.QRect(600, 50, 181, 141))
+        self.dafault_img.setGeometry(QtCore.QRect(int(600 * sf_x), int(50 * sf_y), int(181 * sf_x), int(141 * sf_y)))
         self.dafault_img.setObjectName("dafault_img")
         self.dafault_img.setPixmap(QtGui.QPixmap("default_buildings.png"))
         self.dafault_img.setScaledContents(True)
+        
         # Default (Polygon method) description
         self.default_descrip = QtWidgets.QTextBrowser(self.method_frame)
-        self.default_descrip.setGeometry(QtCore.QRect(230, 50, 351, 151))
+        self.default_descrip.setGeometry(QtCore.QRect(int(230 * sf_x), int(50 * sf_y), int(351 * sf_x), int(151 * sf_y)))
         self.default_descrip.setObjectName("default_descrip")
       
         self.default_descrip.setHtml("<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
@@ -59,15 +71,17 @@ class InspectionSetting(QDialog):
 
         # Background specific
         self.backg_2 = QtWidgets.QLabel(self.method_frame)
-        self.backg_2.setGeometry(QtCore.QRect(10, 220, 791, 171))
+        self.backg_2.setGeometry(QtCore.QRect(int(10 * sf_x), int(220 * sf_y), int(791 * sf_x), int(171 * sf_y)))
         self.backg_2.setStyleSheet("background-color: rgb(215, 213, 255)")
         self.backg_2.setText("")
         self.backg_2.setObjectName("backg_2")
         
         # Specific method description
         self.specific_descrip = QtWidgets.QTextBrowser(self.method_frame)
-        self.specific_descrip.setGeometry(QtCore.QRect(230, 230, 351, 151))
+        self.specific_descrip.setGeometry(QtCore.QRect(int(230 * sf_x), int(230 * sf_y), int(351 * sf_x), int(151 * sf_y)))
         self.specific_descrip.setObjectName("specific_descrip")
+
+
         self.specific_descrip.setHtml("<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
                                       "p, li { white-space: pre-wrap; }\n"
                                       "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
@@ -75,22 +89,23 @@ class InspectionSetting(QDialog):
         
         # Specific image
         self.specific_img = QtWidgets.QLabel(self.method_frame)
-        self.specific_img.setGeometry(QtCore.QRect(600, 230, 181, 141))
+        self.specific_img.setGeometry(QtCore.QRect(int(600 * sf_x), int(230 * sf_y), int(181 * sf_x), int(141 * sf_y)))
         self.specific_img.setObjectName("specific_img")
         self.specific_img.setPixmap(QtGui.QPixmap("specific_buildings.png"))
         self.specific_img.setScaledContents(True)
         
         # Local image
         self.local_img = QtWidgets.QLabel(self.method_frame)
-        self.local_img.setGeometry(QtCore.QRect(600, 430, 181, 141))
+        self.local_img.setGeometry(QtCore.QRect(int(600 * sf_x), int(430 * sf_y), int(181 * sf_x), int(141 * sf_y)))
         self.local_img.setObjectName("local_img")
         self.local_img.setPixmap(QtGui.QPixmap("local_buildings.png"))
         self.local_img.setScaledContents(True)
         
         # Local method description
         self.local_descrip = QtWidgets.QTextBrowser(self.method_frame)
-        self.local_descrip.setGeometry(QtCore.QRect(230, 410, 351, 181))
+        self.local_descrip.setGeometry(QtCore.QRect(int(230 * sf_x), int(410 * sf_y), int(351 * sf_x), int(181 * sf_y)))
         self.local_descrip.setObjectName("local_descrip")
+
         self.local_descrip.setHtml("<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
                                    "p, li { white-space: pre-wrap; }\n"
                                    "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
@@ -98,16 +113,16 @@ class InspectionSetting(QDialog):
 
         # Background local
         self.backg_3 = QtWidgets.QLabel(self.method_frame)
-        self.backg_3.setGeometry(QtCore.QRect(10, 400, 791, 201))
+        self.backg_3.setGeometry(QtCore.QRect(int(10 * sf_x), int(400 * sf_y), int(791 * sf_x), int(201 * sf_y)))
         self.backg_3.setStyleSheet("background-color: rgb(255, 253, 187);")
         self.backg_3.setText("")
         self.backg_3.setObjectName("backg_3")
         
         # Polygon method checkbox
         self.default_check = QtWidgets.QCheckBox(self.method_frame)
-        self.default_check.setGeometry(QtCore.QRect(20, 120, 171, 21))
+        self.default_check.setGeometry(QtCore.QRect(int(20 * sf_x), int(120 * sf_y), int(171 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.default_check.setFont(font)
@@ -116,9 +131,9 @@ class InspectionSetting(QDialog):
         
         # Specific method checkbox
         self.specific_check = QtWidgets.QCheckBox(self.method_frame)
-        self.specific_check.setGeometry(QtCore.QRect(20, 300, 201, 21))
+        self.specific_check.setGeometry(QtCore.QRect(int(20 * sf_x), int(300 * sf_y), int(201 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.specific_check.setFont(font)
@@ -127,26 +142,26 @@ class InspectionSetting(QDialog):
         
         # Local method checkbox
         self.local_check = QtWidgets.QCheckBox(self.method_frame)
-        self.local_check.setGeometry(QtCore.QRect(30, 480, 171, 21))
+        self.local_check.setGeometry(QtCore.QRect(int(30 * sf_x), int(480 * sf_y), int(171 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.local_check.setFont(font)
         self.local_check.setObjectName("local_check")
         self.local_check.setText("Local images")  # Set text directly
-
+        
         # Extrapolation method
         self.backg_4 = QtWidgets.QLabel(self.method_frame)
-        self.backg_4.setGeometry(QtCore.QRect(10, 610, 791, 141))
+        self.backg_4.setGeometry(QtCore.QRect(int(10 * sf_x), int(610 * sf_y), int(791 * sf_x), int(141 * sf_y)))
         self.backg_4.setStyleSheet("background-color: rgb(157, 218, 255);")
         self.backg_4.setText("")
         self.backg_4.setObjectName("backg_4")
         
         self.extrapolation_check = QtWidgets.QCheckBox(self.method_frame)
-        self.extrapolation_check.setGeometry(QtCore.QRect(30, 650, 221, 21))
+        self.extrapolation_check.setGeometry(QtCore.QRect(int(30 * sf_x), int(650 * sf_y), int(221 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.extrapolation_check.setFont(font)
@@ -154,9 +169,9 @@ class InspectionSetting(QDialog):
         self.extrapolation_check.setText("Neighbor")
         
         self.extra_label = QtWidgets.QLabel(self.method_frame)
-        self.extra_label.setGeometry(QtCore.QRect(50, 670, 121, 21))
+        self.extra_label.setGeometry(QtCore.QRect(int(50 * sf_x), int(670 * sf_y), int(121 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.extra_label.setFont(font)
@@ -164,8 +179,9 @@ class InspectionSetting(QDialog):
         self.extra_label.setText("extrapolation")
         
         self.extrapolation_descrip = QtWidgets.QTextBrowser(self.method_frame)
-        self.extrapolation_descrip.setGeometry(QtCore.QRect(230, 620, 351, 121))
+        self.extrapolation_descrip.setGeometry(QtCore.QRect(int(230 * sf_x), int(620 * sf_y), int(351 * sf_x), int(121 * sf_y)))
         self.extrapolation_descrip.setObjectName("extrapolation_descrip")
+
         self.extrapolation_descrip.setHtml("<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
                                             "p, li { white-space: pre-wrap; }\n"
                                             "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
@@ -173,10 +189,13 @@ class InspectionSetting(QDialog):
         
         # Local image
         self.extra_img = QtWidgets.QLabel(self.method_frame)
-        self.extra_img.setGeometry(QtCore.QRect(610, 630, 171, 101))
+        self.extra_img.setGeometry(QtCore.QRect(int(610*sf_x), int(630*sf_y), int(171*sf_x), int(101*sf_y)))
         self.extra_img.setObjectName("extra_img")
         self.extra_img.setPixmap(QtGui.QPixmap("extrapolation.jpg"))
         self.extra_img.setScaledContents(True)
+        
+        """ GEM icon GUI elements """
+        self.setWindowIcon(QtGui.QIcon("GEM_icon.ico"))
         
         # Stacking order
         self.backg_3.raise_()
@@ -252,3 +271,4 @@ class InspectionSetting(QDialog):
                 self.main_window.insp_method = 3
                 self.accept()  
         
+ 

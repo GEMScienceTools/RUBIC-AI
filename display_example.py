@@ -15,10 +15,8 @@ class PolygonSettingWindow(QtWidgets.QDialog):
         # Scale the GUI based on resolution
         sf_x = screen_width / 1920
         sf_y = screen_height / 1080
-        sf = (sf_x + sf_y)/2
         print("Scaled factor X: ", sf_x)
         print("Scaled factor Y: ", sf_y)
-        print("General scaled factor:", sf_x)
         
         # Set window size dynamically
         self.setWindowTitle("Setting Polygon Coordinates")
@@ -43,7 +41,7 @@ class PolygonSettingWindow(QtWidgets.QDialog):
         self.csv_button = QtWidgets.QPushButton(self.coord_frame)
         self.csv_button.setGeometry(QtCore.QRect(int(20 * sf_x), int(305 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf))
+        font.setPointSize(int(10 * sf_x))
         font.setBold(False)
         font.setWeight(50)
         self.csv_button.setFont(font)
@@ -410,6 +408,51 @@ class PolygonSettingWindow(QtWidgets.QDialog):
         self.building_extra_button.setObjectName("building_extra_button")
         self.building_extra_button.setText("Upload building coordinates")
         
+        self.output_value_extra = QtWidgets.QLineEdit(self.coord_frame)
+        self.output_value_extra.setGeometry(QtCore.QRect(int(160 * sf_x), int(670 * sf_y), int(111 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        self.output_value_extra.setFont(font)
+        self.output_value_extra.setObjectName("output_value_extra")
+        self.output_value_extra.setText("Extrapolation")
+        
+        self.example_building_button = QtWidgets.QPushButton(self.coord_frame)
+        self.example_building_button.setGeometry(QtCore.QRect(int(20 * sf_x), int(750 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        font.setBold(False)
+        font.setWeight(50)
+        self.example_building_button.setFont(font)
+        self.example_building_button.setObjectName("example_building_button")
+        self.example_building_button.setText("Upload neighbor buildings")
+        
+        self.building_extra_path = QtWidgets.QLabel(self.coord_frame)
+        self.building_extra_path.setGeometry(QtCore.QRect(int(270 * sf_x), int(720 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        self.building_extra_path.setFont(font)
+        self.building_extra_path.setObjectName("building_extra_path")
+        self.building_extra_path.setText("filename.csv")
+        
+        self.example_building_path = QtWidgets.QLabel(self.coord_frame)
+        self.example_building_path.setGeometry(QtCore.QRect(int(270 * sf_x), int(750 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        self.example_building_path.setFont(font)
+        self.example_building_path.setObjectName("example_building_path")
+        self.example_building_path.setText("filename.csv")
+        
+        self.extra_option_button = QtWidgets.QPushButton(self.coord_frame)
+        self.extra_option_button.setGeometry(QtCore.QRect(int(310 * sf_x), int(670 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        font.setBold(False)
+        font.setWeight(50)
+        self.extra_option_button.setFont(font)
+        self.extra_option_button.setObjectName("extra_option_button")
+        self.extra_option_button.setText("Extrapolation options")
+
+        
         self.backg_3.raise_()
         self.backg_2.raise_()
         self.backg_1.raise_()
@@ -448,11 +491,11 @@ class PolygonSettingWindow(QtWidgets.QDialog):
         self.n_image_local_value.raise_()
         self.output_label_extra.raise_()
         self.building_extra_button.raise_()
-        # self.output_value_extra.raise_()
-        # self.example_building_button.raise_()
-        # self.building_extra_path.raise_()
-        # self.example_building_path.raise_()
-        # self.extra_option_button.raise_()
+        self.output_value_extra.raise_()
+        self.example_building_button.raise_()
+        self.building_extra_path.raise_()
+        self.example_building_path.raise_()
+        self.extra_option_button.raise_()
 
 
 
