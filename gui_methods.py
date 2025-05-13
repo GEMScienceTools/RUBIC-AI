@@ -21,8 +21,8 @@ import requests
 # *.py scripts with complex methods
 from coordinates_window import PolygonSettingWindow
 from method_window import InspectionSetting
-from dl_prediction_models import predict_llrs_img, predict_material_img, predict_code_img
-from dl_prediction_models import predict_occupancy_img, predict_block_position_img, predict_n_stories_img
+from dl_prediction_models import predict_llrs_img, predict_material_img, predict_code_img, predict_roof_shape_img
+from dl_prediction_models import predict_occupancy_img, predict_block_position_img, predict_n_stories_img, predict_roof_material_img
 from get_building_orientation import get_street_view_image , get_road_orientation
 from bounding_box_manual import BoundingBoxWindow
 from epoch_construction import EpochSelectionDialog
@@ -43,6 +43,16 @@ class GUIMethods:
         self.save_id = True             # Existing inspection swicth      
         self.box_id = None              # Manual bounding box
         self.epoch_const= True          # Epoch of construction
+        
+        """Get screen resolution to adapt to different screen sizes"""
+        # Get screen resolution
+        screen = QApplication.primaryScreen()
+        screen_geometry = screen.geometry()
+        screen_width = screen_geometry.width()
+
+        # Scale the GUI based on resolution
+        self.sf_x = screen_width / 1920
+        
     ############ Folder Selection ################
     def select_folder(self):
         """Open a folder selection dialog and display the selected folder in a text output."""
@@ -699,7 +709,7 @@ class GUIMethods:
                         # Skipping prection for this image
                         self.predicted_img[aux] = 0
                         font = QtGui.QFont()
-                        font.setPointSize(16)
+                        font.setPointSize(int(16 * self.sf_x ))
                         font.setBold(True)
                         font.setWeight(75)
                         img_frames[aux].setFont(font)
@@ -711,7 +721,7 @@ class GUIMethods:
                 self.no_image = "Street View not available" 
                 for aux in range (3):
                     font = QtGui.QFont()
-                    font.setPointSize(16)
+                    font.setPointSize(int(16 * self.sf_x))
                     font.setBold(True)
                     font.setWeight(75)
                     img_frames[aux].setFont(font)
@@ -758,80 +768,128 @@ class GUIMethods:
                     # Check and/or create cropped folder
                     if not os.path.exists(self.ui.folder_path+"/Cropped_images"):
                         os.makedirs(self.ui.folder_path+"/Cropped_images")
-                    # Image results
-                    results = model(img_path)
-                    image_rgb = cv2.imread(img_path)
-                    # Adapting line weight depending of image size, in order to have an appropiate thickness
-                    height, width, channels = image_rgb.shape
-                    area = height*width
-                    ratio = int(area*3/307200)
-                    # Lines ratio
-                    if area <= 600000:
-                        # Small images
-                        gap = int(area*14/307200)
-                    elif area < 1000000:
-                        # Medium images
-                        gap = int(area*14/307200 * 3/4)
-                    else:
-                        # Large images
-                        gap = int(area*14/307200 * 3/8)
-                        ratio = int(area*3/307200 * 5/8)
-                    highest_conf = 0
-                    highest_conf_box = None
                     
-                    for result in results:
-                        boxes = result.boxes.xyxy  # Bounding box coordinates
-                        confs = result.boxes.conf  # Confidence scores
-                        classes = result.boxes.cls  # Class IDs
-                    
-                        for box, conf, cls in zip(boxes, confs, classes):
-                            cls = int(cls)  # Ensure the class ID is an integer
-                            # Getting the building image with higher confidence as selected bounding box
-                            if class_map[cls] == "building-xzyh" and conf > highest_conf:
-                                highest_conf = conf
-                                highest_conf_box = box
-                    
-                    if highest_conf_box is not None:
-                        x1, y1, x2, y2 = map(int, highest_conf_box)
+                    self.gap = None
+                    try:
+                        # Image results
+                        results = model(img_path)
+                        image_rgb = cv2.imread(img_path)
+                        # Adapting line weight depending of image size, in order to have an appropiate thickness
+                        height, width, channels = image_rgb.shape
+                        area = height*width
+                        ratio = int(area*3/307200)
+                        # Lines ratio
+                        if area <= 600000:
+                            # Small images
+                            self.gap = int(area*14/307200)
+                        elif area < 1000000:
+                            # Medium images
+                            self.gap = int(area*14/307200 * 3/4)
+                        else:
+                            # Large images
+                            self.gap = int(area*14/307200 * 3/8)
+                            ratio = int(area*3/307200 * 5/8)
+                        highest_conf = 0
+                        highest_conf_box = None
                         
-                        # Crop the area within the bounding box
-                        cropped_image = image_rgb[y1:y2, x1:x2]
-                        # Save image in local device
-                        cv2.imwrite(cropped_path, cropped_image)
-                    
-                        # Draw a dashed red rectangle for the highest confidence box
-                        for i in range(x1, x2, gap):
-                            cv2.line(image_rgb, (i, y1), (min(i + 5, x2), y1), (0, 0, 255), ratio)  # Top edge
-                            cv2.line(image_rgb, (i, y2), (min(i + 5, x2), y2), (0, 0, 255), ratio)  # Bottom edge
-                        for i in range(y1, y2, gap):
-                            cv2.line(image_rgb, (x1, i), (x1, min(i + 5, y2)), (0, 0, 255), ratio)  # Left edge
-                            cv2.line(image_rgb, (x2, i), (x2, min(i + 5, y2)), (0, 0, 255), ratio)  # Right edge
-                            
-                        # Check and/or create diplayed folder              
-                        if not os.path.exists(self.ui.folder_path+"/displayed_images"):
-                            os.makedirs(self.ui.folder_path+"/displayed_images")
-                        cv2.imwrite(displayed_path, image_rgb)
+                        for result in results:
+                            boxes = result.boxes.xyxy  # Bounding box coordinates
+                            confs = result.boxes.conf  # Confidence scores
+                            classes = result.boxes.cls  # Class IDs
                         
-                        if image_rgb is not None:
-                            # Convert BGR image (OpenCV) to RGB format
-                            display_image_rgb = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2RGB)
-                            # display_image_rgb = image_rgb.copy()
-                            # Convert the RGB image to QImage
-                            height, width, channel = display_image_rgb.shape
-                            bytes_per_line = 3 * width
-                            qimage = QtGui.QImage(display_image_rgb.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
+                            for box, conf, cls in zip(boxes, confs, classes):
+                                cls = int(cls)  # Ensure the class ID is an integer
+                                # Getting the building image with higher confidence as selected bounding box
+                                if class_map[cls] == "building-xzyh" and conf > highest_conf:
+                                    highest_conf = conf
+                                    highest_conf_box = box
+                        
+                        if highest_conf_box is not None:
+                            x1, y1, x2, y2 = map(int, highest_conf_box)
                             
-                            # Convert QImage to QPixmap
-                            building_pixmap = QtGui.QPixmap.fromImage(qimage)
+                            # Crop the area within the bounding box
+                            cropped_image = image_rgb[y1:y2, x1:x2]
+                            # Save image in local device
+                            cv2.imwrite(cropped_path, cropped_image)
+                        
+                            # Draw a dashed red rectangle for the highest confidence box
+                            if self.gap == 0:
+                                self.gap = 1
+                            for i in range(x1, x2, self.gap):
+                                cv2.line(image_rgb, (i, y1), (min(i + 5, x2), y1), (0, 0, 255), max(1, int(ratio)))  # Top edge
+                                cv2.line(image_rgb, (i, y2), (min(i + 5, x2), y2), (0, 0, 255), max(1, int(ratio)))  # Bottom edge
+                            for i in range(y1, y2, self.gap):
+                                cv2.line(image_rgb, (x1, i), (x1, min(i + 5, y2)), (0, 0, 255), max(1, int(ratio)))  # Left edge
+                                cv2.line(image_rgb, (x2, i), (x2, min(i + 5, y2)), (0, 0, 255), max(1, int(ratio)))  # Right edge
+                                
+                            # Check and/or create diplayed folder              
+                            if not os.path.exists(self.ui.folder_path+"/displayed_images"):
+                                os.makedirs(self.ui.folder_path+"/displayed_images")
+                            cv2.imwrite(displayed_path, image_rgb)
+                            
+                            if image_rgb is not None:
+                                # Convert BGR image (OpenCV) to RGB format
+                                display_image_rgb = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2RGB)
+                                # display_image_rgb = image_rgb.copy()
+                                # Convert the RGB image to QImage
+                                height, width, channel = display_image_rgb.shape
+                                bytes_per_line = 3 * width
+                                qimage = QtGui.QImage(display_image_rgb.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
+                                
+                                # Convert QImage to QPixmap
+                                building_pixmap = QtGui.QPixmap.fromImage(qimage)
+
+                    except FileNotFoundError:
+                        self.no_image = f"""
+                                        <b><u>No image found</u></b><br><br>
+                                        Please check that the image file exists at the specified path:<br>
+                                        <code>{img_path}</code>
+                                        """
+                        font = QtGui.QFont()
+                        font.setPointSize(int(12 * self.sf_x))
+                        font.setBold(True)
+                        font.setWeight(75)
                     
-                    # Displayed image in corresponding frames
-                    img_frames[aux].setPixmap(
-                        building_pixmap.scaled(
-                            img_frames[aux].width(),
-                            img_frames[aux].height(),
-                            QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
-                            QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
-                      
+                        img_frames[aux].setFont(font)
+                        img_frames[aux].setTextFormat(QtCore.Qt.RichText)  # Enable rich text (HTML)
+                        img_frames[aux].setText(self.no_image)
+                        img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)
+                        img_frames[aux].setWordWrap(True)
+                        
+                    try:
+                        # Displayed image in corresponding frames
+                        img_frames[aux].setPixmap(
+                            building_pixmap.scaled(
+                                img_frames[aux].width(),
+                                img_frames[aux].height(),
+                                QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
+                                QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
+                    except:
+                        if self.gap == None:
+                            pass
+                        else:
+                            # Displayed image in corresponding frames
+                            self.no_image = """
+                            <b><u>NO BUILDING DETECTED</u></b><br><br>
+                            There is no building detected by the tool. However, if you believe there is a building in the image,<br>
+                            <b><u>PLEASE CLICK THE "MANUAL BOX" BUTTON</u></b> and manually select the building.<br>
+                            <b><u>The building detector has a precision of 93%</u></b>; therefore, you may ignore this message <br>
+                            and simply click <b><u>Next Building</u></b> to continue classifying.
+                            """
+                            
+                            font = QtGui.QFont()
+                            font.setPointSize(int(12 * self.sf_x))    
+                            font.setBold(True)
+                            font.setWeight(75)
+                            
+                            img_frames[aux].setFont(font)
+                            img_frames[aux].setTextFormat(QtCore.Qt.RichText)  # Enable rich text (HTML)
+                            img_frames[aux].setText(self.no_image)
+                            img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)
+                            img_frames[aux].setWordWrap(True)  # Wrap long text
+                        
+                        
+                        
         # Chance progress bar to complete
         self.ui.progress_bar_method.setValue(100)
         self.ui.method_progress.setText("Done!")
@@ -970,74 +1028,74 @@ class GUIMethods:
     
             dialog.exec_()  # Open the pop-up
         
-            # Image path
-            image_file = dialog.prediction_img
-            
-            if self.ui.ai_check.isChecked():
-                # Comboboxes for each image label
-                material_id = [self.ui.material_cb_1,self.ui.material_cb_2,self.ui.material_cb_3]
-                material_index = predict_material_img(image_file, self.ui.insp_method, self.box_id)
-                # LLRS building image sets prediction
-                material_id[self.box_id].setCurrentIndex(material_index+1)
+            try:
+                # Image path
+                image_file = dialog.prediction_img
                 
-                # Comboboxes for each image label
-                llrs_id = [self.ui.llrs_cb_1,self.ui.llrs_cb_2,self.ui.llrs_cb_3]
-                # LLRS building image prediction
-                llrs_index = predict_llrs_img(image_file, self.ui.insp_method, self.box_id)
-                # LLRS building image sets prediction
-                llrs_id[self.box_id].setCurrentIndex(llrs_index+1)
-                            
-                # Comboboxes for each image label
-                code_level_id = [self.ui.age_cb_1,self.ui.age_cb_2,self.ui.age_cb_3]
-                # LLRS building image prediction
-                code_level_index = predict_code_img(image_file, self.ui.insp_method, self.box_id)
-                # LLRS building image sets prediction
-                code_level_id[self.box_id].setCurrentIndex(code_level_index+1)
+                if self.ui.ai_check.isChecked():
+                    # Comboboxes for each image label
+                    material_id = [self.ui.material_cb_1,self.ui.material_cb_2,self.ui.material_cb_3]
+                    material_index = predict_material_img(image_file, self.ui.insp_method, self.box_id)
+                    # LLRS building image sets prediction
+                    material_id[self.box_id].setCurrentIndex(material_index+1)
+                    
+                    # Comboboxes for each image label
+                    llrs_id = [self.ui.llrs_cb_1,self.ui.llrs_cb_2,self.ui.llrs_cb_3]
+                    # LLRS building image prediction
+                    llrs_index = predict_llrs_img(image_file, self.ui.insp_method, self.box_id)
+                    # LLRS building image sets prediction
+                    llrs_id[self.box_id].setCurrentIndex(llrs_index+1)
+                                
+                    # Comboboxes for each image label
+                    code_level_id = [self.ui.age_cb_1,self.ui.age_cb_2,self.ui.age_cb_3]
+                    # LLRS building image prediction
+                    code_level_index = predict_code_img(image_file, self.ui.insp_method, self.box_id)
+                    # LLRS building image sets prediction
+                    code_level_id[self.box_id].setCurrentIndex(code_level_index+1)
+                    
+                    # Comboboxes for each image label
+                    n_stories_id = [self.ui.n_stories_value_1,self.ui.n_stories_value_2,self.ui.n_stories_value_3]
+                    # LLRS building image prediction
+                    n_stories_index = predict_n_stories_img(image_file, self.ui.insp_method, self.box_id)
+                    # LLRS building image sets prediction
+                    class_names = ['10-12', '13+', '1', '2', '3', '4', '5', '6-7', '8-9']
+                    n_stories_id[self.box_id].setCurrentText(class_names[n_stories_index])
+                    
+                    # Comboboxes for each image label
+                    occupancy_id = [self.ui.occup_cb_1,self.ui.occup_cb_2,self.ui.occup_cb_3]
+                    # LLRS building image prediction
+                    occupancy_index = predict_occupancy_img(image_file, self.ui.insp_method, self.box_id)
+                    # LLRS building image sets prediction
+                    occupancy_class = ['Residential', 'Educational', 'Government', 'Industrial', 'Mixed', 'Other', 'Residential']
+                    occupancy_id[self.box_id].setCurrentText(occupancy_class[occupancy_index])  
+                    
+                    # Comboboxes for each image label
+                    block_position_id = [self.ui.bck_pos_cb_1,self.ui.bck_pos_cb_2,self.ui.bck_pos_cb_3]    
+                    # block_position building image prediction
+                    block_position_index = predict_block_position_img(image_file, self.ui.insp_method, self.box_id)
+                    # block_position building image sets prediction
+                    block_position_id[self.box_id].setCurrentIndex(block_position_index+1)
+                    
+                # Message with special format
+                message = """
+                If you are making predictions using the AI-powered option, when a manual bounding box is created, 
+                <b><u>NEW PREDICTION EXECUTION OCCURS</u></b>. Therefore, you should verify that the current labels 
+                correspond to the true labels.
+                """
                 
-                # Comboboxes for each image label
-                n_stories_id = [self.ui.n_stories_value_1,self.ui.n_stories_value_2,self.ui.n_stories_value_3]
-                # LLRS building image prediction
-                n_stories_index = predict_n_stories_img(image_file, self.ui.insp_method, self.box_id)
-                # LLRS building image sets prediction
-                class_names = ['10-12', '13+', '1', '2', '3', '4', '5', '6-7', '8-9']
-                n_stories_id[self.box_id].setCurrentText(class_names[n_stories_index])
+                # Create a QMessageBox instance
+                msg_box = QMessageBox(self.ui)
+                msg_box.setTextFormat(QtCore.Qt.RichText)
+                msg_box.setText(message)
+                msg_box.setWindowTitle("AI-powered inspection form")
                 
-                # Comboboxes for each image label
-                occupancy_id = [self.ui.occup_cb_1,self.ui.occup_cb_2,self.ui.occup_cb_3]
-                # LLRS building image prediction
-                occupancy_index = predict_occupancy_img(image_file, self.ui.insp_method, self.box_id)
-                # LLRS building image sets prediction
-                occupancy_class = ['Residential', 'Educational', 'Government', 'Industrial', 'Mixed', 'Other', 'Residential']
-                occupancy_id[self.box_id].setCurrentText(occupancy_class[occupancy_index])  
-                
-                # Comboboxes for each image label
-                block_position_id = [self.ui.bck_pos_cb_1,self.ui.bck_pos_cb_2,self.ui.bck_pos_cb_3]    
-                # block_position building image prediction
-                block_position_index = predict_block_position_img(image_file, self.ui.insp_method, self.box_id)
-                # block_position building image sets prediction
-                block_position_id[self.box_id].setCurrentIndex(block_position_index+1)
+                # Show the message box
+                msg_box.exec_()
             
-            
-            # Message with special format
-            message = """
-            If you are making predictions using the AI-powered option, when a manual bounding box is created, 
-            <b><u>NEW PREDICTION EXECUTION OCCURS</u></b>. Therefore, you should verify that the current labels 
-            correspond to the true labels.
-            """
-            
-            # Create a QMessageBox instance
-            msg_box = QMessageBox(self.ui)
-            msg_box.setTextFormat(QtCore.Qt.RichText)
-            msg_box.setText(message)
-            msg_box.setWindowTitle("AI-powered inspection form")
-            
-            # Show the message box
-            msg_box.exec_()
-            
-            
+            except:
+                pass
             
 
-        
     ############ Obtain value of the form of each building image ################       
     def inspection_database (self):
         """
@@ -2107,7 +2165,120 @@ class GUIMethods:
             else:
                 self.box_id = None
                 
+            
+    ############ Deep learning model for predict the Roof shape ################
+    def roof_shape_prediction (self):
+
+        # Conditional to avoid executing the method if there is no project folder
+        if self.ui.output_folder_value.text() == "-":
+            pass
+        # Conditional to avoid executing the method if there is no country name
+        elif self.ui.country_value.text() == "-":
+            pass
+        # Conditional to avoid executing the method if there is no city name 
+        elif self.ui.city_value.text() == "-":
+            pass
+        else:
+            # Comboboxes for each image label
+            roof_shape_id = [self.ui.roof_shape_cb_1,self.ui.roof_shape_cb_2,self.ui.roof_shape_cb_3]
+            if self.box_id == None:
+                # Checkbox for the AI powered activation
+                if self.ui.ai_check.isChecked():
+                    if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+                        for i in range (3):
+                            if self.predicted_img[i] == 1:
+                                # Image path
+                                image_file = self.cropped_image[i]      
+                                # roof_shape building image prediction
+                                box_aux = None
+                                roof_shape_index = predict_roof_shape_img(image_file, self.ui.insp_method, box_aux)
+                                # roof_shape building image sets prediction
+                                roof_shape_id[i].setCurrentIndex(roof_shape_index+1)                       
+                            # Peogress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")
+                    
+                    elif self.ui.insp_method == 2:
                         
+                        self.ui.method_progress.setText("Loading AI model ...")
+                        for j in range (100):
+                            time.sleep(0.0001)
+                            self.ui.progress_bar_method.setValue(j)
+                            
+                        for aux in range (self.n_images_local):
+                            # Local cropped image path
+                            cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                            +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0])+"_cropped.jpg") 
+                                         
+                            
+                            # roof_shape building image prediction
+                            roof_shape_index = predict_roof_shape_img(cropped_path, self.ui.insp_method, self.box_id)
+                            # roof_shape building image sets prediction
+                            roof_shape_id[aux].setCurrentIndex(roof_shape_index+1)
+              
+                            # Peogress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")      
+            else:
+                self.box_id = None
+                
+    ############ Deep learning model for predict the Roof shape ################
+    def roof_material_prediction (self):
+
+        # Conditional to avoid executing the method if there is no project folder
+        if self.ui.output_folder_value.text() == "-":
+            pass
+        # Conditional to avoid executing the method if there is no country name
+        elif self.ui.country_value.text() == "-":
+            pass
+        # Conditional to avoid executing the method if there is no city name 
+        elif self.ui.city_value.text() == "-":
+            pass
+        else:
+            # Comboboxes for each image label
+            roof_material_id = [self.ui.roof_material_cb_1,self.ui.roof_material_cb_2,self.ui.roof_material_cb_3]
+            if self.box_id == None:
+                # Checkbox for the AI powered activation
+                if self.ui.ai_check.isChecked():
+                    if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+                        for i in range (3):
+                            if self.predicted_img[i] == 1:
+                                # Image path
+                                image_file = self.cropped_image[i]      
+                                # roof_material building image prediction
+                                box_aux = None
+                                roof_material_index = predict_roof_material_img(image_file, self.ui.insp_method, box_aux)
+                                # roof_material building image sets prediction
+                                roof_material_id[i].setCurrentIndex(roof_material_index+1)                       
+                            # Peogress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")
+                    
+                    elif self.ui.insp_method == 2:
+                        
+                        self.ui.method_progress.setText("Loading AI model ...")
+                        for j in range (100):
+                            time.sleep(0.0001)
+                            self.ui.progress_bar_method.setValue(j)
+                            
+                        for aux in range (self.n_images_local):
+                            # Local cropped image path
+                            cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                            +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0])+"_cropped.jpg") 
+                                         
+                            
+                            # roof_material building image prediction
+                            roof_material_index = predict_roof_material_img(cropped_path, self.ui.insp_method, self.box_id)
+                            # roof_material building image sets prediction
+                            roof_material_id[aux].setCurrentIndex(roof_material_index+1)
+              
+                            # Peogress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")      
+            else:
+                self.box_id = None                      
+                
+                
     ############ Search and load existing inspections ################                  
     def search_inspection(self):
         """
