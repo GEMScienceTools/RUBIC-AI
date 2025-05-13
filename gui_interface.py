@@ -71,6 +71,8 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.next_button.clicked.connect(self.methods.n_stories_prediction)
         self.next_button.clicked.connect(self.methods.occupancy_prediction)
         self.next_button.clicked.connect(self.methods.block_position_prediction)
+        self.next_button.clicked.connect(self.methods.roof_shape_prediction)
+        self.next_button.clicked.connect(self.methods.roof_material_prediction)
         
         # Search existing inspections
         self.search_img_button.clicked.connect(self.methods.search_inspection)
