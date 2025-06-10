@@ -1401,7 +1401,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         """ GEM Logo elements """
         self.GEM_logo = QtWidgets.QLabel(self.centralwidget)
-        self.GEM_logo.setGeometry(QtCore.QRect(int(1320 * sf_x), int(10 * sf_y), int(241 * sf_x), int(51 * sf_y)))
+        self.GEM_logo.setGeometry(QtCore.QRect(int(1380 * sf_x), int(5 * sf_y), int(177 * sf_x), int(65 * sf_y)))
         self.GEM_logo.setText("")
         self.GEM_logo.setPixmap(QtGui.QPixmap("GEM_Logo.png"))
         self.GEM_logo.setScaledContents(True)
@@ -1480,88 +1480,66 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.save_data_button.setFont(font)
         self.save_data_button.setObjectName("save_data_button")
         
-        """ Block position visual example button """ 
+        # Left image frame buttons
+        icon_size = QtCore.QSize(int(31 * sf_x), int(31 * sf_x))  # Icon is square
         self.bloc_pos_help = QtWidgets.QPushButton(self.frame_left_img)
-        pixmap = QtGui.QPixmap("help_icon.png").scaled(31, 31)  # Resize image to fit  # path to your image
+        pixmap = QtGui.QPixmap("help_icon.png").scaled(icon_size)
         icon = QtGui.QIcon(pixmap)
         self.bloc_pos_help.setIcon(icon)
-        self.bloc_pos_help.setIconSize(pixmap.size())
-        self.bloc_pos_help.setGeometry(QtCore.QRect(420, 560, 31, 31))
+        self.bloc_pos_help.setIconSize(icon_size)
+        self.bloc_pos_help.setGeometry(QtCore.QRect(int(420 * sf_x), int(560 * sf_y), int(31 * sf_x), int(31 * sf_y)))
         self.bloc_pos_help.setObjectName("bloc_pos_help")
         
-        """ Roof Shape visual example button """ 
         self.roof_shape_help = QtWidgets.QPushButton(self.frame_left_img)
-        pixmap = QtGui.QPixmap("help_icon.png").scaled(31, 31)  # Resize image to fit  # path to your image
-        icon = QtGui.QIcon(pixmap)
         self.roof_shape_help.setIcon(icon)
-        self.roof_shape_help.setIconSize(pixmap.size())
-        self.roof_shape_help.setGeometry(QtCore.QRect(420, 640, 31, 31))
+        self.roof_shape_help.setIconSize(icon_size)
+        self.roof_shape_help.setGeometry(QtCore.QRect(int(420 * sf_x), int(640 * sf_y), int(31 * sf_x), int(31 * sf_y)))
         self.roof_shape_help.setObjectName("roof_shape_help")
         
-        """ Roof Material visual example button """ 
         self.roof_material_help = QtWidgets.QPushButton(self.frame_left_img)
-        pixmap = QtGui.QPixmap("help_icon.png").scaled(31, 31)  # Resize image to fit  # path to your image
-        icon = QtGui.QIcon(pixmap)
         self.roof_material_help.setIcon(icon)
-        self.roof_material_help.setIconSize(pixmap.size())
-        self.roof_material_help.setGeometry(QtCore.QRect(420, 680, 31, 31))
+        self.roof_material_help.setIconSize(icon_size)
+        self.roof_material_help.setGeometry(QtCore.QRect(int(420 * sf_x), int(680 * sf_y), int(31 * sf_x), int(31 * sf_y)))
         self.roof_material_help.setObjectName("roof_material_help")
         
-        
-        """ Block position visual example button """ 
+        # Central image frame buttons
         self.bloc_pos_help_2 = QtWidgets.QPushButton(self.frame_central_img)
-        pixmap = QtGui.QPixmap("help_icon.png").scaled(31, 31)  # Resize image to fit  # path to your image
-        icon = QtGui.QIcon(pixmap)
         self.bloc_pos_help_2.setIcon(icon)
-        self.bloc_pos_help_2.setIconSize(pixmap.size())
-        self.bloc_pos_help_2.setGeometry(QtCore.QRect(420, 560, 31, 31))
+        self.bloc_pos_help_2.setIconSize(icon_size)
+        self.bloc_pos_help_2.setGeometry(QtCore.QRect(int(420 * sf_x), int(560 * sf_y), int(31 * sf_x), int(31 * sf_y)))
         self.bloc_pos_help_2.setObjectName("bloc_pos_help_2")
         
-        """ Roof Shape visual example button """ 
         self.roof_shape_help_2 = QtWidgets.QPushButton(self.frame_central_img)
-        pixmap = QtGui.QPixmap("help_icon.png").scaled(31, 31)  # Resize image to fit  # path to your image
-        icon = QtGui.QIcon(pixmap)
         self.roof_shape_help_2.setIcon(icon)
-        self.roof_shape_help_2.setIconSize(pixmap.size())
-        self.roof_shape_help_2.setGeometry(QtCore.QRect(420, 640, 31, 31))
+        self.roof_shape_help_2.setIconSize(icon_size)
+        self.roof_shape_help_2.setGeometry(QtCore.QRect(int(420 * sf_x), int(640 * sf_y), int(31 * sf_x), int(31 * sf_y)))
         self.roof_shape_help_2.setObjectName("roof_shape_help_2")
         
-        """ Roof Material visual example button """ 
         self.roof_material_help_2 = QtWidgets.QPushButton(self.frame_central_img)
-        pixmap = QtGui.QPixmap("help_icon.png").scaled(31, 31)  # Resize image to fit  # path to your image
-        icon = QtGui.QIcon(pixmap)
         self.roof_material_help_2.setIcon(icon)
-        self.roof_material_help_2.setIconSize(pixmap.size())
-        self.roof_material_help_2.setGeometry(QtCore.QRect(420, 680, 31, 31))
+        self.roof_material_help_2.setIconSize(icon_size)
+        self.roof_material_help_2.setGeometry(QtCore.QRect(int(420 * sf_x), int(680 * sf_y), int(31 * sf_x), int(31 * sf_y)))
         self.roof_material_help_2.setObjectName("roof_material_help_2")
         
-        
-        """ Block position visual example button """ 
+        # Right image frame buttons
         self.bloc_pos_help_3 = QtWidgets.QPushButton(self.frame_right_img)
-        pixmap = QtGui.QPixmap("help_icon.png").scaled(31, 31)  # Resize image to fit  # path to your image
-        icon = QtGui.QIcon(pixmap)
         self.bloc_pos_help_3.setIcon(icon)
-        self.bloc_pos_help_3.setIconSize(pixmap.size())
-        self.bloc_pos_help_3.setGeometry(QtCore.QRect(420, 560, 31, 31))
+        self.bloc_pos_help_3.setIconSize(icon_size)
+        self.bloc_pos_help_3.setGeometry(QtCore.QRect(int(420 * sf_x), int(560 * sf_y), int(31 * sf_x), int(31 * sf_y)))
         self.bloc_pos_help_3.setObjectName("bloc_pos_help_3")
         
-        """ Roof Shape visual example button """ 
         self.roof_shape_help_3 = QtWidgets.QPushButton(self.frame_right_img)
-        pixmap = QtGui.QPixmap("help_icon.png").scaled(31, 31)  # Resize image to fit  # path to your image
-        icon = QtGui.QIcon(pixmap)
         self.roof_shape_help_3.setIcon(icon)
-        self.roof_shape_help_3.setIconSize(pixmap.size())
-        self.roof_shape_help_3.setGeometry(QtCore.QRect(420, 640, 31, 31))
+        self.roof_shape_help_3.setIconSize(icon_size)
+        self.roof_shape_help_3.setGeometry(QtCore.QRect(int(420 * sf_x), int(640 * sf_y), int(31 * sf_x), int(31 * sf_y)))
         self.roof_shape_help_3.setObjectName("roof_shape_help_3")
         
-        """ Roof Material visual example button """ 
         self.roof_material_help_3 = QtWidgets.QPushButton(self.frame_right_img)
-        pixmap = QtGui.QPixmap("help_icon.png").scaled(31, 31)  # Resize image to fit  # path to your image
-        icon = QtGui.QIcon(pixmap)
         self.roof_material_help_3.setIcon(icon)
-        self.roof_material_help_3.setIconSize(pixmap.size())
-        self.roof_material_help_3.setGeometry(QtCore.QRect(420, 680, 31, 31))
+        self.roof_material_help_3.setIconSize(icon_size)
+        self.roof_material_help_3.setGeometry(QtCore.QRect(int(420 * sf_x), int(680 * sf_y), int(31 * sf_x), int(31 * sf_y)))
         self.roof_material_help_3.setObjectName("roof_material_help_3")
+
         
         """ Raise all elements """
         self.frame_coord_val.raise_()

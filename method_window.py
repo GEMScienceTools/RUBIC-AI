@@ -63,12 +63,24 @@ class InspectionSetting(QDialog):
         self.default_descrip = QtWidgets.QTextBrowser(self.method_frame)
         self.default_descrip.setGeometry(QtCore.QRect(int(230 * sf_x), int(50 * sf_y), int(351 * sf_x), int(151 * sf_y)))
         self.default_descrip.setObjectName("default_descrip")
-      
-        self.default_descrip.setHtml("<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-                                    "p, li { white-space: pre-wrap; }\n"
-                                    "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
-                                    "<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">Creates a polygon using its vertices coordinates (which must be uploaded in either clockwise or counterclockwise order) and performs virtual inspections based on the sample size or the entire building population within the polygon</span></p></body></html>")
+     
+        font_size = 10 * sf_x  # or any base value that looks right
+        html = (
+            f"<html><head><meta name=\"qrichtext\" content=\"1\" />"
+            "<style type=\"text/css\">"
+            "p, li { white-space: pre-wrap; }"
+            "</style></head>"
+            f"<body style=\" font-family:'MS Shell Dlg 2'; font-size:{font_size:.1f}pt; font-weight:400; font-style:normal;\">"
+            "<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; "
+            "-qt-block-indent:0; text-indent:0px;\">"
+            "<span style=\" font-size:inherit;\">"
+            "Creates a polygon using its vertices coordinates (which must be uploaded in either clockwise or counterclockwise order) "
+            "and performs virtual inspections based on the sample size or the entire building population within the polygon"
+            "</span></p></body></html>"
+        )
+        self.default_descrip.setHtml(html)
 
+     
         # Background specific
         self.backg_2 = QtWidgets.QLabel(self.method_frame)
         self.backg_2.setGeometry(QtCore.QRect(int(10 * sf_x), int(220 * sf_y), int(791 * sf_x), int(171 * sf_y)))
@@ -81,12 +93,25 @@ class InspectionSetting(QDialog):
         self.specific_descrip.setGeometry(QtCore.QRect(int(230 * sf_x), int(230 * sf_y), int(351 * sf_x), int(151 * sf_y)))
         self.specific_descrip.setObjectName("specific_descrip")
 
-
-        self.specific_descrip.setHtml("<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-                                      "p, li { white-space: pre-wrap; }\n"
-                                      "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
-                                      "<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">Allows the user to upload a set of specific building locations (buildings of interest), which can be distributed across different regions or even countries. This enables users to upload a CSV file containing all the pairs of coordinates for the buildings of interest.</span></p></body></html>")
+        # Compute adaptive font size
+        font_size = 10 * sf_x  # You can adjust 7.8 as your base size
         
+        # Construct the HTML with dynamic font size
+        html = (
+            f"<html><head><meta name=\"qrichtext\" content=\"1\" />"
+            "<style type=\"text/css\">"
+            "p, li { white-space: pre-wrap; }"
+            "</style></head>"
+            f"<body style=\" font-family:'MS Shell Dlg 2'; font-size:{font_size:.1f}pt; font-weight:400; font-style:normal;\">"
+            "<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; "
+            "-qt-block-indent:0; text-indent:0px;\">"
+            "<span style=\" font-size:inherit;\">"
+            "Allows the user to upload a set of specific building locations (buildings of interest), which can be distributed across different regions or even countries. "
+            "This enables users to upload a CSV file containing all the pairs of coordinates for the buildings of interest."
+            "</span></p></body></html>"
+        )
+        self.specific_descrip.setHtml(html)
+
         # Specific image
         self.specific_img = QtWidgets.QLabel(self.method_frame)
         self.specific_img.setGeometry(QtCore.QRect(int(600 * sf_x), int(230 * sf_y), int(181 * sf_x), int(141 * sf_y)))
@@ -106,10 +131,25 @@ class InspectionSetting(QDialog):
         self.local_descrip.setGeometry(QtCore.QRect(int(230 * sf_x), int(410 * sf_y), int(351 * sf_x), int(181 * sf_y)))
         self.local_descrip.setObjectName("local_descrip")
 
-        self.local_descrip.setHtml("<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-                                   "p, li { white-space: pre-wrap; }\n"
-                                   "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
-                                   "<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">Users should provide a folder containing all the images, as well as a CSV file with the metadata (e.g., image file name, and the associated latitude and longitude). This is useful in cases where users might not want to use Google Street View, or where GSV might simply not exist for the region of interest.</span></p></body></html>")
+        scale_factor= 1.0
+        # Compute adaptive font size
+        font_size = 10 * sf_x  # Base font size scaled
+        
+        # Construct the HTML with dynamic font size
+        html = (
+            f"<html><head><meta name=\"qrichtext\" content=\"1\" />"
+            "<style type=\"text/css\">"
+            "p, li { white-space: pre-wrap; }"
+            "</style></head>"
+            f"<body style=\" font-family:'MS Shell Dlg 2'; font-size:{font_size:.1f}pt; font-weight:400; font-style:normal;\">"
+            "<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; "
+            "-qt-block-indent:0; text-indent:0px;\">"
+            "<span style=\" font-size:inherit;\">"
+            "Users should provide a folder containing all the images, as well as a CSV file with the metadata (e.g., image file name, and the associated latitude and longitude). "
+            "This is useful in cases where users might not want to use Google Street View, or where GSV might simply not exist for the region of interest."
+            "</span></p></body></html>"
+        )
+        self.local_descrip.setHtml(html)
 
         # Background local
         self.backg_3 = QtWidgets.QLabel(self.method_frame)
@@ -182,11 +222,25 @@ class InspectionSetting(QDialog):
         self.extrapolation_descrip.setGeometry(QtCore.QRect(int(230 * sf_x), int(620 * sf_y), int(351 * sf_x), int(121 * sf_y)))
         self.extrapolation_descrip.setObjectName("extrapolation_descrip")
 
-        self.extrapolation_descrip.setHtml("<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-                                            "p, li { white-space: pre-wrap; }\n"
-                                            "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
-                                            "<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">User should provide a file with the locations of buildings without available images, as well as a file containing building features. Using this information, the tool will extrapolate the most probable features for these buildings.</span></p></body></html>")
+        # Compute adaptive font size
+        font_size = 10 * sf_x  # Adjust base size if needed
         
+        # Construct the HTML with dynamic font size
+        html = (
+            f"<html><head><meta name=\"qrichtext\" content=\"1\" />"
+            "<style type=\"text/css\">"
+            "p, li { white-space: pre-wrap; }"
+            "</style></head>"
+            f"<body style=\" font-family:'MS Shell Dlg 2'; font-size:{font_size:.1f}pt; font-weight:400; font-style:normal;\">"
+            "<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; "
+            "-qt-block-indent:0; text-indent:0px;\">"
+            "<span style=\" font-size:inherit;\">"
+            "User should provide a file with the locations of buildings without available images, as well as a file containing building features. "
+            "Using this information, the tool will extrapolate the most probable features for these buildings."
+            "</span></p></body></html>"
+        )
+        self.extrapolation_descrip.setHtml(html)
+
         # Local image
         self.extra_img = QtWidgets.QLabel(self.method_frame)
         self.extra_img.setGeometry(QtCore.QRect(int(610*sf_x), int(630*sf_y), int(171*sf_x), int(101*sf_y)))
