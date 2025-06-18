@@ -1661,7 +1661,7 @@ class GUIMethods:
                 # Epoch of construction
                 if self.data_ai.iloc[self.click_count * 3 + 2 , 11] is None :
                     self.ui.epc_const_cb_3.setCurrentText("Select Epoch of Construction")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 +1 , 11]) == True:
+                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2, 11]) == True:
                     self.ui.epc_const_cb_3.setCurrentText("Select Epoch of Construction")
                 else:
                     self.setComboBoxByData(self.ui.epc_const_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 + 1 , 11])
