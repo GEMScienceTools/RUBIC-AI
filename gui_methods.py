@@ -736,7 +736,7 @@ class GUIMethods:
             for aux in range (self.n_images_local):
                 # Load the image for drawing
                 try:
-                    img_path = self.ui.folder_path+"/"+str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0])+".jpg"
+                    img_path = self.ui.folder_path+"/"+str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0])
                 except:
                     QMessageBox.warning(self.ui, "Input Error", "No further inspections are available")
                 # Cropped image path (saved in local device)
