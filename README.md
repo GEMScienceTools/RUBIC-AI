@@ -53,11 +53,7 @@ python3 -m venv NAME_OF_MY_ENV
 ```
 * Or if you used pyenv to install a specific version of Python, use:
 ```bash
-python3 -m venv NAME_OF_MY_ENV
-```
-* Assign path to the cloned repository
-```bash
-pyenv exec python -m venv NAME_OF_MY_ENV
+pyenv exec python -m venv myenv
 ```
 * Activate the Virtual Environment
 ```bash
