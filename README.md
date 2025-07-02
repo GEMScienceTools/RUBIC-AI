@@ -42,10 +42,7 @@ python main.py
 ```bash
 brew install python@3.9.13
 ```
-* Create a Python Virtual Environment
-```bash
-brew install python@3.9.13
-```
+Create a Python Virtual Environment
 * Navigate to the folder where you want to create your virtual environment. For example:
 ```bash
 cd ~/my_project
