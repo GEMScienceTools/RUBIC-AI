@@ -110,6 +110,15 @@ python3 main.py
 * Continue the process by clicking the ***Next Building*** button until the inspection is complete, or save your progress by clicking the ***Save Inspection*** button.
 * The results will be saved with the name given in the ***Output name*** cell, which by default is "Local", in a *.csv file. This file will contain all the building features, city, country, coordinates and the path to the building image. Furthermore, it will be uploaded when the GUI starts again, allowing the inspection process to continue from where it was finished. This is why it is important to save the inspection before closing the GUI.
 
+### 2.4 Neighbor extrapolation
+* Select the folder where the outputs will be saved by clicking the ***Project Folder*** button.
+* Set the inspection method by clicking the ***Insp. Method*** button and choosing the neighbor extrapolation
+* Click on the ***Set Coord.*** button and provide the input files by clicking the Select ***Image Folder*** button and selecting the folder where the building images are stored on the local device. Then, by clicking the ***Upload Building Information*** button, the user should provide a *.csv file containing the ID and coordinates of the building images (as shown in polygon method). Finally, select the number of images available per location (1 to 3).
+* Upload the images by clicking the ***Next Building*** button
+* Chose building feature for each combobox (e.g., concrete as LLRS material)
+* Continue the process by clicking the ***Next Building*** button until the inspection is complete, or save your progress by clicking the ***Save Inspection*** button.
+* The results will be saved with the name given in the ***Output name*** cell, which by default is "Local", in a *.csv file. This file will contain all the building features, city, country, coordinates and the path to the building image. Furthermore, it will be uploaded when the GUI starts again, allowing the inspection process to continue from where it was finished. This is why it is important to save the inspection before closing the GUI.
+* 
 ### AI powered Option 
 This option is enabled by clicking the ***AI Powered*** checkbox. Then, each time the ***Next Building*** button is clicked, all the building features will be predicted using a deep learning model. Currently, all models use [DenseNet201](https://pytorch.org/vision/0.20/models/generated/torchvision.models.densenet201.html) and leverage transfer learning from [ImageNet](https://www.image-net.org/), followed by fine-tuning. However, the user should still verify that these features match the ground truth labels and choose the image quality.
 
