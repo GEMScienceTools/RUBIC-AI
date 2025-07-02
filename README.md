@@ -34,7 +34,7 @@ python main.py
 ```
 
 ### *MacOS*
-*Install Homebrew, as it makes it easier to manage packages, including Python versions.
+* Install Homebrew, as it makes it easier to manage packages, including Python versions.
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
