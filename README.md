@@ -2,8 +2,8 @@
 This is the beta version of the toolkit for building feature prediction using facade images, for seismic risk assessment with AI. The Graphic User Interface enables a fast assessment of the building, including an object detection module, to isolate the building of interest.
 
 # How to use
-This guideline utilizes [Anaconda](https://www.anaconda.com/) to facilitate the configuration of the recommended virtual environment for working with AI. It can be downloaded for various operating systems from  
-[Download Anaconda](https://www.anaconda.com/download/success), and installation instructions can be found in [Installing Anaconda](https://www.anaconda.com/docs/getting-started/anaconda/install#macos-linux-installation). Once Anaconda has been installed, it is necessary to create a virtual environment. *Note: Python 3.9.13 can also be installed directly, and the virtual environment can be created using your preferred method* 
+This guideline utilizes [Anaconda](https://www.anaconda.com/) for Windows OS to facilitate the configuration of the recommended virtual environment for working with AI. It can be downloaded for various operating systems from  
+[Download Anaconda](https://www.anaconda.com/download/success), and installation instructions can be found in [Installing Anaconda](https://www.anaconda.com/docs/getting-started/anaconda/install#macos-linux-installation). Once Anaconda has been installed, it is necessary to create a virtual environment. *Note: Python 3.9.13 can also be installed directly, and the virtual environment can be created using your preferred method*. For Linux and macOS, the configuration is done using the terminal.
 
 ## 1. Create a virtual environment 
 ### *Windows*
@@ -34,10 +34,37 @@ python main.py
 ```
 
 ### *MacOS*
-The process would be the same as the one executed for Windows, up until the activation of the virtual environment
+*Install Homebrew, as it makes it easier to manage packages, including Python versions.
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+* Install a specific version of Python
+```bash
+brew install python@3.9.13
+```
+* Create a Python Virtual Environment
+```bash
+brew install python@3.9.13
+```
+* Navigate to the folder where you want to create your virtual environment. For example:
+```bash
+cd ~/my_project
+```
+* Create the virtual environment
+```bash
+python3 -m venv NAME_OF_MY_ENV
+```
+* Or if you used pyenv to install a specific version of Python, use:
+```bash
+python3 -m venv NAME_OF_MY_ENV
+```
 * Assign path to the cloned repository
 ```bash
-cd ~/YOUR_REPO_PATH
+pyenv exec python -m venv NAME_OF_MY_ENV
+```
+* Activate the Virtual Environment
+```bash
+source NAME_OF_MY_ENV/bin/activate
 ```
 * Install dependencies
 ```bash
