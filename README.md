@@ -113,7 +113,12 @@ python3 main.py
 ### 2.4 Neighbor extrapolation
 * Select the folder where the outputs will be saved by clicking the ***Project Folder*** button.
 * Set the inspection method by clicking the ***Insp. Method*** button and choosing the neighbor extrapolation
-* Click on the ***Set Coord.*** button and provide the input files by clicking the Select ***Image Folder*** button and selecting the folder where the building images are stored on the local device. Then, by clicking the ***Upload Building Information*** button, the user should provide a *.csv file containing the ID and coordinates of the building images (as shown in polygon method). Finally, select the number of images available per location (1 to 3).
+* Click on the ***Set Coord.*** button and configure your preferred extrapolation settings by clicking the ***Extrapolation Options*** button and selecting a sampling method (KNN with soft voting or stratified sampling). Then, by checking the corresponding box and clicking the Load Files button, the user can either manually provide the input data or use the Deep Learning option. For manual data upload, the user must provide two .csv files.
+* 1. When clicking the Buildings with Information button, a pop-up window will appear prompting the user to select the file containing information about known buildings. The structure of this file should follow the format below::
+
+![image](https://github.com/user-attachments/assets/ba08b740-0ce5-4f0b-b9a6-cdad5cb50910)
+  
+* **2.** For the ***Unclassified building locations*** button the user should provide a *.csv file containing the ID and coordinates of the building images (as shown in polygon method).
 * Upload the images by clicking the ***Next Building*** button
 * Chose building feature for each combobox (e.g., concrete as LLRS material)
 * Continue the process by clicking the ***Next Building*** button until the inspection is complete, or save your progress by clicking the ***Save Inspection*** button.
