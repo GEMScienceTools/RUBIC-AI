@@ -1,10 +1,27 @@
 [![Windows Tests](https://github.com/GEMScienceTools/oq-vmtk/actions/workflows/windows_test.yml/badge.svg)](WIP)
-[![macOS Tests](https://github.com/GEMScienceTools/oq-vmtk/actions/workflows/linux_test.yml/badge.svg)](WIP)
 
-# RUBIC-AI – Building Recognition using AI-based Identification Toolkit
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="[https://github.com/dangomezm/GEM_AI_Toolkit]">
+    <img src="GEM_Logo.png" alt="Logo" >
+  </a>
 
-A comprehensive AI-powered toolkit for risk assessment using facade image analysis. 
-This beta version provides automated building feature prediction and classification through deep learning models, with an intuitive GUI for efficient building inspection workflows.
+  <h3 align="center">RUBIC-AI – Building Recognition using AI-based Identification Toolkit</h3>
+
+  <p align="center">
+    This repository contains an open source comprehensive AI-powered toolkit for risk assessment using facade image analysis. This beta version provides automated building feature prediction and classification through deep learning models, with an intuitive GUI for efficient building inspection workflows.
+    <br />
+    <a href="https://gemsciencetools.github.io/oq-vmtk/"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/GEMScienceTools/oq-vmtk/tree/main/demos">View Demos</a>
+    ·
+    <a href="https://github.com/GEMScienceTools/oq-vmtk/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    ·
+    <a href="https://github.com/GEMScienceTools/oq-vmtk/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+  </p>
+</div>
 
 ## Features
 
