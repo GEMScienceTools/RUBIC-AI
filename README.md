@@ -15,7 +15,7 @@
   </p>
 </div>
 
-## Features
+# ✨ Key Features
 
 - **AI-powered building feature prediction** using DenseNet201 with transfer learning
 - **Multiple inspection methods** for different data sources and use cases
@@ -24,14 +24,14 @@
 - **Automated seismic risk assessment** from facade images
 - **Flexible data input/output** with CSV support and progress saving
 
-## Quick Start
+# 🚀 Get Started
 
-### Prerequisites
+## ⚙️🔧 Prerequisites
 
 - Python 3.11.13
 - Compatible with Windows, macOS, and Linux
 
-### Installation
+## 👩‍💻🧑‍💻 Installation
 
 1. **Clone the repository**
    ```bash
@@ -70,7 +70,7 @@ Restarting your system can help resolve potential issues related to environment 
    python main.py
    ```
 
-## Inspection Methods
+## 🔍🕵️ Inspection Methods
 
 > ⚠️ NOTE:
 > The suggestion is to start with the methods we support, and then move to the current unavailable.
@@ -135,7 +135,7 @@ ID,Latitude,Longitude,City,Country
 - Batch processing of specific locations
 - Custom output naming
 
-## AI-Powered Features
+## 🤖🧠 AI-Powered Features
 
 ### Automatic Feature Prediction
 
@@ -158,7 +158,7 @@ Enable AI assistance by checking the **AI Powered** checkbox. The system will:
 - Roof shape
 - Roof material
 
-## Data Management
+## 🗂️ Data Management
 
 ### Input Requirements
 
@@ -238,7 +238,7 @@ Ensure you're using Python 3.11.13 specifically, as the models are optimised for
 - Check that you're in the correct virtual environment
 - Ensure you're in the repository directory when running `python main.py`
 
-## Technical Architecture
+## 🖥️ Technical Architecture
 
 ### AI Models
 
@@ -249,17 +249,17 @@ Ensure you're using Python 3.11.13 specifically, as the models are optimised for
 - **Performance:** *[Need benchmarks: accuracy, processing time, etc.]*
 
 
-## Contributing
+# 🤝 Contributions
 
-*pending*
+[WIP]
 
-## License
+# © License
 
-*pending*
+[WIP]
 
-## Support
+# 🌟 Contributors
 
-*pending*
+[WIP]
 
 ## Citation
 
