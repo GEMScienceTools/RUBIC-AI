@@ -11,7 +11,7 @@
 
   <p align="left">
     This repository contains an open source comprehensive AI-powered toolkit for risk assessment using facade image analysis. This beta version provides automated building feature prediction and classification through deep learning models, with an intuitive GUI for efficient building inspection workflows.
-    <a href="https://github.com/GEMScienceTools/oq-vmtk/tree/main/demos">View Demos</a>
+    <a href="https://github.com/dangomezm/GEM_AI_Toolkit/tree/main/demos">View Demos</a>
   </p>
 </div>
 
@@ -35,7 +35,7 @@
 
 1. **Clone the repository**
    ```bash
-   git clone [repository-url]
+   git clone https://github.com/dangomezm/GEM_AI_Toolkit.git
    cd RUBIC-AI
    ```
 
