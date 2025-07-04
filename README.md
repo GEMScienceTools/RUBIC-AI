@@ -9,17 +9,9 @@
 
   <h3 align="center">RUBIC-AI – Building Recognition using AI-based Identification Toolkit</h3>
 
-  <p align="center">
+  <p align="left">
     This repository contains an open source comprehensive AI-powered toolkit for risk assessment using facade image analysis. This beta version provides automated building feature prediction and classification through deep learning models, with an intuitive GUI for efficient building inspection workflows.
-    <br />
-    <a href="https://gemsciencetools.github.io/oq-vmtk/"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
     <a href="https://github.com/GEMScienceTools/oq-vmtk/tree/main/demos">View Demos</a>
-    ·
-    <a href="https://github.com/GEMScienceTools/oq-vmtk/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
-    ·
-    <a href="https://github.com/GEMScienceTools/oq-vmtk/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
   </p>
 </div>
 
