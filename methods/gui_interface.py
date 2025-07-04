@@ -1,7 +1,7 @@
 # import libraries
 from PyQt5 import QtWidgets, QtCore, QtGui
-from gui_methods import GUIMethods
-from gui_gis import GUI_geofiles
+from methods.gui_methods import GUIMethods
+from methods.gui_gis import GUI_geofiles
 
 # Main Class
 class GUIInterface(QtWidgets.QMainWindow):
@@ -1403,12 +1403,12 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.GEM_logo = QtWidgets.QLabel(self.centralwidget)
         self.GEM_logo.setGeometry(QtCore.QRect(int(1380 * sf_x), int(5 * sf_y), int(177 * sf_x), int(65 * sf_y)))
         self.GEM_logo.setText("")
-        self.GEM_logo.setPixmap(QtGui.QPixmap("GEM_Logo.png"))
+        self.GEM_logo.setPixmap(QtGui.QPixmap("help_img/GEM_Logo.png"))
         self.GEM_logo.setScaledContents(True)
         self.GEM_logo.setObjectName("GEM_logo")
         
         """ GEM icon GUI elements """
-        self.setWindowIcon(QtGui.QIcon("GEM_icon.ico"))
+        self.setWindowIcon(QtGui.QIcon("help_img/GEM_icon.ico"))
         
         """ Progress Bar elements """
         # Progress bar widget
@@ -1483,7 +1483,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         # Left image frame buttons
         icon_size = QtCore.QSize(int(31 * sf_x), int(31 * sf_x))  # Icon is square
         self.bloc_pos_help = QtWidgets.QPushButton(self.frame_left_img)
-        pixmap = QtGui.QPixmap("help_icon.png").scaled(icon_size)
+        pixmap = QtGui.QPixmap("help_img/help_icon.png").scaled(icon_size)
         icon = QtGui.QIcon(pixmap)
         self.bloc_pos_help.setIcon(icon)
         self.bloc_pos_help.setIconSize(icon_size)

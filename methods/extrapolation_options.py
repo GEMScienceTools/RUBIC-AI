@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from neighbor_building_extrapolation_feature import find_nearest_neighbors_geodesic
+from methods.neighbor_building_extrapolation_feature import find_nearest_neighbors_geodesic
 import pandas as pd
 
 class extrapolation_options_window(QtWidgets.QDialog):  # Inherit from QDialog

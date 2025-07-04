@@ -13,8 +13,8 @@ import pandas as pd
 import os
 
 # *.py scripts with complex methods
-from gui_gis import GUI_geofiles
-from extrapolation_options import extrapolation_options_window
+from methods.gui_gis import GUI_geofiles
+from methods.extrapolation_options import extrapolation_options_window
 
 class PolygonSettingWindow(QDialog):
     def __init__(self, parent=None, main_window=None, gui_methods=None):
@@ -95,7 +95,7 @@ class PolygonSettingWindow(QDialog):
         self.img_squared = QtWidgets.QLabel(self.coord_frame)
         self.img_squared.setGeometry(QtCore.QRect(int(420 * sf_x), int(120 * sf_y), int(151 * sf_x), int(131 * sf_y)))
         self.img_squared.setObjectName("img_squared")
-        self.img_squared.setPixmap(QtGui.QPixmap("squared_coord.png"))
+        self.img_squared.setPixmap(QtGui.QPixmap("help_img/squared_coord.png"))
         self.img_squared.setScaledContents(True)
         
         # Button for saving the input and continuing

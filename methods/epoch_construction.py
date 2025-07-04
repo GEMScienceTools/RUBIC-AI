@@ -17,7 +17,7 @@ class EpochSelectionDialog(QtWidgets.QDialog):
 
         # Window Title
         self.setWindowTitle("Epoch of construction values")
-        self.resize(400*sf_x, 300*sf_y)
+        self.resize(int(400*sf_x), int(300*sf_y))
 
         # Main layout
         self.layout = QtWidgets.QVBoxLayout(self)

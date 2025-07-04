@@ -56,7 +56,7 @@ class InspectionSetting(QDialog):
         self.dafault_img = QtWidgets.QLabel(self.method_frame)
         self.dafault_img.setGeometry(QtCore.QRect(int(600 * sf_x), int(50 * sf_y), int(181 * sf_x), int(141 * sf_y)))
         self.dafault_img.setObjectName("dafault_img")
-        self.dafault_img.setPixmap(QtGui.QPixmap("default_buildings.png"))
+        self.dafault_img.setPixmap(QtGui.QPixmap("help_img/default_buildings.png"))
         self.dafault_img.setScaledContents(True)
         
         # Default (Polygon method) description
@@ -116,14 +116,14 @@ class InspectionSetting(QDialog):
         self.specific_img = QtWidgets.QLabel(self.method_frame)
         self.specific_img.setGeometry(QtCore.QRect(int(600 * sf_x), int(230 * sf_y), int(181 * sf_x), int(141 * sf_y)))
         self.specific_img.setObjectName("specific_img")
-        self.specific_img.setPixmap(QtGui.QPixmap("specific_buildings.png"))
+        self.specific_img.setPixmap(QtGui.QPixmap("help_img/specific_buildings.png"))
         self.specific_img.setScaledContents(True)
         
         # Local image
         self.local_img = QtWidgets.QLabel(self.method_frame)
         self.local_img.setGeometry(QtCore.QRect(int(600 * sf_x), int(430 * sf_y), int(181 * sf_x), int(141 * sf_y)))
         self.local_img.setObjectName("local_img")
-        self.local_img.setPixmap(QtGui.QPixmap("local_buildings.png"))
+        self.local_img.setPixmap(QtGui.QPixmap("help_img/local_buildings.png"))
         self.local_img.setScaledContents(True)
         
         # Local method description
@@ -245,11 +245,11 @@ class InspectionSetting(QDialog):
         self.extra_img = QtWidgets.QLabel(self.method_frame)
         self.extra_img.setGeometry(QtCore.QRect(int(610*sf_x), int(630*sf_y), int(171*sf_x), int(101*sf_y)))
         self.extra_img.setObjectName("extra_img")
-        self.extra_img.setPixmap(QtGui.QPixmap("extrapolation.jpg"))
+        self.extra_img.setPixmap(QtGui.QPixmap("help_img/extrapolation.jpg"))
         self.extra_img.setScaledContents(True)
         
         """ GEM icon GUI elements """
-        self.setWindowIcon(QtGui.QIcon("GEM_icon.ico"))
+        self.setWindowIcon(QtGui.QIcon("help_img/GEM_icon.ico"))
         
         # Stacking order
         self.backg_3.raise_()
