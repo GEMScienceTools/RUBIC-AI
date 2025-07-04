@@ -21,7 +21,7 @@
 - **Multiple inspection methods** for different data sources and use cases
 - **Interactive GUI** for streamlined building assessment workflows
 - **Object detection module** to isolate buildings of interest
-- **Automated seismic risk assessment** from facade images
+- **Automated building stock collection** from facade images
 - **Flexible data input/output** with CSV support and progress saving
 
 # 🚀 Get Started
@@ -36,7 +36,7 @@
 1. **Clone the repository**
    ```bash
    git clone https://github.com/dangomezm/GEM_AI_Toolkit.git
-   cd RUBIC-AI
+   cd GEM_AI_Toolkit
    ```
 
 2. **Create and activate virtual environment**
@@ -262,20 +262,7 @@ Ensure you're using Python 3.11.13 specifically, as the models are optimised for
 [WIP]
 
 ## Citation
-
-> ⚠️ NOTE:
-> We should also include a reference to your published paper here!
-
-```bibtex
-@software{gomez2025gem,
-  author = {Daniel Gómez},
-  title = {RUBIC-AI: Building Recognition using AI-based Identification Toolkit},
-  year = {2025},
-  version = {RUBIC-AI_beta1},
-  doi = {10.5281/zenodo.14977499},
-  url = {https://doi.org/10.5281/zenodo.14977499}
-}
-```
+[WIP]
 
 ## Changelog
 
