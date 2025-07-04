@@ -259,13 +259,9 @@ Ensure you're using Python 3.11.13 specifically, as the models are optimised for
 <details>
 <summary>📊 Confusion Matrices (Click to Expand)</summary>
 
-**Raw Confusion Matrix**
+* **Lateral Load Resistant System (LLRS)**
   
-![Raw Confusion Matrix](./2af6a809-0739-428d-a11e-1bc4434f05e0.png)
-
-**Normalized Confusion Matrix**
-
-![Normalized Confusion Matrix](./38fd3e1f-d7d0-48a8-b69f-b547e68cf23d.png)
+![LLRS](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/LLRS.png)
 
 </details>
 
