@@ -20,10 +20,9 @@ class HelpDialog(QDialog):
         # Scale the GUI based on resolution
         sf_x = screen_width / 1920
         sf_y = screen_height / 1080
-
         # Window Title
         self.setWindowTitle(w_title)
-        self.resize(400*sf_x, 300*sf_y)
+        self.resize(int(400*sf_x), int(300*sf_y))
         
         layout = QVBoxLayout()
         

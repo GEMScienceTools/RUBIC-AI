@@ -1,17 +1,14 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from methods.neighbor_building_extrapolation_feature import find_nearest_neighbors_geodesic
+from methods.neighbor_building_extrapolation_feature import data_options_window
 import pandas as pd
 
 class extrapolation_options_window(QtWidgets.QDialog):  # Inherit from QDialog
-    def __init__(self, parent=None, n_neighbors=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
-        self.n_neighbors = n_neighbors  # Data passed from main window
-        self.neighbor_data = None
         self.setupUi(self)  # Call setupUi and pass self (QDialog instance)
 
-
-    def setupUi(self, PolygonSetting):  # PolygonSetting is now self
-    
+    def setupUi(self, ExtrapolationSetting):
+        
         # Get screen resolution
         screen = QtWidgets.QApplication.primaryScreen()
         screen_geometry = screen.geometry()
@@ -21,190 +18,133 @@ class extrapolation_options_window(QtWidgets.QDialog):  # Inherit from QDialog
         # Scale the GUI based on resolution
         sf_x = screen_width / 1920
         sf_y = screen_height / 1080
-
         
-        PolygonSetting.setObjectName("PolygonSetting")
-        PolygonSetting.resize(int(400*sf_x), int(370*sf_y))
-        self.coord_frame = QtWidgets.QWidget(PolygonSetting)
-        self.coord_frame.setObjectName("coord_frame")
+        ExtrapolationSetting.setObjectName("ExtrapolationSetting")
+        ExtrapolationSetting.resize(int(1062 * sf_x), int(862 * sf_y))
         
-        self.op_1_check = QtWidgets.QCheckBox(self.coord_frame)
-        self.op_1_check.setGeometry(QtCore.QRect(int(20 * sf_x), int(20 * sf_y), int(241 * sf_x), int(21 * sf_y)))
+        self.method_frame = QtWidgets.QWidget(ExtrapolationSetting)
+        self.method_frame.setObjectName("method_frame")
+        
+        self.w_tittle = QtWidgets.QLabel(self.method_frame)
+        self.w_tittle.setGeometry(QtCore.QRect(int(370 * sf_x), int(0 * sf_y), int(301 * sf_x), int(41 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(12 * sf_x))
         font.setBold(True)
-        font.setItalic(True)
-        font.setUnderline(True)
         font.setWeight(75)
-        self.op_1_check.setFont(font)
-        self.op_1_check.setObjectName("op_1_check")
+        self.w_tittle.setFont(font)
+        self.w_tittle.setObjectName("w_tittle")
         
-        self.save_button = QtWidgets.QPushButton(self.coord_frame)
-        self.save_button.setGeometry(QtCore.QRect(int(90 * sf_x), int(310 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.save_button = QtWidgets.QPushButton(self.method_frame)
+        self.save_button.setGeometry(QtCore.QRect(int(590 * sf_x), int(800 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.save_button.setFont(font)
         self.save_button.setObjectName("save_button")
-        self.save_button.clicked.connect(self.select_method)
+        self.save_button.clicked.connect(self.save_and_continue)
         
-        self.building_value_op1 = QtWidgets.QLabel(self.coord_frame)
-        self.building_value_op1.setGeometry(QtCore.QRect(int(240 * sf_x), int(50 * sf_y), int(211 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        self.building_value_op1.setFont(font)
-        self.building_value_op1.setObjectName("building_value_op1")
+        self.backg_1 = QtWidgets.QLabel(self.method_frame)
+        self.backg_1.setGeometry(QtCore.QRect(int(10 * sf_x), int(40 * sf_y), int(1011 * sf_x), int(351 * sf_y)))
+        self.backg_1.setStyleSheet("background-color: rgb(255, 224, 185);")
+        self.backg_1.setText("")
+        self.backg_1.setObjectName("backg_1")
         
-        self.selected_value_op1 = QtWidgets.QLineEdit(self.coord_frame)
-        self.selected_value_op1.setGeometry(QtCore.QRect(int(240 * sf_x), int(90 * sf_y), int(111 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        self.selected_value_op1.setFont(font)
-        self.selected_value_op1.setObjectName("selected_value_op1")
+        self.knn_descrip = QtWidgets.QTextBrowser(self.method_frame)
+        self.knn_descrip.setGeometry(QtCore.QRect(int(30 * sf_x), int(80 * sf_y), int(981 * sf_x), int(301 * sf_y)))
+        self.knn_descrip.setObjectName("knn_descrip")
         
-        self.n_building_selected = QtWidgets.QLabel(self.coord_frame)
-        self.n_building_selected.setGeometry(QtCore.QRect(int(20 * sf_x), int(90 * sf_y), int(201 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        font.setBold(True)
-        font.setWeight(75)
-        self.n_building_selected.setFont(font)
-        self.n_building_selected.setObjectName("n_building_selected")
+        self.backg_2 = QtWidgets.QLabel(self.method_frame)
+        self.backg_2.setGeometry(QtCore.QRect(int(10 * sf_x), int(420 * sf_y), int(1011 * sf_x), int(371 * sf_y)))
+        self.backg_2.setStyleSheet("background-color: rgb(215, 213, 255);")
+        self.backg_2.setText("")
+        self.backg_2.setObjectName("backg_2")
         
-        self.n_building_op1_label = QtWidgets.QLabel(self.coord_frame)
-        self.n_building_op1_label.setGeometry(QtCore.QRect(int(20 * sf_x), int(50 * sf_y), int(211 * sf_x), int(31 * sf_y)))
+        self.stratified_descrip = QtWidgets.QTextBrowser(self.method_frame)
+        self.stratified_descrip.setGeometry(QtCore.QRect(int(30 * sf_x), int(460 * sf_y), int(981 * sf_x), int(321 * sf_y)))
+        self.stratified_descrip.setObjectName("stratified_descrip")
+        
+        self.knn_check = QtWidgets.QCheckBox(self.method_frame)
+        self.knn_check.setGeometry(QtCore.QRect(int(30 * sf_x), int(50 * sf_y), int(231 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
-        self.n_building_op1_label.setFont(font)
-        self.n_building_op1_label.setObjectName("n_building_op1_label")
+        self.knn_check.setFont(font)
+        self.knn_check.setObjectName("knn_check")
         
-        
-        self.op2_check = QtWidgets.QCheckBox(self.coord_frame)
-        self.op2_check.setGeometry(QtCore.QRect(int(20 * sf_x), int(160 * sf_y), int(281 * sf_x), int(21 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        font.setBold(True)
-        font.setItalic(True)
-        font.setUnderline(True)
-        font.setWeight(75)
-        self.op2_check.setFont(font)
-        self.op2_check.setObjectName("op2_check")
-        
-        self.distance_value = QtWidgets.QLineEdit(self.coord_frame)
-        self.distance_value.setGeometry(QtCore.QRect(int(240 * sf_x), int(190 * sf_y), int(111 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        self.distance_value.setFont(font)
-        self.distance_value.setObjectName("distance_value")
-        
-        self.n_building_op2_button = QtWidgets.QPushButton(self.coord_frame)
-        self.n_building_op2_button.setGeometry(QtCore.QRect(int(20 * sf_x), int(250 * sf_y), int(211 * sf_x), int(31 * sf_y)))
+        self.stratified_check = QtWidgets.QCheckBox(self.method_frame)
+        self.stratified_check.setGeometry(QtCore.QRect(int(30 * sf_x), int(430 * sf_y), int(201 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
-        self.n_building_op2_button.setFont(font)
-        self.n_building_op2_button.setObjectName("n_building_op2_button")
+        self.stratified_check.setFont(font)
+        self.stratified_check.setObjectName("stratified_check")
         
-        self.distance_label = QtWidgets.QLabel(self.coord_frame)
-        self.distance_label.setGeometry(QtCore.QRect(int(20 * sf_x), int(190 * sf_y), int(201 * sf_x), int(31 * sf_y)))
+        self.load_button = QtWidgets.QPushButton(self.method_frame)
+        self.load_button.setGeometry(QtCore.QRect(int(300 * sf_x), int(800 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
-        self.distance_label.setFont(font)
-        self.distance_label.setObjectName("distance_label")
-        
-        self.backg_6 = QtWidgets.QLabel(self.coord_frame)
-        self.backg_6.setGeometry(QtCore.QRect(int(10 * sf_x), int(10 * sf_y), int(351 * sf_x), int(131 * sf_y)))
-        self.backg_6.setStyleSheet("background-color: rgb(255, 224, 185);")
-        self.backg_6.setText("")
-        self.backg_6.setObjectName("backg_6")
-        
-        self.backg_7 = QtWidgets.QLabel(self.coord_frame)
-        self.backg_7.setGeometry(QtCore.QRect(int(10 * sf_x), int(150 * sf_y), int(351 * sf_x), int(151 * sf_y)))
-        self.backg_7.setStyleSheet("background-color: rgb(199, 205, 255);")
-        self.backg_7.setText("")
-        self.backg_7.setObjectName("backg_7")
-        
-        self.max_building = QtWidgets.QLabel(self.coord_frame)
-        self.max_building.setGeometry(QtCore.QRect(int(250 * sf_x), int(230 * sf_y), int(211 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        self.max_building.setFont(font)
-        self.max_building.setObjectName("max_building")
-        
-        self.max_value = QtWidgets.QLabel(self.coord_frame)
-        self.max_value.setGeometry(QtCore.QRect(int(300 * sf_x), int(230 * sf_y), int(211 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        self.max_value.setFont(font)
-        self.max_value.setObjectName("max_value")
-        
-        self.min_building = QtWidgets.QLabel(self.coord_frame)
-        self.min_building.setGeometry(QtCore.QRect(int(250 * sf_x), int(260 * sf_y), int(211 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        self.min_building.setFont(font)
-        self.min_building.setObjectName("min_building")
-        
-        self.min_value = QtWidgets.QLabel(self.coord_frame)
-        self.min_value.setGeometry(QtCore.QRect(int(300 * sf_x), int(260 * sf_y), int(211 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        self.min_value.setFont(font)
-        self.min_value.setObjectName("min_value")
+        self.load_button.setFont(font)
+        self.load_button.setObjectName("load_button")
+        self.load_button.clicked.connect(self.select_method)
 
-        
-        self.backg_7.raise_()
-        self.backg_6.raise_()
+        self.backg_2.raise_()
+        self.backg_1.raise_()
+        self.w_tittle.raise_()
         self.save_button.raise_()
-        self.building_value_op1.raise_()
-        self.selected_value_op1.raise_()
-        self.n_building_selected.raise_()
-        self.n_building_op1_label.raise_()
-        self.distance_value.raise_()
-        self.n_building_op2_button.raise_()
-        self.distance_label.raise_()
-        self.op_1_check.raise_()
-        self.op2_check.raise_()
-        self.max_building.raise_()
-        self.max_value.raise_()
-        self.min_building.raise_()
-        self.min_value.raise_()
-
-        PolygonSetting.setLayout(QtWidgets.QVBoxLayout())  # Set layout before adding widgets
-        PolygonSetting.layout().addWidget(self.coord_frame)  # Add main frame to dialog
-
-        self.retranslateUi(PolygonSetting)
-        QtCore.QMetaObject.connectSlotsByName(PolygonSetting)
-
-    def retranslateUi(self, PolygonSetting):
-        _translate = QtCore.QCoreApplication.translate
-        PolygonSetting.setWindowTitle(_translate("PolygonSetting", "Extrapolation Options"))
-        self.save_button.setText(_translate("PolygonSetting", "Save and continue"))
-        self.building_value_op1.setText(_translate("PolygonSetting", "0000"))
-        self.selected_value_op1.setText(_translate("PolygonSetting", "10"))
-        self.n_building_selected.setText(_translate("PolygonSetting", "N° Neighbors selected"))
-        self.n_building_op1_label.setText(_translate("PolygonSetting", "N° Neighbors available:"))
-        self.distance_value.setText(_translate("PolygonSetting", "1"))
-        self.n_building_op2_button.setText(_translate("PolygonSetting", "N° Neighbors available:"))
-        self.distance_label.setText(_translate("PolygonSetting", "Distance [km]:"))
-        self.op_1_check.setText(_translate("PolygonSetting", "Option 1: N° neighbors"))
-        self.op2_check.setText(_translate("PolygonSetting", "Option 2: Distance limitation"))
-        self.max_building.setText(_translate("PolygonSetting", "Max:"))
-        self.max_value.setText(_translate("PolygonSetting", "0000"))
-        self.min_building.setText(_translate("PolygonSetting", "Min:"))
-        self.min_value.setText(_translate("PolygonSetting", "0000"))
-        
+        self.knn_descrip.raise_()
+        self.stratified_descrip.raise_()
+        self.knn_check.raise_()
+        self.stratified_check.raise_()
+        self.load_button.raise_()
     
+        ExtrapolationSetting.setLayout(QtWidgets.QVBoxLayout())  # Set layout before adding widgets
+        ExtrapolationSetting.layout().addWidget(self.method_frame)  # Add main frame to dialog
+
+        self.retranslateUi(ExtrapolationSetting)
+        QtCore.QMetaObject.connectSlotsByName(ExtrapolationSetting)
+        
+    def retranslateUi(self, ExtrapolationSetting):
+        _translate = QtCore.QCoreApplication.translate
+        ExtrapolationSetting.setWindowTitle(_translate("ExtrapolationSetting", "MainWindow"))
+        self.w_tittle.setText(_translate("ExtrapolationSetting", "Setting Extrapolation Method"))
+        self.save_button.setText(_translate("ExtrapolationSetting", "Save and continue"))
+        self.knn_descrip.setHtml(_translate("ExtrapolationSetting", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
+"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">This method considers the distance to the </span><span style=\" font-size:10pt; font-weight:600;\">K nearest neighbors</span><span style=\" font-size:10pt;\"> and uses </span><span style=\" font-size:10pt; font-weight:600;\">soft voting</span><span style=\" font-size:10pt;\">, meaning that closer neighbors carry more weight in determining the final class. It is based on the assumption that nearby buildings are more likely to share similar characteristics and applies </span><span style=\" font-size:10pt; font-weight:600;\">inverse kernel weighting</span><span style=\" font-size:10pt;\"> to reflect this relationship.</span></p>\n"
+"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">The process begins with an </span><span style=\" font-size:10pt; font-weight:600;\">initial sample representing 10% of the population</span><span style=\" font-size:10pt;\">. Building information can be provided either by uploading a CSV file or by using the built-in </span><span style=\" font-size:10pt; font-weight:600;\">deep learning model</span><span style=\" font-size:10pt;\"> integrated into the tool.</span></p>\n"
+"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt; font-weight:600;\">Convergence</span><span style=\" font-size:10pt;\"> is evaluated based on the stability of the variable of interest—in this case, </span><span style=\" font-size:10pt; font-weight:600;\">building taxonomies</span><span style=\" font-size:10pt;\">. If the distribution of taxonomies changes by no more than </span><span style=\" font-size:10pt; font-weight:600;\">5%</span><span style=\" font-size:10pt;\"> in the subsequent iteration, convergence is assumed. Otherwise, the sample size is incrementally increased by </span><span style=\" font-size:10pt; font-weight:600;\">5%</span><span style=\" font-size:10pt;\"> in each iteration (e.g., 1st iteration = 10%, 2nd iteration = 15%, and so on) until convergence is reached.</span></p>\n"
+"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">Once convergence is achieved, the </span><span style=\" font-size:10pt; font-weight:600;\">sampling stage is complete</span><span style=\" font-size:10pt;\">, and the </span><span style=\" font-size:10pt; font-weight:600;\">extrapolation process</span><span style=\" font-size:10pt;\"> begins. At this stage, the tool analyzes the buildings of interest, calculates the </span><span style=\" font-size:10pt; font-weight:600;\">geodesic distance</span><span style=\" font-size:10pt;\"> to all available sampled buildings, and selects the 10 closest ones to estimate a </span><span style=\" font-size:10pt; font-weight:600;\">probabilistic distribution of likely taxonomies</span><span style=\" font-size:10pt;\">.</span></p></body></html>"))
+        self.stratified_descrip.setHtml(_translate("ExtrapolationSetting", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
+"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">This method uses a </span><span style=\" font-size:10pt; font-weight:600;\">stratified sampling process based on Scheaffer et al. (1986)</span><span style=\" font-size:10pt;\">, aimed at estimating the distribution of building taxonomy classes. It begins by calculating a </span><span style=\" font-size:10pt; font-weight:600;\">pilot sample size</span><span style=\" font-size:10pt;\"> using a conservative formula that assumes maximum uncertainty in class proportions. Based on this pilot sample, the method estimates class proportions.</span></p>\n"
+"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">The process adheres to the principles of stratified sampling, ensuring that each class (or stratum) is proportionally represented according to its estimated frequency and variance. Users can iteratively upload new CSV files or use the built-in </span><span style=\" font-size:10pt; font-weight:600;\">deep learning model</span><span style=\" font-size:10pt;\"> to classify images and expand the sample—</span><span style=\" font-size:10pt; font-weight:600;\">increasing by 5% of the population per iteration</span><span style=\" font-size:10pt;\">.</span></p>\n"
+"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">After each iteration, the method checks whether the estimated class proportions have </span><span style=\" font-size:10pt; font-weight:600;\">converged</span><span style=\" font-size:10pt;\">, meaning they remain stable across samples. If convergence is achieved, the process stops; otherwise, sampling continues, ensuring both </span><span style=\" font-size:10pt; font-weight:600;\">statistical robustness</span><span style=\" font-size:10pt;\"> and </span><span style=\" font-size:10pt; font-weight:600;\">data efficiency</span><span style=\" font-size:10pt;\">.</span></p>\n"
+"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">Once convergence is reached, the </span><span style=\" font-size:10pt; font-weight:600;\">assignment process</span><span style=\" font-size:10pt;\"> begins. This step uses a </span><span style=\" font-size:10pt; font-weight:600;\">hierarchical fallback strategy</span><span style=\" font-size:10pt;\"> that depends on the availability of information. The method prioritizes the use of </span><span style=\" font-size:10pt; font-weight:600;\">specific local data</span><span style=\" font-size:10pt;\"> where available, and progressively falls back to </span><span style=\" font-size:10pt; font-weight:600;\">more general or global information</span><span style=\" font-size:10pt;\"> when needed, ensuring the most accurate classification possible based on the data at hand.</span></p></body></html>"))
+        self.knn_check.setText(_translate("ExtrapolationSetting", "K-NN with Soft Voting"))
+        self.stratified_check.setText(_translate("ExtrapolationSetting", "Stratified Sampling"))
+        self.load_button.setText(_translate("ExtrapolationSetting", "Load files"))
+        
+        
+        
+    ################################################################
+    "=============================================================="
+    ################################################################
+    "=============================================================="
+
+
     def select_method(self):
         # Check how many checkboxes are checked
-        checked_count = sum([self.op_1_check.isChecked(), 
-                             self.op2_check.isChecked()])
+        checked_count = sum([self.knn_check.isChecked(), 
+                             self.stratified_check.isChecked()])
         
         if checked_count > 1:
             # Show a warning if more than one checkbox is checked
@@ -214,35 +154,25 @@ class extrapolation_options_window(QtWidgets.QDialog):  # Inherit from QDialog
             msg.setWindowTitle("Selection Warning")
             msg.exec_()
         else:
-            # Print the selected method if only one checkbox is checked
-            if self.op_1_check.isChecked():
-                self.neighbor_method = 1
-                self.accept()  
-            if self.op2_check.isChecked():
-                self.neighbor_method = 2
-                self.accept()
+            if self.knn_check.isChecked():
+                dialog = data_options_window(parent=self)
+                self.load_check = True
                 
+                if dialog.exec_() == QtWidgets.QDialog.Accepted:
+                    try:
+                        self.info_existing = dialog.info_existing
+                        self.info_pending  = dialog.info_pending
+                    except:
+                        QtWidgets.QMessageBox.warning(self, "Inspection Method Error", "Please upload the input files. Press again the **Load files** button")
+                    
+    def save_and_continue(self):
+        try:
+            if self.load_check:
+                self.accept()
+        except:
+            QtWidgets.QMessageBox.warning(self, "Inspection Method Error", "Please select inspection method.")
     
-    def distance_neighbor(self, building_extra_path, example_building_path):
-        building_no_info = pd.read_csv(building_extra_path)
-        building_reference = pd.read_csv(example_building_path)
 
-        n_neighbor = []
-        neighbor_method = 2
-        # Iterate over each building with no image
-        for idx, input_row in building_no_info.iterrows():
-            # Find 3 nearest neighbors using geodesic distance
-            nearest_neighbors = find_nearest_neighbors_geodesic(input_row, building_reference, 
-                                                                n_neighbor, neighbor_method,
-                                                                float(self.distance_value.text()))
-            n_neighbor.append(nearest_neighbors.shape[0])
-            
-            
-        max_neighbor = max(n_neighbor)
-        min_neighbor = min(n_neighbor)
-
-        self.max_value.setText(str(max_neighbor))
-        self.min_value.setText(str(min_neighbor))
 
 
 

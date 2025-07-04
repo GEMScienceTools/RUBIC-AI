@@ -1,4 +1,4 @@
-# GUI pyqt5 libraries
+    # GUI pyqt5 libraries
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox, QApplication
 
@@ -19,6 +19,7 @@ from methods.extrapolation_options import extrapolation_options_window
 class PolygonSettingWindow(QDialog):
     def __init__(self, parent=None, main_window=None, gui_methods=None):
         super().__init__(parent)
+        self.sw = True
         self.main_window = main_window  # Reference to the main window (GUIInterface)
         self.gui_methods = gui_methods  # Reference to GUIMethods
         
@@ -34,7 +35,7 @@ class PolygonSettingWindow(QDialog):
         
         # Set window size dynamically
         self.setWindowTitle("Setting Polygon Coordinates")
-        self.resize(int(612 * sf_x), int(846 * sf_y))
+        self.resize(int(612 * sf_x), int(760 * sf_y))
 
         # Main widget
         self.coord_frame = QtWidgets.QWidget(self)
@@ -100,7 +101,7 @@ class PolygonSettingWindow(QDialog):
         
         # Button for saving the input and continuing
         self.save_button = QtWidgets.QPushButton(self.coord_frame)
-        self.save_button.setGeometry(QtCore.QRect(int(320 * sf_x), int(800 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.save_button.setGeometry(QtCore.QRect(int(320 * sf_x), int(720 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -157,7 +158,7 @@ class PolygonSettingWindow(QDialog):
         self.backg_4.setObjectName("backg_4")
         
         self.backg_5 = QtWidgets.QLabel(self.coord_frame)
-        self.backg_5.setGeometry(QtCore.QRect(int(10 * sf_x), int(640 * sf_y), int(591 * sf_x), int(151 * sf_y)))
+        self.backg_5.setGeometry(QtCore.QRect(int(10 * sf_x), int(640 * sf_y), int(591 * sf_x), int(71 * sf_y)))
         self.backg_5.setStyleSheet("background-color: rgb(254, 255, 160);")
         self.backg_5.setText("")
         self.backg_5.setObjectName("backg_5")
@@ -254,7 +255,7 @@ class PolygonSettingWindow(QDialog):
         
         # Load button for determine building population
         self.load_button = QtWidgets.QPushButton(self.coord_frame)
-        self.load_button.setGeometry(QtCore.QRect(int(110 * sf_x), int(800 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.load_button.setGeometry(QtCore.QRect(int(110 * sf_x), int(720 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -431,17 +432,6 @@ class PolygonSettingWindow(QDialog):
         self.output_label_extra.setObjectName("output_label_extra")
         self.output_label_extra.setText("Output name:")
         
-        self.building_extra_button = QtWidgets.QPushButton(self.coord_frame)
-        self.building_extra_button.setGeometry(QtCore.QRect(int(20 * sf_x), int(710 * sf_y), int(231 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        font.setBold(False)
-        font.setWeight(50)
-        self.building_extra_button.setFont(font)
-        self.building_extra_button.setObjectName("building_extra_button")
-        self.building_extra_button.setText("Upload building coordinates")
-        self.building_extra_button.clicked.connect(self.check_data_extra_buildings)
-        
         self.output_value_extra = QtWidgets.QLineEdit(self.coord_frame)
         self.output_value_extra.setGeometry(QtCore.QRect(int(160 * sf_x), int(670 * sf_y), int(111 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
@@ -450,32 +440,43 @@ class PolygonSettingWindow(QDialog):
         self.output_value_extra.setObjectName("output_value_extra")
         self.output_value_extra.setText("Extrapolation")
         
-        self.example_building_button = QtWidgets.QPushButton(self.coord_frame)
-        self.example_building_button.setGeometry(QtCore.QRect(int(20 * sf_x), int(750 * sf_y), int(231 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        font.setBold(False)
-        font.setWeight(50)
-        self.example_building_button.setFont(font)
-        self.example_building_button.setObjectName("example_building_button")
-        self.example_building_button.setText("Upload neighbor buildings")
-        self.example_building_button.clicked.connect(self.check_data_extra_neighbors)
+        # self.building_extra_button = QtWidgets.QPushButton(self.coord_frame)
+        # self.building_extra_button.setGeometry(QtCore.QRect(int(20 * sf_x), int(710 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        # font = QtGui.QFont()
+        # font.setPointSize(int(10 * sf_x))
+        # font.setBold(False)
+        # font.setWeight(50)
+        # self.building_extra_button.setFont(font)
+        # self.building_extra_button.setObjectName("building_extra_button")
+        # self.building_extra_button.setText("Upload building coordinates")
+        # self.building_extra_button.clicked.connect(self.check_data_extra_buildings)
         
-        self.building_extra_path = QtWidgets.QLabel(self.coord_frame)
-        self.building_extra_path.setGeometry(QtCore.QRect(int(270 * sf_x), int(720 * sf_y), int(291 * sf_x), int(21 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        self.building_extra_path.setFont(font)
-        self.building_extra_path.setObjectName("building_extra_path")
-        self.building_extra_path.setText("filename.csv")
+        # self.example_building_button = QtWidgets.QPushButton(self.coord_frame)
+        # self.example_building_button.setGeometry(QtCore.QRect(int(20 * sf_x), int(750 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        # font = QtGui.QFont()
+        # font.setPointSize(int(10 * sf_x))
+        # font.setBold(False)
+        # font.setWeight(50)
+        # self.example_building_button.setFont(font)
+        # self.example_building_button.setObjectName("example_building_button")
+        # self.example_building_button.setText("Upload neighbor buildings")
+        # self.example_building_button.clicked.connect(self.check_data_extra_neighbors)
         
-        self.example_building_path = QtWidgets.QLabel(self.coord_frame)
-        self.example_building_path.setGeometry(QtCore.QRect(int(270 * sf_x), int(750 * sf_y), int(291 * sf_x), int(21 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        self.example_building_path.setFont(font)
-        self.example_building_path.setObjectName("example_building_path")
-        self.example_building_path.setText("filename.csv")
+        # self.building_extra_path = QtWidgets.QLabel(self.coord_frame)
+        # self.building_extra_path.setGeometry(QtCore.QRect(int(270 * sf_x), int(720 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        # font = QtGui.QFont()
+        # font.setPointSize(int(10 * sf_x))
+        # self.building_extra_path.setFont(font)
+        # self.building_extra_path.setObjectName("building_extra_path")
+        # self.building_extra_path.setText("filename.csv")
+        
+        # self.example_building_path = QtWidgets.QLabel(self.coord_frame)
+        # self.example_building_path.setGeometry(QtCore.QRect(int(270 * sf_x), int(750 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        # font = QtGui.QFont()
+        # font.setPointSize(int(10 * sf_x))
+        # self.example_building_path.setFont(font)
+        # self.example_building_path.setObjectName("example_building_path")
+        # self.example_building_path.setText("filename.csv")
         
         self.extra_option_button = QtWidgets.QPushButton(self.coord_frame)
         self.extra_option_button.setGeometry(QtCore.QRect(int(310 * sf_x), int(670 * sf_y), int(231 * sf_x), int(31 * sf_y)))
@@ -526,11 +527,11 @@ class PolygonSettingWindow(QDialog):
         self.n_image_local_value.raise_()
         self.extrapolation_label.raise_()
         self.output_label_extra.raise_()
-        self.building_extra_button.raise_()
+        # self.building_extra_button.raise_()
         self.output_value_extra.raise_()
-        self.example_building_button.raise_()
-        self.building_extra_path.raise_()
-        self.example_building_path.raise_()
+        # self.example_building_button.raise_()
+        # self.building_extra_path.raise_()
+        # self.example_building_path.raise_()
         self.extra_option_button.raise_()
         
    ############ City Name by coordinates ################
@@ -801,7 +802,8 @@ class PolygonSettingWindow(QDialog):
         
         ##### --------- Extrapolation Method ---------- #########
         elif self.main_window.insp_method == 3: 
-            QMessageBox.information(self, "Success", "Done! Please click save and continue button")            
+            if self.sw != True:
+                QMessageBox.information(self, "Success", "Done! Please click save and continue button")            
             
     ############ Folder Selection ################
     def select_folder(self):
@@ -903,6 +905,7 @@ class PolygonSettingWindow(QDialog):
               `GUI_geofiles.download_building_footprints()` for data retrieval.
             - The UI prevents selecting more than three images for local inspections.
         """
+        
         if self.main_window.insp_method == 0:
             # Polygon
             # Get polygon based on coordinates
@@ -921,8 +924,11 @@ class PolygonSettingWindow(QDialog):
                 QMessageBox.warning(self, "Input Error", "Please select a number of images equal to or less than 3.")
         elif self.main_window.insp_method == 3:
             # Extrapoaltion folder
-            self.population = False
-            self.main_window.extrapolation_name = self.output_value_extra.text()
+            if self.sw == True:
+                QMessageBox.warning(self, "Input Error", "Please provide the extrapolation information by pressing the button **Extrapolation options**")
+            else:
+                self.population = False
+                self.main_window.extrapolation_name = self.output_value_extra.text()
             
       
     def building_sample(self):
@@ -954,35 +960,37 @@ class PolygonSettingWindow(QDialog):
             - The `GUI_geofiles` module is responsible for performing geospatial operations.
         """
         # Checking is the inspection mode correspond to specific
-        if self.population == True:
-            GUI_geofiles.create_centroid_layer(self.main_window)   
-            self.accept()
-        elif self.population == False: # Local method
-            self.accept()
-            
-            if self.main_window.insp_method == 3:
-                # Message with special format
-                message = """
-                When using the neighbor extrapolation option, no images will be displayed. Please just press 
-                the <b><u>Next Building button</u></b>, and your results will be saved to the selected path. 
-                """
+        try:
+            if self.population == True:
+                GUI_geofiles.create_centroid_layer(self.main_window)   
+                self.accept()
+            elif self.population == False: # Local method
+                self.accept()
                 
-                # Create a QMessageBox instance
-                msg_box = QMessageBox(self.main_window)
-                msg_box.setTextFormat(QtCore.Qt.RichText)
-                msg_box.setText(message)
-                msg_box.setWindowTitle("Neighbor Extrapolation Usage")
+                if self.main_window.insp_method == 3:
+                    # Message with special format
+                    message = """
+                    When using the neighbor extrapolation option, no images will be displayed. Please just press 
+                    the <b><u>Next Building button</u></b>, and your results will be saved to the selected path. 
+                    """
+                    
+                    # Create a QMessageBox instance
+                    msg_box = QMessageBox(self.main_window)
+                    msg_box.setTextFormat(QtCore.Qt.RichText)
+                    msg_box.setText(message)
+                    msg_box.setWindowTitle("Neighbor Extrapolation Usage")
+                    
+                    # Show the message box
+                    msg_box.exec_()
                 
-                # Show the message box
-                msg_box.exec_()
-            
-        elif self.population != None:  # Polygon method
-            # Extract a random subset 
-            GUI_geofiles.extract_random_subset(self.main_window, self.sample_size_default.text())
-            # Create a point layer and extract the coordinates of a subset of buildings
-            GUI_geofiles.create_centroid_layer(self.main_window)   
-            self.accept()
- 
+            elif self.population != None:  # Polygon method
+                # Extract a random subset 
+                GUI_geofiles.extract_random_subset(self.main_window, self.sample_size_default.text())
+                # Create a point layer and extract the coordinates of a subset of buildings
+                GUI_geofiles.create_centroid_layer(self.main_window)   
+                self.accept()
+        except:
+            QMessageBox.warning(self, "Input Error", "First Please upload the data using the **Load Data button**")
         
     def upload_csv(self, label):
         """
@@ -1037,24 +1045,13 @@ class PolygonSettingWindow(QDialog):
             
             
     def extrapolation_values(self):
-        if self.example_building_path.text() == "filename.csv":
-            QMessageBox.warning(self, "Input Error", "Please select neighbor building file information.")
-        else:
-            n_neigh = pd.read_csv(self.gui_methods.example_building_path)
-            dialog = extrapolation_options_window(parent=self, n_neighbors=n_neigh)
-            dialog.building_value_op1.setText(str(n_neigh.shape[0]))
-            
-            dialog.n_building_op2_button.clicked.connect(lambda: 
-                                                         dialog.distance_neighbor(self.gui_methods.building_extra_path, 
-                                                                                  self.gui_methods.example_building_path))
-            
-            if dialog.exec_() == QDialog.Accepted:
-                self.main_window.neighbor_method = dialog.neighbor_method
-                if dialog.neighbor_method == 1:
-                    self.main_window.n_neighbor = dialog.selected_value_op1.text()
-                elif dialog.neighbor_method == 2:
-                    self.main_window.distance = dialog.distance_value.text()
-                    self.main_window.n_neighbor = dialog.building_value_op2.text()
+        self.sw = False
+        dialog = extrapolation_options_window(parent=self)
+    
+        if dialog.exec_() == QDialog.Accepted:
+            self.gui_methods.info_existing = dialog.info_existing
+            self.gui_methods.info_pending  = dialog.info_pending
+
                     
         
                     
