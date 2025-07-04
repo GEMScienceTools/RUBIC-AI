@@ -11,31 +11,31 @@
 
   <p align="left">
     This repository contains an open source comprehensive AI-powered toolkit for risk assessment using facade image analysis. This beta version provides automated building feature prediction and classification through deep learning models, with an intuitive GUI for efficient building inspection workflows.
-    <a href="https://github.com/GEMScienceTools/oq-vmtk/tree/main/demos">View Demos</a>
+    <a href="https://github.com/dangomezm/GEM_AI_Toolkit/tree/main/demos">View Demos</a>
   </p>
 </div>
 
-## Features
+# ✨ Key Features
 
 - **AI-powered building feature prediction** using DenseNet201 with transfer learning
 - **Multiple inspection methods** for different data sources and use cases
 - **Interactive GUI** for streamlined building assessment workflows
 - **Object detection module** to isolate buildings of interest
-- **Automated seismic risk assessment** from facade images
+- **Automated building stock collection** from facade images
 - **Flexible data input/output** with CSV support and progress saving
 
-## Quick Start
+# 🚀 Get Started
 
-### Prerequisites
+## ⚙️🔧 Prerequisites
 
 - Python 3.11.13
 - Compatible with Windows, macOS, and Linux
 
-### Installation
+## 👩‍💻🧑‍💻 Installation
 
 1. **Clone the repository**
    ```bash
-   git clone [repository-url]
+   git clone https://github.com/dangomezm/RUBIC-AI.git
    cd RUBIC-AI
    ```
 
@@ -70,7 +70,7 @@ Restarting your system can help resolve potential issues related to environment 
    python main.py
    ```
 
-## Inspection Methods
+## 🔍🕵️ Inspection Methods
 
 > ⚠️ NOTE:
 > The suggestion is to start with the methods we support, and then move to the current unavailable.
@@ -78,19 +78,19 @@ Restarting your system can help resolve potential issues related to environment 
 
 ### 1. Local Images Method ✅ *Available*
 
-**Best for:** Local image collections with known coordinates
+**Best for:** Create a building stock from images stored on your local device
 
 **Workflow:**
 1. Select the project output folder
 2. Choose the "Local Images" inspection method
 3. Configure input data:
-   - Select the folder containing building images
+   - Select the folder containing building façade images
    - Upload a CSV file with building coordinates and IDs
    - Specify number of images per location (1-3)
 4. Process images and classify features
 5. Save results as CSV
 
-**Required CSV format:**
+**Required typical CSV format:**
 ```csv
 ID,Latitude,Longitude,City,Country
 1,10.9639,-74.7964,Barranquilla,Colombia
@@ -103,14 +103,23 @@ ID,Latitude,Longitude,City,Country
 
 **Workflow:**
 1. Select the project output folder
-2. Choose the "Neighbour Extrapolation" method
+2. Choose the "Neighbor Extrapolation" method
 3. Configure extrapolation settings:
    - Select sampling method (KNN with soft voting or stratified sampling)
-   - Upload buildings with known information
+   - Upload buildings with known information **Required special CSV format:**
    - Upload unclassified building locations
 4. Process and extrapolate features
 5. Save the enhanced dataset
 
+**Required special CSV format:**
+```csv
+ID,Latitude,Longitude,Country,City,LLRS Material,LLRS,Code Level,Number of Stories,Occupancy,Block Position,Taxonomy
+1,10.92224755,-74.78642608,Colombia,Barranquilla,MCF,LWAL,CDL,1,RES,BP1,MCF/LWAL+CDL/H:1/RES/BP1
+2,10.91268031,-74.80288191,Colombia,Soledad,CR,LFM,CDM,3,RES,BP2,CR/LFM+CDM/H:3/RES/BP2
+3,10.91968505,-74.79215175,Colombia,Barranquilla,MUR,LWAL,CDL,1,RES,BP1,MUR/LWAL+CDL/H:1/RES/BP1
+4,10.91647181,-74.76986198,Colombia,Soledad,CR,LFINF,CDM,2,COM,BP1,CR/LFINF+CDM/H:2/COM/BP1
+5,10.90251035,-74.79685532,Colombia,Soledad,CR,LFM,CDL,2,RES,BP2,CR/LFM+CDL/H:2/RES/BP27
+```
 **Features:**
 - **KNN with soft voting:** Uses k-nearest neighbors for classification
 - **Stratified sampling:** Maintains class distribution in samples
@@ -135,7 +144,7 @@ ID,Latitude,Longitude,City,Country
 - Batch processing of specific locations
 - Custom output naming
 
-## AI-Powered Features
+## 🤖🧠 AI-Powered Features
 
 ### Automatic Feature Prediction
 
@@ -147,8 +156,7 @@ Enable AI assistance by checking the **AI Powered** checkbox. The system will:
 - Maintain human oversight for quality assurance
 
 ### Supported Building Features
-
-*[Additional explanation needed: List the specific building features the AI can classify, such as:]*
+* List the specific building features the AI can classify, such as:
 - Lateral Load Resisting System (LLRS) 
 - LLRS Material
 - Code level
@@ -158,14 +166,11 @@ Enable AI assistance by checking the **AI Powered** checkbox. The system will:
 - Roof shape
 - Roof material
 
-## Data Management
+## 🗂️ Data Management
 
 ### Input Requirements
 
 **Image specifications:**
-> ⚠️ NOTE:
-> Maybe we can add the doc you created explaining the details
-
 - Supported formats: *[JPG, JPEG, PNG]*
 - Minimum resolution: *640x480*
 
@@ -184,7 +189,7 @@ Results are automatically saved as CSV files containing:
 
 **Important:** Always save your progress before closing the GUI. The application automatically loads previous work when restarted, allowing you to continue from where you left off.
 
-## Installation Details
+## 📦 Installation Details
 
 ### Windows Setup
 
@@ -215,8 +220,8 @@ Results are automatically saved as CSV files containing:
 2. **Create and activate virtual environment**
    ```bash
    cd ~/your_project_folder
-   python3 -m venv GEM_AI
-   source GEM_AI/bin/activate
+   python3 -m venv RUBIC-AI
+   source RUBIC-AI/bin/activate
    pip install -r requirements.txt
    python3 main.py
    ```
@@ -238,44 +243,47 @@ Ensure you're using Python 3.11.13 specifically, as the models are optimised for
 - Check that you're in the correct virtual environment
 - Ensure you're in the repository directory when running `python main.py`
 
-## Technical Architecture
+## 🖥️ Technical Architecture
 
 ### AI Models
 
 - **Base Architecture:** DenseNet201
 - **Training Strategy:** Transfer learning from ImageNet with fine-tuning
 - **Inference:** Real-time feature prediction with human verification
-#### *Currently Unavailable*
-- **Performance:** *[Need benchmarks: accuracy, processing time, etc.]*
+### 🔧 *Currently Working on Improvements*
+
+#### 🏗️ Lateral Load Resistant System (LLRS) Classifier
+
+- **Current Accuracy:** **~75.6%**
+
+<details>
+<summary>📊 Confusion Matrices (Click to Expand)</summary>
+
+**Raw Confusion Matrix**
+  
+![Raw Confusion Matrix](./2af6a809-0739-428d-a11e-1bc4434f05e0.png)
+
+**Normalized Confusion Matrix**
+
+![Normalized Confusion Matrix](./38fd3e1f-d7d0-48a8-b69f-b547e68cf23d.png)
+
+</details>
 
 
-## Contributing
+# 🤝 Contributions
 
-*pending*
+[WIP]
 
-## License
+# © License
 
-*pending*
+[WIP]
 
-## Support
+# 🌟 Contributors
 
-*pending*
+[WIP]
 
 ## Citation
-
-> ⚠️ NOTE:
-> We should also include a reference to your published paper here!
-
-```bibtex
-@software{gomez2025gem,
-  author = {Daniel Gómez},
-  title = {RUBIC-AI: Building Recognition using AI-based Identification Toolkit},
-  year = {2025},
-  version = {RUBIC-AI_beta1},
-  doi = {10.5281/zenodo.14977499},
-  url = {https://doi.org/10.5281/zenodo.14977499}
-}
-```
+[WIP]
 
 ## Changelog
 
