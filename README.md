@@ -90,6 +90,8 @@ Restarting your system can help resolve potential issues related to environment 
 4. Process images and classify features
 5. Save results as CSV
 
+<img src="help_img/output.gif" alt="Logo" >
+
 **Required typical CSV format:**
 ```csv
 ID,Latitude,Longitude,City,Country
