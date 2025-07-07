@@ -152,7 +152,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         """ GUI Title elements """
         # Title of the GUI
         self.Tittle = QtWidgets.QLabel(self.centralwidget)
-        self.Tittle.setGeometry(QtCore.QRect(int(550 * sf_x), int(0 * sf_y), int(441 * sf_x), int(31 * sf_y)))
+        self.Tittle.setGeometry(QtCore.QRect(int(500 * sf_x), int(0 * sf_y), int(571 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(16 * sf_x))
         font.setBold(True)
@@ -1680,11 +1680,11 @@ class GUIInterface(QtWidgets.QMainWindow):
         """ Method for translation """
     def retranslateUi(self, GUIInterface):
         _translate = QtCore.QCoreApplication.translate
-        GUIInterface.setWindowTitle(_translate("GUIInterface", "RUBIC-AI: Building Classifier"))
+        GUIInterface.setWindowTitle(_translate("GUIInterface", "RUBIC-AI: Building Inventory Classifier"))
         self.path_out_folder_bt.setText(_translate("GUIInterface", "Project Folder"))
         self.country_label_input.setText(_translate("GUIInterface", "Country:"))
         self.city_label.setText(_translate("GUIInterface", "City:"))
-        self.Tittle.setText(_translate("GUIInterface", "RUBIC-AI: Building Classifier"))
+        self.Tittle.setText(_translate("GUIInterface", "RUBIC-AI: Building Inventory Classifier"))
         self.output_folder_value.setText(_translate("GUIInterface", "-"))
         self.output_path_tittle.setText(_translate("GUIInterface", "Project Selection"))
         self.lat_label.setText(_translate("GUIInterface", "Building Latitude: "))

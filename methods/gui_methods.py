@@ -2355,52 +2355,53 @@ class GUIMethods:
             self.ui.method_progress.setText("Successful extrapolation process")
         
     def epoch_construction(self):
-        path = self.ui.output_folder_value.text()+"/epoch_value.csv"
-        
-        try:
-            epoch = pd.read_csv(path)
-            if self.epoch_const == True:
+        if self.ui.insp_method != 3:
+            path = self.ui.output_folder_value.text()+"/epoch_value.csv"
+            
+            try:
+                epoch = pd.read_csv(path)
+                if self.epoch_const == True:
+                    self.epoch_const = False
+                    for i in range(len(epoch)):
+                        self.ui.epc_const_cb_1.addItem(epoch.iloc[i,0])
+                        self.ui.epc_const_cb_2.addItem(epoch.iloc[i,0])
+                        self.ui.epc_const_cb_3.addItem(epoch.iloc[i,0])
+            except:
                 self.epoch_const = False
+                
+                # Message with special format
+                message = """
+                The construction epoch varies by country and is typically linked to the implementation 
+                of specific building code regulations. As a result, each country has its own relevant 
+                periods. <b><u>PLEASE SELECT AND ENTER THE APPROPRIATE CONSTRUCTION EPOCH FOR YOUR COUNTRY</u></b>.
+                """
+                
+                # Create a QMessageBox instance
+                msg_box = QMessageBox(self.ui)
+                msg_box.setTextFormat(QtCore.Qt.RichText)
+                msg_box.setText(message)
+                msg_box.setWindowTitle("Epoch of construction values")
+                
+                # Show the message box
+                msg_box.exec_()
+                
+                """Open the bounding box selection pop-up window."""
+                app = QApplication.instance()  # Ensure PyQt instance exists
+                if app is None:
+                    app = QApplication([])
+                    
+                # Called function where the user creates a manual bounding box by clicking four points, which is then displayed in the UI frame.
+                dialog = EpochSelectionDialog(parent=self.ui, main_window=self.ui)
+                dialog.exec_()  # Open the pop-up
+                epoch = dialog.get_epochs()
                 for i in range(len(epoch)):
-                    self.ui.epc_const_cb_1.addItem(epoch.iloc[i,0])
-                    self.ui.epc_const_cb_2.addItem(epoch.iloc[i,0])
-                    self.ui.epc_const_cb_3.addItem(epoch.iloc[i,0])
-        except:
-            self.epoch_const = False
-            
-            # Message with special format
-            message = """
-            The construction epoch varies by country and is typically linked to the implementation 
-            of specific building code regulations. As a result, each country has its own relevant 
-            periods. <b><u>PLEASE SELECT AND ENTER THE APPROPRIATE CONSTRUCTION EPOCH FOR YOUR COUNTRY</u></b>.
-            """
-            
-            # Create a QMessageBox instance
-            msg_box = QMessageBox(self.ui)
-            msg_box.setTextFormat(QtCore.Qt.RichText)
-            msg_box.setText(message)
-            msg_box.setWindowTitle("Epoch of construction values")
-            
-            # Show the message box
-            msg_box.exec_()
-            
-            """Open the bounding box selection pop-up window."""
-            app = QApplication.instance()  # Ensure PyQt instance exists
-            if app is None:
-                app = QApplication([])
-                
-            # Called function where the user creates a manual bounding box by clicking four points, which is then displayed in the UI frame.
-            dialog = EpochSelectionDialog(parent=self.ui, main_window=self.ui)
-            dialog.exec_()  # Open the pop-up
-            epoch = dialog.get_epochs()
-            for i in range(len(epoch)):
-                self.ui.epc_const_cb_1.addItem(epoch[i])
-                self.ui.epc_const_cb_2.addItem(epoch[i])
-                self.ui.epc_const_cb_3.addItem(epoch[i])
-                
-            epoch = pd.DataFrame(epoch)
-            epoch.columns = ["Epochs"]
-            epoch.to_csv(path, index=False)
+                    self.ui.epc_const_cb_1.addItem(epoch[i])
+                    self.ui.epc_const_cb_2.addItem(epoch[i])
+                    self.ui.epc_const_cb_3.addItem(epoch[i])
+                    
+                epoch = pd.DataFrame(epoch)
+                epoch.columns = ["Epochs"]
+                epoch.to_csv(path, index=False)
             
     def help_block_position(self):
         # Paths to your example images for each roof shape 
