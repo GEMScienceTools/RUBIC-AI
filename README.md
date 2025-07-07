@@ -4,7 +4,7 @@
 <br />
 <div align="center">
   <a href="[https://github.com/dangomezm/GEM_AI_Toolkit]">
-    <img src="help_img/RUBIC_V2.png" alt="Logo" >
+    <img src="help_img/GUI_RUBIC_LOGO.png" alt="Logo" >
   </a>
 
   <h3 align="center">RUBIC-AI – Building Recognition using AI-based Identification Toolkit</h3>
