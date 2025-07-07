@@ -28,8 +28,14 @@
 
 ## ⚙️🔧 Prerequisites
 
+Before you begin, ensure you have the following installed:
+- [Git](https://git-scm.com/downloads) – Used to clone the repository and manage versions.
 - Python 3.11.13
-- Compatible with Windows, macOS, and Linux
+### Check if GIT is installed
+Open a terminal and run:
+```bash
+git --version
+```
 
 ## 👩‍💻🧑‍💻 Installation
 
