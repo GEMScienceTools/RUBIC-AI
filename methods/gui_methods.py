@@ -739,12 +739,15 @@ class GUIMethods:
                     img_path = self.ui.folder_path+"/"+str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0])
                 except:
                     QMessageBox.warning(self.ui, "Input Error", "No further inspections are available")
-                # Cropped image path (saved in local device)
-                cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0])+"_cropped.jpg")   
-                # Display image path (saved in local device)
-                displayed_path = (self.ui.folder_path+"/displayed_images/"
-                                +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0])+"_displayed.jpg")
+            
+                aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
+                cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
+                
+                aux_displayed_path = (self.ui.folder_path+"/displayed_images/"
+                                +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
+                displayed_path = os.path.splitext(aux_displayed_path)[0]+"_displayed.jpg"
+
                 # Display building image
                 if os.path.exists(displayed_path):
                     # Display an already isolated image
@@ -917,9 +920,9 @@ class GUIMethods:
         # Getting the path for image prediction
         if self.ui.insp_method == 2:
             try:
-                # Cropped image path
-                self.cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                     +str(self.data_building.iloc[self.click_count * self.n_images_local, 0][:-4])+"_cropped.jpg") 
+                aux_cropped_path  = (self.ui.folder_path+"/Cropped_images/"
+                                     +str(self.data_building.iloc[self.click_count * self.n_images_local, 0]))
+                self.cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
             except:
                 QMessageBox.warning(self.ui, "File Error", "This option is only available if there is a previous building detection.")
         else:
@@ -951,8 +954,9 @@ class GUIMethods:
         if self.ui.insp_method == 2:
             try:
                 # Cropped image path
-                self.cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                      +str(self.data_building.iloc[self.click_count * self.n_images_local + 1, 0][:-4])+"_cropped.jpg")
+                aux_cropped_path  = (self.ui.folder_path+"/Cropped_images/"
+                                     +str(self.data_building.iloc[self.click_count * self.n_images_local + 1, 0]))
+                self.cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
             except:
                 QMessageBox.warning(self.ui, "File Error", "This option is only available if there is a previous building detection.")
         else:
@@ -983,8 +987,9 @@ class GUIMethods:
         if self.ui.insp_method == 2:
             try:
                 # Cropped image path
-                self.cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                     +str(self.data_building.iloc[self.click_count * self.n_images_local + 2, 0][:-4])+"_cropped.jpg")   
+                aux_cropped_path  = (self.ui.folder_path+"/Cropped_images/"
+                                     +str(self.data_building.iloc[self.click_count * self.n_images_local + 2, 0]))
+                self.cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
             except:
                 QMessageBox.warning(self.ui, "File Error", "This option is only available if there is a previous building detection.")
             
@@ -1761,10 +1766,12 @@ class GUIMethods:
                         
                     for aux in range (self.n_images_local):
                         # Local cropped image path
-                        cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                        +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0])+"_cropped.jpg") 
-                                     
                         
+                        aux_path = (self.ui.folder_path+"/Cropped_images/"
+                                        +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
+                        
+                        cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
+               
                         # LLRS building image prediction
                         material_index = predict_material_img(cropped_path, self.ui.insp_method, self.box_id)
                         # LLRS building image sets prediction
@@ -1834,10 +1841,11 @@ class GUIMethods:
                         
                     for aux in range (self.n_images_local):
                         # Local cropped image path
-                        cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                        +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0])+"_cropped.jpg") 
-                                     
                         
+                        aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                            +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
+                        cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"                                                     
+                      
                         # LLRS building image prediction
                         llrs_index = predict_llrs_img(cropped_path, self.ui.insp_method, self.box_id)
                         # LLRS building image sets prediction
@@ -1911,8 +1919,9 @@ class GUIMethods:
                         
                     for aux in range (self.n_images_local):
                         # Local cropped image path
-                        cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                        +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0])+"_cropped.jpg") 
+                        aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                            +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
+                        cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                                      
                         # LLRS building image prediction
                         code_level_index = predict_code_img(cropped_path, self.ui.insp_method, self.box_id)
@@ -1989,9 +1998,9 @@ class GUIMethods:
                         
                     for aux in range (self.n_images_local):
                         # Local cropped image path
-                        cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                        +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0])+"_cropped.jpg") 
-                                     
+                        aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                            +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
+                        cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                         
                         # LLRS building image prediction
                         n_stories_index = predict_n_stories_img(cropped_path, self.ui.insp_method, self.box_id)
@@ -2069,9 +2078,9 @@ class GUIMethods:
                         
                     for aux in range (self.n_images_local):
                         # Local cropped image path
-                        cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                        +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0])+"_cropped.jpg") 
-                                     
+                        aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                            +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
+                        cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"        
                         
                         # LLRS building image prediction
                         occupancy_index = predict_occupancy_img(cropped_path, self.ui.insp_method, self.box_id)
@@ -2150,9 +2159,9 @@ class GUIMethods:
                             
                         for aux in range (self.n_images_local):
                             # Local cropped image path
-                            cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                            +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0])+"_cropped.jpg") 
-                                         
+                            aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                                +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
+                            cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                             
                             # block_position building image prediction
                             block_position_index = predict_block_position_img(cropped_path, self.ui.insp_method, self.box_id)
@@ -2207,9 +2216,9 @@ class GUIMethods:
                             
                         for aux in range (self.n_images_local):
                             # Local cropped image path
-                            cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                            +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0])+"_cropped.jpg") 
-                                         
+                            aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                                +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
+                            cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                             
                             # roof_shape building image prediction
                             roof_shape_index = predict_roof_shape_img(cropped_path, self.ui.insp_method, self.box_id)
@@ -2263,10 +2272,10 @@ class GUIMethods:
                             
                         for aux in range (self.n_images_local):
                             # Local cropped image path
-                            cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                            +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0])+"_cropped.jpg") 
-                                         
-                            
+                            aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                                +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
+                            cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
+                                                                   
                             # roof_material building image prediction
                             roof_material_index = predict_roof_material_img(cropped_path, self.ui.insp_method, self.box_id)
                             # roof_material building image sets prediction
