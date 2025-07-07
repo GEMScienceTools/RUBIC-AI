@@ -1407,8 +1407,33 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.GEM_logo.setScaledContents(True)
         self.GEM_logo.setObjectName("GEM_logo")
         
+        self.RUBIC_logo = QtWidgets.QLabel(self.centralwidget)
+        self.RUBIC_logo.setGeometry(QtCore.QRect(int(1323 * sf_x), int(5 * sf_y), int(60 * sf_x), int(65 * sf_y)))
+        self.RUBIC_logo.setText("")
+        self.RUBIC_logo.setPixmap(QtGui.QPixmap("help_img/RUBIC_logo.png"))
+        self.RUBIC_logo.setScaledContents(True)
+        self.RUBIC_logo.setObjectName("GEM_logo")
+        
         """ GEM icon GUI elements """
-        self.setWindowIcon(QtGui.QIcon("help_img/GEM_icon.ico"))
+        self.setWindowIcon(QtGui.QIcon("help_img/RUBIC_logo.png"))
+        
+        # """ GEM Logo elements """
+        # self.GEM_logo = QtWidgets.QLabel(self.centralwidget)
+        # self.GEM_logo.setGeometry(QtCore.QRect(int(1320 * sf_x), int(5 * sf_y), int(177 * sf_x), int(65 * sf_y)))
+        # self.GEM_logo.setText("")
+        # self.GEM_logo.setPixmap(QtGui.QPixmap("help_img/GEM_Logo.png"))
+        # self.GEM_logo.setScaledContents(True)
+        # self.GEM_logo.setObjectName("GEM_logo")
+        
+        # self.RUBIC_logo = QtWidgets.QLabel(self.centralwidget)
+        # self.RUBIC_logo.setGeometry(QtCore.QRect(int(1497 * sf_x), int(5 * sf_y), int(60 * sf_x), int(65 * sf_y)))
+        # self.RUBIC_logo.setText("")
+        # self.RUBIC_logo.setPixmap(QtGui.QPixmap("help_img/RUBIC_logo.png"))
+        # self.RUBIC_logo.setScaledContents(True)
+        # self.RUBIC_logo.setObjectName("GEM_logo")
+        
+        """ GEM icon GUI elements """
+        self.setWindowIcon(QtGui.QIcon("help_img/RUBIC_logo.png"))
         
         """ Progress Bar elements """
         # Progress bar widget
@@ -1577,6 +1602,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.search_img_value.raise_()
         self.search_img_label.raise_()
         self.GEM_logo.raise_()
+        self.RUBIC_logo.raise_()
         self.material_cb_2.raise_()
         self.llrs_cb_2.raise_()
         self.img_q_cb_2.raise_()
@@ -1654,11 +1680,11 @@ class GUIInterface(QtWidgets.QMainWindow):
         """ Method for translation """
     def retranslateUi(self, GUIInterface):
         _translate = QtCore.QCoreApplication.translate
-        GUIInterface.setWindowTitle(_translate("GUIInterface", "GEM Data Collection"))
+        GUIInterface.setWindowTitle(_translate("GUIInterface", "RUBIC-AI: Building Classifier"))
         self.path_out_folder_bt.setText(_translate("GUIInterface", "Project Folder"))
         self.country_label_input.setText(_translate("GUIInterface", "Country:"))
         self.city_label.setText(_translate("GUIInterface", "City:"))
-        self.Tittle.setText(_translate("GUIInterface", "Building Feature Collection"))
+        self.Tittle.setText(_translate("GUIInterface", "RUBIC-AI: Building Classifier"))
         self.output_folder_value.setText(_translate("GUIInterface", "-"))
         self.output_path_tittle.setText(_translate("GUIInterface", "Project Selection"))
         self.lat_label.setText(_translate("GUIInterface", "Building Latitude: "))
