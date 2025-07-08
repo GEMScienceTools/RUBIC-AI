@@ -119,6 +119,8 @@ ID,Latitude,Longitude,City,Country
 4. Process and extrapolate features
 5. Save the enhanced dataset
 
+<img src="help_img/Extrapolation.gif" alt="Logo" >
+
 **Required special CSV format:**
 ```csv
 ID,Latitude,Longitude,Country,City,LLRS Material,LLRS,Code Level,Number of Stories,Occupancy,Block Position,Taxonomy
