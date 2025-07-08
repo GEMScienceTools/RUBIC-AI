@@ -73,3 +73,7 @@ venv.bak/
 
 # VSCode settings
 src/.vscode/
+
+# Ignore tmp images dirs
+demos/Local_images_data_example/images_buildings/Cropped_images/
+demos/Local_images_data_example/images_buildings/displayed_images/
