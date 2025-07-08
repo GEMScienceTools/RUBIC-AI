@@ -87,6 +87,24 @@ Restarting your system can help resolve potential issues related to environment 
 **Best for:** Create a building stock from images stored on your local device
 
 **Workflow:**
+1. Select the folder where the outputs will be saved by clicking the ***Project Folder*** button.
+2. Set the usage mode by clicking the ***Insp. Method*** button and choosing the **local method** checkbox.
+3. Click on the ***Set Coord.*** button to provide the input files.
+   > 3.1. By clicking the ***Image Folder*** button the user selects the folder where the building images are stored on the local device.
+   > 3.2. Then, by clicking the ***Upload Building Information*** button, the user should provide a *.csv file containing the ID and coordinates of the building images.
+   ** Example of the required CSV format:**
+	```csv
+	ID,Latitude,Longitude,City,Country
+	1,10.9639,-74.7964,Barranquilla,Colombia
+	2,10.9640,-74.7965,Barranquilla,Colombia
+	```
+   > 3.3. Finally, select the number of images available per location (1 to 3).
+5. Upload the images by clicking the ***Next Building*** button
+6. Chose building feature for each combobox (e.g., concrete as LLRS material)
+7. Continue the process by clicking the ***Next Building*** button until the inspection is complete, or save your progress by clicking the ***Save Inspection*** button.
+8. The results will be saved with the name given in the ***Output name*** cell, which by default is "Local", in a *.csv file. This file will contain all the building features, city, country, coordinates and the path to the building image. Furthermore, it will be uploaded when the GUI starts again, allowing the inspection process to continue from where it was finished. This is why it is important to save the inspection before closing the GUI.
+
+
 1. Select the project output folder
 2. Choose the "Local Images" inspection method
 3. Configure input data:
@@ -98,12 +116,7 @@ Restarting your system can help resolve potential issues related to environment 
 
 <img src="help_img/output.gif" alt="Logo" >
 
-**Required typical CSV format:**
-```csv
-ID,Latitude,Longitude,City,Country
-1,10.9639,-74.7964,Barranquilla,Colombia
-2,10.9640,-74.7965,Barranquilla,Colombia
-```
+
 
 ### 2. Neighbor Extrapolation ✅ *Available*
 
