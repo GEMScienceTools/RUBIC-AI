@@ -18,7 +18,7 @@
 # ✨ Key Features
 
 - **AI-powered building feature prediction** using DenseNet201 with transfer learning
-- **Multiple inspection methods** for different data sources and use cases
+- **Multiple usage modes** for different data sources and use cases
 - **Interactive GUI** for streamlined building assessment workflows
 - **Object detection module** to isolate buildings of interest
 - **Automated building stock collection** from facade images
@@ -39,13 +39,7 @@ git --version
 
 ## 👩‍💻🧑‍💻 Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/dangomezm/RUBIC-AI.git
-   cd RUBIC-AI
-   ```
-
-2. **Create and activate virtual environment**
+1. **Create and activate virtual environment**
 
    **Windows (Anaconda):**
    ```bash
@@ -57,6 +51,10 @@ git --version
    ```bash
    python3 -m venv RUBIC-AI
    source RUBIC-AI/bin/activate  # macOS/Linux
+   ```
+2. **Clone the repository**
+   ```bash
+   git clone https://github.com/dangomezm/RUBIC-AI.git
    ```
 
 3. **Install dependencies**
@@ -76,11 +74,13 @@ Restarting your system can help resolve potential issues related to environment 
    python main.py
    ```
 
-## 🔍🕵️ Inspection Methods
-
-> ⚠️ NOTE:
-> The suggestion is to start with the methods we support, and then move to the current unavailable.
-> The steps for each method are also simplified. Please check if some steps were skipped.
+## 🔍🕵️ Usage modes
+> ⚠️ **Note:**  
+> Some modes are currently unavailable:  
+> - **Polygon Method**  
+> - **Specific Coordinates Method**  
+>  
+> We are working to restore these functionalities as soon as possible.
 
 ### 1. Local Images Method ✅ *Available*
 
