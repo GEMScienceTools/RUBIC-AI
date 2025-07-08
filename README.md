@@ -271,6 +271,34 @@ Ensure you're using Python 3.11.13 specifically, as the models are optimised for
   
 ![LLRS](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/LLRS.png)
 
+* **LLRS Material**
+  
+![LLRS](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/LLRS_Material.png)
+
+* **Number of stories**
+  
+![LLRS](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/n_stories.png)
+
+* **Occupancy**
+  
+![LLRS](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/occupancy.png)
+
+* **Code level**
+  
+![LLRS](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/code_level.png)
+
+* **Block position**
+  
+![LLRS](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/block_matrix.png)
+
+* **Roof shape**
+  
+![LLRS](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/roof_shape.png)
+
+* **Roof material**
+  
+![LLRS](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/roof_material.png)
+
 </details>
 
 
