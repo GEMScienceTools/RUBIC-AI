@@ -40,7 +40,7 @@ Before you begin, make sure the following are installed on your system:
   📥 Download: [Anaconda.com](https://www.anaconda.com/download/success)  
   📖 Installation guide: [Anaconda Installation Instructions](https://www.anaconda.com/docs/getting-started/anaconda/install#macos-linux-installation)
 
-## 👩‍💻🧑‍💻 Installation
+## 👩‍💻 Installation
 
 1. **Create and activate virtual environment**
 
@@ -84,7 +84,7 @@ Restarting your system can help resolve potential issues related to environment 
    python main.py
    ```
 
-## 🔍🕵️ Usage modes
+## 🕵️ Usage modes
 > ⚠️ **Note:**  
 > Some modes are currently unavailable:  
 > - **Polygon Method**  
