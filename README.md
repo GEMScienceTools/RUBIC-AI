@@ -233,86 +233,6 @@ If you want to check a specific image, use the ***Search Building*** button. Fir
 - Batch processing of specific locations
 - Custom output naming
 
-## 🤖🧠 AI-Powered Features
-
-### Automatic Feature Prediction
-
-Enable AI assistance by checking the **AI Powered** checkbox. The system will:
-
-- Automatically predict building features using DenseNet201
-- Leverage transfer learning from ImageNet
-- Provide real-time classifications that you can verify and correct
-- Maintain human oversight for quality assurance
-
-### Supported Building Features
-* List the specific building features the AI can classify, such as:
-- Lateral Load Resisting System (LLRS) 
-- LLRS Material
-- Code level
-- Number of stories
-- Occupancy
-- Block position
-- Roof shape
-- Roof material
-
-## 🗂️ Data Management
-
-### Input Requirements
-
-**Image specifications:**
-- Supported formats: *[JPG, JPEG, PNG]*
-- Minimum resolution: *640x480*
-
-**CSV file structure:**
-All CSV files should include headers and follow the coordinate format shown in examples above.
-
-### Output Files
-
-Results are automatically saved as CSV files containing:
-- All classified building features
-- Geographic coordinates
-- City and country information
-- Image file paths
-
-### Progress Saving
-
-**Important:** Always save your progress before closing the GUI. The application automatically loads previous work when restarted, allowing you to continue from where you left off.
-
-## 📦 Installation Details
-
-### Windows Setup
-
-1. 
-
-2. **Create environment using Anaconda Prompt**
-   ```bash
-   conda create -n RUBIC-AI python=3.11.13
-   conda activate RUBIC-AI
-   cd /d YOUR_REPO_PATH
-   pip install -r requirements.txt
-   python main.py
-   ```
-
-### macOS Setup
-
-1. **Install Python 3.11.13**
-	```bash
-   pip install python@3.11.13
-   ```
-   or you can also try
-   ```bash
-   brew install python@3.11.13
-   ```
-
-2. **Create and activate virtual environment**
-   ```bash
-   cd ~/your_project_folder
-   python3 -m venv RUBIC-AI
-   source RUBIC-AI/bin/activate
-   pip install -r requirements.txt
-   python3 main.py
-   ```
-
 ## Troubleshooting
 
 ### Common Issues
@@ -393,16 +313,17 @@ Ensure you're using Python 3.11.13 specifically, as the models are optimised for
 
 </details>
 
+### Input Requirements
 
+**Image specifications:**
+- Supported formats: *[JPG, JPEG, PNG]*
+- Minimum resolution: *640x480*
+- 
 # 🤝 Contributions
 
 [WIP]
 
 # © License
-
-[WIP]
-
-# 🌟 Contributors
 
 [WIP]
 
