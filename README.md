@@ -233,23 +233,6 @@ If you want to check a specific image, use the ***Search Building*** button. Fir
 - Batch processing of specific locations
 - Custom output naming
 
-## Troubleshooting
-
-### Common Issues
-
-**pip installation fails:**
-```bash
-pip3 install -r requirements.txt  # Try pip3 instead of pip
-```
-
-**Python version conflicts:**
-Ensure you're using Python 3.11.13 specifically, as the models are optimised for this version.
-
-**GUI won't start:**
-- Verify all dependencies are installed
-- Check that you're in the correct virtual environment
-- Ensure you're in the repository directory when running `python main.py`
-
 ## 🖥️ Technical Architecture
 
 ### AI Models
@@ -313,12 +296,10 @@ Ensure you're using Python 3.11.13 specifically, as the models are optimised for
 
 </details>
 
-### Input Requirements
-
-**Image specifications:**
+### Image input specifications:**
 - Supported formats: *[JPG, JPEG, PNG]*
 - Minimum resolution: *640x480*
-- 
+  
 # 🤝 Contributions
 
 [WIP]
