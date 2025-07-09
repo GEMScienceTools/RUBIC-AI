@@ -28,14 +28,17 @@
 
 ## ⚙️🔧 Prerequisites
 
-Before you begin, ensure you have the following installed:
-- [Git](https://git-scm.com/downloads) – Used to clone the repository and manage versions.
-- Python 3.11.13
-### Check if GIT is installed
-Open a terminal and run:
-```bash
-git --version
-```
+Before you begin, make sure the following are installed on your system:
+
+- [Git](https://git-scm.com/downloads) — Used to clone the repository and manage version control.  
+  Git is typically pre-installed on macOS, but you can verify its installation by running the following command in the terminal:
+  ```bash
+  git --version
+  ```
+- **Python 3.11.13**
+- **Anaconda** (*only required for Windows users*)  
+  📥 Download: [Anaconda.com](https://www.anaconda.com/download/success)  
+  📖 Installation guide: [Anaconda Installation Instructions](https://www.anaconda.com/docs/getting-started/anaconda/install#macos-linux-installation)
 
 ## 👩‍💻🧑‍💻 Installation
 
@@ -239,9 +242,7 @@ Results are automatically saved as CSV files containing:
 
 ### Windows Setup
 
-1. **Install Anaconda**
-   - Download from [Anaconda.com](https://www.anaconda.com/download/success)
-   - Follow [installation instructions](https://www.anaconda.com/docs/getting-started/anaconda/install#macos-linux-installation)
+1. 
 
 2. **Create environment using Anaconda Prompt**
    ```bash
