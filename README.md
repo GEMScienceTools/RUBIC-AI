@@ -7,7 +7,7 @@
     <img src="help_img/GUI_RUBIC_LOGO.png" alt="Logo" >
   </a>
 
-  <h3 align="center">RUBIC-AI – Building Recognition using AI-based Identification Toolkit</h3>
+  <h3 align="center">RUBIC-AI – Risk and Unified Building Inventory Classifier using AI</h3>
 
   <p align="left">
     This repository contains an open source comprehensive AI-powered toolkit for risk assessment using facade image analysis. This beta version provides automated building feature prediction and classification through deep learning models, with an intuitive GUI for efficient building inspection workflows.
