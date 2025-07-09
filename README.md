@@ -53,16 +53,23 @@ git --version
    source RUBIC-AI/bin/activate  # macOS/Linux
    ```
 2. **Clone the repository**
+   Choose your preferred folder to clone the repository by opening the terminal and navigating to the desired location.
+   > Windows
+   ```bash
+   cd /Users/your-username/Path/To/Your/Repo
+   ```
+
+    Clone the ropository
    ```bash
    git clone https://github.com/dangomezm/RUBIC-AI.git
    ```
 
-3. **Install dependencies**
+4. **Install dependencies**
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **(Optional) Restart your system**
+5. **(Optional) Restart your system**
 
 Restarting your system can help resolve potential issues related to environment path changes or incomplete installations.
 
@@ -87,36 +94,52 @@ Restarting your system can help resolve potential issues related to environment 
 **Best for:** Create a building stock from images stored on your local device
 
 **Workflow:**
-1. Select the folder where the outputs will be saved by clicking the ***Project Folder*** button.
-2. Set the usage mode by clicking the ***Insp. Method*** button and choosing the **local method** checkbox.
-3. Click on the ***Set Coord.*** button to provide the input files.
-   > 3.1. By clicking the ***Image Folder*** button the user selects the folder where the building images are stored on the local device.
-   > 3.2. Then, by clicking the ***Upload Building Information*** button, the user should provide a *.csv file containing the ID and coordinates of the building images.
-   ** Example of the required CSV format:**
-	```csv
-	ID,Latitude,Longitude,City,Country
-	1,10.9639,-74.7964,Barranquilla,Colombia
-	2,10.9640,-74.7965,Barranquilla,Colombia
-	```
-   > 3.3. Finally, select the number of images available per location (1 to 3).
-5. Upload the images by clicking the ***Next Building*** button
-6. Chose building feature for each combobox (e.g., concrete as LLRS material)
-7. Continue the process by clicking the ***Next Building*** button until the inspection is complete, or save your progress by clicking the ***Save Inspection*** button.
-8. The results will be saved with the name given in the ***Output name*** cell, which by default is "Local", in a *.csv file. This file will contain all the building features, city, country, coordinates and the path to the building image. Furthermore, it will be uploaded when the GUI starts again, allowing the inspection process to continue from where it was finished. This is why it is important to save the inspection before closing the GUI.
+1. **Select the project folder**  
+   Click the ***Project Folder*** button to open a pop-up window and navigate to the folder where outputs will be saved.  
+   > 📁 *Example:* `demos/Local_images_data_example`
+   
+2. **Set the usage mode**  
+   Click the ***Insp. Method*** button and check the **local method** option.
+   
+3. **Set input files**  
+   Click the ***Set Coord.*** button and follow these steps:
+* 3.1. Click the ***Select image folder*** button to select the folder containing building images stored locally.  
+   > 📁 *Example:* `demos/Local_images_data_example/images_buildings`  
+* 3.2. Click the ***Upload buildings information*** button and upload a CSV file containing the image ID and coordinates.  
+   > 📁 *Example:* `demos/Local_images_data_example/local_images_data.csv`  
+   > 📝 *Required CSV format:*
+   ```csv
+   ID,Latitude,Longitude,City,Country
+   1,10.9639,-74.7964,Barranquilla,Colombia
+   2,10.9640,-74.7965,Barranquilla,Colombia
+   ```
+* 3.3. The results will be saved using the name specified in the ***Output name*** field (default: **"Local"**) as a `.csv` file. This file will contain all the building features, along with metadata such as city, country, coordinates, and the path to the corresponding building image.
+* 3.4. Select the number of images available per location (1 to 3).
+* 3.5. Upload the information and check the format by clicking the ***Load data*** button. Once a confirmation message appears, click ***Save and continue*** to proceed to the next step.
 
+4. In this step, the user can classify building features in two ways:  
+   **I) Manually** or **II) Using Deep Learning models with verification of predicted attributes.**
 
-1. Select the project output folder
-2. Choose the "Local Images" inspection method
-3. Configure input data:
-   - Select the folder containing building façade images
-   - Upload a CSV file with building coordinates and IDs
-   - Specify number of images per location (1-3)
-4. Process images and classify features
-5. Save results as CSV
+4.1. 📝 Manual Classification
+- **4.1.1.** Click the ***Next Building*** button to upload and display the first building image.
+- **4.1.2.** Use the corresponding comboboxes to select the appropriate features based on the displayed image (e.g., select "Concrete" as the LLRS material).
+- **4.1.3.** Click the ***Next Building*** button again to proceed to the next image, and repeat this process until all images have been reviewed.
+- **4.1.4.** Save either all results or a partial set by clicking the ***Save data*** button. When the GUI is launched again, previously saved results will be reloaded, allowing the classification process to resume from where it left off.  
+> ⚠️ **Important:** *If you do not save your data before closing the GUI, your work will be lost.*
+
+4.2. 🤖 AI-Powered Classification
+- **4.2.1.** Click the ***AI Powered*** checkbox to activate the deep learning models.
+- **4.2.2.** Upload the images by clicking the ***Next Building*** button. At this step, the tool will automatically predict the building features.
+- **4.2.3.** Click the ***Next Building*** button again to proceed to the next image, and repeat this process until all images have been reviewed.
+- **4.2.4.** Save either all results or a partial set by clicking the ***Save data*** button. When the GUI is launched again, previously saved results will be reloaded, allowing the classification process to resume from where it left off.  
+> ⚠️ **Important:** *If you do not save your data before closing the GUI, your work will be lost.*
+
+5. ***Review Previous Classifications***
+To review or complete unfinished classifications, follow the steps up to **4.1 Manual Classification** to upload the CSV file containing the classification data.
+You can navigate through the results using the ***Next Building*** and ***Previous Building*** buttons to move forward or backward between images and review the associated information.
+If you want to check a specific image, use the ***Search Building*** button. First, enter the image ID (e.g., `1_1`) in the adjacent field, then click the ***Search Building*** button. The GUI will automatically display the corresponding image and its saved classification.
 
 <img src="help_img/output.gif" alt="Logo" >
-
-
 
 ### 2. Neighbor Extrapolation ✅ *Available*
 
