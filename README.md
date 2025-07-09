@@ -168,12 +168,12 @@ If you want to check a specific image, use the ***Search Building*** button. Fir
 			  > 📁 *Example:* `demos/Extrapolation_data_example/neighbor_building_info.csv`  
 			  > 📝 *Required CSV format:*
 			   ```csv
-			   ID,Latitude,Longitude,Country,City,LLRS Material,LLRS,Code Level,Number of Stories,Occupancy,Block Position,Taxonomy
-			1,10.92224755,-74.78642608,Colombia,Barranquilla,MCF,LWAL,CDL,1,RES,BP1,MCF/LWAL+CDL/H:1/RES/BP1
-			2,10.91268031,-74.80288191,Colombia,Soledad,CR,LFM,CDM,3,RES,BP2,CR/LFM+CDM/H:3/RES/BP2
-			3,10.91968505,-74.79215175,Colombia,Barranquilla,MUR,LWAL,CDL,1,RES,BP1,MUR/LWAL+CDL/H:1/RES/BP1
-			4,10.91647181,-74.76986198,Colombia,Soledad,CR,LFINF,CDM,2,COM,BP1,CR/LFINF+CDM/H:2/COM/BP1
-			5,10.90251035,-74.79685532,Colombia,Soledad,CR,LFM,CDL,2,RES,BP2,CR/LFM+CDL/H:2/RES/BP27
+			  	ID,Latitude,Longitude,Country,City,LLRS Material,LLRS,Code Level,Number of Stories,Occupancy,Block Position,Taxonomy
+				1,10.92224755,-74.78642608,Colombia,Barranquilla,MCF,LWAL,CDL,1,RES,BP1,MCF/LWAL+CDL/H:1/RES/BP1
+				2,10.91268031,-74.80288191,Colombia,Soledad,CR,LFM,CDM,3,RES,BP2,CR/LFM+CDM/H:3/RES/BP2
+				3,10.91968505,-74.79215175,Colombia,Barranquilla,MUR,LWAL,CDL,1,RES,BP1,MUR/LWAL+CDL/H:1/RES/BP1
+				4,10.91647181,-74.76986198,Colombia,Soledad,CR,LFINF,CDM,2,COM,BP1,CR/LFINF+CDM/H:2/COM/BP1
+				5,10.90251035,-74.79685532,Colombia,Soledad,CR,LFM,CDL,2,RES,BP2,CR/LFM+CDL/H:2/RES/BP27
 			   ```
 			- Click the ***Unclassified building locations*** button and upload a CSV file containing ID and coordinates of the building that the user want to classify based on the information of the building of reference due to there is not information availabe for them.
 			   > 📁 *Example:* `demos/Extrapolation_data_example/building_with_no_image.csv`
@@ -211,6 +211,8 @@ If you want to check a specific image, use the ***Search Building*** button. Fir
 
 4. Click the ***Next Building*** button to perform the extrapolation. The results will be saved in the output path selected in Step 1.  
    > 📁 *Example:* `demos/Extrapolation_data_example/Extrapolation.csv`
+
+🎥 [Watch the extrapolation demo](help_img/Extrapolation.mp4)
 
 ### 3. Polygon Method 🚧 *Currently Unavailable*
 
