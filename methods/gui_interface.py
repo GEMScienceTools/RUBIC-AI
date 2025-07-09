@@ -119,7 +119,7 @@ class GUIInterface(QtWidgets.QMainWindow):
             # User confirmed, close the application
             print("GUI is closing...")
             QtWidgets.QApplication.quit()  # This will terminate the GUI and allow the script to continue
-            print("------------- Thanks you ------------")
+            print("------------- Thank you ------------")
         else:
             # User canceled, do not close
             print("User canceled the close operation.")
