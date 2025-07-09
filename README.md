@@ -57,7 +57,6 @@ Before you begin, make sure the following are installed on your system:
    ```
 2. **Clone the repository**
    Choose your preferred folder to clone the repository by opening the terminal and navigating to the desired location.
-   > Windows
    ```bash
    cd /Users/your-username/Path/To/Your/Repo
    ```
@@ -67,17 +66,15 @@ Before you begin, make sure the following are installed on your system:
    git clone https://github.com/dangomezm/RUBIC-AI.git
    ```
 
-4. **Install dependencies**
+3. **Install dependencies**
    ```bash
    pip install -r requirements.txt
    ```
 
-5. **(Optional) Restart your system**
-
+4. **(Optional) Restart your system**
 Restarting your system can help resolve potential issues related to environment path changes or incomplete installations.
 
 > 🔁 *This step is usually not required, but recommended if you encounter errors related to newly installed dependencies.*
-
 
 5. **Launch the application**
    ```bash
@@ -102,7 +99,7 @@ Restarting your system can help resolve potential issues related to environment 
    > 📁 *Example:* `demos/Local_images_data_example`
    
 2. **Set the usage mode**  
-   Click the ***Insp. Method*** button and check the **local method** option.
+   Click the ***Insp. Method*** button, select the **Local images** option, and then click the ***Save and continue*** button.
    
 3. **Set input files**  
    Click the ***Set Coord.*** button and follow these steps:
@@ -149,30 +146,76 @@ If you want to check a specific image, use the ***Search Building*** button. Fir
 **Best for:** Expanding known building data to classify unknown buildings
 
 **Workflow:**
-1. Select the project output folder
-2. Choose the "Neighbor Extrapolation" method
-3. Configure extrapolation settings:
-   - Select sampling method (KNN with soft voting or stratified sampling)
-   - Upload buildings with known information **Required special CSV format:**
-   - Upload unclassified building locations
-4. Process and extrapolate features
-5. Save the enhanced dataset
+1. **Select the project folder**  
+   Click the ***Project Folder*** button to open a pop-up window and navigate to the folder where the outputs will be saved.  
+   > 📁 *Example:* `demos/Extrapolation_data_example`
 
-<img src="help_img/Extrapolation.gif" alt="Logo" >
+2. **Set the usage mode**  
+   Click the ***Insp. Method*** button, select the **Neighbor extrapolation** option, and then click the ***Save and continue*** button.
 
-**Required special CSV format:**
-```csv
-ID,Latitude,Longitude,Country,City,LLRS Material,LLRS,Code Level,Number of Stories,Occupancy,Block Position,Taxonomy
-1,10.92224755,-74.78642608,Colombia,Barranquilla,MCF,LWAL,CDL,1,RES,BP1,MCF/LWAL+CDL/H:1/RES/BP1
-2,10.91268031,-74.80288191,Colombia,Soledad,CR,LFM,CDM,3,RES,BP2,CR/LFM+CDM/H:3/RES/BP2
-3,10.91968505,-74.79215175,Colombia,Barranquilla,MUR,LWAL,CDL,1,RES,BP1,MUR/LWAL+CDL/H:1/RES/BP1
-4,10.91647181,-74.76986198,Colombia,Soledad,CR,LFINF,CDM,2,COM,BP1,CR/LFINF+CDM/H:2/COM/BP1
-5,10.90251035,-74.79685532,Colombia,Soledad,CR,LFM,CDL,2,RES,BP2,CR/LFM+CDL/H:2/RES/BP27
-```
-**Features:**
-- **KNN with soft voting:** Uses k-nearest neighbors for classification
-- **Stratified sampling:** Maintains class distribution in samples
-- **Manual or AI-powered classification:** Choose your preferred workflow
+3. **Set input files**  
+   Click the ***Set Coord.*** button and follow these steps:
+
+   - **3.1.** Click the ***Extrapolation options*** button. This will display a pop-up window with two available options:  
+     - **KNN with soft voting**  
+     - **Stratified sampling**  
+
+     Select one of the two options and then click the ***Load Files*** button. A new pop-up window will appear for setting the input files.
+
+     - **3.1.1.** Set the input files using either the **Manual method** or the **Deep Learning model** method.
+
+	3.1.1.1 📄 Upload Data Manually
+	- Define the output file name using the ***Output name*** field (default: **"KNN"**).
+	- Click the ***Buildings with information*** button and upload a CSV file containing the reference buildings — that is, buildings that have already been classified and include all the features of interest.  
+	  > 📁 *Example:* `demos/Extrapolation_data_example/neighbor_building_info.csv`  
+	  > 📝 *Required CSV format:*
+	   ```csv
+	   ID,Latitude,Longitude,Country,City,LLRS Material,LLRS,Code Level,Number of Stories,Occupancy,Block Position,Taxonomy
+	1,10.92224755,-74.78642608,Colombia,Barranquilla,MCF,LWAL,CDL,1,RES,BP1,MCF/LWAL+CDL/H:1/RES/BP1
+	2,10.91268031,-74.80288191,Colombia,Soledad,CR,LFM,CDM,3,RES,BP2,CR/LFM+CDM/H:3/RES/BP2
+	3,10.91968505,-74.79215175,Colombia,Barranquilla,MUR,LWAL,CDL,1,RES,BP1,MUR/LWAL+CDL/H:1/RES/BP1
+	4,10.91647181,-74.76986198,Colombia,Soledad,CR,LFINF,CDM,2,COM,BP1,CR/LFINF+CDM/H:2/COM/BP1
+	5,10.90251035,-74.79685532,Colombia,Soledad,CR,LFM,CDL,2,RES,BP2,CR/LFM+CDL/H:2/RES/BP27
+	   ```
+	- Click the ***Unclassified building locations*** button and upload a CSV file containing ID and coordinates of the building that the user want to classify based on the information of the building of reference due to there is not information availabe for them.
+	   > 📁 *Example:* `demos/Extrapolation_data_example/building_with_no_image.csv`
+	   > 📝 *Required CSV format:*
+	   ```csv
+	   ID,Latitude,Longitude
+	   1,10.9639,-74.7964
+	   2,10.9640,-74.7965
+	   ```
+
+	3.1.1.2 🤖 DL Model
+	- Define the output file name using the ***Output name*** field (default: **"DL Model"**).
+
+	- Click the ***Image Folder*** button to select the folder containing the building images stored locally.  
+	  > 📁 *Example:* `demos/Extrapolation_data_example/images_buildings`
+
+	- Click the ***Unclassified building locations*** button and upload a CSV file containing the ID and coordinates of the buildings that need to be classified based on the predicted features of the reference buildings. These buildings do not have image data or existing attribute information.
+	  > 📁 *Example:* `demos/Extrapolation_data_example/building_data.csv`  
+	  > 📝 *Required CSV format:
+	   ```csv
+	   ID,Latitude,Longitude
+	   1,10.9639,-74.7964
+	   2,10.9640,-74.7965
+	   ```
+	- Click the ***Unclassified building locations*** button and upload a CSV file containing the ID and coordinates of the buildings that the user wants to classify based on the information from the reference buildings, as no attribute information is available for them.
+	   > 📁 *Example:* `demos/Extrapolation_data_example/building_with_no_image.csv`
+	   > 📝 *Required CSV format:*
+	   ```csv
+	   ID,Latitude,Longitude
+	   1,10.9639,-74.7964
+	   2,10.9640,-74.7965
+	   ```
+3.2. Click the ***Save and continue*** button in the ***Setting Input Files*** window, and then click the ***Save and continue*** button in the ***Setting Extrapolation Method*** window.
+3.3. In the ***Setting Polygon Coordinates*** window, click the ***Load data*** button to check the format, then click the ***Save and continue*** button.
+
+
+4. Click the ***Next Building*** button to perform the extrapolation. The results will be saved in the output path selected in Step 1.  
+   > 📁 *Example:* `demos/Extrapolation_data_example/Extrapolation.csv`
+
+
 
 ### 3. Polygon Method 🚧 *Currently Unavailable*
 
