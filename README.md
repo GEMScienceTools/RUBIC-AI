@@ -212,6 +212,8 @@ If you want to check a specific image, use the ***Search Building*** button. Fir
 4. Click the ***Next Building*** button to perform the extrapolation. The results will be saved in the output path selected in Step 1.  
    > 📁 *Example:* `demos/Extrapolation_data_example/Extrapolation.csv`
 
+🎥 [Watch the extrapolation demo](help_img/Extrapolation.mp4)
+
 ### 3. Polygon Method 🚧 *Currently Unavailable*
 
 **Best for:** Area-based building surveys
