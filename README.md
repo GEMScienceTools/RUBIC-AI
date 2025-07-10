@@ -31,7 +31,7 @@
 Before you begin, make sure the following are installed on your system:
 
 - [Git](https://git-scm.com/downloads) — Used to clone the repository and manage version control.  
-  Git is typically pre-installed on macOS, but you can verify its installation by running the following command in the terminal:
+  Git is typically pre-installed on macOS, but on Windows, users need to install it manually. You can verify whether Git is installed by running the following command in the terminal:
   ```bash
   git --version
   ```
@@ -139,7 +139,6 @@ To review or complete unfinished classifications, follow the steps up to **4.1 M
 You can navigate through the results using the ***Next Building*** and ***Previous Building*** buttons to move forward or backward between images and review the associated information.
 If you want to check a specific image, use the ***Search Building*** button. First, enter the image ID (e.g., `1_1`) in the adjacent field, then click the ***Search Building*** button. The GUI will automatically display the corresponding image and its saved classification.
 
-<img src="help_img/output.gif" alt="Logo" >
 
 ### 2. Neighbor Extrapolation ✅ *Available*
 
@@ -212,7 +211,7 @@ If you want to check a specific image, use the ***Search Building*** button. Fir
 4. Click the ***Next Building*** button to perform the extrapolation. The results will be saved in the output path selected in Step 1.  
    > 📁 *Example:* `demos/Extrapolation_data_example/Extrapolation.csv`
 
-<img src="help_img/Extrapolation.gif" alt="Logo" >
+
 
 ### 3. Polygon Method 🚧 *Currently Unavailable*
 
