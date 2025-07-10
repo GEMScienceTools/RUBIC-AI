@@ -31,7 +31,7 @@
 Before you begin, make sure the following are installed on your system:
 
 - [Git](https://git-scm.com/downloads) — Used to clone the repository and manage version control.  
-  Git is typically pre-installed on macOS, but you can verify its installation by running the following command in the terminal:
+  Git is typically pre-installed on macOS, but on Windows, users need to install it manually. You can verify whether Git is installed by running the following command in the terminal:
   ```bash
   git --version
   ```
