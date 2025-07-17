@@ -1,10 +1,14 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QDialog, QMessageBox
 
+from methods.polygon_method import PolygonSetting
+from methods.specific_locations_method import SpecificLocationSetting
+from methods.local_images_method import LocalImageSetting 
+
+
 class InspectionSetting(QDialog):
-    def __init__(self, parent=None, main_window=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
-        self.main_window = main_window  # Reference to the main window (GUIInterface)
         
         # Get screen resolution
         screen = QtWidgets.QApplication.primaryScreen()
@@ -131,7 +135,6 @@ class InspectionSetting(QDialog):
         self.local_descrip.setGeometry(QtCore.QRect(int(230 * sf_x), int(410 * sf_y), int(351 * sf_x), int(181 * sf_y)))
         self.local_descrip.setObjectName("local_descrip")
 
-        scale_factor= 1.0
         # Compute adaptive font size
         font_size = 10 * sf_x  # Base font size scaled
         
@@ -249,7 +252,7 @@ class InspectionSetting(QDialog):
         self.extra_img.setScaledContents(True)
         
         """ GEM icon GUI elements """
-        self.setWindowIcon(QtGui.QIcon("help_img/GEM_icon.ico"))
+        self.setWindowIcon(QtGui.QIcon("help_img/RUBIC_logo.png"))
         
         # Stacking order
         self.backg_3.raise_()
@@ -310,19 +313,31 @@ class InspectionSetting(QDialog):
         else:
             # Print the selected method if only one checkbox is checked
             if self.default_check.isChecked():
-                self.main_window.insp_method = 0
-                self.accept()  
+                self.insp_method = 0
+                # QMessageBox.warning(self, "Usage mode error", "This option is currently unavailable. Please select either 'Local Images' or 'Neighbor Extrapolation'.")
+                self.accept()
+                self.polygon_dialog = PolygonSetting(method=self)  # Pass main window reference if needed
+                self.polygon_dialog.exec_()
 
             if self.specific_check.isChecked():
-                self.main_window.insp_method = 1
-                self.accept()  
+                self.insp_method = 1
+                self.accept()
+                self.specific_dialog = SpecificLocationSetting(method=self)  # Pass main window reference if needed
+                self.specific_dialog.exec_()
+                self.data_specific = self.specific_dialog.df 
                 
             if self.local_check.isChecked():
-                self.main_window.insp_method = 2
+                self.insp_method = 2
                 self.accept()
+                self.local_dialog = LocalImageSetting(method=self)  # Pass main window reference if needed
+                self.local_dialog.exec_()
+                self.data_local = self.local_dialog.df
                 
             if self.extrapolation_check.isChecked():
-                self.main_window.insp_method = 3
-                self.accept()  
+                self.insp_method = 3
+                QMessageBox.warning(self, "Usage mode error", "This option is currently unavailable. Please select other mode.")
+                self.accept() 
+                
+        
         
  

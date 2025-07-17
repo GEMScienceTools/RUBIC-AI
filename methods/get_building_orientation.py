@@ -27,7 +27,7 @@ def get_road_orientation(location):
         - Handles API errors and missing road data gracefully.
     """
     # Model parameters
-    api_key = "AIzaSyBMINy7oPRKyOPW-wnZqQClXSUs11I9RBs"
+    api_key = "AIzaSyB3ugs1aQmA9I6zkFouqllGjuIcdHZvjG4"
     base_url = "https://roads.googleapis.com/v1/nearestRoads"
     params = {
         "points": f"{location[0]},{location[1]}",

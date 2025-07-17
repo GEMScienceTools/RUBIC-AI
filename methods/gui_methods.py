@@ -1,5 +1,5 @@
 # GUI pyqt5 libraries
-from PyQt5.QtWidgets import QFileDialog, QDialog, QMessageBox, QApplication
+from PyQt5.QtWidgets import QMessageBox, QApplication
 from PyQt5 import QtCore, QtGui
 
 # Libries for shape and geopackage creation
@@ -19,8 +19,8 @@ import torch
 import requests
 
 # *.py scripts with complex methods
-from methods.coordinates_window import PolygonSettingWindow
-from methods.method_window import InspectionSetting
+# from methods.coordinates_window import PolygonSettingWindow
+# from methods.method_window import InspectionSetting
 from methods.dl_prediction_models import predict_llrs_img, predict_material_img, predict_code_img, predict_roof_shape_img
 from methods.dl_prediction_models import predict_occupancy_img, predict_block_position_img, predict_n_stories_img, predict_roof_material_img
 from methods.get_building_orientation import get_street_view_image , get_road_orientation
@@ -37,12 +37,16 @@ class GUIMethods:
         self.start = True               # Building ID aux varible  
         self.data_building = None       # Building sample information
         self.data_ai = None             # AI inspection
-        self.data_expo = None           # Classic exposure model inspection
         self.data_old = None            # Existing inspection swicth
         self.sw_insp = True             # Existing inspection swicth           
         self.save_id = True             # Existing inspection swicth      
         self.box_id = None              # Manual bounding box
         self.epoch_const= True          # Epoch of construction
+        self.cont_local = 0
+        self.n_insp_local = 0
+        self.data_old_local = 0
+        self.previous_local = False
+        self.sw_local_previous = True
         
         """Get screen resolution to adapt to different screen sizes"""
         # Get screen resolution
@@ -53,59 +57,122 @@ class GUIMethods:
         # Scale the GUI based on resolution
         self.sf_x = screen_width / 1920
         
-    ############ Folder Selection ################
-    def select_folder(self):
-        """Open a folder selection dialog and display the selected folder in a text output."""
-        folder_path = QFileDialog.getExistingDirectory(None, "Select Folder")
-        if folder_path:  # If a folder is selected
-            self.ui.output_folder_value.setText(folder_path)
+
+    ############ Counts the number of clicks made on the next button ################ 
+    def count_clicks_next(self):
+        """
+        Increment the click counter and update the inspection dataset.
+    
+        This method increments the click counter to navigate through building inspections. 
+        It ensures that a project folder, country, and city name are defined before execution. 
+        If necessary, it loads the subset of buildings from a CSV file based on the selected 
+        inspection method. The method also verifies that the current building ID does not 
+        exceed the number of available samples.
+        """
+    
+        """Increment the click counter and update the label."""
+        # load the dataset of the subset buildings
+        if self.data_building is None:
             
-    ############ Emergent window for define the boundary using a coordinate file ################
-    def open_emergent_window(self):
-        """
-        Open an emergent window for defining a boundary using user input.
-    
-        This method launches a dialog window (`PolygonSettingWindow`) that allows users to manually 
-        define a boundary polygon and provide city and country information. If a project folder 
-        is not selected, a warning message is displayed. Upon successful input, the city and country 
-        values are updated in the UI.
-    
-        Args:
-            None. The method relies on UI components and user interaction for input.
-    
-        Returns:
-            None. Updates the `city_value` and `country_value` fields in the UI with the user-provided 
-            city and country information.
-    
-        Effects:
-            - Displays a warning message if no project folder is selected.
-            - Opens a dialog window for user input.
-            - Updates UI fields with the data entered in the dialog.
-    
-        Notes:
-            - The dialog must return `QDialog.Accepted` for the changes to be applied.
-            - Logs a message when the polygon is successfully defined.
-        """
-        # try:
-        dialog = PolygonSettingWindow(parent=self.ui, main_window=self.ui, gui_methods=self)
-        # except:
-        #     QMessageBox.warning(self.ui, "Inspection Method Error", "Please select inspection method.")
-        
-        # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
-            QMessageBox.warning(self.ui, "Project Error", "Please select project folder")
-        else:
-            if dialog.exec_() == QDialog.Accepted:
-                self.n_images_local = int(dialog.n_image_local_value.currentText())
+            if self.ui.insp_method == 0:
+                path=self.ui.output_folder_value+"/"+self.city_method+"_"+self.country_method+"_building_info.csv"
+                self.data_building = pd.read_csv(path)
+            elif self.ui.insp_method == 1:
+                path= self.ui.output_folder_value+"/"+self.ui.file_name+"_building_info.csv"
+                self.data_building = pd.read_csv(path)
+            elif self.ui.insp_method == 2:
+                self.data_building = pd.read_csv(self.ui.file_local_csv)
+            elif self.ui.insp_method == 3:
+                self.data_building = pd.read_csv(self.ui.file_local_csv)
                 
-    ############ Inspection Method Selection ################
-    def select_insp_method(self):
-        """There are three options for make the inspection the user should select one. 
-           Please refer to user manual"""
-        dialog = InspectionSetting(parent=self.ui, main_window=self.ui)
-        dialog.exec_()  # This will open the emergent window as a modal
-        
+        # Verify that the building ID is less than the number of sample
+        if self.click_count >= self.data_building.shape[0] - 1:
+            # self.cont =  self.cont - 2
+            QMessageBox.warning(self.ui, "Database Error", "No further inspections are available")
+        elif self.cont_local >= self.data_building.shape[0] - 1:
+            QMessageBox.warning(self.ui, "Database Error", "No further inspections are available")
+        else:
+            self.ui.method_progress.setText("Loading images ...")
+            
+            # Save inspection for first click after save results or start the script               
+            if self.click_count >= 0:
+                self.inspection_database()
+            
+            if self.ui.insp_method == 2:
+                # Check if there is inspection already done
+                if self.data_old is not None:
+                    self.n_insp = int(self.cont_local_data.dropna(how='all').shape[0])
+                    self.n_insp_local = int(self.data_ai_existing.dropna(how='all').shape[0])
+                    # print("N INSP LOCAL: ", self.n_insp_local)
+                    self.data_old = None  # Only give the number of inspection one time per saved button clicked
+            else:
+                if self.data_old is not None:
+                    self.n_insp = int(self.data_ai.dropna(how='all').shape[0])
+                    self.data_old = None  # Only give the number of inspection one time per saved button clicked
+            # Calculates the number of inspections saved
+            try:
+                # Conditional for only update the number of click and the ID cont one time
+                if self.n_insp > 0 and self.sw_insp == True:
+                    if self.ui.insp_method != 2:
+                        self.click_count = int(self.n_insp/3 - 1)
+                        self.sw_insp = False
+                    else:
+                        # Drop rows with missing coordinates
+                        valid_coords = self.data_ai_existing[['Latitude', 'Longitude']].dropna()
+                        # Drop duplicates to get unique coordinate pairs
+                        unique_coords = valid_coords.drop_duplicates()
+                        # Count unique coordinate pairs
+                        num_unique_coords = len(unique_coords)
+                        self.click_count = num_unique_coords - 1
+                        self.sw_insp = False
+            except:
+                pass
+            # ID increaser
+            self.click_count += 1
+            self.previous_local = False
+      
+    ############ Counts the number of clicks made on the previous button ################ 
+    def count_clicks_previous(self):
+        """
+        Decrement the click counter to navigate to the previous building inspection.
     
+        This method decreases the click counter, allowing the user to move back to a 
+        previous inspection record. It ensures that a project folder, country, and 
+        city name are defined before execution. If the dataset has not been initialized, 
+        it prompts the user to click the "Next" button first.
+        """
+
+        if self.data_building is None:
+            QMessageBox.warning(self.ui, "GUI Error", "Please click the Next button to start the GUI")
+        else:
+            """Increment the click counter and update the label."""
+            if self.click_count > 0:
+                if self.ui.insp_method == 2:
+                    self.click_count += -1
+                    
+                    if self.sw_local_previous == True:
+                        
+                        # Drop rows with missing coordinates
+                        valid_coords = self.data_ai_existing[['Latitude', 'Longitude']].dropna()
+                        # Drop duplicates to get unique coordinate pairs
+                        unique_coords = valid_coords.drop_duplicates()
+                        # Count unique coordinate pairs
+                        num_unique_coords = len(unique_coords)
+                        
+                        df = self.ui.data_method
+                        # Create a coordinate pair column
+                        df["coord_pair"] = list(zip(df["latitude"], df["longitude"]))
+                        # Keep the first occurrence of each coordinate
+                        self.unique_coords = df.drop_duplicates(subset="coord_pair", keep="first").reset_index()
+                        self.local_aux = num_unique_coords
+                            
+                        self.sw_local_previous = False
+                        
+                elif self.ui.insp_method == 0 or self.ui.insp_method == 1:
+                    self.click_count += -1
+                        
+        self.previous_local = True
+
     ############ Get city name using coordinates ################
     def get_city_name(self):
         """
@@ -118,22 +185,84 @@ class GUIMethods:
         Returns:
             str: The name of the city, including the country, or an error message.
         """
-        lat = float(self.ui.lat_value.text())
-        lon = float(self.ui.lon_value.text())
+        
+        if self.click_count >= 0:
+            if self.ui.insp_method == 2:
+
+                if self.data_old_local == True:
+                    self.cont_local = self.n_insp_local
+                    self.data_old_local = False
+                
+                
+                if self.previous_local != True:
+                    lat = float(self.ui.data_method.iloc[self.cont_local , 1])
+                    lon = float(self.ui.data_method.iloc[self.cont_local , 2]) 
+                    # print("LATITUDE: ",lat)
+                    # print("Longitude: ",lon)
+                    self.ui.lat_value.setText(str(round(lat,8)))
+                    self.ui.lon_value.setText(str(round(lon,8)))
+                    
+                    df = self.ui.data_method
+                    matching_rows = df[(df['latitude'] == lat) & (df['longitude'] == lon)]
+                
+                    self.n_images_local = len(matching_rows)
+                    self.old_local = self.cont_local
+                    self.cont_local = self.cont_local + self.n_images_local
+                else:
+                    self.local_aux = self.local_aux - 1
+                    lat, lon = self.unique_coords.iloc[self.local_aux , 4]
+
+                    self.ui.lat_value.setText(str(lat))
+                    self.ui.lon_value.setText(str(lon))
+                   
+                    print("ID: ", self.unique_coords.iloc[self.local_aux, 0])
+                    print("Local aux: ", self.local_aux)
+                    if self.local_aux >= 0:
+                        self.old_local = self.unique_coords.iloc[self.local_aux, 0]
+                        
+                        df = self.ui.data_method
+                        matching_rows = df[(df['latitude'] == lat) & (df['longitude'] == lon)]
+                    
+                        self.n_images_local = len(matching_rows)
+                    else:
+                        QMessageBox.warning(self.ui, "Database Error", "No further inspections are available")
+                     
+                geolocator = Nominatim(user_agent="city_name_locator")
+                location = geolocator.reverse((lat, lon), exactly_one=True, language="en")
+                
+                if location and 'address' in location.raw:
+                    address = location.raw['address']
+                    self.city = address.get('city', address.get('town', address.get('village', 'Unknown')))
+                    self.country = address.get('country', 'Unknown')
+                    self.city_name_manual = self.city+"_"+self.country
+                    self.ui.city_value.setText(self.city) 
+                    self.ui.country_value.setText(self.country) 
+                    return (self.city , self.country)
+                
+                return "City not found"
             
-        geolocator = Nominatim(user_agent="city_name_locator")
-        location = geolocator.reverse((lat, lon), exactly_one=True, language="en")
-        
-        if location and 'address' in location.raw:
-            address = location.raw['address']
-            self.city = address.get('city', address.get('town', address.get('village', 'Unknown')))
-            self.country = address.get('country', 'Unknown')
-            self.city_name_manual = self.city+"_"+self.country
-            self.ui.city_value.setText(self.city) 
-            self.ui.country_value.setText(self.country) 
-            return (self.city , self.country)
-        
-        return "City not found"
+            elif self.ui.insp_method == 0 or self.ui.insp_method == 1:
+                self.ui.lat_value.setText(str(round(self.data_building.iloc[self.click_count, 1],8)))
+                self.ui.lon_value.setText(str(round(self.data_building.iloc[self.click_count, 2],8)))
+                
+                lat = float(self.ui.lat_value.text())
+                lon = float(self.ui.lon_value.text())
+                    
+                geolocator = Nominatim(user_agent="city_name_locator")
+                location = geolocator.reverse((lat, lon), exactly_one=True, language="en")
+                
+                if location and 'address' in location.raw:
+                    address = location.raw['address']
+                    self.city = address.get('city', address.get('town', address.get('village', 'Unknown')))
+                    self.country = address.get('country', 'Unknown')
+                    self.city_name_manual = self.city+"_"+self.country
+                    self.ui.city_value.setText(self.city) 
+                    self.ui.country_value.setText(self.country) 
+                    return (self.city , self.country)
+                
+                return "City not found"
+        else:
+            pass
      
         
     ############ Create building dataset for upload images from GSV ################ 
@@ -159,100 +288,104 @@ class GUIMethods:
             - Checks for the existence of the CSV file to avoid creating duplicate files.
             - The exported CSV can be used for further processing, such as batch uploading to GSV.
         """
-        # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no country name
-        elif self.ui.country_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no city name 
-        elif self.ui.city_value.text() == "-":
-            pass
-        else:
+        # # Conditional to avoid executing the method if there is no project folder
+        # if self.ui.output_folder_value == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no country name
+        # elif self.ui.country_value.text() == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no city name 
+        # elif self.ui.city_value.text() == "-":
+        #     pass
+        # else:
+        
+        
+        if self.ui.insp_method == 0:
+            self.city_method = self.ui.city
+            self.country_method = self.ui.country
+            # Input and output for the method
+            centroid_file=self.ui.output_folder_value+"/"+self.city_method+"_"+self.country_method+"_subset_centroids.gpkg"
+            database_file=self.ui.output_folder_value+"/"+self.city_method+"_"+self.country_method+"_building_info.csv"
+            # Check if a database file exists
+            if os.path.exists(database_file):
+                pass
+            else:
+                # Load the GeoPackage
+                gdf = gpd.read_file(centroid_file)
+                # Filter columns
+                filtered_gdf = gdf[['id', 'latitude', 'longitude']]
+                # Export to CSV
+                filtered_gdf.to_csv(database_file, index=False)             
+                print("Filtered CSV exported successfully!")
+                
+        elif self.ui.insp_method == 1:
+            
             self.city_method = self.ui.city_value.text()
             self.country_method = self.ui.country_value.text()
             
-            if self.ui.insp_method == 0:
-                # Input and output for the method
-                centroid_file=self.ui.output_folder_value.text()+"/"+self.city_method+"_"+self.country_method+"_subset_centroids.gpkg"
-                database_file=self.ui.output_folder_value.text()+"/"+self.city_method+"_"+self.country_method+"_building_info.csv"
-                # Check if a database file exists
-                if os.path.exists(database_file):
-                    pass
-                else:
-                    # Load the GeoPackage
-                    gdf = gpd.read_file(centroid_file)
-                    # Filter columns
-                    filtered_gdf = gdf[['id', 'latitude', 'longitude']]
-                    # Export to CSV
-                    filtered_gdf.to_csv(database_file, index=False)             
-                    print("Filtered CSV exported successfully!")
-                    
-            elif self.ui.insp_method == 1:
-                centroid_file = self.ui.output_folder_value.text()+"/"+self.ui.file_name+".gpkg"
-                database_file = self.ui.output_folder_value.text()+"/"+self.ui.file_name+"_building_info.csv"
-                # Check if a database file exists
-                if os.path.exists(database_file):
-                    pass
-                else:
-                    # Load the GeoPackage
-                    gdf = gpd.read_file(centroid_file)
-                    # Filter columns
-                    filtered_gdf = gdf[['ID', 'latitude', 'longitude']]
-                    # Export to CSV
-                    filtered_gdf.to_csv(database_file, index=False)             
-                    print("Filtered CSV exported successfully!")
+            centroid_file = self.ui.output_folder_value+"/"+self.ui.file_name+".gpkg"
+            database_file = self.ui.output_folder_value+"/"+self.ui.file_name+"_building_info.csv"
+            # Check if a database file exists
+            if os.path.exists(database_file):
+                pass
+            else:
+                # Load the GeoPackage
+                gdf = gpd.read_file(centroid_file)
+                # Filter columns
+                filtered_gdf = gdf[['ID', 'latitude', 'longitude']]
+                # Export to CSV
+                filtered_gdf.to_csv(database_file, index=False)             
+                print("Filtered CSV exported successfully!")
+        
+        elif self.ui.insp_method == 2:  
+            pass # There is already the information in the csv with building information
             
-            elif self.ui.insp_method == 2:  
-                pass # There is already the information in the csv with building information
                 
-                    
-            # Upload the create building info to get the size of the inspection dataset
-            # Craete an empty dataframe with the exact size
-            if self.data_building is None:
-                # Load the footprint database
-                # try:
-                # Footprint_data = size of inspection dataset
-                if self.ui.insp_method == 0:
-                    footprint_data = pd.read_csv(self.ui.output_folder_value.text()+"/"+self.city_method+"_"+
-                                             self.country_method+"_building_info.csv")
-                elif self.ui.insp_method == 1:
-                    footprint_data = pd.read_csv(self.ui.output_folder_value.text()+"/"+self.ui.file_name+"_building_info.csv")
-                elif self.ui.insp_method == 2:
-                    footprint_data = pd.read_csv(self.ui.file_local_csv)
-                elif self.ui.insp_method == 3:
-                    self.building_no_img = pd.read_csv(self.building_extra_path)
-                    self.neighbor_data = pd.read_csv(self.example_building_path)
-                # except:
-                #     pass
-                
-                # Define the column namesfor the inspection database
-                column_names = ["ID", 
-                                "Latitude", 
-                                "Longitude",
-                                "Country",
-                                "City",
-                                "LLRS Material",
-                                "LLRS",
-                                "Code Level",
-                                "Number of Stories",
-                                "Occupancy",
-                                "Block Position",
-                                "Epoch of construction",
-                                "Roof shape",
-                                "Roof material",
-                                "Image Quality",
-                                "Taxonomy",
-                                "Image filename or link"]
-                
-                # Create an empty DataFrame for number of footprint available
-                try:
-                    if  self.data_ai == None:
-                        self.data_ai = pd.DataFrame(np.full((footprint_data.shape[0]*3, len(column_names)), None), columns=column_names)
-                    if  self.data_expo == None:
-                        self.data_expo = pd.DataFrame(np.full((footprint_data.shape[0], len(column_names)), None), columns=column_names)
-                except:
-                    pass
+        # Upload the create building info to get the size of the inspection dataset
+        # Craete an empty dataframe with the exact size
+        if self.data_building is None:
+            # Load the footprint database
+            # try:
+            # Footprint_data = size of inspection dataset
+            
+            if self.ui.insp_method == 0:
+                footprint_data = pd.read_csv(self.ui.output_folder_value+"/"+self.city_method+"_"+
+                                         self.country_method+"_building_info.csv")
+            elif self.ui.insp_method == 1:
+                footprint_data = pd.read_csv(self.ui.output_folder_value+"/"+self.ui.file_name+"_building_info.csv")
+            elif self.ui.insp_method == 2:
+                footprint_data = pd.read_csv(self.ui.file_local_csv)
+            elif self.ui.insp_method == 3:
+                self.building_no_img = pd.read_csv(self.building_extra_path)
+                self.neighbor_data = pd.read_csv(self.example_building_path)
+            # except:
+            #     pass
+            
+            # Define the column namesfor the inspection database
+            column_names = ["ID", 
+                            "Latitude", 
+                            "Longitude",
+                            "Country",
+                            "City",
+                            "LLRS Material",
+                            "LLRS",
+                            "Code Level",
+                            "Number of Stories",
+                            "Occupancy",
+                            "Block Position",
+                            "Epoch of construction",
+                            "Roof shape",
+                            "Roof material",
+                            "Image Quality",
+                            "Taxonomy",
+                            "Image filename or link"]
+            
+            # Create an empty DataFrame for number of footprint available
+            try:
+                if  self.data_ai == None:
+                    self.data_ai = pd.DataFrame(np.full((footprint_data.shape[0]*3, len(column_names)), None), columns=column_names)
+            except:
+                pass
         
             
     ############ Create building dataset for upload images from GSV ################     
@@ -265,206 +398,98 @@ class GUIMethods:
         exposure model inspection records from CSV files and integrates them into the 
         current dataset.
         """
-        # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no country name
-        elif self.ui.country_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no city name 
-        elif self.ui.city_value.text() == "-":
-            pass
-        else:
-            # Upload existing inspections
-            if self.start == True:
-                try:
-                    if self.ui.insp_method == 0:
-                        output_folder = self.ui.output_folder_value.text()
-                        insp_path = f"{output_folder}/{self.city_method}_{self.country_method}"
-                        # Upload the existing inspections for AI 
-                        self.data_ai_existing = pd.read_csv(insp_path+"_AI_inspections.csv")
-                        # Replace empty rows with the existing information
-                        self.data_ai.iloc[:self.data_ai_existing.shape[0], :] = self.data_ai_existing.iloc[:self.data_ai_existing.shape[0], :]
-                        # Upload the existing inspections for exposure model
-                        self.data_expo_existing = pd.read_csv(insp_path+"_EXPO_inspections.csv")
-                        # Replace empty rows with the existing information
-                        self.data_expo.iloc[:self.data_expo_existing.shape[0], :] = self.data_expo_existing.iloc[:self.data_expo_existing.shape[0], :]
-                
-                        print("Upload existing data sucessfully")
-                        self.data_old = "OK"  # THERE IS EXISTING DATA
-                        self.start = False
-                        
-                    elif self.ui.insp_method == 1:
-                        insp_path = self.ui.output_folder_value.text()+"/"+self.ui.file_name 
-                        # Upload the existing inspections for AI 
-                        self.data_ai_existing = pd.read_csv(insp_path+"_AI_inspections.csv")
-                        # Replace empty rows with the existing information
-                        self.data_ai.iloc[:self.data_ai_existing.shape[0], :] = self.data_ai_existing.iloc[:self.data_ai_existing.shape[0], :]
-                        # Upload the existing inspections for exposure model
-                        self.data_expo_existing = pd.read_csv(insp_path+"_EXPO_inspections.csv")
-                        # Replace empty rows with the existing information
-                        self.data_expo.iloc[:self.data_expo_existing.shape[0], :] = self.data_expo_existing.iloc[:self.data_expo_existing.shape[0], :]
-                
-                        print("Upload existing data sucessfully")
-                        self.data_old = "OK"  # THERE IS EXISTING DATA
-                        self.start = False
-                        
-                    elif self.ui.insp_method == 2:
-                        insp_path = self.ui.output_folder_value.text()+"/"+self.ui.file_name_local 
-                        # Upload the existing inspections for AI 
-                        self.data_ai_existing = pd.read_csv(insp_path+"_AI_inspections.csv")
-                        # Replace empty rows with the existing information
-                        self.data_ai.iloc[:self.data_ai_existing.shape[0], :] = self.data_ai_existing.iloc[:self.data_ai_existing.shape[0], :]
-                        # Upload the existing inspections for exposure model
-                        self.data_expo_existing = pd.read_csv(insp_path+"_EXPO_inspections.csv")
-                        # Replace empty rows with the existing information
-                        self.data_expo.iloc[:self.data_expo_existing.shape[0], :] = self.data_expo_existing.iloc[:self.data_expo_existing.shape[0], :]
-                        
-                        print("Upload existing data sucessfully")
-                        self.data_old = "OK"  # THERE IS EXISTING DATA
-                        self.start = False
-                        
-                    elif self.ui.insp_method == 3:
-                        pass
-                except:
-                    pass
-
-        
-    ############ Counts the number of clicks made on the next button ################ 
-    def count_clicks_next(self):
-        """
-        Increment the click counter and update the inspection dataset.
-    
-        This method increments the click counter to navigate through building inspections. 
-        It ensures that a project folder, country, and city name are defined before execution. 
-        If necessary, it loads the subset of buildings from a CSV file based on the selected 
-        inspection method. The method also verifies that the current building ID does not 
-        exceed the number of available samples.
-        """
-        # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no country name
-        elif self.ui.country_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no city name 
-        elif self.ui.city_value.text() == "-":
-            pass
-        else:
-            """Increment the click counter and update the label."""
-            # load the dataset of the subset buildings
-            if self.data_building is None:
-                
-                if self.ui.insp_method == 0:
-                    path=self.ui.output_folder_value.text()+"/"+self.city_method+"_"+self.country_method+"_building_info.csv"
-                    self.data_building = pd.read_csv(path)
-                elif self.ui.insp_method == 1:
-                    path= self.ui.output_folder_value.text()+"/"+self.ui.file_name+"_building_info.csv"
-                    self.data_building = pd.read_csv(path)
-                elif self.ui.insp_method == 2:
-                    self.data_building = pd.read_csv(self.ui.file_local_csv)
-                elif self.ui.insp_method == 3:
-                    self.data_building = pd.read_csv(self.ui.file_local_csv)
-                    
-            # Verify that the building ID is less than the number of sample
-            if self.click_count >= self.data_building.shape[0] - 1:
-                # self.cont =  self.cont - 2
-                QMessageBox.warning(self.ui, "Database Error", "No further inspections are available")
-            else:
-                self.ui.method_progress.setText("Loading images ...")
-                
-                # # Save inspection for first click after save results or start the script               
-                if self.click_count >= 0:
-                    self.inspection_database()
-                
-                # Check if there is inspection already done
-                if self.data_old is not None:
-                    self.n_insp = int(self.data_ai.dropna(how='all').shape[0])
-                    self.data_old = None  # Only give the number of inspection one time per saved button clicked
-                
-                # Calculates the number of inspections saved
-                try:
-                    # Conditional for only update the number of click and the ID cont one time
-                    if self.n_insp > 0 and self.sw_insp == True:
-                        self.click_count = int(self.n_insp/3 - 1)
-                        self.sw_insp = False
-                except:
-                    pass
-                # ID increaser
-                self.click_count += 1
-                
-        
-    ############ Counts the number of clicks made on the previous button ################ 
-    def count_clicks_previous(self):
-        """
-        Decrement the click counter to navigate to the previous building inspection.
-    
-        This method decreases the click counter, allowing the user to move back to a 
-        previous inspection record. It ensures that a project folder, country, and 
-        city name are defined before execution. If the dataset has not been initialized, 
-        it prompts the user to click the "Next" button first.
-        """
-        # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
-            QMessageBox.warning(self.ui, "Project Error", "Please select project folder")
-        # Conditional to avoid executing the method if there is no country name
-        elif self.ui.country_value.text() == "-":
-            QMessageBox.warning(self.ui, "Country Error", "Please sets country name")
-        # Conditional to avoid executing the method if there is no city name 
-        elif self.ui.city_value.text() == "-":
-            QMessageBox.warning(self.ui, "City Error", "Please sets city name")
-        else:
+        # # Conditional to avoid executing the method if there is no project folder
+        # if self.ui.output_folder_value == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no country name
+        # elif self.ui.country_value.text() == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no city name 
+        # elif self.ui.city_value.text() == "-":
+        #     pass
+        # else:
+        # Upload existing inspections
+        if self.start == True:
             try:
-                if self.data_building == None:
-                    QMessageBox.warning(self.ui, "GUI Error", "Please click the Next button to start the GUI")
-                else:
-                    """Increment the click counter and update the label."""
-                    if self.click_count > 0:
-                        self.click_count += -1
-                    else:
-                        pass
-            except:
-                """Increment the click counter and update the label."""
-                if self.click_count > 0:
-                    self.click_count += -1
-                else:
+                if self.ui.insp_method == 0:
+                    output_folder = self.ui.output_folder_value
+                    insp_path = f"{output_folder}/{self.city_method}_{self.country_method}"
+                    # Upload the existing inspections for AI 
+                    self.data_ai_existing = pd.read_csv(insp_path+"_AI_classification.csv")
+                    # Replace empty rows with the existing information
+                    self.data_ai.iloc[:self.data_ai_existing.shape[0], :] = self.data_ai_existing.iloc[:self.data_ai_existing.shape[0], :]
+                    
+                    # print("Upload existing data sucessfully")
+                    self.data_old = "OK"  # THERE IS EXISTING DATA
+                    self.start = False
+                    
+                elif self.ui.insp_method == 1:
+                    insp_path = self.ui.output_folder_value+"/"+self.ui.file_name
+                    # Upload the existing inspections for AI 
+                    self.data_ai_existing = pd.read_csv(insp_path+"_AI_classification.csv")
+                    # Replace empty rows with the existing information
+                    self.data_ai.iloc[:self.data_ai_existing.shape[0], :] = self.data_ai_existing.iloc[:self.data_ai_existing.shape[0], :]
+                    
+                    # print("Upload existing data sucessfully")
+                    self.data_old = "OK"  # THERE IS EXISTING DATA
+                    self.start = False
+                    
+                elif self.ui.insp_method == 2:
+                    insp_path = self.ui.output_folder_value+"/"+self.ui.file_name_local.text()
+                    # Upload the existing inspections for AI 
+                    self.data_ai_existing = pd.read_csv(insp_path+"_AI_classification.csv")
+                    self.cont_local_data = pd.read_csv(insp_path+"_AI_aux_cont.csv")
+                    # Replace empty rows with the existing information
+                    self.data_ai.iloc[:self.data_ai_existing.shape[0], :] = self.data_ai_existing.iloc[:self.data_ai_existing.shape[0], :]
+                    self.cont_local_data.iloc[:self.cont_local_data.shape[0], :] = self.cont_local_data.iloc[:self.cont_local_data.shape[0], :]     
+                    print("Upload existing data sucessfully")
+                    self.data_old = "OK"  # THERE IS EXISTING DATA
+                    self.data_old_local = True
+                    self.start = False
+                    
+                elif self.ui.insp_method == 3:
                     pass
+            except:
+                pass
+
+        
+  
         
 
-    ############ Sets the coordinates of the building ################ 
-    def coordinates(self):
-        """
-        Retrieve and update the building's coordinates in the User Interface (UI).
+    # ############ Sets the coordinates of the building ################ 
+    # def coordinates(self):
+    #     """
+    #     Retrieve and update the building's coordinates in the User Interface (UI).
     
-        This method fetches the latitude and longitude of the currently selected 
-        building and updates the corresponding UI fields. It ensures that a project 
-        folder, country, and city name are defined before execution. Additionally, 
-        if the inspection method involves a polygon-based or specific method 
-        (`insp_method` 1 or 2), it retrieves the city name dynamically.
-        """
-        # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no country name
-        elif self.ui.country_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no city name 
-        elif self.ui.city_value.text() == "-":
-            pass
-        else:
-            # Sets the coordinates of the building
-            self.ui.lat_value.setText(str(round(self.data_building.iloc[self.click_count, 1],8)))
-            self.ui.lon_value.setText(str(round(self.data_building.iloc[self.click_count, 2],8)))
+    #     This method fetches the latitude and longitude of the currently selected 
+    #     building and updates the corresponding UI fields. It ensures that a project 
+    #     folder, country, and city name are defined before execution. Additionally, 
+    #     if the inspection method involves a polygon-based or specific method 
+    #     (`insp_method` 1 or 2), it retrieves the city name dynamically.
+    #     """
+    #     # Conditional to avoid executing the method if there is no project folder
+    #     if self.ui.output_folder_value == "-":
+    #         pass
+    #     # Conditional to avoid executing the method if there is no country name
+    #     elif self.ui.country_value.text() == "-":
+    #         pass
+    #     # Conditional to avoid executing the method if there is no city name 
+    #     elif self.ui.city_value.text() == "-":
+    #         pass
+    #     else:
+    #         # Sets the coordinates of the building
+    #         self.ui.lat_value.setText(str(round(self.data_building.iloc[self.click_count, 1],8)))
+    #         self.ui.lon_value.setText(str(round(self.data_building.iloc[self.click_count, 2],8)))
         
-        # # Getting the city name for a Polygon method, where buildings could be located in different cities or countries.
-        # if self.ui.insp_method == 1:
-        #     self.get_city_name()
-        # # Getting the city name for a specific method, where buildings could be located in different cities or countries.
-        # elif self.ui.insp_method == 2:
-        #     self.get_city_name()
-        # elif self.ui.insp_method == 3:
-        if self.ui.insp_method != 3:
-            self.get_city_name()
+    #     # # Getting the city name for a Polygon method, where buildings could be located in different cities or countries.
+    #     # if self.ui.insp_method == 1:
+    #     #     self.get_city_name()
+    #     # # Getting the city name for a specific method, where buildings could be located in different cities or countries.
+    #     # elif self.ui.insp_method == 2:
+    #     #     self.get_city_name()
+    #     # elif self.ui.insp_method == 3:
+    #     if self.ui.insp_method != 3:
+    #         self.get_city_name()
  
     ############ Checks if there is GSV availability ################  
     def check_street_view(self):
@@ -491,7 +516,7 @@ class GUIMethods:
             - Ensures execution only if project details are correctly set.
         """
         # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
+        if self.ui.output_folder_value == "-":
             pass
         # Conditional to avoid executing the method if there is no country name
         elif self.ui.country_value.text() == "-":
@@ -501,7 +526,7 @@ class GUIMethods:
             pass
         else:
             # Input parameters
-            api_key = "AIzaSyBMINy7oPRKyOPW-wnZqQClXSUs11I9RBs"
+            api_key = "AIzaSyB3ugs1aQmA9I6zkFouqllGjuIcdHZvjG4"
             lat= self.ui.lat_value.text()
             lon= self.ui.lon_value.text() 
             url = "https://maps.googleapis.com/maps/api/streetview/metadata"
@@ -541,50 +566,42 @@ class GUIMethods:
             - Checks for Street View availability before attempting to fetch images.
             - Skips execution if no project folder is defined or if images already exist.
         """
-             
-        # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no country name
-        elif self.ui.country_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no city name 
-        elif self.ui.city_value.text() == "-":
-            pass
-        else:
+           
+        # Image ID displayed values
+        # left image
+        self.ui.img_id_value_1.setText(str(self.click_count+1)+"_1")
+        # central image
+        self.ui.img_id_value_2.setText(str(self.click_count+1)+"_2")
+        # right image
+        self.ui.img_id_value_3.setText(str(self.click_count+1)+"_3")
+        
+        if self.ui.insp_method == 0 or self.ui.insp_method == 1:  
 
             # Building coordinates
             location = (float(self.ui.lat_value.text()), float(self.ui.lon_value.text()))
             # API key is required; without it, access to GSV is not possible
-            api_key = "AIzaSyBMINy7oPRKyOPW-wnZqQClXSUs11I9RBs"  
+            api_key = "AIzaSyB3ugs1aQmA9I6zkFouqllGjuIcdHZvjG4"  
             
-            # Image ID displayed values
-            # left image
-            self.ui.img_id_value_1.setText(str(self.click_count+1)+"_1")
-            # central image
-            self.ui.img_id_value_2.setText(str(self.click_count+1)+"_2")
-            # right image
-            self.ui.img_id_value_3.setText(str(self.click_count+1)+"_3")
             
-            if self.ui.insp_method == 0 or self.ui.insp_method == 1:                      
-                # angles for taking the images
-                angle = (-30,0,30)
-                self.img_url = ["","",""]
-                # img_frames = [self.ui.left_gsv_img,self.ui.central_gsv_img,self.ui.right_gsv_img]
-                for aux in range (3):
-                    if self.check_street_view() == True:
-                        # Get image from GSV
-                        self.img_url[aux] = get_street_view_image(location, api_key, angle[aux])[0]
-                        if aux == 0:
-                            self.img_original_1 = get_street_view_image(location, api_key, angle[aux])[1]
-                        elif aux == 1:
-                            self.img_original_2 = get_street_view_image(location, api_key, angle[aux])[1]
-                        else:
-                            self.img_original_3 = get_street_view_image(location, api_key, angle[aux])[1]
+                               
+            # angles for taking the images
+            angle = (-30,0,30)
+            self.img_url = ["","",""]
+            # img_frames = [self.ui.left_gsv_img,self.ui.central_gsv_img,self.ui.right_gsv_img]
+            for aux in range (3):
+                if self.check_street_view() == True:
+                    # Get image from GSV
+                    self.img_url[aux] = get_street_view_image(location, api_key, angle[aux])[0]
+                    if aux == 0:
+                        self.img_original_1 = get_street_view_image(location, api_key, angle[aux])[1]
+                    elif aux == 1:
+                        self.img_original_2 = get_street_view_image(location, api_key, angle[aux])[1]
                     else:
-                        print("Street View not available")
-            else:
-                pass
+                        self.img_original_3 = get_street_view_image(location, api_key, angle[aux])[1]
+                else:
+                    print("Street View not available")
+        else:
+            pass
 
         
         
@@ -624,6 +641,9 @@ class GUIMethods:
         device= "cuda" if torch.cuda.is_available() else "cpu"
         model.to(device)
         # List of the frame
+        self.ui.left_gsv_img.clear()
+        self.ui.central_gsv_img.clear()
+        self.ui.right_gsv_img.clear()
         img_frames = [self.ui.left_gsv_img,self.ui.central_gsv_img,self.ui.right_gsv_img]
         sw = True
         #Check inspection mode
@@ -730,22 +750,23 @@ class GUIMethods:
         
         # Checking Inspection method (manual option)
         elif self.ui.insp_method == 2:
+            
             # Image frames
             img_frames = [self.ui.left_gsv_img, self.ui.central_gsv_img, self.ui.right_gsv_img]
             # Loop for the number of image displayed selected with the option in the coordinates pop-up
             for aux in range (self.n_images_local):
                 # Load the image for drawing
                 try:
-                    img_path = self.ui.folder_path+"/"+str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0])
+                    img_path = self.ui.folder_path+"/"+str(self.data_building.iloc[self.old_local + aux, 0])
                 except:
                     QMessageBox.warning(self.ui, "Input Error", "No further inspections are available")
             
                 aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
+                                +str(self.data_building.iloc[self.old_local + aux, 0]))
                 cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                 
                 aux_displayed_path = (self.ui.folder_path+"/displayed_images/"
-                                +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
+                                +str(self.data_building.iloc[self.old_local + aux, 0]))
                 displayed_path = os.path.splitext(aux_displayed_path)[0]+"_displayed.jpg"
 
                 # Display building image
@@ -913,16 +934,16 @@ class GUIMethods:
             self.image_bb = self.img_original_1
         elif self.ui.insp_method == 2:
             # From local device 
-            self.image_bb = self.ui.folder_path+"/"+str(self.data_building.iloc[self.click_count * self.n_images_local, 0])
+            self.image_bb = self.ui.folder_path+"/"+str(self.data_building.iloc[self.old_local, 0])
         # Left Frame to display
         self.frame_bb_disp = self.ui.left_gsv_img
         
         # Getting the path for image prediction
         if self.ui.insp_method == 2:
-            try:
-                aux_cropped_path  = (self.ui.folder_path+"/Cropped_images/"
-                                     +str(self.data_building.iloc[self.click_count * self.n_images_local, 0]))
-                self.cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
+            try:   
+                aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                +str(self.data_building.iloc[self.old_local, 0]))
+                self.cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg" 
             except:
                 QMessageBox.warning(self.ui, "File Error", "This option is only available if there is a previous building detection.")
         else:
@@ -946,7 +967,7 @@ class GUIMethods:
             self.image_bb = self.img_original_2
         elif self.ui.insp_method == 2:
             # From local device 
-            self.image_bb = self.ui.folder_path+"/"+str(self.data_building.iloc[self.click_count * self.n_images_local + 1, 0])
+            self.image_bb = self.ui.folder_path+"/"+str(self.data_building.iloc[self.old_local + 1, 0])
         # Central Frame to display 
         self.frame_bb_disp = self.ui.central_gsv_img
         
@@ -954,8 +975,8 @@ class GUIMethods:
         if self.ui.insp_method == 2:
             try:
                 # Cropped image path
-                aux_cropped_path  = (self.ui.folder_path+"/Cropped_images/"
-                                     +str(self.data_building.iloc[self.click_count * self.n_images_local + 1, 0]))
+                aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                +str(self.data_building.iloc[self.old_local + 1, 0]))
                 self.cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
             except:
                 QMessageBox.warning(self.ui, "File Error", "This option is only available if there is a previous building detection.")
@@ -980,15 +1001,15 @@ class GUIMethods:
             self.image_bb = self.img_original_3
         elif self.ui.insp_method == 2:
             # From local device 
-            self.image_bb = self.ui.folder_path+"/"+str(self.data_building.iloc[self.click_count * self.n_images_local + 2, 0])
+            self.image_bb = self.ui.folder_path+"/"+str(self.data_building.iloc[self.old_local + 2, 0])
         
         self.frame_bb_disp = self.ui.right_gsv_img
         # Getting the path for image prediction
         if self.ui.insp_method == 2:
             try:
                 # Cropped image path
-                aux_cropped_path  = (self.ui.folder_path+"/Cropped_images/"
-                                     +str(self.data_building.iloc[self.click_count * self.n_images_local + 2, 0]))
+                aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                +str(self.data_building.iloc[self.old_local + 2, 0]))
                 self.cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
             except:
                 QMessageBox.warning(self.ui, "File Error", "This option is only available if there is a previous building detection.")
@@ -1012,7 +1033,7 @@ class GUIMethods:
             - Ensures a valid PyQt5 `QApplication` instance exists before opening the pop-up.
         """
         # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
+        if self.ui.output_folder_value == "-":
             QMessageBox.warning(self.ui, "File Error", "This option is only available once the building image is displayed.")
         # Conditional to avoid executing the method if there is no country name
         elif self.ui.country_value.text() == "-":
@@ -1131,23 +1152,14 @@ class GUIMethods:
             - Requires properly configured UI components to retrieve and store data.
         """
         
-        # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no country name
-        elif self.ui.country_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no city name 
-        elif self.ui.city_value.text() == "-":
-            pass
-        else:    
+        if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+            base_url = "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint="
+            coord = str(self.ui.lat_value.text()) + "," + str(self.ui.lon_value.text())
+            heading = get_road_orientation((float(self.ui.lat_value.text()), float(self.ui.lon_value.text())))
             
-            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                base_url = "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint="
-                coord = str(self.ui.lat_value.text()) + "," + str(self.ui.lon_value.text())
-                heading = get_road_orientation((float(self.ui.lat_value.text()), float(self.ui.lon_value.text())))
-                
-            # Left building image
+        # -------------------  Left building image ---------------------- 
+        
+        if self.ui.insp_method == 0 or self.ui.insp_method == 1:
             self.data_ai.iloc[self.click_count * 3 , 0] = self.ui.img_id_value_1.text()                  # ID
             self.data_ai.iloc[self.click_count * 3 , 1] = self.data_building.iloc[self.click_count,1]    # Latitude
             self.data_ai.iloc[self.click_count * 3 , 2] = self.data_building.iloc[self.click_count,2]    # Longitude
@@ -1174,21 +1186,53 @@ class GUIMethods:
             except:
                 pass
             
-            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                if self.img_url[0]  != "":
-                    self.data_ai.iloc[self.click_count * 3 , 16] = self.img_url[0]                           # Image URL
-                else:
-                    if isinstance(heading, int):
-                        self.data_ai.iloc[self.click_count * 3 , 16] = base_url + coord +"&heading="+str((heading+ 150) % 360)+"&pitch=5&fov=120"
+            if self.img_url[0]  != "":
+                self.data_ai.iloc[self.click_count * 3 , 16] = self.img_url[0]                           # Image URL
+            else:
+                if isinstance(heading, int):
+                    self.data_ai.iloc[self.click_count * 3 , 16] = base_url + coord +"&heading="+str((heading+ 150) % 360)+"&pitch=5&fov=120"
+        
+        # ------------------- Local  -----------------------
+        elif self.ui.insp_method == 2:
+            # Left building image
+            self.data_ai.iloc[self.old_local , 0] = self.ui.img_id_value_1.text()                  # ID
+            self.data_ai.iloc[self.old_local , 1] = self.data_building.iloc[self.old_local,1]      # Latitude
+            self.data_ai.iloc[self.old_local , 2] = self.data_building.iloc[self.old_local,2]      # Longitude
+            self.data_ai.iloc[self.old_local , 3] = self.ui.country_value.text()                   # Country
+            self.data_ai.iloc[self.old_local , 4] = self.ui.city_value.text()                      # City
+            self.data_ai.iloc[self.old_local , 5] = self.ui.material_cb_1.currentData()            # LLRS Material
+            self.data_ai.iloc[self.old_local , 6] = self.ui.llrs_cb_1.currentData()                # LLRS 
+            self.data_ai.iloc[self.old_local , 7] = self.ui.age_cb_1.currentData()                 # Code Level 
+            self.data_ai.iloc[self.old_local , 8] = self.ui.n_stories_value_1.currentData()        # Number of Stories 
+            self.data_ai.iloc[self.old_local , 9] = self.ui.occup_cb_1.currentData()               # Occupancy
+            self.data_ai.iloc[self.old_local , 10] = self.ui.bck_pos_cb_1.currentData()            # Block Position
+            self.data_ai.iloc[self.old_local , 11] = self.ui.epc_const_cb_1.currentText()          # Epoch of construction
+            self.data_ai.iloc[self.old_local , 12] = self.ui.roof_shape_cb_1.currentData()         # Roof shape
+            self.data_ai.iloc[self.old_local , 13] = self.ui.roof_material_cb_1.currentData()      # Roof material
+            self.data_ai.iloc[self.old_local , 14] = self.ui.img_q_cb_1.currentData()              # Image Quality
             
-            elif self.ui.insp_method == 2:
-                self.data_ai.iloc[self.click_count * 3 , 16] = self.data_building.iloc[self.click_count * self.n_images_local , 0] 
-                
-            # Central building image
-            # AI values
+            try:
+                self.data_ai.iloc[self.old_local , 15] = (self.ui.material_cb_1.currentData()+"/"+
+                                                                self.ui.llrs_cb_1.currentData()+"+"+
+                                                                self.ui.age_cb_1.currentData()+"/H:"+
+                                                                self.ui.n_stories_value_1.currentText()+"/"+
+                                                                self.ui.occup_cb_1.currentData()+"/"+
+                                                                self.ui.bck_pos_cb_1.currentData())            # Taxonomy
+            except:
+                pass
+            
+            self.data_ai.iloc[self.old_local , 16] = self.data_building.iloc[self.old_local , 0] 
+            
+#####################################################################  
+##################################################################### 
+#####################################################################
+           
+        # -------------------  Central building image ----------------------    
+        
+        if self.ui.insp_method == 0 or self.ui.insp_method == 1:
             self.data_ai.iloc[self.click_count * 3 + 1, 0] = self.ui.img_id_value_2.text()                  # ID
-            self.data_ai.iloc[self.click_count * 3 + 1, 1] = self.data_building.iloc[self.click_count,1]    # Latitude
-            self.data_ai.iloc[self.click_count * 3 + 1, 2] = self.data_building.iloc[self.click_count,2]    # Longitude
+            self.data_ai.iloc[self.click_count * 3 + 1, 1] = self.data_building.iloc[self.click_count , 1]    # Latitude
+            self.data_ai.iloc[self.click_count * 3 + 1, 2] = self.data_building.iloc[self.click_count , 2]    # Longitude
             self.data_ai.iloc[self.click_count * 3 + 1, 3] = self.ui.country_value.text()                   # Country
             self.data_ai.iloc[self.click_count * 3 + 1, 4] = self.ui.city_value.text()                      # City
             self.data_ai.iloc[self.click_count * 3 + 1, 5] = self.ui.material_cb_2.currentData()            # LLRS Material
@@ -1197,58 +1241,65 @@ class GUIMethods:
             self.data_ai.iloc[self.click_count * 3 + 1, 8] = self.ui.n_stories_value_2.currentData()        # Number of Stories 
             self.data_ai.iloc[self.click_count * 3 + 1, 9] = self.ui.occup_cb_2.currentData()               # Occupancy
             self.data_ai.iloc[self.click_count * 3 + 1, 10] = self.ui.bck_pos_cb_2.currentData()            # Block Position
-            self.data_ai.iloc[self.click_count * 3 + 1, 11] = self.ui.img_q_cb_2.currentData()              # Image Quality
+            self.data_ai.iloc[self.click_count * 3 + 1, 11] = self.ui.epc_const_cb_2.currentText()          # Epoch of construction
+            self.data_ai.iloc[self.click_count * 3 + 1, 12] = self.ui.roof_shape_cb_2.currentData()         # Roof shape
+            self.data_ai.iloc[self.click_count * 3 + 1, 13] = self.ui.roof_material_cb_2.currentData()      # Roof material
+            self.data_ai.iloc[self.click_count * 3 + 1, 14] = self.ui.img_q_cb_2.currentData()              # Image Quality
             
             try:
-                self.data_ai.iloc[self.click_count * 3 + 1, 12] = (self.ui.material_cb_2.currentData()+"/"+self.ui.llrs_cb_2.currentData()
-                                                                +"/HEX:"+self.ui.n_stories_value_2.currentText()+"/"+
-                                                                "CODE:"+self.ui.age_cb_2.currentData())            # Taxonomy
+                self.data_ai.iloc[self.click_count * 3 + 1, 15] = (self.ui.material_cb_2.currentData()+"/"+
+                                                                self.ui.llrs_cb_2.currentData()+"+"+
+                                                                self.ui.age_cb_2.currentData()+"/H:"+
+                                                                self.ui.n_stories_value_2.currentText()+"/"+
+                                                                self.ui.occup_cb_2.currentData()+"/"+
+                                                                self.ui.bck_pos_cb_2.currentData())            # Taxonomy
             except:
                 pass
             
             if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                if self.img_url[1]  != "":
-                    self.data_ai.iloc[self.click_count * 3 + 1, 13] = self.img_url[1]                           # Image URL
+                if self.img_url[0]  != "":
+                    self.data_ai.iloc[self.click_count * 3 + 1, 16] = self.img_url[0]                           # Image URL
                 else:
                     if isinstance(heading, int):
-                        self.data_ai.iloc[self.click_count * 3 + 1, 13] = base_url + coord +"&heading="+str((heading+ 180) % 360)+"&pitch=5&fov=120"
-            elif self.ui.insp_method == 2:
-                if self.n_images_local >= 2:
-                    self.data_ai.iloc[self.click_count * 3 + 1, 13] = self.data_building.iloc[self.click_count * self.n_images_local + 1, 0] 
+                        self.data_ai.iloc[self.click_count * 3 + 1, 16] = base_url + coord +"&heading="+str((heading+ 150) % 360)+"&pitch=5&fov=120"
+        
+        # ------------------- Local  -----------------------
+        elif self.ui.insp_method == 2:
+            self.data_ai.iloc[self.old_local + 1, 0] = self.ui.img_id_value_2.text()                  # ID
+            self.data_ai.iloc[self.old_local + 1, 1] = self.data_building.iloc[self.old_local + 1, 1]    # Latitude
+            self.data_ai.iloc[self.old_local + 1, 2] = self.data_building.iloc[self.old_local + 1, 2]    # Longitude
+            self.data_ai.iloc[self.old_local + 1, 3] = self.ui.country_value.text()                   # Country
+            self.data_ai.iloc[self.old_local + 1, 4] = self.ui.city_value.text()                      # City
+            self.data_ai.iloc[self.old_local + 1, 5] = self.ui.material_cb_2.currentData()            # LLRS Material
+            self.data_ai.iloc[self.old_local + 1, 6] = self.ui.llrs_cb_2.currentData()                # LLRS 
+            self.data_ai.iloc[self.old_local + 1, 7] = self.ui.age_cb_2.currentData()                 # Code Level 
+            self.data_ai.iloc[self.old_local + 1, 8] = self.ui.n_stories_value_2.currentData()        # Number of Stories 
+            self.data_ai.iloc[self.old_local + 1, 9] = self.ui.occup_cb_2.currentData()               # Occupancy
+            self.data_ai.iloc[self.old_local + 1, 10] = self.ui.bck_pos_cb_2.currentData()            # Block Position
+            self.data_ai.iloc[self.old_local + 1, 11] = self.ui.epc_const_cb_2.currentText()          # Epoch of construction
+            self.data_ai.iloc[self.old_local + 1, 12] = self.ui.roof_shape_cb_2.currentData()         # Roof shape
+            self.data_ai.iloc[self.old_local + 1, 13] = self.ui.roof_material_cb_2.currentData()      # Roof material
+            self.data_ai.iloc[self.old_local + 1, 14] = self.ui.img_q_cb_2.currentData()              # Image Quality
             
-#####################################################################  
-            # Exposure model values
-            self.data_expo.iloc[self.click_count, 0] = self.ui.img_id_value_2.text()                  # ID
-            self.data_expo.iloc[self.click_count, 1] = self.data_building.iloc[self.click_count,1]    # Latitude
-            self.data_expo.iloc[self.click_count, 2] = self.data_building.iloc[self.click_count,2]    # Longitude
-            self.data_expo.iloc[self.click_count, 3] = self.ui.country_value.text()                   # Country
-            self.data_expo.iloc[self.click_count, 4] = self.ui.city_value.text()                      # City
-            self.data_expo.iloc[self.click_count, 5] = self.ui.material_cb_2.currentData()            # LLRS Material
-            self.data_expo.iloc[self.click_count, 6] = self.ui.llrs_cb_2.currentData()                # LLRS 
-            self.data_expo.iloc[self.click_count, 7] = self.ui.age_cb_2.currentData()                 # Code Level 
-            self.data_expo.iloc[self.click_count, 8] = self.ui.n_stories_value_2.currentData()             # Number of Stories 
-            self.data_expo.iloc[self.click_count, 9] = self.ui.occup_cb_2.currentData()               # Occupancy
-            self.data_expo.iloc[self.click_count, 10] = self.ui.bck_pos_cb_2.currentData()            # Block Position
-            self.data_expo.iloc[self.click_count, 11] = self.ui.img_q_cb_2.currentData()              # Image Quality
             try:
-                self.data_expo.iloc[self.click_count * 3, 12] = (self.ui.material_cb_2.currentData()+"/"+self.ui.llrs_cb_2.currentData()
-                                                                +"/HEX:"+self.ui.n_stories_value_2.currentText()+"/"+
-                                                                "CODE:"+self.ui.age_cb_2.currentData())            # Taxonomy
+                self.data_ai.iloc[self.old_local + 1, 15] = (self.ui.material_cb_2.currentData()+"/"+
+                                                                self.ui.llrs_cb_2.currentData()+"+"+
+                                                                self.ui.age_cb_2.currentData()+"/H:"+
+                                                                self.ui.n_stories_value_2.currentText()+"/"+
+                                                                self.ui.occup_cb_2.currentData()+"/"+
+                                                                self.ui.bck_pos_cb_2.currentData())            # Taxonomy
             except:
                 pass
-            
-            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                if self.img_url[1]  != "":
-                    self.data_expo.iloc[self.click_count, 13] = self.img_url[1]                           # Image URL
-                else:
-                    if isinstance(heading, int):
-                        self.data_expo.iloc[self.click_count, 13] = base_url + coord +"&heading="+str((heading+ 180) % 360)+"&pitch=5&fov=120"
-            elif self.ui.insp_method == 2:
-                if self.n_images_local >= 2:
-                    self.data_expo.iloc[self.click_count, 13] = self.data_building.iloc[self.click_count * self.n_images_local + 1, 0]            
+
+            self.data_ai.iloc[self.old_local + 1, 16] = self.data_building.iloc[self.old_local + 1, 0] 
+        
 #####################################################################  
-            
-            # Right building image
+##################################################################### 
+##################################################################### 
+       
+        # -------------------  Right building image ----------------------    
+        
+        if self.ui.insp_method == 0 or self.ui.insp_method == 1:
             self.data_ai.iloc[self.click_count * 3 + 2, 0] = self.ui.img_id_value_3.text()                  # ID
             self.data_ai.iloc[self.click_count * 3 + 2, 1] = self.data_building.iloc[self.click_count,1]    # Latitude
             self.data_ai.iloc[self.click_count * 3 + 2, 2] = self.data_building.iloc[self.click_count,2]    # Longitude
@@ -1260,25 +1311,57 @@ class GUIMethods:
             self.data_ai.iloc[self.click_count * 3 + 2, 8] = self.ui.n_stories_value_3.currentData()        # Number of Stories 
             self.data_ai.iloc[self.click_count * 3 + 2, 9] = self.ui.occup_cb_3.currentData()               # Occupancy
             self.data_ai.iloc[self.click_count * 3 + 2, 10] = self.ui.bck_pos_cb_3.currentData()            # Block Position
-            self.data_ai.iloc[self.click_count * 3 + 2, 11] = self.ui.img_q_cb_3.currentData()              # Image Quality
+            self.data_ai.iloc[self.click_count * 3 + 2, 11] = self.ui.epc_const_cb_3.currentText()          # Epoch of construction
+            self.data_ai.iloc[self.click_count * 3 + 2, 12] = self.ui.roof_shape_cb_3.currentData()         # Roof shape
+            self.data_ai.iloc[self.click_count * 3 + 2, 13] = self.ui.roof_material_cb_3.currentData()      # Roof material
+            self.data_ai.iloc[self.click_count * 3 + 2, 14] = self.ui.img_q_cb_3.currentData()              # Image Quality
             
             try:
-                self.data_ai.iloc[self.click_count * 3 + 2, 12] = (self.ui.material_cb_3.currentData()+"/"+self.ui.llrs_cb_3.currentData()
-                                                                +"/HEX:"+self.ui.n_stories_value_3.currentText()+"/"+
-                                                                "CODE:"+self.ui.age_cb_3.currentData())            # Taxonomy
+                self.data_ai.iloc[self.click_count * 3 + 2, 15] = (self.ui.material_cb_3.currentData()+"/"+
+                                                                self.ui.llrs_cb_3.currentData()+"+"+
+                                                                self.ui.age_cb_3.currentData()+"/H:"+
+                                                                self.ui.n_stories_value_3.currentText()+"/"+
+                                                                self.ui.occup_cb_3.currentData()+"/"+
+                                                                self.ui.bck_pos_cb_3.currentData())            # Taxonomy
             except:
                 pass
             
             if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                if self.img_url[2]  != "":
-                    self.data_ai.iloc[self.click_count * 3 + 2, 13] = self.img_url[2]                           # Image URL
+                if self.img_url[0]  != "":
+                    self.data_ai.iloc[self.click_count * 3 + 2, 16] = self.img_url[0]                           # Image URL
                 else:
                     if isinstance(heading, int):
-                        self.data_ai.iloc[self.click_count * 3 + 2, 13] = base_url + coord +"&heading="+str((heading+ 210) % 360)+"&pitch=5&fov=120"
-            elif self.ui.insp_method == 2:
-                if self.n_images_local == 3:
-                    self.data_ai.iloc[self.click_count * 3 + 2, 13] = self.data_building.iloc[self.click_count * self.n_images_local + 2, 0] 
+                        self.data_ai.iloc[self.click_count * 3 + 2, 16] = base_url + coord +"&heading="+str((heading+ 150) % 360)+"&pitch=5&fov=120"
+        
+        # ------------------- Local  -----------------------
+        elif self.ui.insp_method == 2:
+            self.data_ai.iloc[self.old_local + 2, 0] = self.ui.img_id_value_3.text()                  # ID
+            self.data_ai.iloc[self.old_local + 2, 1] = self.data_building.iloc[self.old_local + 2 , 1]    # Latitude
+            self.data_ai.iloc[self.old_local + 2, 2] = self.data_building.iloc[self.old_local + 2 , 2]    # Longitude
+            self.data_ai.iloc[self.old_local + 2, 3] = self.ui.country_value.text()                   # Country
+            self.data_ai.iloc[self.old_local + 2, 4] = self.ui.city_value.text()                      # City
+            self.data_ai.iloc[self.old_local + 2, 5] = self.ui.material_cb_3.currentData()            # LLRS Material
+            self.data_ai.iloc[self.old_local + 2, 6] = self.ui.llrs_cb_3.currentData()                # LLRS 
+            self.data_ai.iloc[self.old_local + 2, 7] = self.ui.age_cb_3.currentData()                 # Code Level 
+            self.data_ai.iloc[self.old_local + 2, 8] = self.ui.n_stories_value_3.currentData()        # Number of Stories 
+            self.data_ai.iloc[self.old_local + 2, 9] = self.ui.occup_cb_3.currentData()               # Occupancy
+            self.data_ai.iloc[self.old_local + 2, 10] = self.ui.bck_pos_cb_3.currentData()            # Block Position
+            self.data_ai.iloc[self.old_local + 2, 11] = self.ui.epc_const_cb_3.currentText()          # Epoch of construction
+            self.data_ai.iloc[self.old_local + 2, 12] = self.ui.roof_shape_cb_3.currentData()         # Roof shape
+            self.data_ai.iloc[self.old_local + 2, 13] = self.ui.roof_material_cb_3.currentData()      # Roof material
+            self.data_ai.iloc[self.old_local + 2, 14] = self.ui.img_q_cb_3.currentData()              # Image Quality
             
+            try:
+                self.data_ai.iloc[self.old_local + 2, 15] = (self.ui.material_cb_3.currentData()+"/"+
+                                                                self.ui.llrs_cb_3.currentData()+"+"+
+                                                                self.ui.age_cb_3.currentData()+"/H:"+
+                                                                self.ui.n_stories_value_3.currentText()+"/"+
+                                                                self.ui.occup_cb_3.currentData()+"/"+
+                                                                self.ui.bck_pos_cb_3.currentData())            # Taxonomy
+            except:
+                pass
+            self.data_ai.iloc[self.old_local + 2, 16] = self.data_building.iloc[self.old_local + 2 , 0] 
+        
             
     ############ Saves the data from the inspections that were conducted ################       
     def save_database (self):
@@ -1306,78 +1389,79 @@ class GUIMethods:
             - Handles exceptions gracefully when no previous CSV file exists.
             - Calls `self.inspection_database()` to gather new inspection data before saving.
         """
-        # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
+        # # Conditional to avoid executing the method if there is no project folder
+        # if self.ui.output_folder_value == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no country name
+        # elif self.ui.country_value.text() == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no city name 
+        # elif self.ui.city_value.text() == "-":
+        #     pass
+        # else:
+        # Load path 
+        output_folder = self.ui.output_folder_value
+        img_prefix = f"{output_folder}/{self.city_method}_{self.country_method}"
+
+        # Create CSV with new inspections
+        self.inspection_database()
+        
+        # Star progress bar
+        self.ui.method_progress.setText("Saving inspections ...")
+        for j in range (101):
+            time.sleep(0.0001)
+            self.ui.progress_bar_method.setValue(j)
+        # Save inspections
+        ############################## Polygon #######################################
+        if self.ui.insp_method == 0:
+            try:
+                # Save the AI inspection data to a CSV file
+                self.data_ai.to_csv(img_prefix + "_AI_aux_cont.csv", index=False)
+                final_df = self.data_ai
+                filtered_df = final_df[final_df['Number of Stories'].notna() | final_df['LLRS'].notna()]
+                filtered_df.to_csv(img_prefix + "_AI_classification.csv", index=False)
+                # Update the progress message in the GUI
+                self.ui.method_progress.setText("Inspections exported successfully!")
+            except:
+                # Show a warning message box if there's a permission error
+                QMessageBox.warning(self.ui, "File Error", "The file is open or the folder is inaccessible."
+                                    +"Please close the file or check folder permissions.")
+        ############################## Specific #######################################
+        elif self.ui.insp_method == 1:
+            try:
+                # Save the AI inspection data to a CSV file
+                self.data_ai.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name+"_AI_aux_cont.csv", index=False)
+                final_df = self.data_ai
+                filtered_df = final_df[final_df['Number of Stories'].notna() | final_df['LLRS'].notna()]
+                filtered_df.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name+ "_AI_classification.csv", index=False)
+                # Update the progress message in the GUI
+                self.ui.method_progress.setText("Inspections exported successfully!")
+            except:
+                # Show a warning message box if there's a permission error
+                QMessageBox.warning(self.ui, "File Error", "The file is open or the folder is inaccessible."
+                                    +"Please close the file or check folder permissions.")
+        ############################## Local #######################################
+        elif self.ui.insp_method == 2:
+            # try:
+            # Save the AI inspection data to a CSV file
+            self.data_ai.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name_local.text()+"_AI_aux_cont.csv", index=False)
+            final_df = self.data_ai
+            filtered_df = final_df[final_df['Number of Stories'].notna() | final_df['LLRS'].notna()]
+            filtered_df.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name_local.text()+ "_AI_classification.csv", index=False)
+            # Update the progress message in the GUI
+            self.ui.method_progress.setText("Inspections exported successfully!")
+            # except:
+            #     # Show a warning message box if there's a permission error
+            #     QMessageBox.warning(self.ui, "File Error", "The file is open or the folder is inaccessible."
+            #                         +"Please close the file or check folder permissions.")
+         ############################## Local #######################################
+        elif self.ui.insp_method == 3:
             pass
-        # Conditional to avoid executing the method if there is no country name
-        elif self.ui.country_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no city name 
-        elif self.ui.city_value.text() == "-":
-            pass
-        else:
-            # Load path 
-            output_folder = self.ui.output_folder_value.text()
-            img_prefix = f"{output_folder}/{self.city_method}_{self.country_method}"
-    
-            # Create CSV with new inspections
-            self.inspection_database()
-            
-            # Star progress bar
-            self.ui.method_progress.setText("Saving inspections ...")
-            for j in range (101):
-                time.sleep(0.0001)
-                self.ui.progress_bar_method.setValue(j)
-            # Save inspections
-            ############################## Polygon #######################################
-            if self.ui.insp_method == 0:
-                try:
-                    # Save the AI inspection data to a CSV file
-                    self.data_ai.to_csv(img_prefix + "_AI_inspections.csv", index=False)
-                    # Save the exposure inspection data to a CSV file
-                    self.data_expo.to_csv(img_prefix + "_EXPO_inspections.csv", index=False)
-                    # Update the progress message in the GUI
-                    self.ui.method_progress.setText("Inspections exported successfully!")
-                except:
-                    # Show a warning message box if there's a permission error
-                    QMessageBox.warning(self.ui, "File Error", "The file is open or the folder is inaccessible."
-                                        +"Please close the file or check folder permissions.")
-            ############################## Specific #######################################
-            elif self.ui.insp_method == 1:
-                try:
-                    # Save the AI inspection data to a CSV file
-                    self.data_ai.to_csv(self.ui.output_folder_value.text()+"/"+self.ui.file_name+"_AI_inspections.csv", index=False)
-                    
-                    # Save the exposure inspection data to a CSV file
-                    self.data_expo.to_csv(self.ui.output_folder_value.text()+"/"+self.ui.file_name+"_EXPO_inspections.csv", index=False)
-                    # Update the progress message in the GUI
-                    self.ui.method_progress.setText("Inspections exported successfully!")
-                except:
-                    # Show a warning message box if there's a permission error
-                    QMessageBox.warning(self.ui, "File Error", "The file is open or the folder is inaccessible."
-                                        +"Please close the file or check folder permissions.")
-            ############################## Local #######################################
-            elif self.ui.insp_method == 2:
-                try:
-                    # Save the AI inspection data to a CSV file
-                    self.data_ai.to_csv(self.ui.output_folder_value.text()+"/"+self.ui.file_name_local+"_AI_inspections.csv", index=False)
-                    
-                    # Save the exposure inspection data to a CSV file
-                    self.data_expo.to_csv(self.ui.output_folder_value.text()+"/"+self.ui.file_name_local+"_EXPO_inspections.csv", index=False)
-                    # Update the progress message in the GUI
-                    self.ui.method_progress.setText("Inspections exported successfully!")
-                except:
-                    # Show a warning message box if there's a permission error
-                    QMessageBox.warning(self.ui, "File Error", "The file is open or the folder is inaccessible."
-                                        +"Please close the file or check folder permissions.")
-             ############################## Local #######################################
-            elif self.ui.insp_method == 3:
-                pass
-            
-            self.data_old = "OK" # TO BE SAVED THERE IS EXISTING DATA
-            self.sw_insp = True
-            self.save_id = True
-            self.start = True
+        
+        self.data_old = "OK" # TO BE SAVED THERE IS EXISTING DATA
+        self.sw_insp = True
+        self.save_id = True
+        self.start = True
             
             
     def setComboBoxByData(self, comboBox, data):
@@ -1441,261 +1525,514 @@ class GUIMethods:
         """
         # Restart default value of left building image
         
-        # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no country name
-        elif self.ui.country_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no city name 
-        elif self.ui.city_value.text() == "-":
-            pass
-        else:
-            if self.ui.insp_method != 3:
-                # Material
-                if self.data_ai.iloc[self.click_count * 3 , 5] is None:
-                    self.ui.material_cb_1.setCurrentText("Select Material")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 5]) == True:
-                    self.ui.material_cb_1.setCurrentText("Select Material")
-                else:
-                    self.setComboBoxByData(self.ui.material_cb_1 , self.data_ai.iloc[self.click_count * 3 , 5])
-        
-                # LLRS
-                if self.data_ai.iloc[self.click_count * 3 , 6] is None :
-                    self.ui.llrs_cb_1.setCurrentText("Select LLRS")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 6]) == True:
-                    self.ui.llrs_cb_1.setCurrentText("Select LLRS")
-                else:
-                    self.setComboBoxByData(self.ui.llrs_cb_1 , self.data_ai.iloc[self.click_count * 3 , 6])
-                    
-                # Code level
-                if self.data_ai.iloc[self.click_count * 3 , 7] is None :
-                    self.ui.age_cb_1.setCurrentText("Select Code Level")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 7]) == True:
-                    self.ui.age_cb_1.setCurrentText("Select Code Level")
-                else:
-                    self.setComboBoxByData(self.ui.age_cb_1 , self.data_ai.iloc[self.click_count * 3 , 7])
+        # # Conditional to avoid executing the method if there is no project folder
+        # if self.ui.output_folder_value == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no country name
+        # elif self.ui.country_value.text() == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no city name 
+        # elif self.ui.city_value.text() == "-":
+        #     pass
+        # else:
+        if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+            # ----------------------- LEFT -----------------------------
+            # Material
+            if self.data_ai.iloc[self.click_count * 3 , 5] is None:
+                self.ui.material_cb_1.setCurrentText("Select Material")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 5]) == True:
+                self.ui.material_cb_1.setCurrentText("Select Material")
+            else:
+                self.setComboBoxByData(self.ui.material_cb_1 , self.data_ai.iloc[self.click_count * 3 , 5])
+    
+            # LLRS
+            if self.data_ai.iloc[self.click_count * 3 , 6] is None :
+                self.ui.llrs_cb_1.setCurrentText("Select LLRS")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 6]) == True:
+                self.ui.llrs_cb_1.setCurrentText("Select LLRS")
+            else:
+                self.setComboBoxByData(self.ui.llrs_cb_1 , self.data_ai.iloc[self.click_count * 3 , 6])
                 
-                # Number of stories
-                if self.data_ai.iloc[self.click_count * 3 , 8] is None :
-                    self.ui.n_stories_value_1.setCurrentText("Select Number of Stories")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 8]) == True:
-                    self.ui.n_stories_value_1.setCurrentText("Select Number of Stories")
-                else:
-                    self.setComboBoxByData(self.ui.n_stories_value_1, self.data_ai.iloc[self.click_count * 3 , 8])
-                    
-                # Occupancy
-                if self.data_ai.iloc[self.click_count * 3 , 9] is None :
-                    self.ui.occup_cb_1.setCurrentText("Select Occupancy Type")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 9]) == True:
-                    self.ui.occup_cb_1.setCurrentText("Select Occupancy Type")
-                else:
-                    self.setComboBoxByData(self.ui.occup_cb_1 , self.data_ai.iloc[self.click_count * 3 , 9])
-                
-                # Block Position
-                if self.data_ai.iloc[self.click_count * 3 , 10] is None :
-                    self.ui.bck_pos_cb_1.setCurrentText("Select Block Position")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 10]) == True:
-                    self.ui.bck_pos_cb_1.setCurrentText("Select Block Position")
-                else:
-                    self.setComboBoxByData(self.ui.bck_pos_cb_1 , self.data_ai.iloc[self.click_count * 3 , 10])
-                    
-                # Epoch of construction
-                if self.data_ai.iloc[self.click_count * 3 , 11] is None :
-                    self.ui.epc_const_cb_1.setCurrentText("Select Epoch of Construction")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 11]) == True:
-                    self.ui.epc_const_cb_1.setCurrentText("Select Epoch of Construction")
-                else:
-                    self.setComboBoxByData(self.ui.epc_const_cb_1 , self.data_ai.iloc[self.click_count * 3 , 11])
-                    
-                # Roof Shape
-                if self.data_ai.iloc[self.click_count * 3 , 12] is None :
-                    self.ui.roof_shape_cb_1.setCurrentText("Select Roof Shape")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 12]) == True:
-                    self.ui.roof_shape_cb_1.setCurrentText("Select Roof Shape")
-                else:
-                    self.setComboBoxByData(self.ui.roof_shape_cb_1 , self.data_ai.iloc[self.click_count * 3 , 12])
-                    
-                # Roof Material
-                if self.data_ai.iloc[self.click_count * 3 , 13] is None :
-                    self.ui.roof_material_cb_1.setCurrentText("Select Roof Material")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 13]) == True:
-                    self.ui.roof_material_cb_1.setCurrentText("Select Roof Material")
-                else:
-                    self.setComboBoxByData(self.ui.roof_material_cb_1 , self.data_ai.iloc[self.click_count * 3 , 13])
-        
-                # Image quality
-                if self.data_ai.iloc[self.click_count * 3 , 14] is None :
-                    self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 14]) == True:
-                    self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
-                else:
-                    self.setComboBoxByData(self.ui.img_q_cb_1 , self.data_ai.iloc[self.click_count * 3 , 14])
-                    
-                    
-                # Restart default value of central building image
-                # Material
-                if self.data_ai.iloc[self.click_count * 3 + 1 , 5] is None:
-                    self.ui.material_cb_2.setCurrentText("Select Material")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 5]) == True:
-                    self.ui.material_cb_2.setCurrentText("Select Material")
-                else:
-                    self.setComboBoxByData(self.ui.material_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 5])
-        
-                # LLRS
-                if self.data_ai.iloc[self.click_count * 3 + 1 , 6] is None :
-                    self.ui.llrs_cb_2.setCurrentText("Select LLRS")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 6]) == True:
-                    self.ui.llrs_cb_2.setCurrentText("Select LLRS")
-                else:
-                    self.setComboBoxByData(self.ui.llrs_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 6])
-                    
-                # Code level
-                if self.data_ai.iloc[self.click_count * 3 + 1 , 7] is None :
-                    self.ui.age_cb_2.setCurrentText("Select Code Level")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 7]) == True:
-                    self.ui.age_cb_2.setCurrentText("Select Code Level")
-                else:
-                    self.setComboBoxByData(self.ui.age_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 7])
-                
-                # Number of stories
-                if self.data_ai.iloc[self.click_count * 3 + 1 , 8] is None :
-                    self.ui.n_stories_value_2.setCurrentText("Select Number of Stories")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 8]) == True:
-                    self.ui.n_stories_value_2.setCurrentText("Select Number of Stories")
-                else:
-                    self.setComboBoxByData(self.ui.n_stories_value_2, self.data_ai.iloc[self.click_count * 3 + 1, 8])
-                    
-                # Occupancy
-                if self.data_ai.iloc[self.click_count * 3 + 1 , 9] is None :
-                    self.ui.occup_cb_2.setCurrentText("Select Occupancy Type")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 9]) == True:
-                    self.ui.occup_cb_2.setCurrentText("Select Occupancy Type")
-                else:
-                    self.setComboBoxByData(self.ui.occup_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 9])
-                
-                # Block Position
-                if self.data_ai.iloc[self.click_count * 3 + 1 , 10] is None :
-                    self.ui.bck_pos_cb_2.setCurrentText("Select Block Position")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 10]) == True:
-                    self.ui.bck_pos_cb_2.setCurrentText("Select Block Position")
-                else:
-                    self.setComboBoxByData(self.ui.bck_pos_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 10])
-                    
-                # Epoch of construction
-                if self.data_ai.iloc[self.click_count * 3 + 1 + 1 , 11] is None :
-                    self.ui.epc_const_cb_2.setCurrentText("Select Epoch of Construction")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 +1 , 11]) == True:
-                    self.ui.epc_const_cb_2.setCurrentText("Select Epoch of Construction")
-                else:
-                    self.setComboBoxByData(self.ui.epc_const_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 + 1 , 11])
-                    
-                # Roof Shape
-                if self.data_ai.iloc[self.click_count * 3 + 1 , 12] is None :
-                    self.ui.roof_shape_cb_2.setCurrentText("Select Roof Shape")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 12]) == True:
-                    self.ui.roof_shape_cb_2.setCurrentText("Select Roof Shape")
-                else:
-                    self.setComboBoxByData(self.ui.roof_shape_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 12])
-                    
-                # Roof Material
-                if self.data_ai.iloc[self.click_count * 3 + 1 , 13] is None :
-                    self.ui.roof_material_cb_2.setCurrentText("Select Roof Material")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 13]) == True:
-                    self.ui.roof_material_cb_2.setCurrentText("Select Roof Material")
-                else:
-                    self.setComboBoxByData(self.ui.roof_material_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 13])
-        
-                # Image quality
-                if self.data_ai.iloc[self.click_count * 3 + 1 , 14] is None :
-                    self.ui.img_q_cb_2.setCurrentText("Select Image Quality")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 14]) == True:
-                    self.ui.img_q_cb_2.setCurrentText("Select Image Quality")
-                else:
-                    self.setComboBoxByData(self.ui.img_q_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 14])
-        
-                # Restart default value of right building image
-                # Material
-                if self.data_ai.iloc[self.click_count * 3 + 2 , 5] is None:
-                    self.ui.material_cb_3.setCurrentText("Select Material")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 5]) == True:
-                    self.ui.material_cb_3.setCurrentText("Select Material")
-                else:
-                    self.setComboBoxByData(self.ui.material_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 5])
-        
-                # LLRS
-                if self.data_ai.iloc[self.click_count * 3 + 2 , 6] is None :
-                    self.ui.llrs_cb_3.setCurrentText("Select LLRS")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 6]) == True:
-                    self.ui.llrs_cb_3.setCurrentText("Select LLRS")
-                else:
-                    self.setComboBoxByData(self.ui.llrs_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 6])
-                    
-                # Code level
-                if self.data_ai.iloc[self.click_count * 3 + 2 , 7] is None :
-                    self.ui.age_cb_3.setCurrentText("Select Code Level")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 7]) == True:
-                    self.ui.age_cb_3.setCurrentText("Select Code Level")
-                else:
-                    self.setComboBoxByData(self.ui.age_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 7])
-                
-                # Number of stories
-                if self.data_ai.iloc[self.click_count * 3 + 2 , 8] is None :
-                    self.ui.n_stories_value_3.setCurrentText("Select Number of Stories")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 8]) == True:
-                    self.ui.n_stories_value_3.setCurrentText("Select Number of Stories")
-                else:
-                    self.setComboBoxByData(self.ui.n_stories_value_3, self.data_ai.iloc[self.click_count * 3 + 2, 8])
-                    
-                # Occupancy
-                if self.data_ai.iloc[self.click_count * 3 + 2 , 9] is None :
-                    self.ui.occup_cb_3.setCurrentText("Select Occupancy Type")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 9]) == True:
-                    self.ui.occup_cb_3.setCurrentText("Select Occupancy Type")
-                else:
-                    self.setComboBoxByData(self.ui.occup_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 9])
-                
-                # Block Position
-                if self.data_ai.iloc[self.click_count * 3 + 2 , 10] is None :
-                    self.ui.bck_pos_cb_3.setCurrentText("Select Block Position")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 10]) == True:
-                    self.ui.bck_pos_cb_3.setCurrentText("Select Block Position")
-                else:
-                    self.setComboBoxByData(self.ui.bck_pos_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 10])
-        
-                # Epoch of construction
-                if self.data_ai.iloc[self.click_count * 3 + 2 , 11] is None :
-                    self.ui.epc_const_cb_3.setCurrentText("Select Epoch of Construction")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2, 11]) == True:
-                    self.ui.epc_const_cb_3.setCurrentText("Select Epoch of Construction")
-                else:
-                    self.setComboBoxByData(self.ui.epc_const_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 + 1 , 11])
-                    
-                # Roof Shape
-                if self.data_ai.iloc[self.click_count * 3 + 2 , 12] is None :
-                    self.ui.roof_shape_cb_3.setCurrentText("Select Roof Shape")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 12]) == True:
-                    self.ui.roof_shape_cb_3.setCurrentText("Select Roof Shape")
-                else:
-                    self.setComboBoxByData(self.ui.roof_shape_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 12])
-                    
-                # Roof Material
-                if self.data_ai.iloc[self.click_count * 3 + 2 , 13] is None :
-                    self.ui.roof_material_cb_3.setCurrentText("Select Roof Material")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 13]) == True:
-                    self.ui.roof_material_cb_3.setCurrentText("Select Roof Material")
-                else:
-                    self.setComboBoxByData(self.ui.roof_material_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 13])
-                    
-                # Image quality
-                if self.data_ai.iloc[self.click_count * 3 + 2 , 11] is None :
-                    self.ui.img_q_cb_3.setCurrentText("Select Image Quality")
-                elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 11]) == True:
-                    self.ui.img_q_cb_3.setCurrentText("Select Image Quality")
-                else:
-                    self.setComboBoxByData(self.ui.img_q_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 11])
+            # Code level
+            if self.data_ai.iloc[self.click_count * 3 , 7] is None :
+                self.ui.age_cb_1.setCurrentText("Select Code Level")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 7]) == True:
+                self.ui.age_cb_1.setCurrentText("Select Code Level")
+            else:
+                self.setComboBoxByData(self.ui.age_cb_1 , self.data_ai.iloc[self.click_count * 3 , 7])
             
-     
+            # Number of stories
+            if self.data_ai.iloc[self.click_count * 3 , 8] is None :
+                self.ui.n_stories_value_1.setCurrentText("Select Number of Stories")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 8]) == True:
+                self.ui.n_stories_value_1.setCurrentText("Select Number of Stories")
+            else:
+                self.setComboBoxByData(self.ui.n_stories_value_1, self.data_ai.iloc[self.click_count * 3 , 8])
+                
+            # Occupancy
+            if self.data_ai.iloc[self.click_count * 3 , 9] is None :
+                self.ui.occup_cb_1.setCurrentText("Select Occupancy Type")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 9]) == True:
+                self.ui.occup_cb_1.setCurrentText("Select Occupancy Type")
+            else:
+                self.setComboBoxByData(self.ui.occup_cb_1 , self.data_ai.iloc[self.click_count * 3 , 9])
+            
+            # Block Position
+            if self.data_ai.iloc[self.click_count * 3 , 10] is None :
+                self.ui.bck_pos_cb_1.setCurrentText("Select Block Position")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 10]) == True:
+                self.ui.bck_pos_cb_1.setCurrentText("Select Block Position")
+            else:
+                self.setComboBoxByData(self.ui.bck_pos_cb_1 , self.data_ai.iloc[self.click_count * 3 , 10])
+                
+            # Epoch of construction
+            if self.data_ai.iloc[self.click_count * 3 , 11] is None :
+                self.ui.epc_const_cb_1.setCurrentText("Select Epoch of Construction")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 11]) == True:
+                self.ui.epc_const_cb_1.setCurrentText("Select Epoch of Construction")
+            else:
+                self.setComboBoxByData(self.ui.epc_const_cb_1 , self.data_ai.iloc[self.click_count * 3 , 11])
+                
+            # Roof Shape
+            if self.data_ai.iloc[self.click_count * 3 , 12] is None :
+                self.ui.roof_shape_cb_1.setCurrentText("Select Roof Shape")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 12]) == True:
+                self.ui.roof_shape_cb_1.setCurrentText("Select Roof Shape")
+            else:
+                self.setComboBoxByData(self.ui.roof_shape_cb_1 , self.data_ai.iloc[self.click_count * 3 , 12])
+                
+            # Roof Material
+            if self.data_ai.iloc[self.click_count * 3 , 13] is None :
+                self.ui.roof_material_cb_1.setCurrentText("Select Roof Material")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 13]) == True:
+                self.ui.roof_material_cb_1.setCurrentText("Select Roof Material")
+            else:
+                self.setComboBoxByData(self.ui.roof_material_cb_1 , self.data_ai.iloc[self.click_count * 3 , 13])
+    
+            # Image quality
+            if self.data_ai.iloc[self.click_count * 3 , 14] is None :
+                self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 14]) == True:
+                self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
+            else:
+                self.setComboBoxByData(self.ui.img_q_cb_1 , self.data_ai.iloc[self.click_count * 3 , 14])
+                
+            # ----------------------- CENTRAL -----------------------------
+            
+            # Restart default value of central building image
+            # Material
+            if self.data_ai.iloc[self.click_count * 3 + 1 , 5] is None:
+                self.ui.material_cb_2.setCurrentText("Select Material")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 5]) == True:
+                self.ui.material_cb_2.setCurrentText("Select Material")
+            else:
+                self.setComboBoxByData(self.ui.material_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 5])
+    
+            # LLRS
+            if self.data_ai.iloc[self.click_count * 3 + 1 , 6] is None :
+                self.ui.llrs_cb_2.setCurrentText("Select LLRS")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 6]) == True:
+                self.ui.llrs_cb_2.setCurrentText("Select LLRS")
+            else:
+                self.setComboBoxByData(self.ui.llrs_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 6])
+                
+            # Code level
+            if self.data_ai.iloc[self.click_count * 3 + 1 , 7] is None :
+                self.ui.age_cb_2.setCurrentText("Select Code Level")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 7]) == True:
+                self.ui.age_cb_2.setCurrentText("Select Code Level")
+            else:
+                self.setComboBoxByData(self.ui.age_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 7])
+            
+            # Number of stories
+            if self.data_ai.iloc[self.click_count * 3 + 1 , 8] is None :
+                self.ui.n_stories_value_2.setCurrentText("Select Number of Stories")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 8]) == True:
+                self.ui.n_stories_value_2.setCurrentText("Select Number of Stories")
+            else:
+                self.setComboBoxByData(self.ui.n_stories_value_2, self.data_ai.iloc[self.click_count * 3 + 1, 8])
+                
+            # Occupancy
+            if self.data_ai.iloc[self.click_count * 3 + 1 , 9] is None :
+                self.ui.occup_cb_2.setCurrentText("Select Occupancy Type")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 9]) == True:
+                self.ui.occup_cb_2.setCurrentText("Select Occupancy Type")
+            else:
+                self.setComboBoxByData(self.ui.occup_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 9])
+            
+            # Block Position
+            if self.data_ai.iloc[self.click_count * 3 + 1 , 10] is None :
+                self.ui.bck_pos_cb_2.setCurrentText("Select Block Position")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 10]) == True:
+                self.ui.bck_pos_cb_2.setCurrentText("Select Block Position")
+            else:
+                self.setComboBoxByData(self.ui.bck_pos_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 10])
+                
+            # Epoch of construction
+            if self.data_ai.iloc[self.click_count * 3 + 1, 11] is None :
+                self.ui.epc_const_cb_2.setCurrentIndex(0)
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1, 11]) == True:
+                self.ui.epc_const_cb_2.setCurrentText("Select Epoch of Construction")
+            else:
+                self.setComboBoxByData(self.ui.epc_const_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 11])
+            
+            # Roof Shape
+            if self.data_ai.iloc[self.click_count * 3 + 1 , 12] is None :
+                self.ui.roof_shape_cb_2.setCurrentText("Select Roof Shape")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 12]) == True:
+                self.ui.roof_shape_cb_2.setCurrentText("Select Roof Shape")
+            else:
+                self.setComboBoxByData(self.ui.roof_shape_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 12])
+                
+            # Roof Material
+            if self.data_ai.iloc[self.click_count * 3 + 1 , 13] is None :
+                self.ui.roof_material_cb_2.setCurrentText("Select Roof Material")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 13]) == True:
+                self.ui.roof_material_cb_2.setCurrentText("Select Roof Material")
+            else:
+                self.setComboBoxByData(self.ui.roof_material_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 13])
+    
+            # Image quality
+            if self.data_ai.iloc[self.click_count * 3 + 1 , 14] is None :
+                self.ui.img_q_cb_2.setCurrentText("Select Image Quality")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 1 , 14]) == True:
+                self.ui.img_q_cb_2.setCurrentText("Select Image Quality")
+            else:
+                self.setComboBoxByData(self.ui.img_q_cb_2 , self.data_ai.iloc[self.click_count * 3 + 1 , 14])
+    
+    
+            # ----------------------- RIGHT -----------------------------
+            
+            # Restart default value of right building image
+            # Material
+            if self.data_ai.iloc[self.click_count * 3 + 2 , 5] is None:
+                self.ui.material_cb_3.setCurrentText("Select Material")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 5]) == True:
+                self.ui.material_cb_3.setCurrentText("Select Material")
+            else:
+                self.setComboBoxByData(self.ui.material_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 5])
+    
+            # LLRS
+            if self.data_ai.iloc[self.click_count * 3 + 2 , 6] is None :
+                self.ui.llrs_cb_3.setCurrentText("Select LLRS")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 6]) == True:
+                self.ui.llrs_cb_3.setCurrentText("Select LLRS")
+            else:
+                self.setComboBoxByData(self.ui.llrs_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 6])
+                
+            # Code level
+            if self.data_ai.iloc[self.click_count * 3 + 2 , 7] is None :
+                self.ui.age_cb_3.setCurrentText("Select Code Level")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 7]) == True:
+                self.ui.age_cb_3.setCurrentText("Select Code Level")
+            else:
+                self.setComboBoxByData(self.ui.age_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 7])
+            
+            # Number of stories
+            if self.data_ai.iloc[self.click_count * 3 + 2 , 8] is None :
+                self.ui.n_stories_value_3.setCurrentText("Select Number of Stories")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 8]) == True:
+                self.ui.n_stories_value_3.setCurrentText("Select Number of Stories")
+            else:
+                self.setComboBoxByData(self.ui.n_stories_value_3, self.data_ai.iloc[self.click_count * 3 + 2, 8])
+                
+            # Occupancy
+            if self.data_ai.iloc[self.click_count * 3 + 2 , 9] is None :
+                self.ui.occup_cb_3.setCurrentText("Select Occupancy Type")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 9]) == True:
+                self.ui.occup_cb_3.setCurrentText("Select Occupancy Type")
+            else:
+                self.setComboBoxByData(self.ui.occup_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 9])
+            
+            # Block Position
+            if self.data_ai.iloc[self.click_count * 3 + 2 , 10] is None :
+                self.ui.bck_pos_cb_3.setCurrentText("Select Block Position")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 10]) == True:
+                self.ui.bck_pos_cb_3.setCurrentText("Select Block Position")
+            else:
+                self.setComboBoxByData(self.ui.bck_pos_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 10])
+    
+            # Epoch of construction
+            if self.data_ai.iloc[self.click_count * 3 + 2 , 11] is None :
+                self.ui.epc_const_cb_3.setCurrentIndex(0)
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2, 11]) == True:
+                self.ui.epc_const_cb_3.setCurrentIndex(0)
+            else:
+                self.setComboBoxByData(self.ui.epc_const_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 11])
+                
+            # Roof Shape
+            if self.data_ai.iloc[self.click_count * 3 + 2 , 12] is None :
+                self.ui.roof_shape_cb_3.setCurrentText("Select Roof Shape")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 12]) == True:
+                self.ui.roof_shape_cb_3.setCurrentText("Select Roof Shape")
+            else:
+                self.setComboBoxByData(self.ui.roof_shape_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 12])
+                
+            # Roof Material
+            if self.data_ai.iloc[self.click_count * 3 + 2 , 13] is None :
+                self.ui.roof_material_cb_3.setCurrentText("Select Roof Material")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 13]) == True:
+                self.ui.roof_material_cb_3.setCurrentText("Select Roof Material")
+            else:
+                self.setComboBoxByData(self.ui.roof_material_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 13])
+                
+            # Image quality
+            if self.data_ai.iloc[self.click_count * 3 + 2 , 14] is None :
+                self.ui.img_q_cb_3.setCurrentText("Select Image Quality")
+            elif pd.isna(self.data_ai.iloc[self.click_count * 3 + 2 , 14]) == True:
+                self.ui.img_q_cb_3.setCurrentText("Select Image Quality")
+            else:
+                self.setComboBoxByData(self.ui.img_q_cb_3 , self.data_ai.iloc[self.click_count * 3 + 2 , 14])
+        
+        elif self.ui.insp_method == 2: 
+            # ----------------------- LEFT -----------------------------
+            # Material
+            if self.data_ai.iloc[self.old_local , 5] is None:
+                self.ui.material_cb_1.setCurrentText("Select Material")
+            elif pd.isna(self.data_ai.iloc[self.old_local , 5]) == True:
+                self.ui.material_cb_1.setCurrentText("Select Material")
+            else:
+                self.setComboBoxByData(self.ui.material_cb_1 , self.data_ai.iloc[self.old_local , 5])
+    
+            # LLRS
+            if self.data_ai.iloc[self.old_local , 6] is None :
+                self.ui.llrs_cb_1.setCurrentText("Select LLRS")
+            elif pd.isna(self.data_ai.iloc[self.old_local , 6]) == True:
+                self.ui.llrs_cb_1.setCurrentText("Select LLRS")
+            else:
+                self.setComboBoxByData(self.ui.llrs_cb_1 , self.data_ai.iloc[self.old_local , 6])
+                
+            # Code level
+            if self.data_ai.iloc[self.old_local , 7] is None :
+                self.ui.age_cb_1.setCurrentText("Select Code Level")
+            elif pd.isna(self.data_ai.iloc[self.old_local , 7]) == True:
+                self.ui.age_cb_1.setCurrentText("Select Code Level")
+            else:
+                self.setComboBoxByData(self.ui.age_cb_1 , self.data_ai.iloc[self.old_local , 7])
+            
+            # Number of stories
+            if self.data_ai.iloc[self.old_local , 8] is None :
+                self.ui.n_stories_value_1.setCurrentText("Select Number of Stories")
+            elif pd.isna(self.data_ai.iloc[self.old_local , 8]) == True:
+                self.ui.n_stories_value_1.setCurrentText("Select Number of Stories")
+            else:
+                self.setComboBoxByData(self.ui.n_stories_value_1, self.data_ai.iloc[self.old_local , 8])
+                
+            # Occupancy
+            if self.data_ai.iloc[self.old_local , 9] is None :
+                self.ui.occup_cb_1.setCurrentText("Select Occupancy Type")
+            elif pd.isna(self.data_ai.iloc[self.old_local , 9]) == True:
+                self.ui.occup_cb_1.setCurrentText("Select Occupancy Type")
+            else:
+                self.setComboBoxByData(self.ui.occup_cb_1 , self.data_ai.iloc[self.old_local , 9])
+            
+            # Block Position
+            if self.data_ai.iloc[self.old_local , 10] is None :
+                self.ui.bck_pos_cb_1.setCurrentText("Select Block Position")
+            elif pd.isna(self.data_ai.iloc[self.old_local , 10]) == True:
+                self.ui.bck_pos_cb_1.setCurrentText("Select Block Position")
+            else:
+                self.setComboBoxByData(self.ui.bck_pos_cb_1 , self.data_ai.iloc[self.old_local , 10])
+                
+            # Epoch of construction
+            if self.data_ai.iloc[self.old_local , 11] is None :
+                self.ui.epc_const_cb_1.setCurrentText("Select Epoch of Construction")
+            elif pd.isna(self.data_ai.iloc[self.old_local , 11]) == True:
+                self.ui.epc_const_cb_1.setCurrentText("Select Epoch of Construction")
+            else:
+                self.setComboBoxByData(self.ui.epc_const_cb_1 , self.data_ai.iloc[self.old_local , 11])
+                
+            # Roof Shape
+            if self.data_ai.iloc[self.old_local , 12] is None :
+                self.ui.roof_shape_cb_1.setCurrentText("Select Roof Shape")
+            elif pd.isna(self.data_ai.iloc[self.old_local , 12]) == True:
+                self.ui.roof_shape_cb_1.setCurrentText("Select Roof Shape")
+            else:
+                self.setComboBoxByData(self.ui.roof_shape_cb_1 , self.data_ai.iloc[self.old_local , 12])
+                
+            # Roof Material
+            if self.data_ai.iloc[self.old_local , 13] is None :
+                self.ui.roof_material_cb_1.setCurrentText("Select Roof Material")
+            elif pd.isna(self.data_ai.iloc[self.old_local , 13]) == True:
+                self.ui.roof_material_cb_1.setCurrentText("Select Roof Material")
+            else:
+                self.setComboBoxByData(self.ui.roof_material_cb_1 , self.data_ai.iloc[self.old_local , 13])
+    
+            # Image quality
+            if self.data_ai.iloc[self.old_local , 14] is None :
+                self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
+            elif pd.isna(self.data_ai.iloc[self.old_local , 14]) == True:
+                self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
+            else:
+                self.setComboBoxByData(self.ui.img_q_cb_1 , self.data_ai.iloc[self.old_local , 14])
+                
+            # ----------------------- CENTRAL -----------------------------
+            
+            # Restart default value of central building image
+            # Material
+            if self.data_ai.iloc[self.old_local + 1 , 5] is None:
+                self.ui.material_cb_2.setCurrentText("Select Material")
+            elif pd.isna(self.data_ai.iloc[self.old_local + 1 , 5]) == True:
+                self.ui.material_cb_2.setCurrentText("Select Material")
+            else:
+                self.setComboBoxByData(self.ui.material_cb_2 , self.data_ai.iloc[self.old_local + 1 , 5])
+    
+            # LLRS
+            if self.data_ai.iloc[self.old_local + 1 , 6] is None :
+                self.ui.llrs_cb_2.setCurrentText("Select LLRS")
+            elif pd.isna(self.data_ai.iloc[self.old_local + 1 , 6]) == True:
+                self.ui.llrs_cb_2.setCurrentText("Select LLRS")
+            else:
+                self.setComboBoxByData(self.ui.llrs_cb_2 , self.data_ai.iloc[self.old_local + 1 , 6])
+                
+            # Code level
+            if self.data_ai.iloc[self.old_local + 1 , 7] is None :
+                self.ui.age_cb_2.setCurrentText("Select Code Level")
+            elif pd.isna(self.data_ai.iloc[self.old_local + 1 , 7]) == True:
+                self.ui.age_cb_2.setCurrentText("Select Code Level")
+            else:
+                self.setComboBoxByData(self.ui.age_cb_2 , self.data_ai.iloc[self.old_local + 1 , 7])
+            
+            # Number of stories
+            if self.data_ai.iloc[self.old_local + 1 , 8] is None :
+                self.ui.n_stories_value_2.setCurrentText("Select Number of Stories")
+            elif pd.isna(self.data_ai.iloc[self.old_local + 1 , 8]) == True:
+                self.ui.n_stories_value_2.setCurrentText("Select Number of Stories")
+            else:
+                self.setComboBoxByData(self.ui.n_stories_value_2, self.data_ai.iloc[self.old_local + 1, 8])
+                
+            # Occupancy
+            if self.data_ai.iloc[self.old_local + 1 , 9] is None :
+                self.ui.occup_cb_2.setCurrentText("Select Occupancy Type")
+            elif pd.isna(self.data_ai.iloc[self.old_local + 1 , 9]) == True:
+                self.ui.occup_cb_2.setCurrentText("Select Occupancy Type")
+            else:
+                self.setComboBoxByData(self.ui.occup_cb_2 , self.data_ai.iloc[self.old_local + 1 , 9])
+            
+            # Block Position
+            if self.data_ai.iloc[self.old_local + 1 , 10] is None :
+                self.ui.bck_pos_cb_2.setCurrentText("Select Block Position")
+            elif pd.isna(self.data_ai.iloc[self.old_local + 1 , 10]) == True:
+                self.ui.bck_pos_cb_2.setCurrentText("Select Block Position")
+            else:
+                self.setComboBoxByData(self.ui.bck_pos_cb_2 , self.data_ai.iloc[self.old_local + 1 , 10])
+                
+            # Epoch of construction
+            if self.data_ai.iloc[self.old_local + 1, 11] is None :
+                self.ui.epc_const_cb_2.setCurrentIndex(0)
+            elif pd.isna(self.data_ai.iloc[self.old_local + 1, 11]) == True:
+                self.ui.epc_const_cb_2.setCurrentText("Select Epoch of Construction")
+            else:
+                self.setComboBoxByData(self.ui.epc_const_cb_2 , self.data_ai.iloc[self.old_local + 1 , 11])
+            
+            # Roof Shape
+            if self.data_ai.iloc[self.old_local + 1 , 12] is None :
+                self.ui.roof_shape_cb_2.setCurrentText("Select Roof Shape")
+            elif pd.isna(self.data_ai.iloc[self.old_local + 1 , 12]) == True:
+                self.ui.roof_shape_cb_2.setCurrentText("Select Roof Shape")
+            else:
+                self.setComboBoxByData(self.ui.roof_shape_cb_2 , self.data_ai.iloc[self.old_local + 1 , 12])
+                
+            # Roof Material
+            if self.data_ai.iloc[self.old_local + 1 , 13] is None :
+                self.ui.roof_material_cb_2.setCurrentText("Select Roof Material")
+            elif pd.isna(self.data_ai.iloc[self.old_local + 1 , 13]) == True:
+                self.ui.roof_material_cb_2.setCurrentText("Select Roof Material")
+            else:
+                self.setComboBoxByData(self.ui.roof_material_cb_2 , self.data_ai.iloc[self.old_local + 1 , 13])
+    
+            # Image quality
+            if self.data_ai.iloc[self.old_local + 1 , 14] is None :
+                self.ui.img_q_cb_2.setCurrentText("Select Image Quality")
+            elif pd.isna(self.data_ai.iloc[self.old_local + 1 , 14]) == True:
+                self.ui.img_q_cb_2.setCurrentText("Select Image Quality")
+            else:
+                self.setComboBoxByData(self.ui.img_q_cb_2 , self.data_ai.iloc[self.old_local + 1 , 14])
+    
+    
+            # ----------------------- RIGHT -----------------------------
+            
+            # Restart default value of right building image
+            # Material
+            if self.data_ai.iloc[self.old_local + 2 , 5] is None:
+                self.ui.material_cb_3.setCurrentText("Select Material")
+            elif pd.isna(self.data_ai.iloc[self.old_local + 2 , 5]) == True:
+                self.ui.material_cb_3.setCurrentText("Select Material")
+            else:
+                self.setComboBoxByData(self.ui.material_cb_3 , self.data_ai.iloc[self.old_local + 2 , 5])
+    
+            # LLRS
+            if self.data_ai.iloc[self.old_local + 2 , 6] is None :
+                self.ui.llrs_cb_3.setCurrentText("Select LLRS")
+            elif pd.isna(self.data_ai.iloc[self.old_local + 2 , 6]) == True:
+                self.ui.llrs_cb_3.setCurrentText("Select LLRS")
+            else:
+                self.setComboBoxByData(self.ui.llrs_cb_3 , self.data_ai.iloc[self.old_local + 2 , 6])
+                
+            # Code level
+            if self.data_ai.iloc[self.old_local + 2 , 7] is None :
+                self.ui.age_cb_3.setCurrentText("Select Code Level")
+            elif pd.isna(self.data_ai.iloc[self.old_local + 2 , 7]) == True:
+                self.ui.age_cb_3.setCurrentText("Select Code Level")
+            else:
+                self.setComboBoxByData(self.ui.age_cb_3 , self.data_ai.iloc[self.old_local + 2 , 7])
+            
+            # Number of stories
+            if self.data_ai.iloc[self.old_local + 2 , 8] is None :
+                self.ui.n_stories_value_3.setCurrentText("Select Number of Stories")
+            elif pd.isna(self.data_ai.iloc[self.old_local + 2 , 8]) == True:
+                self.ui.n_stories_value_3.setCurrentText("Select Number of Stories")
+            else:
+                self.setComboBoxByData(self.ui.n_stories_value_3, self.data_ai.iloc[self.old_local + 2, 8])
+                
+            # Occupancy
+            if self.data_ai.iloc[self.old_local + 2 , 9] is None :
+                self.ui.occup_cb_3.setCurrentText("Select Occupancy Type")
+            elif pd.isna(self.data_ai.iloc[self.old_local + 2 , 9]) == True:
+                self.ui.occup_cb_3.setCurrentText("Select Occupancy Type")
+            else:
+                self.setComboBoxByData(self.ui.occup_cb_3 , self.data_ai.iloc[self.old_local + 2 , 9])
+            
+            # Block Position
+            if self.data_ai.iloc[self.old_local + 2 , 10] is None :
+                self.ui.bck_pos_cb_3.setCurrentText("Select Block Position")
+            elif pd.isna(self.data_ai.iloc[self.old_local + 2 , 10]) == True:
+                self.ui.bck_pos_cb_3.setCurrentText("Select Block Position")
+            else:
+                self.setComboBoxByData(self.ui.bck_pos_cb_3 , self.data_ai.iloc[self.old_local + 2 , 10])
+    
+            # Epoch of construction
+            if self.data_ai.iloc[self.old_local + 2 , 11] is None :
+                self.ui.epc_const_cb_3.setCurrentIndex(0)
+            elif pd.isna(self.data_ai.iloc[self.old_local + 2, 11]) == True:
+                self.ui.epc_const_cb_3.setCurrentIndex(0)
+            else:
+                self.setComboBoxByData(self.ui.epc_const_cb_3 , self.data_ai.iloc[self.old_local + 2 , 11])
+                
+            # Roof Shape
+            if self.data_ai.iloc[self.old_local + 2 , 12] is None :
+                self.ui.roof_shape_cb_3.setCurrentText("Select Roof Shape")
+            elif pd.isna(self.data_ai.iloc[self.old_local + 2 , 12]) == True:
+                self.ui.roof_shape_cb_3.setCurrentText("Select Roof Shape")
+            else:
+                self.setComboBoxByData(self.ui.roof_shape_cb_3 , self.data_ai.iloc[self.old_local + 2 , 12])
+                
+            # Roof Material
+            if self.data_ai.iloc[self.old_local + 2 , 13] is None :
+                self.ui.roof_material_cb_3.setCurrentText("Select Roof Material")
+            elif pd.isna(self.data_ai.iloc[self.old_local + 2 , 13]) == True:
+                self.ui.roof_material_cb_3.setCurrentText("Select Roof Material")
+            else:
+                self.setComboBoxByData(self.ui.roof_material_cb_3 , self.data_ai.iloc[self.old_local + 2 , 13])
+                
+            # Image quality
+            if self.data_ai.iloc[self.old_local + 2 , 14] is None :
+                self.ui.img_q_cb_3.setCurrentText("Select Image Quality")
+            elif pd.isna(self.data_ai.iloc[self.old_local + 2 , 14]) == True:
+                self.ui.img_q_cb_3.setCurrentText("Select Image Quality")
+            else:
+                self.setComboBoxByData(self.ui.img_q_cb_3 , self.data_ai.iloc[self.old_local + 2 , 14])
+    
     ############ Deep learning model for predict the LLRS Material ################
     def material_prediction (self):
         """
@@ -1720,67 +2057,67 @@ class GUIMethods:
             - Requires the AI-powered checkbox (`ai_check`) to be selected for predictions to proceed.
             - Assumes a predefined function `predict_material_img` for making predictions.
         """
-        # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no country name
-        elif self.ui.country_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no city name 
-        elif self.ui.city_value.text() == "-":
-            pass
-        else:
-            # Comboboxes for each image label
-            material_id = [self.ui.material_cb_1,self.ui.material_cb_2,self.ui.material_cb_3]
-            # Checkbox for the AI powered activation
-            if self.ui.ai_check.isChecked():
-                # Polygon and Specific method
-                if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                    self.ui.method_progress.setText("Loading AI model ...")
-                    for j in range (100):
-                        time.sleep(0.0001)
-                        self.ui.progress_bar_method.setValue(j)
-                    for i in range (3):
-                        # Image path
-                        if self.predicted_img[i] == 1:
-                            image_file = self.cropped_image[i]
-                            # LLRS building image prediction
-                            box_aux = None
-                            material_index = predict_material_img(image_file, self.ui.insp_method, box_aux)
-                      
-                            # Set DL model prediction
-                            # LLRS building image sets prediction
-                            material_id[i].setCurrentIndex(material_index+1)
-                     
-                        # Peogress bar update
-                        self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")
-                
-                # Local method
-                elif self.ui.insp_method == 2:
-                    
-                    self.ui.method_progress.setText("Loading AI model ...")
-                    for j in range (100):
-                        time.sleep(0.0001)
-                        self.ui.progress_bar_method.setValue(j)
-                        
-                    for aux in range (self.n_images_local):
-                        # Local cropped image path
-                        
-                        aux_path = (self.ui.folder_path+"/Cropped_images/"
-                                        +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
-                        
-                        cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
-               
+        # # Conditional to avoid executing the method if there is no project folder
+        # if self.ui.output_folder_value == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no country name
+        # elif self.ui.country_value.text() == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no city name 
+        # elif self.ui.city_value.text() == "-":
+        #     pass
+        # else:
+        # Comboboxes for each image label
+        material_id = [self.ui.material_cb_1,self.ui.material_cb_2,self.ui.material_cb_3]
+        # Checkbox for the AI powered activation
+        if self.ui.ai_check.isChecked():
+            # Polygon and Specific method
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+                self.ui.method_progress.setText("Loading AI model ...")
+                for j in range (100):
+                    time.sleep(0.0001)
+                    self.ui.progress_bar_method.setValue(j)
+                for i in range (3):
+                    # Image path
+                    if self.predicted_img[i] == 1:
+                        image_file = self.cropped_image[i]
                         # LLRS building image prediction
-                        material_index = predict_material_img(cropped_path, self.ui.insp_method, self.box_id)
+                        box_aux = None
+                        material_index = predict_material_img(image_file, self.ui.insp_method, box_aux)
+                  
+                        # Set DL model prediction
                         # LLRS building image sets prediction
-                        material_id[aux].setCurrentIndex(material_index+1)
-          
-                        # Peogress bar update
-                        self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")
-                        
+                        material_id[i].setCurrentIndex(material_index+1)
+                 
+                    # Peogress bar update
+                    self.ui.progress_bar_method.setValue(100)
+                    self.ui.method_progress.setText("Prediction complete!")
+            
+            # Local method
+            elif self.ui.insp_method == 2:
+                
+                self.ui.method_progress.setText("Loading AI model ...")
+                for j in range (100):
+                    time.sleep(0.0001)
+                    self.ui.progress_bar_method.setValue(j)
+                    
+                for aux in range (self.n_images_local):
+                    # Local cropped image path
+                    
+                    aux_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    
+                    cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
+           
+                    # LLRS building image prediction
+                    material_index = predict_material_img(cropped_path, self.ui.insp_method, self.box_id)
+                    # LLRS building image sets prediction
+                    material_id[aux].setCurrentIndex(material_index+1)
+      
+                    # Peogress bar update
+                    self.ui.progress_bar_method.setValue(100)
+                    self.ui.method_progress.setText("Prediction complete!")
+                    
                         
     ############ Deep learning model for predict the LLRS ################
     def llrs_prediction (self):
@@ -1803,58 +2140,58 @@ class GUIMethods:
             - Requires the AI-powered checkbox (`ai_check`) to be selected for predictions to proceed.
             - Assumes a predefined function `predict_llrs_img` for making predictions.
         """
-        # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no country name
-        elif self.ui.country_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no city name 
-        elif self.ui.city_value.text() == "-":
-            pass
-        else:
-            # Comboboxes for each image label
-            llrs_id = [self.ui.llrs_cb_1,self.ui.llrs_cb_2,self.ui.llrs_cb_3]
-            # Checkbox for the AI powered activation
-            if self.ui.ai_check.isChecked():
-                if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                    for i in range (3):
-                        if self.predicted_img[i] == 1:
-                            # Image path
-                            image_file = self.cropped_image[i]       
-                            # LLRS building image prediction
-                            box_aux = None
-                            llrs_index = predict_llrs_img(image_file, self.ui.insp_method, box_aux)
-                            # LLRS building image sets prediction
-                            llrs_id[i].setCurrentIndex(llrs_index+1) 
-                            
-                        # Peogress bar update
-                        self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")
-                
-                elif self.ui.insp_method == 2:
-                    
-                    self.ui.method_progress.setText("Loading AI model ...")
-                    for j in range (100):
-                        time.sleep(0.0001)
-                        self.ui.progress_bar_method.setValue(j)
-                        
-                    for aux in range (self.n_images_local):
-                        # Local cropped image path
-                        
-                        aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                            +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
-                        cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"                                                     
-                      
+        # # Conditional to avoid executing the method if there is no project folder
+        # if self.ui.output_folder_value == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no country name
+        # elif self.ui.country_value.text() == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no city name 
+        # elif self.ui.city_value.text() == "-":
+        #     pass
+        # else:
+        # Comboboxes for each image label
+        llrs_id = [self.ui.llrs_cb_1,self.ui.llrs_cb_2,self.ui.llrs_cb_3]
+        # Checkbox for the AI powered activation
+        if self.ui.ai_check.isChecked():
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+                for i in range (3):
+                    if self.predicted_img[i] == 1:
+                        # Image path
+                        image_file = self.cropped_image[i]       
                         # LLRS building image prediction
-                        llrs_index = predict_llrs_img(cropped_path, self.ui.insp_method, self.box_id)
+                        box_aux = None
+                        llrs_index = predict_llrs_img(image_file, self.ui.insp_method, box_aux)
                         # LLRS building image sets prediction
-                        llrs_id[aux].setCurrentIndex(llrs_index+1)
-          
-                        # Peogress bar update
-                        self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")
+                        llrs_id[i].setCurrentIndex(llrs_index+1) 
                         
+                    # Peogress bar update
+                    self.ui.progress_bar_method.setValue(100)
+                    self.ui.method_progress.setText("Prediction complete!")
+            
+            elif self.ui.insp_method == 2:
+                
+                self.ui.method_progress.setText("Loading AI model ...")
+                for j in range (100):
+                    time.sleep(0.0001)
+                    self.ui.progress_bar_method.setValue(j)
+                    
+                for aux in range (self.n_images_local):
+                    # Local cropped image path
+                    
+                    aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"                  
+                  
+                    # LLRS building image prediction
+                    llrs_index = predict_llrs_img(cropped_path, self.ui.insp_method, self.box_id)
+                    # LLRS building image sets prediction
+                    llrs_id[aux].setCurrentIndex(llrs_index+1)
+      
+                    # Peogress bar update
+                    self.ui.progress_bar_method.setValue(100)
+                    self.ui.method_progress.setText("Prediction complete!")
+                    
                         
     ############ Deep learning model for predict the Code level ################
     def code_level_prediction (self):
@@ -1880,58 +2217,59 @@ class GUIMethods:
               on local cropped images.
             - The `predict_code_img` function is called to generate predictions.
         """
-        # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no country name
-        elif self.ui.country_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no city name 
-        elif self.ui.city_value.text() == "-":
-            pass
-        else:
-            # Comboboxes for each image label
-            code_level_id = [self.ui.age_cb_1,self.ui.age_cb_2,self.ui.age_cb_3]
-            # Checkbox for the AI powered activation
-            if self.ui.ai_check.isChecked():
-                if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                    for i in range (3):
-                        if self.predicted_img[i] == 1:
-                            # Image path
-                            image_file = self.cropped_image[i]
-    
-                            # LLRS building image prediction
-                            box_aux = None
-                            code_level_index = predict_code_img(image_file, self.ui.insp_method, box_aux)
-    
-                            # LLRS building image sets prediction
-                            code_level_id[i].setCurrentIndex(code_level_index+1)                      
-                        # Peogress bar update
-                        self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")
-                
-                elif self.ui.insp_method == 2:
-                    
-                    self.ui.method_progress.setText("Loading AI model ...")
-                    for j in range (100):
-                        time.sleep(0.0001)
-                        self.ui.progress_bar_method.setValue(j)
-                        
-                    for aux in range (self.n_images_local):
-                        # Local cropped image path
-                        aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                            +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
-                        cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
-                                     
+        # # Conditional to avoid executing the method if there is no project folder
+        # if self.ui.output_folder_value == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no country name
+        # elif self.ui.country_value.text() == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no city name 
+        # elif self.ui.city_value.text() == "-":
+        #     pass
+        # else:
+        # Comboboxes for each image label
+        code_level_id = [self.ui.age_cb_1,self.ui.age_cb_2,self.ui.age_cb_3]
+        # Checkbox for the AI powered activation
+        if self.ui.ai_check.isChecked():
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+                for i in range (3):
+                    if self.predicted_img[i] == 1:
+                        # Image path
+                        image_file = self.cropped_image[i]
+
                         # LLRS building image prediction
-                        code_level_index = predict_code_img(cropped_path, self.ui.insp_method, self.box_id)
+                        box_aux = None
+                        code_level_index = predict_code_img(image_file, self.ui.insp_method, box_aux)
+
                         # LLRS building image sets prediction
-                        code_level_id[aux].setCurrentIndex(code_level_index+1)
-          
-                        # Peogress bar update
-                        self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")
+                        code_level_id[i].setCurrentIndex(code_level_index+1)                      
+                    # Peogress bar update
+                    self.ui.progress_bar_method.setValue(100)
+                    self.ui.method_progress.setText("Prediction complete!")
+            
+            elif self.ui.insp_method == 2:
+                
+                self.ui.method_progress.setText("Loading AI model ...")
+                for j in range (100):
+                    time.sleep(0.0001)
+                    self.ui.progress_bar_method.setValue(j)
                     
+                for aux in range (self.n_images_local):
+                    # Local cropped image path
+                    
+                    aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
+                                 
+                    # LLRS building image prediction
+                    code_level_index = predict_code_img(cropped_path, self.ui.insp_method, self.box_id)
+                    # LLRS building image sets prediction
+                    code_level_id[aux].setCurrentIndex(code_level_index+1)
+      
+                    # Peogress bar update
+                    self.ui.progress_bar_method.setValue(100)
+                    self.ui.method_progress.setText("Prediction complete!")
+                
      
     ############ Deep learning model for predict the Number of Stories ################
     def n_stories_prediction (self):
@@ -1957,61 +2295,62 @@ class GUIMethods:
             - Requires the AI-powered checkbox (`ai_check`) to be selected for predictions to proceed.
             - Assumes a predefined function `predict_llrs_img` for making predictions.
         """
-        # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no country name
-        elif self.ui.country_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no city name 
-        elif self.ui.city_value.text() == "-":
-            pass
-        else:
-            # Comboboxes for each image label
-            n_stories_id = [self.ui.n_stories_value_1,self.ui.n_stories_value_2,self.ui.n_stories_value_3]
-            # Checkbox for the AI powered activation
-            if self.ui.ai_check.isChecked():
-                if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                    for i in range (3):
-                        if self.predicted_img[i] == 1:
-                            # Image path
-                            image_file = self.cropped_image[i]
-        
-                            # LLRS building image prediction
-                            box_aux = None
-                            n_stories_index = predict_n_stories_img(image_file, self.ui.insp_method, box_aux)
-        
-                            # LLRS building image sets prediction
-                            class_names = ['10-12', '13+', '1', '2', '3', '4', '5', '6-7', '8-9']
-                            n_stories_id[i].setCurrentText(class_names[n_stories_index])    
-                            
-                        # Peogress bar update
-                        self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")
-                
-                elif self.ui.insp_method == 2:
-                    
-                    self.ui.method_progress.setText("Loading AI model ...")
-                    for j in range (100):
-                        time.sleep(0.0001)
-                        self.ui.progress_bar_method.setValue(j)
-                        
-                    for aux in range (self.n_images_local):
-                        # Local cropped image path
-                        aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                            +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
-                        cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
-                        
+        # # Conditional to avoid executing the method if there is no project folder
+        # if self.ui.output_folder_value == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no country name
+        # elif self.ui.country_value.text() == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no city name 
+        # elif self.ui.city_value.text() == "-":
+        #     pass
+        # else:
+        # Comboboxes for each image label
+        n_stories_id = [self.ui.n_stories_value_1,self.ui.n_stories_value_2,self.ui.n_stories_value_3]
+        # Checkbox for the AI powered activation
+        if self.ui.ai_check.isChecked():
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+                for i in range (3):
+                    if self.predicted_img[i] == 1:
+                        # Image path
+                        image_file = self.cropped_image[i]
+    
                         # LLRS building image prediction
-                        n_stories_index = predict_n_stories_img(cropped_path, self.ui.insp_method, self.box_id)
+                        box_aux = None
+                        n_stories_index = predict_n_stories_img(image_file, self.ui.insp_method, box_aux)
+    
                         # LLRS building image sets prediction
                         class_names = ['10-12', '13+', '1', '2', '3', '4', '5', '6-7', '8-9']
-                        n_stories_id[aux].setCurrentText(class_names[n_stories_index])
-          
-                        # Peogress bar update
-                        self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")
+                        n_stories_id[i].setCurrentText(class_names[n_stories_index])    
                         
+                    # Peogress bar update
+                    self.ui.progress_bar_method.setValue(100)
+                    self.ui.method_progress.setText("Prediction complete!")
+            
+            elif self.ui.insp_method == 2:
+                
+                self.ui.method_progress.setText("Loading AI model ...")
+                for j in range (100):
+                    time.sleep(0.0001)
+                    self.ui.progress_bar_method.setValue(j)
+                    
+                for aux in range (self.n_images_local):
+                    # Local cropped image path
+                    
+                    aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
+                    
+                    # LLRS building image prediction
+                    n_stories_index = predict_n_stories_img(cropped_path, self.ui.insp_method, self.box_id)
+                    # LLRS building image sets prediction
+                    class_names = ['10-12', '13+', '1', '2', '3', '4', '5', '6-7', '8-9']
+                    n_stories_id[aux].setCurrentText(class_names[n_stories_index])
+      
+                    # Peogress bar update
+                    self.ui.progress_bar_method.setValue(100)
+                    self.ui.method_progress.setText("Prediction complete!")
+                    
                         
     ############ Deep learning model for predict the Occupancy type ################
     def occupancy_prediction (self):
@@ -2038,59 +2377,59 @@ class GUIMethods:
             - For manual inspection mode (`insp_method == 2`), predictions are performed 
               on local cropped images.
         """
-        # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no country name
-        elif self.ui.country_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no city name 
-        elif self.ui.city_value.text() == "-":
-            pass
-        else:
-            # Comboboxes for each image label
-            occupancy_id = [self.ui.occup_cb_1,self.ui.occup_cb_2,self.ui.occup_cb_3]
-            # Checkbox for the AI powered activation
-            if self.ui.ai_check.isChecked():
-                if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                    for i in range (3):
-                        if self.predicted_img[i] == 1:
-                            # Image path
-                            image_file = self.cropped_image[i]
-    
-                            # LLRS building image prediction
-                            box_aux = None
-                            occupancy_index = predict_occupancy_img(image_file, self.ui.insp_method, box_aux)
-    
-                            # LLRS building image sets prediction
-                            occupancy_class = ['Residential', 'Educational', 'Government', 'Industrial', 'Mixed', 'Other', 'Residential']
-                            occupancy_id[i].setCurrentText(occupancy_class[occupancy_index])                      
-                        # Peogress bar update
-                        self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")
-                
-                elif self.ui.insp_method == 2:
-                    
-                    self.ui.method_progress.setText("Loading AI model ...")
-                    for j in range (100):
-                        time.sleep(0.0001)
-                        self.ui.progress_bar_method.setValue(j)
-                        
-                    for aux in range (self.n_images_local):
-                        # Local cropped image path
-                        aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                            +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
-                        cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"        
-                        
+        # # Conditional to avoid executing the method if there is no project folder
+        # if self.ui.output_folder_value == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no country name
+        # elif self.ui.country_value.text() == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no city name 
+        # elif self.ui.city_value.text() == "-":
+        #     pass
+        # else:
+        # Comboboxes for each image label
+        occupancy_id = [self.ui.occup_cb_1,self.ui.occup_cb_2,self.ui.occup_cb_3]
+        # Checkbox for the AI powered activation
+        if self.ui.ai_check.isChecked():
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+                for i in range (3):
+                    if self.predicted_img[i] == 1:
+                        # Image path
+                        image_file = self.cropped_image[i]
+
                         # LLRS building image prediction
-                        occupancy_index = predict_occupancy_img(cropped_path, self.ui.insp_method, self.box_id)
+                        box_aux = None
+                        occupancy_index = predict_occupancy_img(image_file, self.ui.insp_method, box_aux)
+
                         # LLRS building image sets prediction
                         occupancy_class = ['Residential', 'Educational', 'Government', 'Industrial', 'Mixed', 'Other', 'Residential']
-                        occupancy_id[aux].setCurrentText(occupancy_class[occupancy_index])     
-          
-                        # Peogress bar update
-                        self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")
+                        occupancy_id[i].setCurrentText(occupancy_class[occupancy_index])                      
+                    # Peogress bar update
+                    self.ui.progress_bar_method.setValue(100)
+                    self.ui.method_progress.setText("Prediction complete!")
+            
+            elif self.ui.insp_method == 2:
+                
+                self.ui.method_progress.setText("Loading AI model ...")
+                for j in range (100):
+                    time.sleep(0.0001)
+                    self.ui.progress_bar_method.setValue(j)
+                    
+                for aux in range (self.n_images_local):
+                    
+                    aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"      
+                    
+                    # LLRS building image prediction
+                    occupancy_index = predict_occupancy_img(cropped_path, self.ui.insp_method, self.box_id)
+                    # LLRS building image sets prediction
+                    occupancy_class = ['Residential', 'Educational', 'Government', 'Industrial', 'Mixed', 'Other', 'Residential']
+                    occupancy_id[aux].setCurrentText(occupancy_class[occupancy_index])     
+      
+                    # Peogress bar update
+                    self.ui.progress_bar_method.setValue(100)
+                    self.ui.method_progress.setText("Prediction complete!")
                         
                         
     ############ Deep learning model for predict the block_position ################
@@ -2121,171 +2460,173 @@ class GUIMethods:
             - The predicted index is incremented by 1 before being assigned to the combo box.
         """
 
-        # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no country name
-        elif self.ui.country_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no city name 
-        elif self.ui.city_value.text() == "-":
-            pass
-        else:
-            # Comboboxes for each image label
-            block_position_id = [self.ui.bck_pos_cb_1,self.ui.bck_pos_cb_2,self.ui.bck_pos_cb_3]
-            if self.box_id == None:
-                # Checkbox for the AI powered activation
-                if self.ui.ai_check.isChecked():
-                    if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                        for i in range (3):
-                            if self.predicted_img[i] == 1:
-                                # Image path
-                                image_file = self.cropped_image[i]      
-                                # block_position building image prediction
-                                box_aux = None
-                                block_position_index = predict_block_position_img(image_file, self.ui.insp_method, box_aux)
-                                # block_position building image sets prediction
-                                block_position_id[i].setCurrentIndex(block_position_index+1)                       
-                            # Peogress bar update
-                            self.ui.progress_bar_method.setValue(100)
-                            self.ui.method_progress.setText("Prediction complete!")
-                    
-                    elif self.ui.insp_method == 2:
-                        
-                        self.ui.method_progress.setText("Loading AI model ...")
-                        for j in range (100):
-                            time.sleep(0.0001)
-                            self.ui.progress_bar_method.setValue(j)
-                            
-                        for aux in range (self.n_images_local):
-                            # Local cropped image path
-                            aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                                +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
-                            cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
-                            
+        # # Conditional to avoid executing the method if there is no project folder
+        # if self.ui.output_folder_value == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no country name
+        # elif self.ui.country_value.text() == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no city name 
+        # elif self.ui.city_value.text() == "-":
+        #     pass
+        # else:
+        # Comboboxes for each image label
+        block_position_id = [self.ui.bck_pos_cb_1,self.ui.bck_pos_cb_2,self.ui.bck_pos_cb_3]
+        if self.box_id == None:
+            # Checkbox for the AI powered activation
+            if self.ui.ai_check.isChecked():
+                if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+                    for i in range (3):
+                        if self.predicted_img[i] == 1:
+                            # Image path
+                            image_file = self.cropped_image[i]      
                             # block_position building image prediction
-                            block_position_index = predict_block_position_img(cropped_path, self.ui.insp_method, self.box_id)
+                            box_aux = None
+                            block_position_index = predict_block_position_img(image_file, self.ui.insp_method, box_aux)
                             # block_position building image sets prediction
-                            block_position_id[aux].setCurrentIndex(block_position_index+1)
-              
-                            # Peogress bar update
-                            self.ui.progress_bar_method.setValue(100)
-                            self.ui.method_progress.setText("Prediction complete!")      
-            else:
-                self.box_id = None
+                            block_position_id[i].setCurrentIndex(block_position_index+1)                       
+                        # Peogress bar update
+                        self.ui.progress_bar_method.setValue(100)
+                        self.ui.method_progress.setText("Prediction complete!")
+                
+                elif self.ui.insp_method == 2:
+                    
+                    self.ui.method_progress.setText("Loading AI model ...")
+                    for j in range (100):
+                        time.sleep(0.0001)
+                        self.ui.progress_bar_method.setValue(j)
+                        
+                    for aux in range (self.n_images_local):
+                        # Local cropped image path
+                        
+                        aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                        +str(self.data_building.iloc[self.old_local + aux, 0]))
+                        cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
+                        
+                        # block_position building image prediction
+                        block_position_index = predict_block_position_img(cropped_path, self.ui.insp_method, self.box_id)
+                        # block_position building image sets prediction
+                        block_position_id[aux].setCurrentIndex(block_position_index+1)
+          
+                        # Peogress bar update
+                        self.ui.progress_bar_method.setValue(100)
+                        self.ui.method_progress.setText("Prediction complete!")      
+        else:
+            self.box_id = None
                 
             
     ############ Deep learning model for predict the Roof shape ################
     def roof_shape_prediction (self):
 
-        # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no country name
-        elif self.ui.country_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no city name 
-        elif self.ui.city_value.text() == "-":
-            pass
-        else:
-            # Comboboxes for each image label
-            roof_shape_id = [self.ui.roof_shape_cb_1,self.ui.roof_shape_cb_2,self.ui.roof_shape_cb_3]
-            if self.box_id == None:
-                # Checkbox for the AI powered activation
-                if self.ui.ai_check.isChecked():
-                    if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                        for i in range (3):
-                            if self.predicted_img[i] == 1:
-                                # Image path
-                                image_file = self.cropped_image[i]      
-                                # roof_shape building image prediction
-                                box_aux = None
-                                roof_shape_index = predict_roof_shape_img(image_file, self.ui.insp_method, box_aux)
-                                # roof_shape building image sets prediction
-                                roof_shape_id[i].setCurrentIndex(roof_shape_index+1)                       
-                            # Peogress bar update
-                            self.ui.progress_bar_method.setValue(100)
-                            self.ui.method_progress.setText("Prediction complete!")
-                    
-                    elif self.ui.insp_method == 2:
-                        
-                        self.ui.method_progress.setText("Loading AI model ...")
-                        for j in range (100):
-                            time.sleep(0.0001)
-                            self.ui.progress_bar_method.setValue(j)
-                            
-                        for aux in range (self.n_images_local):
-                            # Local cropped image path
-                            aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                                +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
-                            cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
-                            
+        # # Conditional to avoid executing the method if there is no project folder
+        # if self.ui.output_folder_value == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no country name
+        # elif self.ui.country_value.text() == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no city name 
+        # elif self.ui.city_value.text() == "-":
+        #     pass
+        # else:
+        # Comboboxes for each image label
+        roof_shape_id = [self.ui.roof_shape_cb_1,self.ui.roof_shape_cb_2,self.ui.roof_shape_cb_3]
+        if self.box_id == None:
+            # Checkbox for the AI powered activation
+            if self.ui.ai_check.isChecked():
+                if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+                    for i in range (3):
+                        if self.predicted_img[i] == 1:
+                            # Image path
+                            image_file = self.cropped_image[i]      
                             # roof_shape building image prediction
-                            roof_shape_index = predict_roof_shape_img(cropped_path, self.ui.insp_method, self.box_id)
+                            box_aux = None
+                            roof_shape_index = predict_roof_shape_img(image_file, self.ui.insp_method, box_aux)
                             # roof_shape building image sets prediction
-                            roof_shape_id[aux].setCurrentIndex(roof_shape_index+1)
-              
-                            # Peogress bar update
-                            self.ui.progress_bar_method.setValue(100)
-                            self.ui.method_progress.setText("Prediction complete!")      
-            else:
-                self.box_id = None
+                            roof_shape_id[i].setCurrentIndex(roof_shape_index+1)                       
+                        # Peogress bar update
+                        self.ui.progress_bar_method.setValue(100)
+                        self.ui.method_progress.setText("Prediction complete!")
                 
+                elif self.ui.insp_method == 2:
+                    
+                    self.ui.method_progress.setText("Loading AI model ...")
+                    for j in range (100):
+                        time.sleep(0.0001)
+                        self.ui.progress_bar_method.setValue(j)
+                        
+                    for aux in range (self.n_images_local):
+                        # Local cropped image path
+                        
+                        aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                        +str(self.data_building.iloc[self.old_local + aux, 0]))
+                        cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
+                        
+                        # roof_shape building image prediction
+                        roof_shape_index = predict_roof_shape_img(cropped_path, self.ui.insp_method, self.box_id)
+                        # roof_shape building image sets prediction
+                        roof_shape_id[aux].setCurrentIndex(roof_shape_index+1)
+          
+                        # Peogress bar update
+                        self.ui.progress_bar_method.setValue(100)
+                        self.ui.method_progress.setText("Prediction complete!")      
+        else:
+            self.box_id = None
+            
     ############ Deep learning model for predict the Roof shape ################
     def roof_material_prediction (self):
 
-        # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no country name
-        elif self.ui.country_value.text() == "-":
-            pass
-        # Conditional to avoid executing the method if there is no city name 
-        elif self.ui.city_value.text() == "-":
-            pass
-        else:
-            # Comboboxes for each image label
-            roof_material_id = [self.ui.roof_material_cb_1,self.ui.roof_material_cb_2,self.ui.roof_material_cb_3]
-            if self.box_id == None:
-                # Checkbox for the AI powered activation
-                if self.ui.ai_check.isChecked():
-                    if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                        for i in range (3):
-                            if self.predicted_img[i] == 1:
-                                # Image path
-                                image_file = self.cropped_image[i]      
-                                # roof_material building image prediction
-                                box_aux = None
-                                roof_material_index = predict_roof_material_img(image_file, self.ui.insp_method, box_aux)
-                                # roof_material building image sets prediction
-                                roof_material_id[i].setCurrentIndex(roof_material_index+1)                       
-                            # Peogress bar update
-                            self.ui.progress_bar_method.setValue(100)
-                            self.ui.method_progress.setText("Prediction complete!")
-                    
-                    elif self.ui.insp_method == 2:
-                        
-                        self.ui.method_progress.setText("Loading AI model ...")
-                        for j in range (100):
-                            time.sleep(0.0001)
-                            self.ui.progress_bar_method.setValue(j)
-                            
-                        for aux in range (self.n_images_local):
-                            # Local cropped image path
-                            aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                                +str(self.data_building.iloc[self.click_count * self.n_images_local + aux, 0]))
-                            cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
-                                                                   
+        # # Conditional to avoid executing the method if there is no project folder
+        # if self.ui.output_folder_value == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no country name
+        # elif self.ui.country_value.text() == "-":
+        #     pass
+        # # Conditional to avoid executing the method if there is no city name 
+        # elif self.ui.city_value.text() == "-":
+        #     pass
+        # else:
+        # Comboboxes for each image label
+        roof_material_id = [self.ui.roof_material_cb_1,self.ui.roof_material_cb_2,self.ui.roof_material_cb_3]
+        if self.box_id == None:
+            # Checkbox for the AI powered activation
+            if self.ui.ai_check.isChecked():
+                if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+                    for i in range (3):
+                        if self.predicted_img[i] == 1:
+                            # Image path
+                            image_file = self.cropped_image[i]      
                             # roof_material building image prediction
-                            roof_material_index = predict_roof_material_img(cropped_path, self.ui.insp_method, self.box_id)
+                            box_aux = None
+                            roof_material_index = predict_roof_material_img(image_file, self.ui.insp_method, box_aux)
                             # roof_material building image sets prediction
-                            roof_material_id[aux].setCurrentIndex(roof_material_index+1)
-              
-                            # Peogress bar update
-                            self.ui.progress_bar_method.setValue(100)
-                            self.ui.method_progress.setText("Prediction complete!")      
-            else:
-                self.box_id = None                      
+                            roof_material_id[i].setCurrentIndex(roof_material_index+1)                       
+                        # Peogress bar update
+                        self.ui.progress_bar_method.setValue(100)
+                        self.ui.method_progress.setText("Prediction complete!")
+                
+                elif self.ui.insp_method == 2:
+                    
+                    self.ui.method_progress.setText("Loading AI model ...")
+                    for j in range (100):
+                        time.sleep(0.0001)
+                        self.ui.progress_bar_method.setValue(j)
+                        
+                    for aux in range (self.n_images_local):
+                        # Local cropped image path
+                        aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                        +str(self.data_building.iloc[self.old_local + aux, 0]))
+                        cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
+                                                               
+                        # roof_material building image prediction
+                        roof_material_index = predict_roof_material_img(cropped_path, self.ui.insp_method, self.box_id)
+                        # roof_material building image sets prediction
+                        roof_material_id[aux].setCurrentIndex(roof_material_index+1)
+          
+                        # Peogress bar update
+                        self.ui.progress_bar_method.setValue(100)
+                        self.ui.method_progress.setText("Prediction complete!")      
+        else:
+            self.box_id = None                      
                 
                 
     ############ Search and load existing inspections ################                  
@@ -2305,29 +2646,35 @@ class GUIMethods:
             - If the database is missing, the user is advised to upload it using the "Next Building" button.
         """
 
-        # Conditional to avoid executing the method if there is no project folder
-        if self.ui.output_folder_value.text() == "-":
-            QMessageBox.warning(self.ui, "Project Error", "Please select project folder")
-        # Conditional to avoid executing the method if there is no country name
-        elif self.ui.country_value.text() == "-":
-            QMessageBox.warning(self.ui, "Country Error", "Please sets country name")
-        # Conditional to avoid executing the method if there is no city name 
-        elif self.ui.city_value.text() == "-":
-            QMessageBox.warning(self.ui, "City Error", "Please sets city name")
-        else:
-            # Get the value from the QLineEdit
-            search_value = self.ui.search_img_value.text()
-            # Check if the value is not empty
-            if not search_value.strip():
-                self.ui.search_img_value.setText("Please enter a value to search.")
-                return
+        # # Conditional to avoid executing the method if there is no project folder
+        # if self.ui.output_folder_value == "-":
+        #     QMessageBox.warning(self.ui, "Project Error", "Please select project folder")
+        # # Conditional to avoid executing the method if there is no country name
+        # elif self.ui.country_value.text() == "-":
+        #     QMessageBox.warning(self.ui, "Country Error", "Please sets country name")
+        # # Conditional to avoid executing the method if there is no city name 
+        # elif self.ui.city_value.text() == "-":
+        #     QMessageBox.warning(self.ui, "City Error", "Please sets city name")
+        # else:
+        # Get the value from the QLineEdit
+        search_value = self.ui.search_img_value.text()
+        # Check if the value is not empty
+        if not search_value.strip():
+            self.ui.search_img_value.setText("Please enter a value to search.")
+            return
 
-            # Search in the DataFrame
-            try:
-                result = self.data_ai[self.data_ai['ID'] == search_value]
-            except:
-                QMessageBox.warning(self.ui, "Data Error", "Please click the Next Building button to upload the inspection database")
-            n_building = result.iloc[0,0][0]
+        # Search in the DataFrame
+        try:
+            result = self.data_ai[self.data_ai['ID'] == search_value]
+        except:
+            QMessageBox.warning(self.ui, "Data Error", "Please click the Next Building button to upload the inspection database")
+        n_building = result.iloc[0,0][0]
+        
+        if self.ui.insp_method == 0:
+            self.click_count = int(n_building) - 1
+        if self.ui.insp_method == 1:
+            self.click_count = int(n_building) - 1
+        if self.ui.insp_method == 2:
             self.click_count = int(n_building)
 
     def neighbor_extrapolation(self):
@@ -2350,22 +2697,22 @@ class GUIMethods:
             # Convert final list to DataFrame
             final_distribution_df_full = pd.DataFrame(final_distribution_list_full)
             # Export to CSV
-            saved_path = self.ui.output_folder_value.text()+"/"+self.ui.extrapolation_name+".csv"
+            saved_path = self.ui.output_folder_value+"/"+self.ui.extrapolation_name+".csv"
             final_distribution_df_full.to_csv(saved_path, index=False)
             self.ui.method_progress.setText("Successful extrapolation process")
         
     def epoch_construction(self):
         if self.ui.insp_method != 3:
-            path = self.ui.output_folder_value.text()+"/epoch_value.csv"
-            
+            path = self.ui.output_folder_value+"/epoch_value.csv"
+          
             try:
                 epoch = pd.read_csv(path)
                 if self.epoch_const == True:
                     self.epoch_const = False
                     for i in range(len(epoch)):
-                        self.ui.epc_const_cb_1.addItem(epoch.iloc[i,0])
-                        self.ui.epc_const_cb_2.addItem(epoch.iloc[i,0])
-                        self.ui.epc_const_cb_3.addItem(epoch.iloc[i,0])
+                        self.ui.epc_const_cb_1.addItem(str(epoch.iloc[i,0]))
+                        self.ui.epc_const_cb_2.addItem(str(epoch.iloc[i,0]))
+                        self.ui.epc_const_cb_3.addItem(str(epoch.iloc[i,0]))
             except:
                 self.epoch_const = False
                 

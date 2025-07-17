@@ -3,6 +3,8 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from methods.gui_methods import GUIMethods
 from methods.gui_gis import GUI_geofiles
 
+from methods.method_window import InspectionSetting  # import the method window
+
 # Main Class
 class GUIInterface(QtWidgets.QMainWindow):
     
@@ -11,18 +13,48 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.setupUi(self)
         self.methods = GUIMethods(self)  # Pass the UI to the methods class
         self.geo_qgis = GUI_geofiles(self)  # Pass the UI to the methods class
+        
+        # ✅ Automatically launch the InspectionSetting pop-up window
+        self.method_dialog = InspectionSetting()  # Pass main window reference if needed
+        self.method_dialog.exec_()  # This will show the method window as a modal dialog    
+        self.insp_method = self.method_dialog.insp_method
+        if self.insp_method == 0:
+            self.output_folder_value = self.method_dialog.output_folder_value
+            self.file_name = self.method_dialog.output_polygon.text()
+            self.city = self.method_dialog.city
+            self.country = self.method_dialog.country
+        elif self.insp_method == 1:
+            self.output_folder_value = self.method_dialog.output_folder_value
+            self.file_name = self.method_dialog.specific_output_name.text()
+        elif self.insp_method == 2:
+            self.data_method = self.method_dialog.data_local
+            self.folder_path = self.method_dialog.folder_path
+            self.file_local_csv = self.method_dialog.file_local_csv
+            self.output_folder_value = self.method_dialog.output_folder_value
+            self.file_name_local = self.method_dialog.local_output_name
+        elif self.insp_method == 3:
+            self.data_method = self.method_dialog.data_local
+        
+        QtWidgets.QMessageBox.information(
+            self,
+            "Success",
+            "✅ Setup complete!\n\n"
+            "Please click **OK** to proceed to the main classification window.\n"
+            "Once there, click the **Next Building** button in the purple panel to begin the classification process."
+        )
+        
         """ Methods applied with button and others elements """
         
         # Selection of the project folder for saving data
-        self.path_out_folder_bt.clicked.connect(self.methods.select_folder)
+        # self.path_out_folder_bt.clicked.connect(self.methods.select_folder)
         
-        self.method_button.clicked.connect(self.methods.select_insp_method)
+        # self.method_button.clicked.connect(self.methods.select_insp_method)
         
         # Excute a emergent window to upload coordinates of the analysis area
-        self.set_cood_button.clicked.connect(self.methods.open_emergent_window)
+        # self.set_cood_button.clicked.connect(self.methods.open_emergent_window)
         
-        # Normalize input data
-        self.next_button.clicked.connect(self.geo_qgis.normalize_input)
+        # # Normalize input data
+        # self.next_button.clicked.connect(self.geo_qgis.normalize_input)
         
         # Create a *.csv file "Country_City_building_info.csv" with its OSM ID and its coordinates
         self.next_button.clicked.connect(self.methods.create_database)
@@ -35,8 +67,8 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.previous_button.clicked.connect(self.methods.count_clicks_previous)
         
         # Sets lat and lot values
-        self.next_button.clicked.connect(self.methods.coordinates)
-        self.previous_button.clicked.connect(self.methods.coordinates)
+        self.next_button.clicked.connect(self.methods.get_city_name)
+        self.previous_button.clicked.connect(self.methods.get_city_name)
         
         # Set eóch construction values
         self.next_button.clicked.connect(self.methods.epoch_construction)
@@ -76,7 +108,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Search existing inspections
         self.search_img_button.clicked.connect(self.methods.search_inspection)
-        self.search_img_button.clicked.connect(self.methods.coordinates)
+        self.search_img_button.clicked.connect(self.methods.get_city_name)
         self.search_img_button.clicked.connect(self.methods.fetch_three_step_views)
         self.search_img_button.clicked.connect(self.methods.object_detector_building)
         self.search_img_button.clicked.connect(self.methods.clean_database)
@@ -125,7 +157,8 @@ class GUIInterface(QtWidgets.QMainWindow):
             print("User canceled the close operation.")
             event.ignore()  # Prevent the GUI from closing
 
-    
+
+
     # Definition of the different pluggin, button, among others (objects) of the GUI
     def setupUi(self, GUIInterface):
         
@@ -143,7 +176,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         """Set up the user interface components."""
         # Configure main window properties
         GUIInterface.setObjectName("GUIInterface")
-        GUIInterface.resize(int(1570*sf_x), int(989*sf_y))  # Size of the GUI (Display resolution)
+        GUIInterface.resize(int(1570*sf_x), int(940*sf_y))  # Size of the GUI (Display resolution)
         
         # Create a central widget where other widgets will be added
         self.centralwidget = QtWidgets.QWidget(GUIInterface)
@@ -161,38 +194,39 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.Tittle.setAlignment(QtCore.Qt.AlignCenter)
         self.Tittle.setObjectName("Tittle")
         
-        """ Project folder elements """
-        # Button for selecting the project folder
-        self.path_out_folder_bt = QtWidgets.QPushButton(self.centralwidget)
-        self.path_out_folder_bt.setGeometry(QtCore.QRect(int(1090 * sf_x), int(90 * sf_y), int(131 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        self.path_out_folder_bt.setFont(font)
-        self.path_out_folder_bt.setObjectName("path_out_folder_bt")
+        # """ Project folder elements """
+        # # Button for selecting the project folder
+        # self.path_out_folder_bt = QtWidgets.QPushButton(self.centralwidget)
+        # self.path_out_folder_bt.setGeometry(QtCore.QRect(int(20 * sf_x), int(90 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        # font = QtGui.QFont()
+        # font.setBold(True)
+        # font.setPointSize(int(10 * sf_x))
+        # self.path_out_folder_bt.setFont(font)
+        # self.path_out_folder_bt.setObjectName("path_out_folder_bt")
         
-        # Project folder text value
-        self.output_folder_value = QtWidgets.QLabel(self.centralwidget)
-        self.output_folder_value.setGeometry(QtCore.QRect(int(1240 * sf_x), int(90 * sf_y), int(311 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(8 * sf_x))
-        self.output_folder_value.setFont(font)
-        self.output_folder_value.setObjectName("output_folder_value")
+        # # Project folder text value
+        # self.output_folder_value = QtWidgets.QLabel(self.centralwidget)
+        # self.output_folder_value.setGeometry(QtCore.QRect(int(160 * sf_x), int(90 * sf_y), int(311 * sf_x), int(31 * sf_y)))
+        # font = QtGui.QFont()
+        # font.setPointSize(int(8 * sf_x))
+        # self.output_folder_value.setFont(font)
+        # self.output_folder_value.setObjectName("output_folder_value")
         
-        # Label of project selection
-        self.output_path_tittle = QtWidgets.QLabel(self.centralwidget)
-        self.output_path_tittle.setGeometry(QtCore.QRect(int(1090 * sf_x), int(50 * sf_y), int(181 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(12 * sf_x))
-        font.setBold(True)
-        font.setWeight(75)
-        self.output_path_tittle.setFont(font)
-        self.output_path_tittle.setObjectName("output_path_tittle")
+        # # Label of project selection
+        # self.output_path_tittle = QtWidgets.QLabel(self.centralwidget)
+        # self.output_path_tittle.setGeometry(QtCore.QRect(int(20 * sf_x), int(50 * sf_y), int(181 * sf_x), int(31 * sf_y)))
+        # font = QtGui.QFont()
+        # font.setPointSize(int(12 * sf_x))
+        # font.setBold(True)
+        # font.setWeight(75)
+        # self.output_path_tittle.setFont(font)
+        # self.output_path_tittle.setObjectName("output_path_tittle")
         
         
         """ Coordinates data elements """
         # Label of latitude 
         self.lat_label = QtWidgets.QLabel(self.centralwidget)
-        self.lat_label.setGeometry(QtCore.QRect(int(660 * sf_x), int(50 * sf_y), int(161 * sf_x), int(31 * sf_y)))
+        self.lat_label.setGeometry(QtCore.QRect(int(600 * sf_x), int(50 * sf_y), int(111 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -203,7 +237,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Latitude value
         self.lat_value = QtWidgets.QLabel(self.centralwidget)
-        self.lat_value.setGeometry(QtCore.QRect(int(840 * sf_x), int(50 * sf_y), int(161 * sf_x), int(31 * sf_y)))
+        self.lat_value.setGeometry(QtCore.QRect(int(720 * sf_x), int(50 * sf_y), int(171 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.lat_value.setFont(font)
@@ -213,7 +247,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Label of longitude
         self.lon_label = QtWidgets.QLabel(self.centralwidget)
-        self.lon_label.setGeometry(QtCore.QRect(int(660 * sf_x), int(90 * sf_y), int(171 * sf_x), int(31 * sf_y)))
+        self.lon_label.setGeometry(QtCore.QRect(int(880 * sf_x), int(50 * sf_y), int(111 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -224,7 +258,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Longitude value
         self.lon_value = QtWidgets.QLabel(self.centralwidget)
-        self.lon_value.setGeometry(QtCore.QRect(int(840 * sf_x), int(90 * sf_y), int(161 * sf_x), int(31 * sf_y)))
+        self.lon_value.setGeometry(QtCore.QRect(int(1000 * sf_x), int(50 * sf_y), int(171 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.lon_value.setFont(font)
@@ -235,7 +269,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         """ Country and city elements """
         # Label for the country 
         self.country_label_input = QtWidgets.QLabel(self.centralwidget)
-        self.country_label_input.setGeometry(QtCore.QRect(int(20 * sf_x), int(90 * sf_y), int(81 * sf_x), int(31 * sf_y)))
+        self.country_label_input.setGeometry(QtCore.QRect(int(260 * sf_x), int(50 * sf_y), int(81 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(11 * sf_x))
         font.setBold(True)
@@ -246,7 +280,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Country value
         self.country_value = QtWidgets.QLabel(self.centralwidget)
-        self.country_value.setGeometry(QtCore.QRect(int(110 * sf_x), int(90 * sf_y), int(151 * sf_x), int(31 * sf_y)))
+        self.country_value.setGeometry(QtCore.QRect(int(350 * sf_x), int(50 * sf_y), int(161 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.country_value.setFont(font)
@@ -256,7 +290,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Label for the city
         self.city_label = QtWidgets.QLabel(self.centralwidget)
-        self.city_label.setGeometry(QtCore.QRect(int(270 * sf_x), int(90 * sf_y), int(71 * sf_x), int(31 * sf_y)))
+        self.city_label.setGeometry(QtCore.QRect(int(20 * sf_x), int(50 * sf_y), int(71 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(11 * sf_x))
         font.setBold(True)
@@ -268,7 +302,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # City value
         self.city_value = QtWidgets.QLabel(self.centralwidget)
-        self.city_value.setGeometry(QtCore.QRect(int(320 * sf_x), int(90 * sf_y), int(161 * sf_x), int(31 * sf_y)))
+        self.city_value.setGeometry(QtCore.QRect(int(80 * sf_x), int(50 * sf_y), int(161 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.city_value.setFont(font)
@@ -278,28 +312,28 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Colored frame area
         self.frame_location = QtWidgets.QFrame(self.centralwidget)
-        self.frame_location.setGeometry(QtCore.QRect(int(10 * sf_x), int(40 * sf_y), int(631 * sf_x), int(91 * sf_y)))
+        self.frame_location.setGeometry(QtCore.QRect(int(10 * sf_x), int(40 * sf_y), int(1171 * sf_x), int(51 * sf_y)))
         self.frame_location.setStyleSheet("background-color: rgb(254, 255, 174);")
         self.frame_location.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_location.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_location.setObjectName("frame_location")
         
-        # Location label
-        self.location_label = QtWidgets.QLabel(self.frame_location)
-        self.location_label.setGeometry(QtCore.QRect(int(260 * sf_x), int(10 * sf_y), int(111 * sf_x), int(21 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(14 * sf_x))
-        font.setBold(True)
-        font.setWeight(75)
-        self.location_label.setFont(font)
-        self.location_label.setAlignment(QtCore.Qt.AlignCenter)
-        self.location_label.setObjectName("location_label")
+        # # Location label
+        # self.location_label = QtWidgets.QLabel(self.frame_location)
+        # self.location_label.setGeometry(QtCore.QRect(int(260 * sf_x), int(10 * sf_y), int(111 * sf_x), int(21 * sf_y)))
+        # font = QtGui.QFont()
+        # font.setPointSize(int(14 * sf_x))
+        # font.setBold(True)
+        # font.setWeight(75)
+        # self.location_label.setFont(font)
+        # self.location_label.setAlignment(QtCore.Qt.AlignCenter)
+        # self.location_label.setObjectName("location_label")
         
         
         """ Button for next and previous building image """
         # Button to get the next building images
         self.next_button = QtWidgets.QPushButton(self.centralwidget)
-        self.next_button.setGeometry(QtCore.QRect(int(210 * sf_x), int(930 * sf_y), int(151 * sf_x), int(41 * sf_y)))
+        self.next_button.setGeometry(QtCore.QRect(int(210 * sf_x), int(880 * sf_y), int(151 * sf_x), int(41 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -309,7 +343,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Button to get the previous building images
         self.previous_button = QtWidgets.QPushButton(self.centralwidget)
-        self.previous_button.setGeometry(QtCore.QRect(int(20 * sf_x), int(930 * sf_y), int(171 * sf_x), int(41 * sf_y)))
+        self.previous_button.setGeometry(QtCore.QRect(int(20 * sf_x), int(880 * sf_y), int(171 * sf_x), int(41 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -319,7 +353,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Colored area for next and previous button
         self.img_area = QtWidgets.QLabel(self.centralwidget)
-        self.img_area.setGeometry(QtCore.QRect(int(10 * sf_x), int(920 * sf_y), int(371 * sf_x), int(61 * sf_y)))
+        self.img_area.setGeometry(QtCore.QRect(int(10 * sf_x), int(870 * sf_y), int(371 * sf_x), int(61 * sf_y)))
         self.img_area.setStyleSheet("background-color: rgb(209, 170, 255);")
         self.img_area.setText("")
         self.img_area.setObjectName("img_area")
@@ -329,7 +363,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         """ Left Building images elements """
         # Left image color frame
         self.frame_left_img = QtWidgets.QFrame(self.centralwidget)
-        self.frame_left_img.setGeometry(QtCore.QRect(int(10 * sf_x), int(150 * sf_y), int(511 * sf_x), int(761 * sf_y)))
+        self.frame_left_img.setGeometry(QtCore.QRect(int(10 * sf_x), int(100 * sf_y), int(511 * sf_x), int(761 * sf_y)))
         self.frame_left_img.setStyleSheet("background-color: rgb(102, 220, 255);")
         self.frame_left_img.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_left_img.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -370,7 +404,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Bounding box for image left frame
         self.bounding_box_1 = QtWidgets.QPushButton(self.centralwidget)
-        self.bounding_box_1.setGeometry(QtCore.QRect(int(310 * sf_x), int(160 * sf_y), int(161 * sf_x), int(21 * sf_y)))
+        self.bounding_box_1.setGeometry(QtCore.QRect(int(310 * sf_x), int(110 * sf_y), int(161 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -382,7 +416,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Material for left image label
         self.material_1 = QtWidgets.QLabel(self.centralwidget)
-        self.material_1.setGeometry(QtCore.QRect(int(20 * sf_x), int(510 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.material_1.setGeometry(QtCore.QRect(int(20 * sf_x), int(460 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -392,7 +426,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.material_1.setObjectName("material_1")
         # Material Combobox elements
         self.material_cb_1 = QtWidgets.QComboBox(self.centralwidget)
-        self.material_cb_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(510 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.material_cb_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(460 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.material_cb_1.setFont(font)
@@ -415,7 +449,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # LLRS for left image label
         self.llrs_1 = QtWidgets.QLabel(self.centralwidget)
-        self.llrs_1.setGeometry(QtCore.QRect(int(20 * sf_x), int(549 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.llrs_1.setGeometry(QtCore.QRect(int(20 * sf_x), int(500 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -425,7 +459,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.llrs_1.setObjectName("llrs_1")
         # LLRS Combobox elements
         self.llrs_cb_1 = QtWidgets.QComboBox(self.centralwidget)
-        self.llrs_cb_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(551 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.llrs_cb_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(500 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.llrs_cb_1.setFont(font)
@@ -445,7 +479,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Code level for left image label
         self.age_1 = QtWidgets.QLabel(self.centralwidget)
-        self.age_1.setGeometry(QtCore.QRect(int(20 * sf_x), int(590 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.age_1.setGeometry(QtCore.QRect(int(20 * sf_x), int(540 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -455,7 +489,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.age_1.setObjectName("age_1")
         # Code level Combobox elements
         self.age_cb_1 = QtWidgets.QComboBox(self.centralwidget)
-        self.age_cb_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(590 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.age_cb_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(540 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.age_cb_1.setFont(font)
@@ -474,7 +508,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
        # Number of stories for left image label
         self.n_stories_1 = QtWidgets.QLabel(self.centralwidget)
-        self.n_stories_1.setGeometry(QtCore.QRect(int(20 * sf_x), int(630 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.n_stories_1.setGeometry(QtCore.QRect(int(20 * sf_x), int(580 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -484,7 +518,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.n_stories_1.setObjectName("n_stories_1")
         # Number of stories value
         self.n_stories_value_1 = QtWidgets.QComboBox(self.centralwidget)
-        self.n_stories_value_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(630 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.n_stories_value_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(580 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.n_stories_value_1.setFont(font)
@@ -507,7 +541,7 @@ class GUIInterface(QtWidgets.QMainWindow):
 
        # Occupancy type for left image label
         self.occupancy = QtWidgets.QLabel(self.centralwidget)
-        self.occupancy.setGeometry(QtCore.QRect(int(20 * sf_x), int(670 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.occupancy.setGeometry(QtCore.QRect(int(20 * sf_x), int(620 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -517,7 +551,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.occupancy.setObjectName("occupancy")
         # Occupancy Combobox elements
         self.occup_cb_1 = QtWidgets.QComboBox(self.centralwidget)
-        self.occup_cb_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(670 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.occup_cb_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(620 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.occup_cb_1.setFont(font)
@@ -540,7 +574,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Block position for left image label
         self.block_position = QtWidgets.QLabel(self.centralwidget)
-        self.block_position.setGeometry(QtCore.QRect(int(20 * sf_x), int(710 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        self.block_position.setGeometry(QtCore.QRect(int(20 * sf_x), int(660 * sf_y), int(131 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -550,7 +584,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.block_position.setObjectName("block_position")
         # Block position Combobox elements
         self.bck_pos_cb_1 = QtWidgets.QComboBox(self.centralwidget)
-        self.bck_pos_cb_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(710 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.bck_pos_cb_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(660 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.bck_pos_cb_1.setFont(font)
@@ -568,7 +602,7 @@ class GUIInterface(QtWidgets.QMainWindow):
 
         # Epoch of construction for left image label
         self.epc_const_label_1 = QtWidgets.QLabel(self.centralwidget)
-        self.epc_const_label_1.setGeometry(QtCore.QRect(int(20 * sf_x), int(750 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        self.epc_const_label_1.setGeometry(QtCore.QRect(int(20 * sf_x), int(700 * sf_y), int(131 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -579,7 +613,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.epc_const_label_1.setText("Epoch of const:")
         
         self.epc_const_cb_1 = QtWidgets.QComboBox(self.centralwidget)
-        self.epc_const_cb_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(750 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.epc_const_cb_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(700 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.epc_const_cb_1.setFont(font)
@@ -588,7 +622,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Roof Shape for left image label
         self.roof_shape_label_1 = QtWidgets.QLabel(self.centralwidget)
-        self.roof_shape_label_1.setGeometry(QtCore.QRect(int(20 * sf_x), int(790 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        self.roof_shape_label_1.setGeometry(QtCore.QRect(int(20 * sf_x), int(740 * sf_y), int(131 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -599,7 +633,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.roof_shape_label_1.setText("Roof Shape:")
         
         self.roof_shape_cb_1 = QtWidgets.QComboBox(self.centralwidget)
-        self.roof_shape_cb_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(790 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.roof_shape_cb_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(740 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.roof_shape_cb_1.setFont(font)
@@ -618,7 +652,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Roof Material for left image label
         self.roof_material_label_1 = QtWidgets.QLabel(self.centralwidget)
-        self.roof_material_label_1.setGeometry(QtCore.QRect(int(20 * sf_x), int(830 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        self.roof_material_label_1.setGeometry(QtCore.QRect(int(20 * sf_x), int(780 * sf_y), int(131 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -629,7 +663,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.roof_material_label_1.setText("Roof Material:")
         
         self.roof_material_cb_1 = QtWidgets.QComboBox(self.centralwidget)
-        self.roof_material_cb_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(830 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.roof_material_cb_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(780 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.roof_material_cb_1.setFont(font)
@@ -660,7 +694,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Image quality Combobox elements
         self.img_q_cb_1 = QtWidgets.QComboBox(self.centralwidget)
-        self.img_q_cb_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(870 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.img_q_cb_1.setGeometry(QtCore.QRect(int(170 * sf_x), int(820 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.img_q_cb_1.setFont(font)
@@ -679,7 +713,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         """ Central Building images elements """
         # Central image color frame
         self.frame_central_img = QtWidgets.QFrame(self.centralwidget)
-        self.frame_central_img.setGeometry(QtCore.QRect(int(530 * sf_x), int(150 * sf_y), int(511 * sf_x), int(761 * sf_y)))
+        self.frame_central_img.setGeometry(QtCore.QRect(int(530 * sf_x), int(100 * sf_y), int(511 * sf_x), int(761 * sf_y)))
         self.frame_central_img.setStyleSheet("background-color: rgb(255, 170, 127)")
         self.frame_central_img.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_central_img.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -714,7 +748,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.img_id_value_2.setObjectName("img_id_value_2")
         # Bounding box for image central frame
         self.bounding_box_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.bounding_box_2.setGeometry(QtCore.QRect(int(830 * sf_x), int(160 * sf_y), int(161 * sf_x), int(21 * sf_y)))
+        self.bounding_box_2.setGeometry(QtCore.QRect(int(830 * sf_x), int(110 * sf_y), int(161 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -726,7 +760,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         ################## Form for building feature ##########################
         # Material for central image label 
         self.material_2 = QtWidgets.QLabel(self.centralwidget)
-        self.material_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(510 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.material_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(460 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -736,7 +770,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.material_2.setObjectName("material_2")
         # Material Combobox elements
         self.material_cb_2 = QtWidgets.QComboBox(self.centralwidget)
-        self.material_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(510 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.material_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(460 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.material_cb_2.setFont(font)
@@ -759,7 +793,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # LLRS Central image label
         self.llrs_2 = QtWidgets.QLabel(self.centralwidget)
-        self.llrs_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(549 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.llrs_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(500 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -769,7 +803,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.llrs_2.setObjectName("llrs_2")
         # LLRS Combobox elements
         self.llrs_cb_2 = QtWidgets.QComboBox(self.centralwidget)
-        self.llrs_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(551 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.llrs_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(500 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.llrs_cb_2.setFont(font)
@@ -799,7 +833,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.age_2.setObjectName("age_2")
         # Code level Combobox elements
         self.age_cb_2 = QtWidgets.QComboBox(self.centralwidget)
-        self.age_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(590 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.age_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(540 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.age_cb_2.setFont(font)
@@ -817,7 +851,7 @@ class GUIInterface(QtWidgets.QMainWindow):
 
         # Number of stories elements
         self.n_stories_2 = QtWidgets.QLabel(self.centralwidget)
-        self.n_stories_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(630 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.n_stories_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(580 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -827,7 +861,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.n_stories_2.setObjectName("n_stories_2")
         # Number of stories value
         self.n_stories_value_2 = QtWidgets.QComboBox(self.centralwidget)
-        self.n_stories_value_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(630 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.n_stories_value_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(580 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.n_stories_value_2.setFont(font)
@@ -850,7 +884,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Occupancy type label
         self.occupancy_2 = QtWidgets.QLabel(self.centralwidget)
-        self.occupancy_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(670 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.occupancy_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(620 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -860,7 +894,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.occupancy_2.setObjectName("occupancy_2")
         # Occupancy type Combobox elements
         self.occup_cb_2 = QtWidgets.QComboBox(self.centralwidget)
-        self.occup_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(670 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.occup_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(620 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.occup_cb_2.setFont(font)
@@ -883,7 +917,7 @@ class GUIInterface(QtWidgets.QMainWindow):
        
         # Block position label
         self.block_position_2 = QtWidgets.QLabel(self.centralwidget)
-        self.block_position_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(710 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        self.block_position_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(660 * sf_y), int(131 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -893,7 +927,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.block_position_2.setObjectName("block_position_2")
         # Block Position Combobox elements
         self.bck_pos_cb_2 = QtWidgets.QComboBox(self.centralwidget)
-        self.bck_pos_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(710 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.bck_pos_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(660 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.bck_pos_cb_2.setFont(font)
@@ -911,7 +945,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Epoch of construction for left image label
         self.epc_const_label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.epc_const_label_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(750 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        self.epc_const_label_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(700 * sf_y), int(131 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -922,7 +956,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.epc_const_label_2.setText("Epoch of const:")
 
         self.epc_const_cb_2 = QtWidgets.QComboBox(self.centralwidget)
-        self.epc_const_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(750 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.epc_const_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(700 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.epc_const_cb_2.setFont(font)
@@ -931,7 +965,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Roof shape for central image
         self.roof_shape_label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.roof_shape_label_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(790 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        self.roof_shape_label_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(740 * sf_y), int(131 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -942,7 +976,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.roof_shape_label_2.setText("Roof Shape:")
         
         self.roof_shape_cb_2 = QtWidgets.QComboBox(self.centralwidget)
-        self.roof_shape_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(790 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.roof_shape_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(740 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.roof_shape_cb_2.setFont(font)
@@ -965,7 +999,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Roof Material for central image label
         self.roof_material_label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.roof_material_label_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(830 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        self.roof_material_label_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(780 * sf_y), int(131 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -976,7 +1010,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.roof_material_label_2.setText("Roof Material:")
         
         self.roof_material_cb_2 = QtWidgets.QComboBox(self.centralwidget)
-        self.roof_material_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(830 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.roof_material_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(780 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.roof_material_cb_2.setFont(font)
@@ -1006,7 +1040,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Image quality Combobox elements
         self.img_q_cb_2 = QtWidgets.QComboBox(self.centralwidget)
-        self.img_q_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(870 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.img_q_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(820 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.img_q_cb_2.setFont(font)
@@ -1025,7 +1059,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         """ Right Building images elements """
         # Right image color frame
         self.frame_right_img = QtWidgets.QFrame(self.centralwidget)
-        self.frame_right_img.setGeometry(QtCore.QRect(int(1050 * sf_x), int(150 * sf_y), int(511 * sf_x), int(761 * sf_y)))
+        self.frame_right_img.setGeometry(QtCore.QRect(int(1050 * sf_x), int(100 * sf_y), int(511 * sf_x), int(761 * sf_y)))
         self.frame_right_img.setStyleSheet("background-color: rgb(183, 252, 172)")
         self.frame_right_img.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_right_img.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -1060,7 +1094,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.img_id_value_3.setObjectName("img_id_value_3")
         # Bounding box for image right frame
         self.bounding_box_3 = QtWidgets.QPushButton(self.centralwidget)
-        self.bounding_box_3.setGeometry(QtCore.QRect(int(1360 * sf_x), int(160 * sf_y), int(161 * sf_x), int(21 * sf_y)))
+        self.bounding_box_3.setGeometry(QtCore.QRect(int(1360 * sf_x), int(110 * sf_y), int(161 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -1073,7 +1107,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Material for right image label
         self.material_3 = QtWidgets.QLabel(self.centralwidget)
-        self.material_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(510 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.material_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(460 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -1083,7 +1117,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.material_3.setObjectName("material_3")
         # Material right combobox elements
         self.material_cb_3 = QtWidgets.QComboBox(self.centralwidget)
-        self.material_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(510 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.material_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(460 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.material_cb_3.setFont(font)
@@ -1106,7 +1140,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # LLRS for right image label
         self.llrs_3 = QtWidgets.QLabel(self.centralwidget)
-        self.llrs_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(549 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.llrs_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(500 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -1116,7 +1150,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.llrs_3.setObjectName("llrs_3")
         # LLRS right combobox elements
         self.llrs_cb_3 = QtWidgets.QComboBox(self.centralwidget)
-        self.llrs_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(551 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.llrs_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(500 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.llrs_cb_3.setFont(font)
@@ -1135,7 +1169,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Code level for right image label
         self.age_3 = QtWidgets.QLabel(self.centralwidget)
-        self.age_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(590 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.age_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(540 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -1145,7 +1179,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.age_3.setObjectName("age_3")
         # Code level right combobox elements
         self.age_cb_3 = QtWidgets.QComboBox(self.centralwidget)
-        self.age_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(590 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.age_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(540 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.age_cb_3.setFont(font)
@@ -1164,7 +1198,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Number of stories for right image label
         self.n_stories_3 = QtWidgets.QLabel(self.centralwidget)
-        self.n_stories_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(630 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.n_stories_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(580 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -1174,7 +1208,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.n_stories_3.setObjectName("n_stories_3")
         # Number of stories value
         self.n_stories_value_3 = QtWidgets.QComboBox(self.centralwidget)
-        self.n_stories_value_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(630 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.n_stories_value_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(580 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.n_stories_value_3.setFont(font)
@@ -1198,7 +1232,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Occupancy type for right image label
         self.occupancy_3 = QtWidgets.QLabel(self.centralwidget)
-        self.occupancy_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(670 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.occupancy_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(620 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -1208,7 +1242,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.occupancy_3.setObjectName("occupancy_3")
         # Occupancy type right combobox elements
         self.occup_cb_3 = QtWidgets.QComboBox(self.centralwidget)
-        self.occup_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(670 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.occup_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(620 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.occup_cb_3.setFont(font)
@@ -1231,7 +1265,7 @@ class GUIInterface(QtWidgets.QMainWindow):
                      
         # Block position for right image label
         self.block_position_3 = QtWidgets.QLabel(self.centralwidget)
-        self.block_position_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(710 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        self.block_position_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(660 * sf_y), int(131 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -1241,7 +1275,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.block_position_3.setObjectName("block_position_3")
         # Block position right combobox elements
         self.bck_pos_cb_3 = QtWidgets.QComboBox(self.centralwidget)
-        self.bck_pos_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(710 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.bck_pos_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(660 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.bck_pos_cb_3.setFont(font)
@@ -1259,7 +1293,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Epoch of construction for right image label
         self.epc_const_label_3 = QtWidgets.QLabel(self.centralwidget)
-        self.epc_const_label_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(750 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        self.epc_const_label_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(700 * sf_y), int(131 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -1270,7 +1304,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.epc_const_label_3.setText("Epoch of const:")
         
         self.epc_const_cb_3 = QtWidgets.QComboBox(self.centralwidget)
-        self.epc_const_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(750 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.epc_const_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(700 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.epc_const_cb_3.setFont(font)
@@ -1279,7 +1313,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Roof shape for right image
         self.roof_shape_label_3 = QtWidgets.QLabel(self.centralwidget)
-        self.roof_shape_label_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(790 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        self.roof_shape_label_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(740 * sf_y), int(131 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -1290,7 +1324,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.roof_shape_label_3.setText("Roof Shape:")
         
         self.roof_shape_cb_3 = QtWidgets.QComboBox(self.centralwidget)
-        self.roof_shape_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(790 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.roof_shape_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(740 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.roof_shape_cb_3.setFont(font)
@@ -1309,7 +1343,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Roof Material for left image label
         self.roof_material_label_3 = QtWidgets.QLabel(self.centralwidget)
-        self.roof_material_label_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(830 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        self.roof_material_label_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(780 * sf_y), int(131 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -1320,7 +1354,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.roof_material_label_3.setText("Roof Material:")
         
         self.roof_material_cb_3 = QtWidgets.QComboBox(self.centralwidget)
-        self.roof_material_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(830 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.roof_material_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(780 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.roof_material_cb_3.setFont(font)
@@ -1350,7 +1384,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.img_quality_3.setObjectName("img_quality_3")
         # Image quality right combobox elements
         self.img_q_cb_3 = QtWidgets.QComboBox(self.centralwidget)
-        self.img_q_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(870 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.img_q_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(820 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.img_q_cb_3.setFont(font)
@@ -1373,7 +1407,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         """ Search button elements """
         self.search_img_button = QtWidgets.QPushButton(self.centralwidget)
-        self.search_img_button.setGeometry(QtCore.QRect(int(1400 * sf_x), int(920 * sf_y), int(151 * sf_x), int(31 * sf_y)))
+        self.search_img_button.setGeometry(QtCore.QRect(int(1400 * sf_x), int(870 * sf_y), int(151 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -1383,14 +1417,14 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         self.search_img_value = QtWidgets.QLineEdit(self.centralwidget)
         self.search_img_value.setPlaceholderText("Enter image ID to search")
-        self.search_img_value.setGeometry(QtCore.QRect(int(1250 * sf_x), int(920 * sf_y), int(141 * sf_x), int(31 * sf_y)))
+        self.search_img_value.setGeometry(QtCore.QRect(int(1250 * sf_x), int(870 * sf_y), int(141 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.search_img_value.setFont(font)
         self.search_img_value.setObjectName("search_img_value")
         
         self.search_img_label = QtWidgets.QLabel(self.centralwidget)
-        self.search_img_label.setGeometry(QtCore.QRect(int(1140 * sf_x), int(920 * sf_y), int(91 * sf_x), int(31 * sf_y)))
+        self.search_img_label.setGeometry(QtCore.QRect(int(1140 * sf_x), int(870 * sf_y), int(91 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -1438,7 +1472,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         """ Progress Bar elements """
         # Progress bar widget
         self.progress_bar_method = QtWidgets.QProgressBar(self.centralwidget)
-        self.progress_bar_method.setGeometry(QtCore.QRect(int(620 * sf_x), int(940 * sf_y), int(161 * sf_x), int(23 * sf_y)))
+        self.progress_bar_method.setGeometry(QtCore.QRect(int(620 * sf_x), int(890 * sf_y), int(161 * sf_x), int(23 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.progress_bar_method.setFont(font)
@@ -1447,46 +1481,53 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Progress bar label value
         self.method_progress = QtWidgets.QLabel(self.centralwidget)
-        self.method_progress.setGeometry(QtCore.QRect(int(800 * sf_x), int(930 * sf_y), int(291 * sf_x), int(41 * sf_y)))
+        self.method_progress.setGeometry(QtCore.QRect(int(800 * sf_x), int(880 * sf_y), int(291 * sf_x), int(41 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.method_progress.setFont(font)
         self.method_progress.setObjectName("method_progress")
         
-        """ Coordinates input by file button elements """
-        # Button set coordinates
-        self.set_cood_button = QtWidgets.QPushButton(self.centralwidget)
-        self.set_cood_button.setGeometry(QtCore.QRect(int(500 * sf_x), int(90 * sf_y), int(131 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        font.setBold(True)
-        font.setWeight(75)
-        self.set_cood_button.setFont(font)
-        self.set_cood_button.setObjectName("set_cood_button")
+        # """ Coordinates input by file button elements """
+        # # Button set coordinates
+        # self.set_cood_button = QtWidgets.QPushButton(self.centralwidget)
+        # self.set_cood_button.setGeometry(QtCore.QRect(int(500 * sf_x), int(90 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        # font = QtGui.QFont()
+        # font.setPointSize(int(10 * sf_x))
+        # font.setBold(True)
+        # font.setWeight(75)
+        # self.set_cood_button.setFont(font)
+        # self.set_cood_button.setObjectName("set_cood_button")
         
         # Colored frame area
-        self.frame_coord_val = QtWidgets.QFrame(self.centralwidget)
-        self.frame_coord_val.setGeometry(QtCore.QRect(int(650 * sf_x), int(40 * sf_y), int(391 * sf_x), int(91 * sf_y)))
-        self.frame_coord_val.setStyleSheet("background-color: rgb(254, 255, 174);")
-        self.frame_coord_val.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.frame_coord_val.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.frame_coord_val.setObjectName("frame_coord_val")
+        # self.frame_coord_val = QtWidgets.QFrame(self.centralwidget)
+        # self.frame_coord_val.setGeometry(QtCore.QRect(int(650 * sf_x), int(40 * sf_y), int(391 * sf_x), int(91 * sf_y)))
+        # self.frame_coord_val.setStyleSheet("background-color: rgb(254, 255, 174);")
+        # self.frame_coord_val.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        # self.frame_coord_val.setFrameShadow(QtWidgets.QFrame.Raised)
+        # self.frame_coord_val.setObjectName("frame_coord_val")
         
-        """ Method button elements """
-        # Button set method
-        self.method_button = QtWidgets.QPushButton(self.centralwidget)
-        self.method_button.setGeometry(QtCore.QRect(int(500 * sf_x), int(50 * sf_y), int(131 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        font.setBold(True)
-        font.setWeight(75)
-        self.method_button.setFont(font)
-        self.method_button.setObjectName("method_button")
+        # self.frame_input = QtWidgets.QFrame(self.centralwidget)
+        # self.frame_input.setGeometry(QtCore.QRect(int(10 * sf_x), int(40 * sf_y), int(661 * sf_x), int(91 * sf_y)))
+        # self.frame_input.setStyleSheet("background-color: rgb(214, 211, 192);")
+        # self.frame_input.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        # self.frame_input.setFrameShadow(QtWidgets.QFrame.Raised)
+        # self.frame_input.setObjectName("frame_input")
+        
+        # """ Method button elements """
+        # # Button set method
+        # self.method_button = QtWidgets.QPushButton(self.centralwidget)
+        # self.method_button.setGeometry(QtCore.QRect(int(500 * sf_x), int(50 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        # font = QtGui.QFont()
+        # font.setPointSize(int(10 * sf_x))
+        # font.setBold(True)
+        # font.setWeight(75)
+        # self.method_button.setFont(font)
+        # self.method_button.setObjectName("method_button")
         
         """ AI Powered activation elements """
         # AI checkbox activation
         self.ai_check = QtWidgets.QCheckBox(self.centralwidget)
-        self.ai_check.setGeometry(QtCore.QRect(int(400 * sf_x), int(940 * sf_y), int(131 * sf_x), int(21 * sf_y)))
+        self.ai_check.setGeometry(QtCore.QRect(int(400 * sf_x), int(890 * sf_y), int(131 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -1497,7 +1538,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         """ Save data button elements """ 
         # Save data button
         self.save_data_button = QtWidgets.QPushButton(self.centralwidget)
-        self.save_data_button.setGeometry(QtCore.QRect(int(1130 * sf_x), int(950 * sf_y), int(111 * sf_x), int(31 * sf_y)))
+        self.save_data_button.setGeometry(QtCore.QRect(int(1130 * sf_x), int(900 * sf_y), int(111 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -1567,14 +1608,15 @@ class GUIInterface(QtWidgets.QMainWindow):
 
         
         """ Raise all elements """
-        self.frame_coord_val.raise_()
+        # self.frame_coord_val.raise_()
+        # self.frame_input.raise_()
         self.frame_location.raise_()
-        self.path_out_folder_bt.raise_()
+        # self.path_out_folder_bt.raise_()
         self.country_label_input.raise_()
         self.city_label.raise_()
         self.Tittle.raise_()
-        self.output_folder_value.raise_()
-        self.output_path_tittle.raise_()
+        # self.output_folder_value.raise_()
+        # self.output_path_tittle.raise_()
         self.lat_label.raise_()
         self.lon_label.raise_()
         self.previous_button.raise_()
@@ -1628,10 +1670,10 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.occupancy_3.raise_()
         self.progress_bar_method.raise_()
         self.method_progress.raise_()
-        self.set_cood_button.raise_()
+        # self.set_cood_button.raise_()
         self.ai_check.raise_()
         self.save_data_button.raise_()
-        self.method_button.raise_()
+        # self.method_button.raise_()
         self.n_stories_value_1.raise_()
         self.n_stories_value_2.raise_()
         self.n_stories_value_3.raise_()
@@ -1681,14 +1723,14 @@ class GUIInterface(QtWidgets.QMainWindow):
     def retranslateUi(self, GUIInterface):
         _translate = QtCore.QCoreApplication.translate
         GUIInterface.setWindowTitle(_translate("GUIInterface", "RUBIC-AI: Building Inventory Classifier"))
-        self.path_out_folder_bt.setText(_translate("GUIInterface", "Project Folder"))
+        # self.path_out_folder_bt.setText(_translate("GUIInterface", "Project Folder"))
         self.country_label_input.setText(_translate("GUIInterface", "Country:"))
         self.city_label.setText(_translate("GUIInterface", "City:"))
         self.Tittle.setText(_translate("GUIInterface", "RUBIC-AI: Building Inventory Classifier"))
-        self.output_folder_value.setText(_translate("GUIInterface", "-"))
-        self.output_path_tittle.setText(_translate("GUIInterface", "Project Selection"))
-        self.lat_label.setText(_translate("GUIInterface", "Building Latitude: "))
-        self.lon_label.setText(_translate("GUIInterface", "Building Longitude:"))
+        # self.output_folder_value.setText(_translate("GUIInterface", "-"))
+        # self.output_path_tittle.setText(_translate("GUIInterface", "Input panel"))
+        self.lat_label.setText(_translate("GUIInterface", "Latitude: "))
+        self.lon_label.setText(_translate("GUIInterface", "Longitude:"))
         self.previous_button.setText(_translate("GUIInterface", "Previous Building"))
         self.lat_value.setText(_translate("GUIInterface", "-"))
         self.lon_value.setText(_translate("GUIInterface", "-"))
@@ -1719,7 +1761,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.img_q_cb_1.setItemText(0, _translate("GUIInterface", "Select Image Quality"))
         self.search_img_button.setText(_translate("GUIInterface", "Search Building"))
         self.search_img_label.setText(_translate("GUIInterface", "Image ID:"))
-        self.location_label.setText(_translate("GUIInterface", "Location"))
+        # self.location_label.setText(_translate("GUIInterface", "Location"))
         self.material_cb_2.setItemText(0, _translate("GUIInterface", "Select Material"))
         self.llrs_cb_2.setItemText(0, _translate("GUIInterface", "Select LLRS"))
         self.img_q_cb_2.setItemText(0, _translate("GUIInterface", "Select Image Quality"))
@@ -1744,11 +1786,14 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.age_3.setText(_translate("GUIInterface", "Code Level:"))
         self.occupancy_3.setText(_translate("GUIInterface", "Occupancy:"))
         self.method_progress.setText(_translate("GUIInterface", "-"))
-        self.set_cood_button.setText(_translate("GUIInterface", "Set Coord."))
+        # self.set_cood_button.setText(_translate("GUIInterface", "Input files"))
         self.ai_check.setText(_translate("GUIInterface", "AI Powered"))
         self.save_data_button.setText(_translate("GUIInterface", "Save data"))
-        self.method_button.setText(_translate("GUIInterface", "Insp. Method"))
+        # self.method_button.setText(_translate("GUIInterface", "Usage mode"))
         self.bounding_box_1.setText(_translate("search_img_value", "Manual box"))
         self.bounding_box_2.setText(_translate("search_img_value", "Manual box"))
         self.bounding_box_3.setText(_translate("search_img_value", "Manual box"))
+        
+        
+
         
