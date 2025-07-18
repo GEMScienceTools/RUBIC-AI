@@ -2,9 +2,10 @@ import torch
 import torchvision.transforms as transforms
 from torchvision import models
 from PIL import Image
+from PyQt5.QtWidgets import QMessageBox
 
 ############ Material prediction ################
-def predict_material_img (image_path, insp_method, box_id):
+def predict_material_img (image_path, insp_method, box_id, self):
     """
     Predict the construction material of a building using a pre-trained DenseNet201 model.
 
@@ -65,26 +66,43 @@ def predict_material_img (image_path, insp_method, box_id):
     # Function to predict the class of an image
     # Load and preprocess the image
     if insp_method != 2:
-        image = Image.fromarray(image_path)
-        image = image.convert("RGB")
+        try:
+            image = Image.fromarray(image_path)
+            image = image.convert("RGB")
+            
+            image = transform(image).unsqueeze(0).to(device)
+            
+            # Perform inference
+            with torch.no_grad():
+                output = model(image)
+                prediction = torch.argmax(output, dim=1).item()
+                
+            return prediction
+        
+        except:
+            QMessageBox.warning(
+                self,
+                "Image Error",
+                f"No Street View image found or no building detected for ID: {box_id}")
     else:
         if box_id != None:
             image = Image.fromarray(image_path)
             image = image.convert("RGB")
         else:
             image = Image.open(image_path).convert("RGB")
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model(image)
-        prediction = torch.argmax(output, dim=1).item()
+   
+        image = transform(image).unsqueeze(0).to(device)
         
-    return prediction
+        # Perform inference
+        with torch.no_grad():
+            output = model(image)
+            prediction = torch.argmax(output, dim=1).item()
+            
+        return prediction
 
 
 ############ LLRS prediction ################
-def predict_llrs_img (image_path, insp_method, box_id):
+def predict_llrs_img (image_path, insp_method, box_id, self):
     """
     Predict the lateral load resisting system (LLRS) of a building using a pre-trained DenseNet201 model.
 
@@ -146,26 +164,42 @@ def predict_llrs_img (image_path, insp_method, box_id):
     # Function to predict the class of an image
     # Load and preprocess the image
     if insp_method != 2:
-        image = Image.fromarray(image_path)
-        image = image.convert("RGB")
+        try:
+            image = Image.fromarray(image_path)
+            image = image.convert("RGB")
+            
+            image = transform(image).unsqueeze(0).to(device)
+            
+            # Perform inference
+            with torch.no_grad():
+                output = model(image)
+                prediction = torch.argmax(output, dim=1).item()
+                
+            return prediction
+        
+        except:
+            pass
     else:
         if box_id != None:
             image = Image.fromarray(image_path)
             image = image.convert("RGB")
         else:
             image = Image.open(image_path).convert("RGB")
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model(image)
-        prediction = torch.argmax(output, dim=1).item()
+   
+        image = transform(image).unsqueeze(0).to(device)
         
-    return prediction
+        # Perform inference
+        with torch.no_grad():
+            output = model(image)
+            prediction = torch.argmax(output, dim=1).item()
+            
+        return prediction
+        
+    
 
 
 ############ Code level prediction ################
-def predict_code_img (image_path, insp_method, box_id):
+def predict_code_img (image_path, insp_method, box_id, self):
     """
     Predict the building code level based on an image using a pre-trained DenseNet201 model.
 
@@ -226,26 +260,40 @@ def predict_code_img (image_path, insp_method, box_id):
     # Function to predict the class of an image
     # Load and preprocess the image
     if insp_method != 2:
-        image = Image.fromarray(image_path)
-        image = image.convert("RGB")
+        try:
+            image = Image.fromarray(image_path)
+            image = image.convert("RGB")
+            
+            image = transform(image).unsqueeze(0).to(device)
+            
+            # Perform inference
+            with torch.no_grad():
+                output = model(image)
+                prediction = torch.argmax(output, dim=1).item()
+                
+            return prediction
+        
+        except:
+            pass
     else:
         if box_id != None:
             image = Image.fromarray(image_path)
             image = image.convert("RGB")
         else:
             image = Image.open(image_path).convert("RGB")
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model(image)
-        prediction = torch.argmax(output, dim=1).item()
+   
+        image = transform(image).unsqueeze(0).to(device)
         
-    return prediction
+        # Perform inference
+        with torch.no_grad():
+            output = model(image)
+            prediction = torch.argmax(output, dim=1).item()
+            
+        return prediction
 
 
 ############ Number of Stories prediction ################
-def predict_n_stories_img (image_path, insp_method, box_id):
+def predict_n_stories_img (image_path, insp_method, box_id, self):
     """
     Predict the number of stories of a building using a pre-trained DenseNet201 model.
 
@@ -307,26 +355,40 @@ def predict_n_stories_img (image_path, insp_method, box_id):
     # Function to predict the class of an image
     # Load and preprocess the image
     if insp_method != 2:
-        image = Image.fromarray(image_path)
-        image = image.convert("RGB")
+        try:
+            image = Image.fromarray(image_path)
+            image = image.convert("RGB")
+            
+            image = transform(image).unsqueeze(0).to(device)
+            
+            # Perform inference
+            with torch.no_grad():
+                output = model(image)
+                prediction = torch.argmax(output, dim=1).item()
+                
+            return prediction
+        
+        except:
+            pass
     else:
         if box_id != None:
             image = Image.fromarray(image_path)
             image = image.convert("RGB")
         else:
             image = Image.open(image_path).convert("RGB")
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model(image)
-        prediction = torch.argmax(output, dim=1).item()
+   
+        image = transform(image).unsqueeze(0).to(device)
         
-    return prediction
+        # Perform inference
+        with torch.no_grad():
+            output = model(image)
+            prediction = torch.argmax(output, dim=1).item()
+            
+        return prediction
 
 
 ############ Occupancy prediction ################
-def predict_occupancy_img (image_path, insp_method, box_id):
+def predict_occupancy_img (image_path, insp_method, box_id, self):
     """
     Predict the occupancy classification of a building using a pre-trained DenseNet201 model.
 
@@ -387,26 +449,40 @@ def predict_occupancy_img (image_path, insp_method, box_id):
     # Function to predict the class of an image
     # Load and preprocess the image
     if insp_method != 2:
-        image = Image.fromarray(image_path)
-        image = image.convert("RGB")
+        try:
+            image = Image.fromarray(image_path)
+            image = image.convert("RGB")
+            
+            image = transform(image).unsqueeze(0).to(device)
+            
+            # Perform inference
+            with torch.no_grad():
+                output = model(image)
+                prediction = torch.argmax(output, dim=1).item()
+                
+            return prediction
+        
+        except:
+            pass
     else:
         if box_id != None:
             image = Image.fromarray(image_path)
             image = image.convert("RGB")
         else:
             image = Image.open(image_path).convert("RGB")
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model(image)
-        prediction = torch.argmax(output, dim=1).item()
+   
+        image = transform(image).unsqueeze(0).to(device)
         
-    return prediction
+        # Perform inference
+        with torch.no_grad():
+            output = model(image)
+            prediction = torch.argmax(output, dim=1).item()
+            
+        return prediction
 
 
 ############ Block Position prediction ################
-def predict_block_position_img (image_path, insp_method, box_id):
+def predict_block_position_img (image_path, insp_method, box_id, self):
     """
     Predict the block position of a building using a pre-trained DenseNet201 model.
 
@@ -468,25 +544,39 @@ def predict_block_position_img (image_path, insp_method, box_id):
     # Function to predict the class of an image
     # Load and preprocess the image
     if insp_method != 2:
-        image = Image.fromarray(image_path)
-        image = image.convert("RGB")
+        try:
+            image = Image.fromarray(image_path)
+            image = image.convert("RGB")
+            
+            image = transform(image).unsqueeze(0).to(device)
+            
+            # Perform inference
+            with torch.no_grad():
+                output = model(image)
+                prediction = torch.argmax(output, dim=1).item()
+                
+            return prediction
+        
+        except:
+            pass
     else:
         if box_id != None:
             image = Image.fromarray(image_path)
             image = image.convert("RGB")
         else:
             image = Image.open(image_path).convert("RGB")
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model(image)
-        prediction = torch.argmax(output, dim=1).item()
+   
+        image = transform(image).unsqueeze(0).to(device)
         
-    return prediction
+        # Perform inference
+        with torch.no_grad():
+            output = model(image)
+            prediction = torch.argmax(output, dim=1).item()
+            
+        return prediction
 
 ############ Roof Shape prediction ################
-def predict_roof_shape_img (image_path, insp_method, box_id):
+def predict_roof_shape_img (image_path, insp_method, box_id, self):
     """
     Predict the roof shape of a building using a pre-trained DenseNet201 model.
 
@@ -548,25 +638,39 @@ def predict_roof_shape_img (image_path, insp_method, box_id):
     # Function to predict the class of an image
     # Load and preprocess the image
     if insp_method != 2:
-        image = Image.fromarray(image_path)
-        image = image.convert("RGB")
+        try:
+            image = Image.fromarray(image_path)
+            image = image.convert("RGB")
+            
+            image = transform(image).unsqueeze(0).to(device)
+            
+            # Perform inference
+            with torch.no_grad():
+                output = model(image)
+                prediction = torch.argmax(output, dim=1).item()
+                
+            return prediction
+        
+        except:
+            pass
     else:
         if box_id != None:
             image = Image.fromarray(image_path)
             image = image.convert("RGB")
         else:
             image = Image.open(image_path).convert("RGB")
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model(image)
-        prediction = torch.argmax(output, dim=1).item()
+   
+        image = transform(image).unsqueeze(0).to(device)
         
-    return prediction
+        # Perform inference
+        with torch.no_grad():
+            output = model(image)
+            prediction = torch.argmax(output, dim=1).item()
+            
+        return prediction
 
 ############ Roof Material prediction ################
-def predict_roof_material_img (image_path, insp_method, box_id):
+def predict_roof_material_img (image_path, insp_method, box_id, self):
     """
     Predict the roof material of a building using a pre-trained DenseNet201 model.
 
@@ -628,19 +732,33 @@ def predict_roof_material_img (image_path, insp_method, box_id):
     # Function to predict the class of an image
     # Load and preprocess the image
     if insp_method != 2:
-        image = Image.fromarray(image_path)
-        image = image.convert("RGB")
+        try:
+            image = Image.fromarray(image_path)
+            image = image.convert("RGB")
+            
+            image = transform(image).unsqueeze(0).to(device)
+            
+            # Perform inference
+            with torch.no_grad():
+                output = model(image)
+                prediction = torch.argmax(output, dim=1).item()
+                
+            return prediction
+        
+        except:
+            pass
     else:
         if box_id != None:
             image = Image.fromarray(image_path)
             image = image.convert("RGB")
         else:
             image = Image.open(image_path).convert("RGB")
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model(image)
-        prediction = torch.argmax(output, dim=1).item()
+   
+        image = transform(image).unsqueeze(0).to(device)
         
-    return prediction
+        # Perform inference
+        with torch.no_grad():
+            output = model(image)
+            prediction = torch.argmax(output, dim=1).item()
+            
+        return prediction

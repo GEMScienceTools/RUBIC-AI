@@ -47,6 +47,7 @@ class GUIMethods:
         self.data_old_local = 0
         self.previous_local = False
         self.sw_local_previous = True
+        self.cropped_image = ["","",""]
         
         """Get screen resolution to adapt to different screen sizes"""
         # Get screen resolution
@@ -415,7 +416,7 @@ class GUIMethods:
                     output_folder = self.ui.output_folder_value
                     insp_path = f"{output_folder}/{self.city_method}_{self.country_method}"
                     # Upload the existing inspections for AI 
-                    self.data_ai_existing = pd.read_csv(insp_path+"_AI_classification.csv")
+                    self.data_ai_existing = pd.read_csv(insp_path+"_AI_aux_cont.csv")
                     # Replace empty rows with the existing information
                     self.data_ai.iloc[:self.data_ai_existing.shape[0], :] = self.data_ai_existing.iloc[:self.data_ai_existing.shape[0], :]
                     
@@ -426,7 +427,7 @@ class GUIMethods:
                 elif self.ui.insp_method == 1:
                     insp_path = self.ui.output_folder_value+"/"+self.ui.file_name
                     # Upload the existing inspections for AI 
-                    self.data_ai_existing = pd.read_csv(insp_path+"_AI_classification.csv")
+                    self.data_ai_existing = pd.read_csv(insp_path+"_AI_aux_cont.csv")
                     # Replace empty rows with the existing information
                     self.data_ai.iloc[:self.data_ai_existing.shape[0], :] = self.data_ai_existing.iloc[:self.data_ai_existing.shape[0], :]
                     
@@ -686,16 +687,14 @@ class GUIMethods:
                                 highest_conf_box = box
                     
                     # Create image for cropped and displayed
-                    self.cropped_image = ["","",""]
                     display_image = org_img[aux].copy()
                     
                     # Extracting selecting bounding box coordinates witin the image
                     if highest_conf_box is not None:
                         x1, y1, x2, y2 = map(int, highest_conf_box)
-            
+                        
                         # Crop the area within the selected bounding box
-                        self.cropped_image[aux] = org_img[aux][y1:y2, x1:x2]
-            
+                        self.cropped_image[aux] = org_img[aux][y1:y2, x1:x2] 
                         # Draw a dashed rectangle for the highest confidence box
                         for i in range(x1, x2, 14):
                             cv2.line(display_image, (i, y1), (min(i + 5, x2), y1), (0, 0, 255), 3)
@@ -1061,28 +1060,28 @@ class GUIMethods:
                 if self.ui.ai_check.isChecked():
                     # Comboboxes for each image label
                     material_id = [self.ui.material_cb_1,self.ui.material_cb_2,self.ui.material_cb_3]
-                    material_index = predict_material_img(image_file, self.ui.insp_method, self.box_id)
+                    material_index = predict_material_img(image_file, self.ui.insp_method, self.box_id, self)
                     # LLRS building image sets prediction
                     material_id[self.box_id].setCurrentIndex(material_index+1)
                     
                     # Comboboxes for each image label
                     llrs_id = [self.ui.llrs_cb_1,self.ui.llrs_cb_2,self.ui.llrs_cb_3]
                     # LLRS building image prediction
-                    llrs_index = predict_llrs_img(image_file, self.ui.insp_method, self.box_id)
+                    llrs_index = predict_llrs_img(image_file, self.ui.insp_method, self.box_id, self)
                     # LLRS building image sets prediction
                     llrs_id[self.box_id].setCurrentIndex(llrs_index+1)
                                 
                     # Comboboxes for each image label
                     code_level_id = [self.ui.age_cb_1,self.ui.age_cb_2,self.ui.age_cb_3]
                     # LLRS building image prediction
-                    code_level_index = predict_code_img(image_file, self.ui.insp_method, self.box_id)
+                    code_level_index = predict_code_img(image_file, self.ui.insp_method, self.box_id, self)
                     # LLRS building image sets prediction
                     code_level_id[self.box_id].setCurrentIndex(code_level_index+1)
                     
                     # Comboboxes for each image label
                     n_stories_id = [self.ui.n_stories_value_1,self.ui.n_stories_value_2,self.ui.n_stories_value_3]
                     # LLRS building image prediction
-                    n_stories_index = predict_n_stories_img(image_file, self.ui.insp_method, self.box_id)
+                    n_stories_index = predict_n_stories_img(image_file, self.ui.insp_method, self.box_id, self)
                     # LLRS building image sets prediction
                     class_names = ['10-12', '13+', '1', '2', '3', '4', '5', '6-7', '8-9']
                     n_stories_id[self.box_id].setCurrentText(class_names[n_stories_index])
@@ -1090,7 +1089,7 @@ class GUIMethods:
                     # Comboboxes for each image label
                     occupancy_id = [self.ui.occup_cb_1,self.ui.occup_cb_2,self.ui.occup_cb_3]
                     # LLRS building image prediction
-                    occupancy_index = predict_occupancy_img(image_file, self.ui.insp_method, self.box_id)
+                    occupancy_index = predict_occupancy_img(image_file, self.ui.insp_method, self.box_id, self)
                     # LLRS building image sets prediction
                     occupancy_class = ['Residential', 'Educational', 'Government', 'Industrial', 'Mixed', 'Other', 'Residential']
                     occupancy_id[self.box_id].setCurrentText(occupancy_class[occupancy_index])  
@@ -1098,7 +1097,7 @@ class GUIMethods:
                     # Comboboxes for each image label
                     block_position_id = [self.ui.bck_pos_cb_1,self.ui.bck_pos_cb_2,self.ui.bck_pos_cb_3]    
                     # block_position building image prediction
-                    block_position_index = predict_block_position_img(image_file, self.ui.insp_method, self.box_id)
+                    block_position_index = predict_block_position_img(image_file, self.ui.insp_method, self.box_id, self)
                     # block_position building image sets prediction
                     block_position_id[self.box_id].setCurrentIndex(block_position_index+1)
                     
@@ -2083,15 +2082,19 @@ class GUIMethods:
                         image_file = self.cropped_image[i]
                         # LLRS building image prediction
                         box_aux = None
-                        material_index = predict_material_img(image_file, self.ui.insp_method, box_aux)
+                        material_index = predict_material_img(image_file, self.ui.insp_method, box_aux, self.ui)
                   
                         # Set DL model prediction
                         # LLRS building image sets prediction
-                        material_id[i].setCurrentIndex(material_index+1)
+                        if material_index is None:
+                            pass
+                        else:
+                            
+                            material_id[i].setCurrentIndex(material_index+1)
                  
-                    # Peogress bar update
-                    self.ui.progress_bar_method.setValue(100)
-                    self.ui.method_progress.setText("Prediction complete!")
+                            # Peogress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")
             
             # Local method
             elif self.ui.insp_method == 2:
@@ -2110,13 +2113,16 @@ class GUIMethods:
                     cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
            
                     # LLRS building image prediction
-                    material_index = predict_material_img(cropped_path, self.ui.insp_method, self.box_id)
+                    material_index = predict_material_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
                     # LLRS building image sets prediction
-                    material_id[aux].setCurrentIndex(material_index+1)
+                    if material_index is None:
+                        pass
+                    else:
+                        material_id[aux].setCurrentIndex(material_index+1)
       
-                    # Peogress bar update
-                    self.ui.progress_bar_method.setValue(100)
-                    self.ui.method_progress.setText("Prediction complete!")
+                        # Peogress bar update
+                        self.ui.progress_bar_method.setValue(100)
+                        self.ui.method_progress.setText("Prediction complete!")
                     
                         
     ############ Deep learning model for predict the LLRS ################
@@ -2161,13 +2167,16 @@ class GUIMethods:
                         image_file = self.cropped_image[i]       
                         # LLRS building image prediction
                         box_aux = None
-                        llrs_index = predict_llrs_img(image_file, self.ui.insp_method, box_aux)
+                        llrs_index = predict_llrs_img(image_file, self.ui.insp_method, box_aux, self.ui)
                         # LLRS building image sets prediction
-                        llrs_id[i].setCurrentIndex(llrs_index+1) 
+                        if llrs_index is None:
+                            pass
+                        else:
+                            llrs_id[i].setCurrentIndex(llrs_index+1) 
                         
-                    # Peogress bar update
-                    self.ui.progress_bar_method.setValue(100)
-                    self.ui.method_progress.setText("Prediction complete!")
+                            # Peogress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")
             
             elif self.ui.insp_method == 2:
                 
@@ -2184,13 +2193,16 @@ class GUIMethods:
                     cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"                  
                   
                     # LLRS building image prediction
-                    llrs_index = predict_llrs_img(cropped_path, self.ui.insp_method, self.box_id)
+                    llrs_index = predict_llrs_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
                     # LLRS building image sets prediction
-                    llrs_id[aux].setCurrentIndex(llrs_index+1)
+                    if llrs_index is None:
+                        pass
+                    else:
+                        llrs_id[aux].setCurrentIndex(llrs_index+1)
       
-                    # Peogress bar update
-                    self.ui.progress_bar_method.setValue(100)
-                    self.ui.method_progress.setText("Prediction complete!")
+                        # Peogress bar update
+                        self.ui.progress_bar_method.setValue(100)
+                        self.ui.method_progress.setText("Prediction complete!")
                     
                         
     ############ Deep learning model for predict the Code level ################
@@ -2239,13 +2251,17 @@ class GUIMethods:
 
                         # LLRS building image prediction
                         box_aux = None
-                        code_level_index = predict_code_img(image_file, self.ui.insp_method, box_aux)
+                        code_level_index = predict_code_img(image_file, self.ui.insp_method, box_aux, self.ui)
 
                         # LLRS building image sets prediction
-                        code_level_id[i].setCurrentIndex(code_level_index+1)                      
-                    # Peogress bar update
-                    self.ui.progress_bar_method.setValue(100)
-                    self.ui.method_progress.setText("Prediction complete!")
+                        if code_level_index is None:
+                            pass
+                        else:
+                            code_level_id[i].setCurrentIndex(code_level_index+1)   
+                            
+                            # Progress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")
             
             elif self.ui.insp_method == 2:
                 
@@ -2262,13 +2278,16 @@ class GUIMethods:
                     cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                                  
                     # LLRS building image prediction
-                    code_level_index = predict_code_img(cropped_path, self.ui.insp_method, self.box_id)
+                    code_level_index = predict_code_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
                     # LLRS building image sets prediction
-                    code_level_id[aux].setCurrentIndex(code_level_index+1)
-      
-                    # Peogress bar update
-                    self.ui.progress_bar_method.setValue(100)
-                    self.ui.method_progress.setText("Prediction complete!")
+                    if code_level_index is None:
+                        pass
+                    else:
+                        code_level_id[aux].setCurrentIndex(code_level_index+1)
+          
+                        # Peogress bar update
+                        self.ui.progress_bar_method.setValue(100)
+                        self.ui.method_progress.setText("Prediction complete!")
                 
      
     ############ Deep learning model for predict the Number of Stories ################
@@ -2317,15 +2336,18 @@ class GUIMethods:
     
                         # LLRS building image prediction
                         box_aux = None
-                        n_stories_index = predict_n_stories_img(image_file, self.ui.insp_method, box_aux)
+                        n_stories_index = predict_n_stories_img(image_file, self.ui.insp_method, box_aux, self.ui)
     
                         # LLRS building image sets prediction
                         class_names = ['10-12', '13+', '1', '2', '3', '4', '5', '6-7', '8-9']
-                        n_stories_id[i].setCurrentText(class_names[n_stories_index])    
+                        if n_stories_index is None:
+                            pass
+                        else:
+                            n_stories_id[i].setCurrentText(class_names[n_stories_index])    
                         
-                    # Peogress bar update
-                    self.ui.progress_bar_method.setValue(100)
-                    self.ui.method_progress.setText("Prediction complete!")
+                            # Peogress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")
             
             elif self.ui.insp_method == 2:
                 
@@ -2342,14 +2364,17 @@ class GUIMethods:
                     cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                     
                     # LLRS building image prediction
-                    n_stories_index = predict_n_stories_img(cropped_path, self.ui.insp_method, self.box_id)
+                    n_stories_index = predict_n_stories_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
                     # LLRS building image sets prediction
                     class_names = ['10-12', '13+', '1', '2', '3', '4', '5', '6-7', '8-9']
-                    n_stories_id[aux].setCurrentText(class_names[n_stories_index])
-      
-                    # Peogress bar update
-                    self.ui.progress_bar_method.setValue(100)
-                    self.ui.method_progress.setText("Prediction complete!")
+                    if n_stories_index is None:
+                        pass
+                    else:
+                        n_stories_id[aux].setCurrentText(class_names[n_stories_index])
+          
+                        # Peogress bar update
+                        self.ui.progress_bar_method.setValue(100)
+                        self.ui.method_progress.setText("Prediction complete!")
                     
                         
     ############ Deep learning model for predict the Occupancy type ################
@@ -2399,14 +2424,17 @@ class GUIMethods:
 
                         # LLRS building image prediction
                         box_aux = None
-                        occupancy_index = predict_occupancy_img(image_file, self.ui.insp_method, box_aux)
+                        occupancy_index = predict_occupancy_img(image_file, self.ui.insp_method, box_aux, self.ui)
 
                         # LLRS building image sets prediction
                         occupancy_class = ['Residential', 'Educational', 'Government', 'Industrial', 'Mixed', 'Other', 'Residential']
-                        occupancy_id[i].setCurrentText(occupancy_class[occupancy_index])                      
-                    # Peogress bar update
-                    self.ui.progress_bar_method.setValue(100)
-                    self.ui.method_progress.setText("Prediction complete!")
+                        if occupancy_index is None:
+                            pass
+                        else:
+                            occupancy_id[i].setCurrentText(occupancy_class[occupancy_index])                      
+                            # Peogress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")
             
             elif self.ui.insp_method == 2:
                 
@@ -2422,14 +2450,17 @@ class GUIMethods:
                     cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"      
                     
                     # LLRS building image prediction
-                    occupancy_index = predict_occupancy_img(cropped_path, self.ui.insp_method, self.box_id)
+                    occupancy_index = predict_occupancy_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
                     # LLRS building image sets prediction
                     occupancy_class = ['Residential', 'Educational', 'Government', 'Industrial', 'Mixed', 'Other', 'Residential']
-                    occupancy_id[aux].setCurrentText(occupancy_class[occupancy_index])     
-      
-                    # Peogress bar update
-                    self.ui.progress_bar_method.setValue(100)
-                    self.ui.method_progress.setText("Prediction complete!")
+                    if occupancy_index is None:
+                        pass
+                    else:
+                        occupancy_id[aux].setCurrentText(occupancy_class[occupancy_index])     
+          
+                        # Peogress bar update
+                        self.ui.progress_bar_method.setValue(100)
+                        self.ui.method_progress.setText("Prediction complete!")
                         
                         
     ############ Deep learning model for predict the block_position ################
@@ -2482,12 +2513,15 @@ class GUIMethods:
                             image_file = self.cropped_image[i]      
                             # block_position building image prediction
                             box_aux = None
-                            block_position_index = predict_block_position_img(image_file, self.ui.insp_method, box_aux)
+                            block_position_index = predict_block_position_img(image_file, self.ui.insp_method, box_aux, self.ui)
                             # block_position building image sets prediction
-                            block_position_id[i].setCurrentIndex(block_position_index+1)                       
-                        # Peogress bar update
-                        self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")
+                            if block_position_index is None:
+                                pass
+                            else:
+                                block_position_id[i].setCurrentIndex(block_position_index+1)                       
+                                # Peogress bar update
+                                self.ui.progress_bar_method.setValue(100)
+                                self.ui.method_progress.setText("Prediction complete!")
                 
                 elif self.ui.insp_method == 2:
                     
@@ -2504,13 +2538,16 @@ class GUIMethods:
                         cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                         
                         # block_position building image prediction
-                        block_position_index = predict_block_position_img(cropped_path, self.ui.insp_method, self.box_id)
+                        block_position_index = predict_block_position_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
                         # block_position building image sets prediction
-                        block_position_id[aux].setCurrentIndex(block_position_index+1)
-          
-                        # Peogress bar update
-                        self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")      
+                        if block_position_index is None:
+                            pass
+                        else:
+                            block_position_id[aux].setCurrentIndex(block_position_index+1)
+              
+                            # Peogress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")      
         else:
             self.box_id = None
                 
@@ -2540,12 +2577,15 @@ class GUIMethods:
                             image_file = self.cropped_image[i]      
                             # roof_shape building image prediction
                             box_aux = None
-                            roof_shape_index = predict_roof_shape_img(image_file, self.ui.insp_method, box_aux)
+                            roof_shape_index = predict_roof_shape_img(image_file, self.ui.insp_method, box_aux, self.ui)
                             # roof_shape building image sets prediction
-                            roof_shape_id[i].setCurrentIndex(roof_shape_index+1)                       
-                        # Peogress bar update
-                        self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")
+                            if roof_shape_index is None:
+                                pass
+                            else:
+                                roof_shape_id[i].setCurrentIndex(roof_shape_index+1)                       
+                                # Peogress bar update
+                                self.ui.progress_bar_method.setValue(100)
+                                self.ui.method_progress.setText("Prediction complete!")
                 
                 elif self.ui.insp_method == 2:
                     
@@ -2562,13 +2602,16 @@ class GUIMethods:
                         cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                         
                         # roof_shape building image prediction
-                        roof_shape_index = predict_roof_shape_img(cropped_path, self.ui.insp_method, self.box_id)
+                        roof_shape_index = predict_roof_shape_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
                         # roof_shape building image sets prediction
-                        roof_shape_id[aux].setCurrentIndex(roof_shape_index+1)
-          
-                        # Peogress bar update
-                        self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")      
+                        if roof_shape_index is None:
+                            pass
+                        else:
+                            roof_shape_id[aux].setCurrentIndex(roof_shape_index+1)
+              
+                            # Peogress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")      
         else:
             self.box_id = None
             
@@ -2597,12 +2640,15 @@ class GUIMethods:
                             image_file = self.cropped_image[i]      
                             # roof_material building image prediction
                             box_aux = None
-                            roof_material_index = predict_roof_material_img(image_file, self.ui.insp_method, box_aux)
+                            roof_material_index = predict_roof_material_img(image_file, self.ui.insp_method, box_aux, self.ui)
                             # roof_material building image sets prediction
-                            roof_material_id[i].setCurrentIndex(roof_material_index+1)                       
-                        # Peogress bar update
-                        self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")
+                            if roof_material_index is None:
+                                pass
+                            else:
+                                roof_material_id[i].setCurrentIndex(roof_material_index+1)                       
+                                # Peogress bar update
+                                self.ui.progress_bar_method.setValue(100)
+                                self.ui.method_progress.setText("Prediction complete!")
                 
                 elif self.ui.insp_method == 2:
                     
@@ -2620,11 +2666,14 @@ class GUIMethods:
                         # roof_material building image prediction
                         roof_material_index = predict_roof_material_img(cropped_path, self.ui.insp_method, self.box_id)
                         # roof_material building image sets prediction
-                        roof_material_id[aux].setCurrentIndex(roof_material_index+1)
-          
-                        # Peogress bar update
-                        self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")      
+                        if roof_material_index is None:
+                            pass
+                        else:
+                            roof_material_id[aux].setCurrentIndex(roof_material_index+1)
+              
+                            # Peogress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")      
         else:
             self.box_id = None                      
                 
@@ -2666,9 +2715,9 @@ class GUIMethods:
         # Search in the DataFrame
         try:
             result = self.data_ai[self.data_ai['ID'] == search_value]
+            n_building = result.iloc[0,0][0]
         except:
             QMessageBox.warning(self.ui, "Data Error", "Please click the Next Building button to upload the inspection database")
-        n_building = result.iloc[0,0][0]
         
         if self.ui.insp_method == 0:
             self.click_count = int(n_building) - 1
