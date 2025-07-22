@@ -1,6 +1,5 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QDialog, QMessageBox
-import ctypes
 
 from methods.polygon_method import PolygonSetting
 from methods.specific_locations_method import SpecificLocationSetting
@@ -21,12 +20,16 @@ class InspectionSetting(QDialog):
         sf_x = screen_width / 1920 
         sf_y = screen_height / 1080 
         
-        # Reference DPI for 100% scaling
-        LOGPIXELSX = 88
-        hdc = ctypes.windll.user32.GetDC(0)
-        dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
-        ctypes.windll.user32.ReleaseDC(0, hdc)
-        scale =  1.25/(dpi / 96)  # 96 DPI is 100%
+        try:
+            import ctypes
+            # Reference DPI for 100% scaling
+            LOGPIXELSX = 88
+            hdc = ctypes.windll.user32.GetDC(0)
+            dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
+            ctypes.windll.user32.ReleaseDC(0, hdc)
+            scale =  int(1.25/(dpi / 96))  # 96 DPI is 100%
+        except:
+            scale = 1.25
 
         # Scale the GUI based on resolution
         sf_x_font = sf_x * scale

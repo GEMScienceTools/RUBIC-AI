@@ -5,7 +5,6 @@ import geopandas as gpd
 from shapely.geometry import Polygon
 import os
 from geopy.geocoders import Nominatim
-import ctypes
 
 from methods.gui_gis import GUI_geofiles
 
@@ -24,12 +23,16 @@ class PolygonSetting(QtWidgets.QDialog):
         sf_x = screen_width / 1920 
         sf_y = screen_height / 1080 
         
-        # Reference DPI for 100% scaling
-        LOGPIXELSX = 88
-        hdc = ctypes.windll.user32.GetDC(0)
-        dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
-        ctypes.windll.user32.ReleaseDC(0, hdc)
-        scale =  1.25/(dpi / 96)  # 96 DPI is 100%
+        try:
+            import ctypes
+            # Reference DPI for 100% scaling
+            LOGPIXELSX = 88
+            hdc = ctypes.windll.user32.GetDC(0)
+            dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
+            ctypes.windll.user32.ReleaseDC(0, hdc)
+            scale =  int(1.25/(dpi / 96))  # 96 DPI is 100%
+        except:
+            scale = 1.25
 
         # Scale the GUI based on resolution
         sf_x_font = sf_x * scale

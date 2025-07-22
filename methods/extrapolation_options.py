@@ -1,6 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from methods.neighbor_building_extrapolation_feature import data_options_window
-import ctypes
 import os
 
 class ExtrapolationOptions(QtWidgets.QDialog):
@@ -12,13 +11,18 @@ class ExtrapolationOptions(QtWidgets.QDialog):
         screen_geometry = screen.geometry()
         screen_width = screen_geometry.width()
         screen_height = screen_geometry.height()
-
-        # DPI Scaling
-        LOGPIXELSX = 88
-        hdc = ctypes.windll.user32.GetDC(0)
-        dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
-        ctypes.windll.user32.ReleaseDC(0, hdc)
-        scale = 1.25 / (dpi / 96)  # 96 DPI = 100%
+       
+        try:
+            import ctypes
+            # Reference DPI for 100% scaling
+            LOGPIXELSX = 88
+            hdc = ctypes.windll.user32.GetDC(0)
+            dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
+            ctypes.windll.user32.ReleaseDC(0, hdc)
+            scale =  int(1.25/(dpi / 96))  # 96 DPI is 100%
+        except:
+            scale = 1.25
+        
         sf_x = screen_width / 1920
         sf_y = screen_height / 1080
         sf_font = sf_x * scale
