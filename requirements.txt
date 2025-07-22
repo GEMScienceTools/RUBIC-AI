@@ -2,6 +2,7 @@ PyQt5==5.15.11
 numpy==1.26.4
 opencv-python==4.10.0.84
 geopandas==1.1.1
+scikit-learn==1.6.1
 shapely==2.1.1
 geopy==2.4.1
 pandas==2.3.0
