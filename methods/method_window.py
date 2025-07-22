@@ -1,5 +1,8 @@
+import numpy as np
+
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QDialog, QMessageBox
+from PyQt5.QtGui import QGuiApplication
 
 from methods.polygon_method import PolygonSetting
 from methods.specific_locations_method import SpecificLocationSetting
@@ -19,20 +22,25 @@ class InspectionSetting(QDialog):
         # Scale the GUI based on resolution
         sf_x = screen_width / 1920 
         sf_y = screen_height / 1080 
-        
+        sf_factor = np.sqrt(sf_x**2 * sf_y**2)
+
         try:
+            # Smart scaling for Windows
             import ctypes
             # Reference DPI for 100% scaling
             LOGPIXELSX = 88
             hdc = ctypes.windll.user32.GetDC(0)
             dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
             ctypes.windll.user32.ReleaseDC(0, hdc)
-            scale =  int(1.25/(dpi / 96))  # 96 DPI is 100%
+            scale = 1.25/(dpi / 96)  # 96 DPI is 100%
         except:
-            scale = 1.25
+            # Smart scaling for MacOS
+            scale = QGuiApplication.primaryScreen().devicePixelRatio()
+            scale = scale * 0.75
+            print(f"MacOS scale factor: {scale}")
 
         # Scale the GUI based on resolution
-        sf_x_font = sf_x * scale
+        sf_x_font = sf_factor * scale
 
         # Window Title
         self.setWindowTitle("Selects Inspection Method")
@@ -81,13 +89,14 @@ class InspectionSetting(QDialog):
         self.default_descrip = QtWidgets.QTextBrowser(self.method_frame)
         self.default_descrip.setGeometry(QtCore.QRect(int(230 * sf_x), int(50 * sf_y), int(351 * sf_x), int(151 * sf_y)))
         self.default_descrip.setObjectName("default_descrip")
-     
+
+        # Reusable CSS style block for HTML descriptions
+        css_style = "<style type=\"text/css\">p, li { white-space: pre-wrap; }</style>"
+
         font_size = 10 * sf_x_font  # or any base value that looks right
-        html = (
+        default_html = (
             f"<html><head><meta name=\"qrichtext\" content=\"1\" />"
-            "<style type=\"text/css\">"
-            "p, li { white-space: pre-wrap; }"
-            "</style></head>"
+            f"{css_style}</head>"
             f"<body style=\" font-family:'MS Shell Dlg 2'; font-size:{font_size:.1f}pt; font-weight:400; font-style:normal;\">"
             "<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; "
             "-qt-block-indent:0; text-indent:0px;\">"
@@ -95,10 +104,9 @@ class InspectionSetting(QDialog):
             "Creates a polygon using its vertices coordinates (which must be uploaded in either clockwise or counterclockwise order) "
             "and performs virtual inspections based on the sample size or the entire building population within the polygon"
             "</span></p></body></html>"
-        )
-        self.default_descrip.setHtml(html)
+            )
+        self.default_descrip.setHtml(default_html)
 
-     
         # Background specific
         self.backg_2 = QtWidgets.QLabel(self.method_frame)
         self.backg_2.setGeometry(QtCore.QRect(int(10 * sf_x), int(220 * sf_y), int(791 * sf_x), int(171 * sf_y)))
@@ -113,22 +121,21 @@ class InspectionSetting(QDialog):
 
         # Compute adaptive font size
         font_size = 10 * sf_x_font  # You can adjust 7.8 as your base size
-        
+
         # Construct the HTML with dynamic font size
-        html = (
+        specific_html = (
             f"<html><head><meta name=\"qrichtext\" content=\"1\" />"
-            "<style type=\"text/css\">"
-            "p, li { white-space: pre-wrap; }"
-            "</style></head>"
+            f"{css_style}</head>"
             f"<body style=\" font-family:'MS Shell Dlg 2'; font-size:{font_size:.1f}pt; font-weight:400; font-style:normal;\">"
             "<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; "
             "-qt-block-indent:0; text-indent:0px;\">"
             "<span style=\" font-size:inherit;\">"
-            "Allows the user to upload a set of specific building locations (buildings of interest), which can be distributed across different regions or even countries. "
+            "Allows the user to upload a set of specific building locations (buildings of interest), which may be located in multiple geographic areas, such as different cities or countries. "
+            "Users can upload a CSV file containing all pairs of coordinates for the buildings they wish to inspect."
             "This enables users to upload a CSV file containing all the pairs of coordinates for the buildings of interest."
             "</span></p></body></html>"
-        )
-        self.specific_descrip.setHtml(html)
+            )
+        self.specific_descrip.setHtml(specific_html)
 
         # Specific image
         self.specific_img = QtWidgets.QLabel(self.method_frame)
@@ -151,29 +158,27 @@ class InspectionSetting(QDialog):
 
         # Compute adaptive font size
         font_size = 10 * sf_x_font  # Base font size scaled
-        
+
         # Construct the HTML with dynamic font size
-        html = (
+        local_html = (
             f"<html><head><meta name=\"qrichtext\" content=\"1\" />"
-            "<style type=\"text/css\">"
-            "p, li { white-space: pre-wrap; }"
-            "</style></head>"
+            f"{css_style}</head>"
             f"<body style=\" font-family:'MS Shell Dlg 2'; font-size:{font_size:.1f}pt; font-weight:400; font-style:normal;\">"
             "<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; "
             "-qt-block-indent:0; text-indent:0px;\">"
             "<span style=\" font-size:inherit;\">"
-            "Users should provide a folder containing all the images, as well as a CSV file with the metadata (e.g., image file name, and the associated latitude and longitude). "
+            "Users should provide a folder containing all the images, as well as a CSV file with the metadata. The CSV file must include columns named 'image_file', 'latitude', and 'longitude', where 'image_file' matches the image filename and 'latitude'/'longitude' specify the location. "
             "This is useful in cases where users might not want to use Google Street View, or where GSV might simply not exist for the region of interest."
             "</span></p></body></html>"
         )
-        self.local_descrip.setHtml(html)
-
         # Background local
         self.backg_3 = QtWidgets.QLabel(self.method_frame)
         self.backg_3.setGeometry(QtCore.QRect(int(10 * sf_x), int(400 * sf_y), int(791 * sf_x), int(201 * sf_y)))
         self.backg_3.setStyleSheet("background-color: rgb(255, 253, 187);")
         self.backg_3.setText("")
         self.backg_3.setObjectName("backg_3")
+        
+        self.local_descrip.setHtml(local_html)
         
         # Polygon method checkbox
         self.default_check = QtWidgets.QCheckBox(self.method_frame)
@@ -241,13 +246,11 @@ class InspectionSetting(QDialog):
 
         # Compute adaptive font size
         font_size = 10 * sf_x_font  # Adjust base size if needed
-        
+
         # Construct the HTML with dynamic font size
-        html = (
+        extrapolation_html = (
             f"<html><head><meta name=\"qrichtext\" content=\"1\" />"
-            "<style type=\"text/css\">"
-            "p, li { white-space: pre-wrap; }"
-            "</style></head>"
+            f"{css_style}</head>"
             f"<body style=\" font-family:'MS Shell Dlg 2'; font-size:{font_size:.1f}pt; font-weight:400; font-style:normal;\">"
             "<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; "
             "-qt-block-indent:0; text-indent:0px;\">"
@@ -256,9 +259,9 @@ class InspectionSetting(QDialog):
             "Using this information, the tool will extrapolate the most probable features for these buildings."
             "</span></p></body></html>"
         )
-        self.extrapolation_descrip.setHtml(html)
-
-        # Local image
+        self.extrapolation_descrip.setHtml(extrapolation_html)
+        
+        # Extrapolation image
         self.extra_img = QtWidgets.QLabel(self.method_frame)
         self.extra_img.setGeometry(QtCore.QRect(int(610*sf_x), int(630*sf_y), int(171*sf_x), int(101*sf_y)))
         self.extra_img.setObjectName("extra_img")
@@ -288,7 +291,8 @@ class InspectionSetting(QDialog):
         self.extra_label.raise_()
         self.extrapolation_descrip.raise_()
         self.extra_img.raise_()
-        
+
+
     def select_method(self):
         """
         Select an inspection method based on user checkbox selection.
