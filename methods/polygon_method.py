@@ -5,6 +5,7 @@ import geopandas as gpd
 from shapely.geometry import Polygon
 import os
 from geopy.geocoders import Nominatim
+import ctypes
 
 from methods.gui_gis import GUI_geofiles
 
@@ -13,10 +14,25 @@ class PolygonSetting(QtWidgets.QDialog):
         super().__init__(parent)
         self.method = method
 
+        # Get screen resolution
         screen = QtWidgets.QApplication.primaryScreen()
         screen_geometry = screen.geometry()
-        sf_x = screen_geometry.width() / 1920
-        sf_y = screen_geometry.height() / 1080
+        screen_width = screen_geometry.width()
+        screen_height = screen_geometry.height()
+
+        # Scale the GUI based on resolution
+        sf_x = screen_width / 1920 
+        sf_y = screen_height / 1080 
+        
+        # Reference DPI for 100% scaling
+        LOGPIXELSX = 88
+        hdc = ctypes.windll.user32.GetDC(0)
+        dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
+        ctypes.windll.user32.ReleaseDC(0, hdc)
+        scale =  1.25/(dpi / 96)  # 96 DPI is 100%
+
+        # Scale the GUI based on resolution
+        sf_x_font = sf_x * scale
 
         self.setWindowTitle("Polygon Method Input")
         self.setWindowIcon(QtGui.QIcon("help_img/RUBIC_logo.png"))
@@ -25,8 +41,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.coord_frame = QtWidgets.QWidget(self)
 
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-
+        font.setPointSize(int(10 * sf_x_font))
         self.backg_1 = QtWidgets.QLabel(self.coord_frame)
         self.backg_1.setGeometry(QtCore.QRect(int(10 * sf_x), int(10 * sf_y), int(601 * sf_x), int(551 * sf_y)))
         self.backg_1.setStyleSheet("background-color: rgb(255, 224, 185);")
@@ -34,7 +49,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.polygon_label = QtWidgets.QLabel(self.coord_frame)
         self.polygon_label.setGeometry(QtCore.QRect(int(210 * sf_x), int(20 * sf_y), int(221 * sf_x), int(21 * sf_y)))
         title_font = QtGui.QFont()
-        title_font.setPointSize(int(10 * sf_x))
+        title_font.setPointSize(int(10 * sf_x_font))
         title_font.setBold(True)
         title_font.setItalic(True)
         title_font.setUnderline(True)
@@ -44,7 +59,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.output_label_polygon = QtWidgets.QLabel(self.coord_frame)
         self.output_label_polygon.setGeometry(QtCore.QRect(int(20 * sf_x), int(50 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         label_font = QtGui.QFont()
-        label_font.setPointSize(int(10 * sf_x))
+        label_font.setPointSize(int(10 * sf_x_font))
         label_font.setBold(True)
         self.output_label_polygon.setFont(label_font)
         self.output_label_polygon.setText("Output name:")
@@ -99,7 +114,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.load_data_button = QtWidgets.QPushButton(self.coord_frame)
         self.load_data_button.setGeometry(QtCore.QRect(int(20 * sf_x), int(190 * sf_y), int(271 * sf_x), int(31 * sf_y)))
         self.load_data_button.setFont(label_font)
-        self.load_data_button.setText("Calculate footprints available")
+        self.load_data_button.setText("Get footprints available")
         self.load_data_button.clicked.connect(self.save_coordinates)
         self.load_data_button.clicked.connect(self.building_polulation)
 
@@ -108,31 +123,32 @@ class PolygonSetting(QtWidgets.QDialog):
         self.save_button.setFont(label_font)
         self.save_button.setText("Save and continue")
         self.save_button.clicked.connect(self.building_sample)
+
+        # self.collection_mode = QtWidgets.QComboBox(self.coord_frame)
+        # self.collection_mode.setGeometry(QtCore.QRect(int(250 * sf_x), int(310 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        # font = QtGui.QFont()
+        # font.setPointSize(int(10 * sf_x_font))
+        # self.collection_mode.setFont(font)
+        # self.collection_mode.setObjectName("collection_mode")
+        # self.collection_mode.addItem("Manual")
+        # self.collection_mode.addItem("AI Powered")
         
-        self.collection_mode = QtWidgets.QComboBox(self.coord_frame)
-        self.collection_mode.setGeometry(QtCore.QRect(250, 310, 191, 31))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.collection_mode.setFont(font)
-        self.collection_mode.setObjectName("collection_mode")
-        self.collection_mode.addItem("Manual")
-        self.collection_mode.addItem("AI Powered")
-        
-        self.feature_collection_label = QtWidgets.QLabel(self.coord_frame)
-        self.feature_collection_label.setGeometry(QtCore.QRect(20, 310, 221, 31))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        font.setBold(True)
-        font.setWeight(75)
-        self.feature_collection_label.setFont(font)
-        self.feature_collection_label.setObjectName("feature_collection_label")
-        self.feature_collection_label.setText("Feature collection mode:")
+        # self.feature_collection_label = QtWidgets.QLabel(self.coord_frame)
+        # self.feature_collection_label.setGeometry(QtCore.QRect(int(20 * sf_x), int(310 * sf_y), int(221 * sf_x), int(31 * sf_y)))
+        # font = QtGui.QFont()
+        # font.setPointSize(int(10 * sf_x_font))
+        # font.setBold(True)
+        # font.setWeight(75)
+        # self.feature_collection_label.setFont(font)
+        # self.feature_collection_label.setObjectName("feature_collection_label")
+        # self.feature_collection_label.setText("Feature collection mode:")
         
         self.tableWidget = QtWidgets.QTableWidget(self.coord_frame)
-        self.tableWidget.setGeometry(QtCore.QRect(20, 350, 581, 192))
+        self.tableWidget.setGeometry(QtCore.QRect(int(20 * sf_x), int(350 * sf_y), int(581 * sf_x), int(192 * sf_y)))
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
+
 
     def select_output_folder(self):
         folder_path = QFileDialog.getExistingDirectory(None, "Select Folder")
@@ -169,14 +185,16 @@ class PolygonSetting(QtWidgets.QDialog):
             
     def preview_data(self):
         if hasattr(self, 'df') and not self.df.empty:
-            self.tableWidget.clear()
-            self.tableWidget.setRowCount(len(self.df))
-            self.tableWidget.setColumnCount(len(self.df.columns))
-            self.tableWidget.setHorizontalHeaderLabels(self.df.columns)
+            preview_df = self.df.head(10)  # Only show first 10 rows
     
-            for row in range(len(self.df)):
-                for column in range(len(self.df.columns)):
-                    value = str(self.df.iloc[row, column])
+            self.tableWidget.clear()
+            self.tableWidget.setRowCount(len(preview_df))
+            self.tableWidget.setColumnCount(len(preview_df.columns))
+            self.tableWidget.setHorizontalHeaderLabels(preview_df.columns)
+    
+            for row in range(len(preview_df)):
+                for column in range(len(preview_df.columns)):
+                    value = str(preview_df.iloc[row, column])
                     item = QtWidgets.QTableWidgetItem(value)
                     self.tableWidget.setItem(row, column, item)
     

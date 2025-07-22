@@ -1,10 +1,11 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QDialog, QMessageBox
+import ctypes
 
 from methods.polygon_method import PolygonSetting
 from methods.specific_locations_method import SpecificLocationSetting
 from methods.local_images_method import LocalImageSetting 
-
+from methods.extrapolation_options import ExtrapolationOptions
 
 class InspectionSetting(QDialog):
     def __init__(self, parent=None):
@@ -17,8 +18,18 @@ class InspectionSetting(QDialog):
         screen_height = screen_geometry.height()
 
         # Scale the GUI based on resolution
-        sf_x = screen_width / 1920
-        sf_y = screen_height / 1080
+        sf_x = screen_width / 1920 
+        sf_y = screen_height / 1080 
+        
+        # Reference DPI for 100% scaling
+        LOGPIXELSX = 88
+        hdc = ctypes.windll.user32.GetDC(0)
+        dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
+        ctypes.windll.user32.ReleaseDC(0, hdc)
+        scale =  1.25/(dpi / 96)  # 96 DPI is 100%
+
+        # Scale the GUI based on resolution
+        sf_x_font = sf_x * scale
 
         # Window Title
         self.setWindowTitle("Selects Inspection Method")
@@ -30,7 +41,7 @@ class InspectionSetting(QDialog):
         self.w_tittle = QtWidgets.QLabel(self.method_frame)
         self.w_tittle.setGeometry(QtCore.QRect(int(270 * sf_x), int(0 * sf_y), int(301 * sf_x), int(41 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(12 * sf_x))
+        font.setPointSize(int(12 * sf_x_font))
         font.setBold(True)
         font.setWeight(75)
         self.w_tittle.setFont(font)
@@ -41,7 +52,7 @@ class InspectionSetting(QDialog):
         self.save_button = QtWidgets.QPushButton(self.method_frame)
         self.save_button.setGeometry(QtCore.QRect(int(310 * sf_x), int(760 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_x_font))
         font.setBold(True)
         font.setWeight(75)
         self.save_button.setFont(font)
@@ -68,7 +79,7 @@ class InspectionSetting(QDialog):
         self.default_descrip.setGeometry(QtCore.QRect(int(230 * sf_x), int(50 * sf_y), int(351 * sf_x), int(151 * sf_y)))
         self.default_descrip.setObjectName("default_descrip")
      
-        font_size = 10 * sf_x  # or any base value that looks right
+        font_size = 10 * sf_x_font  # or any base value that looks right
         html = (
             f"<html><head><meta name=\"qrichtext\" content=\"1\" />"
             "<style type=\"text/css\">"
@@ -98,7 +109,7 @@ class InspectionSetting(QDialog):
         self.specific_descrip.setObjectName("specific_descrip")
 
         # Compute adaptive font size
-        font_size = 10 * sf_x  # You can adjust 7.8 as your base size
+        font_size = 10 * sf_x_font  # You can adjust 7.8 as your base size
         
         # Construct the HTML with dynamic font size
         html = (
@@ -136,7 +147,7 @@ class InspectionSetting(QDialog):
         self.local_descrip.setObjectName("local_descrip")
 
         # Compute adaptive font size
-        font_size = 10 * sf_x  # Base font size scaled
+        font_size = 10 * sf_x_font  # Base font size scaled
         
         # Construct the HTML with dynamic font size
         html = (
@@ -165,7 +176,7 @@ class InspectionSetting(QDialog):
         self.default_check = QtWidgets.QCheckBox(self.method_frame)
         self.default_check.setGeometry(QtCore.QRect(int(20 * sf_x), int(120 * sf_y), int(171 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_x_font))
         font.setBold(True)
         font.setWeight(75)
         self.default_check.setFont(font)
@@ -176,7 +187,7 @@ class InspectionSetting(QDialog):
         self.specific_check = QtWidgets.QCheckBox(self.method_frame)
         self.specific_check.setGeometry(QtCore.QRect(int(20 * sf_x), int(300 * sf_y), int(201 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_x_font))
         font.setBold(True)
         font.setWeight(75)
         self.specific_check.setFont(font)
@@ -187,7 +198,7 @@ class InspectionSetting(QDialog):
         self.local_check = QtWidgets.QCheckBox(self.method_frame)
         self.local_check.setGeometry(QtCore.QRect(int(30 * sf_x), int(480 * sf_y), int(171 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_x_font))
         font.setBold(True)
         font.setWeight(75)
         self.local_check.setFont(font)
@@ -204,7 +215,7 @@ class InspectionSetting(QDialog):
         self.extrapolation_check = QtWidgets.QCheckBox(self.method_frame)
         self.extrapolation_check.setGeometry(QtCore.QRect(int(30 * sf_x), int(650 * sf_y), int(221 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_x_font))
         font.setBold(True)
         font.setWeight(75)
         self.extrapolation_check.setFont(font)
@@ -214,7 +225,7 @@ class InspectionSetting(QDialog):
         self.extra_label = QtWidgets.QLabel(self.method_frame)
         self.extra_label.setGeometry(QtCore.QRect(int(50 * sf_x), int(670 * sf_y), int(121 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_x_font))
         font.setBold(True)
         font.setWeight(75)
         self.extra_label.setFont(font)
@@ -226,7 +237,7 @@ class InspectionSetting(QDialog):
         self.extrapolation_descrip.setObjectName("extrapolation_descrip")
 
         # Compute adaptive font size
-        font_size = 10 * sf_x  # Adjust base size if needed
+        font_size = 10 * sf_x_font  # Adjust base size if needed
         
         # Construct the HTML with dynamic font size
         html = (
@@ -335,8 +346,12 @@ class InspectionSetting(QDialog):
                 
             if self.extrapolation_check.isChecked():
                 self.insp_method = 3
-                QMessageBox.warning(self, "Usage mode error", "This option is currently unavailable. Please select other mode.")
-                self.accept() 
+                self.accept()
+                self.extra_dialog = ExtrapolationOptions()  # Pass main window reference if needed
+                self.extra_dialog.exec_()
+                self.info_existing = self.extra_dialog.info_existing
+                self.info_pending = self.extra_dialog.info_pending
+                self.extrapolation_name = self.extra_dialog.extrapolation_name
                 
         
         

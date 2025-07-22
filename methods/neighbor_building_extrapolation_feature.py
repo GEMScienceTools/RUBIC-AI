@@ -225,9 +225,14 @@ class data_options_window(QtWidgets.QDialog):
             QtWidgets.QMessageBox.warning(self, "Input Error", "Please select one method")
         else:
             if self.manual_op.isChecked():
-                self.accept()
+                try:
+                    self.info_existing
+                    self.info_pending
+                    self.accept()
+                except:
+                    QtWidgets.QMessageBox.warning(self, "Input Error", "There are missing the inputs files")
             elif self.dl_op.isChecked():
-                self.accept()
+                QtWidgets.QMessageBox.warning(self, "Input Error", "This option is currently unavailable")
                 
     def data_existing(self):
         self.info_existing = self.upload_csv(self.manual_info_path)

@@ -84,7 +84,7 @@ class GUIMethods:
             elif self.ui.insp_method == 2:
                 self.data_building = pd.read_csv(self.ui.file_local_csv)
             elif self.ui.insp_method == 3:
-                self.data_building = pd.read_csv(self.ui.file_local_csv)
+                self.data_building = pd.DataFrame(np.zeros((2,1)))
                 
         # Verify that the building ID is less than the number of sample
         if self.click_count >= self.data_building.shape[0] - 1:
@@ -216,8 +216,8 @@ class GUIMethods:
                     self.ui.lat_value.setText(str(lat))
                     self.ui.lon_value.setText(str(lon))
                    
-                    print("ID: ", self.unique_coords.iloc[self.local_aux, 0])
-                    print("Local aux: ", self.local_aux)
+                    # print("ID: ", self.unique_coords.iloc[self.local_aux, 0])
+                    # print("Local aux: ", self.local_aux)
                     if self.local_aux >= 0:
                         self.old_local = self.unique_coords.iloc[self.local_aux, 0]
                         
@@ -357,8 +357,7 @@ class GUIMethods:
             elif self.ui.insp_method == 2:
                 footprint_data = pd.read_csv(self.ui.file_local_csv)
             elif self.ui.insp_method == 3:
-                self.building_no_img = pd.read_csv(self.building_extra_path)
-                self.neighbor_data = pd.read_csv(self.example_building_path)
+                pass
             # except:
             #     pass
             
@@ -2729,8 +2728,8 @@ class GUIMethods:
     def neighbor_extrapolation(self):
         
         if self.ui.insp_method == 3:
-            building_no_info = self.info_pending
-            building_reference = self.info_existing
+            building_no_info = self.ui.building_extra_path
+            building_reference = self.ui.example_building_path
             final_distribution_list_full = []
                
             # Iterate over each building with no image
@@ -2746,7 +2745,7 @@ class GUIMethods:
             # Convert final list to DataFrame
             final_distribution_df_full = pd.DataFrame(final_distribution_list_full)
             # Export to CSV
-            saved_path = self.ui.output_folder_value+"/"+self.ui.extrapolation_name+".csv"
+            saved_path = self.ui.extrapolation_name+".csv"
             final_distribution_df_full.to_csv(saved_path, index=False)
             self.ui.method_progress.setText("Successful extrapolation process")
         

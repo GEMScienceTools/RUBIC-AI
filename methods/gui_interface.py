@@ -3,6 +3,8 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 from methods.gui_methods import GUIMethods
 from methods.gui_gis import GUI_geofiles
 
+import ctypes
+
 from methods.method_window import InspectionSetting  # import the method window
 
 # Main Class
@@ -33,8 +35,9 @@ class GUIInterface(QtWidgets.QMainWindow):
             self.output_folder_value = self.method_dialog.output_folder_value
             self.file_name_local = self.method_dialog.local_output_name
         elif self.insp_method == 3:
-            self.data_method = self.method_dialog.data_local
-        
+            self.building_extra_path = self.method_dialog.info_pending
+            self.example_building_path = self.method_dialog.info_existing
+            self.extrapolation_name = self.method_dialog.extrapolation_name
         QtWidgets.QMessageBox.information(
             self,
             "Success",
@@ -156,9 +159,7 @@ class GUIInterface(QtWidgets.QMainWindow):
             # User canceled, do not close
             print("User canceled the close operation.")
             event.ignore()  # Prevent the GUI from closing
-
-
-
+            
     # Definition of the different pluggin, button, among others (objects) of the GUI
     def setupUi(self, GUIInterface):
         
@@ -168,11 +169,18 @@ class GUIInterface(QtWidgets.QMainWindow):
         screen_geometry = screen.geometry()
         screen_width = screen_geometry.width()
         screen_height = screen_geometry.height()
+        
+        # Reference DPI for 100% scaling
+        LOGPIXELSX = 88
+        hdc = ctypes.windll.user32.GetDC(0)
+        dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
+        ctypes.windll.user32.ReleaseDC(0, hdc)
+        scale =  int(1.25/(dpi / 96))  # 96 DPI is 100%
 
         # Scale the GUI based on resolution
-        sf_x = screen_width / 1920
-        sf_y = screen_height / 1080
-        
+        sf_x = screen_width / 1920 * scale
+        sf_y = screen_height / 1080 * scale
+
         """Set up the user interface components."""
         # Configure main window properties
         GUIInterface.setObjectName("GUIInterface")
