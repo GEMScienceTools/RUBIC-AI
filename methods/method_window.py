@@ -1,5 +1,8 @@
+import numpy as np
+
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QDialog, QMessageBox
+from PyQt5.QtGui import QGuiApplication
 
 from methods.polygon_method import PolygonSetting
 from methods.specific_locations_method import SpecificLocationSetting
@@ -19,20 +22,25 @@ class InspectionSetting(QDialog):
         # Scale the GUI based on resolution
         sf_x = screen_width / 1920 
         sf_y = screen_height / 1080 
-        
+        sf_factor = np.sqrt(sf_x**2 * sf_y**2)
+
         try:
+            # Smart scaling for Windows
             import ctypes
             # Reference DPI for 100% scaling
             LOGPIXELSX = 88
             hdc = ctypes.windll.user32.GetDC(0)
             dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
             ctypes.windll.user32.ReleaseDC(0, hdc)
-            scale =  int(1.25/(dpi / 96))  # 96 DPI is 100%
+            scale = 1.25/(dpi / 96)  # 96 DPI is 100%
         except:
-            scale = 1.25
+            # Smart scaling for MacOS
+            scale = QGuiApplication.primaryScreen().devicePixelRatio()
+            scale = scale * 0.75
+            print(f"MacOS scale factor: {scale}")
 
         # Scale the GUI based on resolution
-        sf_x_font = sf_x * scale
+        sf_x_font = sf_factor * scale
 
         # Window Title
         self.setWindowTitle("Selects Inspection Method")
