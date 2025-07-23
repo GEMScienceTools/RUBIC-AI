@@ -1399,7 +1399,7 @@ class GUIMethods:
         # else:
         # Load path 
         output_folder = self.ui.output_folder_value
-        img_prefix = f"{output_folder}/{self.city_method}_{self.country_method}"
+        img_prefix = f"{output_folder}/"
 
         # Create CSV with new inspections
         self.inspection_database()
@@ -1414,7 +1414,7 @@ class GUIMethods:
         if self.ui.insp_method == 0:
             try:
                 # Save the AI inspection data to a CSV file
-                self.data_ai.to_csv(img_prefix + "_AI_aux_cont.csv", index=False)
+                self.data_ai.to_csv(img_prefix + "local_AI_aux_cont.csv", index=False)
                 final_df = self.data_ai
                 filtered_df = final_df[final_df['Number of Stories'].notna() | final_df['LLRS'].notna()]
                 filtered_df.to_csv(img_prefix + "_AI_classification.csv", index=False)
