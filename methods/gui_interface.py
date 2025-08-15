@@ -23,6 +23,8 @@ class GUIInterface(QtWidgets.QMainWindow):
             self.file_name = self.method_dialog.output_polygon.text()
             self.city = self.method_dialog.city
             self.country = self.method_dialog.country
+            self.ai_value = self.method_dialog.ai_value
+            
         elif self.insp_method == 1:
             self.output_folder_value = self.method_dialog.output_folder_value
             self.file_name = self.method_dialog.specific_output_name.text()
@@ -1544,6 +1546,12 @@ class GUIInterface(QtWidgets.QMainWindow):
         font.setWeight(75)
         self.ai_check.setFont(font)
         self.ai_check.setObjectName("ai_check")
+        
+        # self.cover_ai = QtWidgets.QFrame(self.centralwidget)
+        # self.cover_ai.setGeometry(QtCore.QRect(int(390 * sf_x), int(880 * sf_y), int(151 * sf_x), int(51 * sf_y)))
+        # self.cover_ai.setStyleSheet("background-color: rgb(241, 241, 241);")
+        # self.cover_ai.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        # self.cover_ai.setObjectName("cover_ai")
         
         """ Save data button elements """ 
         # Save data button

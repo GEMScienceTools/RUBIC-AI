@@ -13,3 +13,5 @@ requests==2.32.4
 osmnx==2.0.0
 ultralytics==8.3.40
 matplotlib==3.10.3
+chardet==5.2.0
+openai==1.77.0

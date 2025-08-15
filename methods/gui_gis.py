@@ -139,7 +139,7 @@ class GUI_geofiles:
         # Create output file for building footprints
         self.city_method = self.city
         self.country_method = self.country
-        output_file = self.method.output_folder_value+"/"+self.city_method+"_"+self.country_method+"_buildings_footprint.gpkg"
+        output_file = self.method.output_folder_value+"/"+self.output_polygon.text()+"_buildings_footprint.gpkg"
         # Conditionional checks for an existing boundary file, and if it exists, avoids creating a duplicate
         if os.path.exists(output_file):
             buildings = gpd.read_file(output_file)
@@ -221,9 +221,9 @@ class GUI_geofiles:
         #     pass
         # else:
         # Load buildng footprints
-        footprint = self.method.output_folder_value+"/"+self.city_method+"_"+self.country_method+"_buildings_footprint.gpkg"
+        footprint = self.method.output_folder_value+"/"+self.output_polygon.text()+"_buildings_footprint.gpkg"
         # Create output file for building footprints
-        output_file= self.method.output_folder_value+"/"+self.city_method+"_"+self.country_method+"_subset_footprints.gpkg"
+        output_file= self.method.output_folder_value+"/"+self.output_polygon.text()+"_subset_footprints.gpkg"
         # Ensure sample size is not greater than the number of points in the dataset
         seed=10
         # Check if a subset file exists
@@ -292,9 +292,9 @@ class GUI_geofiles:
         #     pass
         # else:
         # Load selected subset building
-        subset_file=self.method.output_folder_value+"/"+self.city_method+"_"+self.country_method+"_subset_footprints.gpkg"
+        subset_file=self.method.output_folder_value+"/"+self.output_polygon.text()+"_subset_footprints.gpkg"
         # Create output file for building footprints
-        output_file=self.method.output_folder_value+"/"+self.city_method+"_"+self.country_method+"_subset_centroids.gpkg"
+        output_file=self.method.output_folder_value+"/"+self.output_polygon.text()+"_subset_centroids.gpkg"
         # Check if a centroid file exists
         if os.path.exists(output_file):
             pass

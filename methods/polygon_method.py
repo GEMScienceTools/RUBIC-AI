@@ -127,24 +127,24 @@ class PolygonSetting(QtWidgets.QDialog):
         self.save_button.setText("Save and continue")
         self.save_button.clicked.connect(self.building_sample)
 
-        # self.collection_mode = QtWidgets.QComboBox(self.coord_frame)
-        # self.collection_mode.setGeometry(QtCore.QRect(int(250 * sf_x), int(310 * sf_y), int(191 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x_font))
-        # self.collection_mode.setFont(font)
-        # self.collection_mode.setObjectName("collection_mode")
-        # self.collection_mode.addItem("Manual")
-        # self.collection_mode.addItem("AI Powered")
+        self.collection_mode = QtWidgets.QComboBox(self.coord_frame)
+        self.collection_mode.setGeometry(QtCore.QRect(int(250 * sf_x), int(310 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x_font))
+        self.collection_mode.setFont(font)
+        self.collection_mode.setObjectName("collection_mode")
+        self.collection_mode.addItem("Manual")
+        self.collection_mode.addItem("AI Powered")
         
-        # self.feature_collection_label = QtWidgets.QLabel(self.coord_frame)
-        # self.feature_collection_label.setGeometry(QtCore.QRect(int(20 * sf_x), int(310 * sf_y), int(221 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x_font))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.feature_collection_label.setFont(font)
-        # self.feature_collection_label.setObjectName("feature_collection_label")
-        # self.feature_collection_label.setText("Feature collection mode:")
+        self.feature_collection_label = QtWidgets.QLabel(self.coord_frame)
+        self.feature_collection_label.setGeometry(QtCore.QRect(int(20 * sf_x), int(310 * sf_y), int(221 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x_font))
+        font.setBold(True)
+        font.setWeight(75)
+        self.feature_collection_label.setFont(font)
+        self.feature_collection_label.setObjectName("feature_collection_label")
+        self.feature_collection_label.setText("Feature collection mode:")
         
         self.tableWidget = QtWidgets.QTableWidget(self.coord_frame)
         self.tableWidget.setGeometry(QtCore.QRect(int(20 * sf_x), int(350 * sf_y), int(581 * sf_x), int(192 * sf_y)))
@@ -207,8 +207,8 @@ class PolygonSetting(QtWidgets.QDialog):
 
     def save_coordinates(self):
         try:
-            lat = self.df.iloc[0,1]
-            lon = self.df.iloc[0,2]
+            lat = self.df.loc[0, 'latitude']
+            lon = self.df.loc[0,'longitude']
             geolocator = Nominatim(user_agent="city_name_locator")
             location = geolocator.reverse((lat, lon), exactly_one=True, language="en")
             if location and 'address' in location.raw:
@@ -219,7 +219,7 @@ class PolygonSetting(QtWidgets.QDialog):
                 self.method.country = self.country
                 self.city_name_manual = self.city + "_" + self.country
 
-            output_gpkg = os.path.join(self.method.output_folder_value, f"{self.city_name_manual}_boundary.gpkg")
+            output_gpkg = os.path.join(self.method.output_folder_value, f"{self.output_polygon.text()}_boundary.gpkg")
             self.boundary_path = output_gpkg
             if os.path.exists(output_gpkg):
                 os.remove(output_gpkg)
@@ -234,12 +234,7 @@ class PolygonSetting(QtWidgets.QDialog):
             gdf = gpd.GeoDataFrame({'geometry': [polygon]}, crs="EPSG:4326")
             gdf.to_file(output_gpkg, driver="GPKG", layer="polygon_layer")
 
-            QMessageBox.information(
-                self,
-                "Success",
-                f"GeoPackage successfully saved to:\n{output_gpkg}\n\n\u26a0\ufe0f Please verify the sample size before continuing.\n"
-                "The sample size should be smaller than the total number of buildings."
-            )
+            QMessageBox.information(self,"Success","GeoPackage successfully generated")
 
         except Exception as e:
             QMessageBox.warning(self, "Error", f"Could not generate GPKG:\n{str(e)}")
@@ -247,9 +242,17 @@ class PolygonSetting(QtWidgets.QDialog):
     def building_polulation(self):
         self.population = GUI_geofiles.download_building_footprints(self)
         self.building_value_polygon.setText(str(self.population))
+        
+    def mode_use(self):
+        if self.collection_mode.currentText() == "Manual":
+            self.ai_value = False 
+        elif self.collection_mode.currentText() == "AI Powered":
+            self.ai_value = True
 
     def building_sample(self):
         GUI_geofiles.extract_random_subset(self, self.sample_size_polygon.text())
         GUI_geofiles.create_centroid_layer(self)
         self.method.output_polygon = self.output_polygon
+        self.mode_use()
         self.accept()
+        

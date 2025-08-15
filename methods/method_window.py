@@ -336,6 +336,8 @@ class InspectionSetting(QDialog):
                 self.accept()
                 self.polygon_dialog = PolygonSetting(method=self)  # Pass main window reference if needed
                 self.polygon_dialog.exec_()
+                self.output_polygon = self.polygon_dialog.output_polygon
+                self.ai_value = self.polygon_dialog.ai_value 
 
             if self.specific_check.isChecked():
                 self.insp_method = 1
