@@ -42,10 +42,7 @@ class GUIMethods:
         self.save_id = True             # Existing inspection swicth      
         self.box_id = None              # Manual bounding box
         self.epoch_const= True          # Epoch of construction
-        self.cont_local = 0
-        self.n_insp_local = 0
         self.data_old_local = False
-        self.previous_local = False
         self.sw_local_previous = True
         self.cropped_image = ["","",""]
         self.start_click = True
@@ -98,17 +95,21 @@ class GUIMethods:
                 self.inspection_database()
             
             if self.ui.insp_method == 2:
+                if self.sw_local_previous == True:
+                    valid_coords = self.ui.data_method[['latitude', 'longitude']].dropna()
+                    # Drop duplicates to get unique coordinate pairs
+                    unique_coords = valid_coords.drop_duplicates()
+                    self.index_id = unique_coords.index.tolist()
+                    df = self.ui.data_method
+                    # Create a coordinate pair column
+                    df["coord_pair"] = list(zip(df["latitude"], df["longitude"]))
+                    # Keep the first occurrence of each coordinate
+                    self.unique_coords = df.drop_duplicates(subset="coord_pair", keep="first").reset_index()
+                    self.sw_local_previous = False
+                    
                 # Check if there is inspection already done
                 if self.data_old is not None:
-                    self.n_insp = int(self.cont_local_data.dropna(how='all').shape[0])
-                    
-                    self.n_insp_local = self.cont_local_data.dropna(how='all')
-                    df = self.data_ai_existing
-                    lat = df.iloc[-1]['Latitude']
-                    lon = df.iloc[-1]['Longitude']
-                    matching_rows = df[(df['Latitude'] == lat) & (df['Longitude'] == lon)]
-                    self.n_images_local = len(matching_rows)
-                    self.n_insp_local = self.n_insp_local.shape[0] - (3-self.n_images_local)
+                    self.n_insp = int(self.data_ai.dropna(how='all').shape[0])
                     self.data_old = None  # Only give the number of inspection one time per saved button clicked
             else:
                 if self.data_old is not None:
@@ -121,7 +122,7 @@ class GUIMethods:
                     if self.ui.insp_method != 2:
                         self.click_count = int(self.n_insp/3 - 1)
                         self.sw_insp = False
-                    else:
+                    elif self.ui.insp_method == 2:
                         # Drop rows with missing coordinates
                         valid_coords = self.data_ai_existing[['Latitude', 'Longitude']].dropna()
                         # Drop duplicates to get unique coordinate pairs
@@ -134,7 +135,6 @@ class GUIMethods:
                 pass
             # ID increaser
             self.click_count += 1
-            self.previous_local = False
             
             try:
                 self.ui.ai_check.setChecked(self.ui.ai_value)
@@ -167,30 +167,10 @@ class GUIMethods:
             if self.click_count > 0:
                 if self.ui.insp_method == 2:
                     self.click_count += -1
-                    
-                    if self.sw_local_previous == True:
-                        
-                        valid_coords = self.data_ai[['Latitude', 'Longitude']].dropna()
-                        # Drop duplicates to get unique coordinate pairs
-                        unique_coords = valid_coords.drop_duplicates()
-                        print("Coordinates id :", unique_coords)
-                        # Count unique coordinate pairs
-                        num_unique_coords = len(unique_coords)
-                        
-                        df = self.ui.data_method
-                        # Create a coordinate pair column
-                        df["coord_pair"] = list(zip(df["latitude"], df["longitude"]))
-                        # Keep the first occurrence of each coordinate
-                        self.unique_coords = df.drop_duplicates(subset="coord_pair", keep="first").reset_index()
-                        print("Coordinates values :", self.unique_coords)
-                        self.local_aux = num_unique_coords-1
-                            
-                        self.sw_local_previous = False
-                        
+                                          
                 elif self.ui.insp_method == 0 or self.ui.insp_method == 1:
                     self.click_count += -1
                         
-        self.previous_local = True
 
     ############ Get city name using coordinates ################
     def get_city_name(self):
@@ -209,78 +189,44 @@ class GUIMethods:
             if self.ui.insp_method == 2:
 
                 if self.data_old_local == True:
-                    self.cont_local = self.n_insp_local
+                    self.cont_local = self.n_insp
                     self.data_old_local = False
                 
-                try:
-                    if self.previous_local == False:
-                        if 'latitude' in self.ui.data_method.columns:
-                            lat = float(self.ui.data_method.loc[self.cont_local, 'latitude'])
-                        else:
-                            raise ValueError("The 'latitude' column is missing from the data.")
-                            
-                        if 'longitude' in self.ui.data_method.columns:
-                            lon = float(self.ui.data_method.loc[self.cont_local, 'longitude'])
-                        else:
-                            raise ValueError("The 'latitude' column is missing from the data.")
-                        
-                        self.ui.lat_value.setText(str(round(lat,8)))
-                        self.ui.lon_value.setText(str(round(lon,8)))
-                        
-                        df = self.ui.data_method
-                        matching_rows = df[(df['latitude'] == lat) & (df['longitude'] == lon)]
+                self.cont_local = int(self.index_id[self.click_count])
+                if 'latitude' in self.ui.data_method.columns:
+                    lat = float(self.ui.data_method.loc[self.cont_local, 'latitude'])
+                else:
+                    raise ValueError("The 'latitude' column is missing from the data.")
                     
-                        self.n_images_local = len(matching_rows)
-                        self.old_local = self.cont_local
-                        self.cont_local = self.cont_local + self.n_images_local
-                        
-                    else:
-                        try:
-                            if self.aux_previous==True:
-                                data = self.data_ai_existing
-                                self.local_aux = self.local_aux
-                                self.aux_previous=False
-                            else:
-                                self.local_aux = self.local_aux - 1
-                        except:
-                            self.local_aux = self.local_aux - 1
-                        
-                        try:
-                            lat, lon = self.unique_coords.loc[self.local_aux , "coord_pair"] 
-                            self.ui.lat_value.setText(str(lat))
-                            self.ui.lon_value.setText(str(lon))
-                        except:
-                            pass
-                        
-                        if self.local_aux >= 0:
-                            self.old_local = self.unique_coords.iloc[self.local_aux, 0]
-                            df = self.ui.data_method
-                            matching_rows = df[(df['latitude'] == lat) & (df['longitude'] == lon)]
-                        
-                            self.n_images_local = len(matching_rows)
-                            self.cont_local = self.cont_local - self.n_images_local + 1
-                        else:
-                            QMessageBox.warning(self.ui, "Database Error", "No further inspections are available or the information was incomplete or not saved correctly.")
-                         
-                    try:
-                        geolocator = Nominatim(user_agent="city_name_locator")
-                        location = geolocator.reverse((lat, lon), exactly_one=True, language="en")
-                        
-                        if location and 'address' in location.raw:
-                            address = location.raw['address']
-                            self.city = address.get('city', address.get('town', address.get('village', 'Unknown')))
-                            self.country = address.get('country', 'Unknown')
-                            self.city_name_manual = self.city+"_"+self.country
-                            self.ui.city_value.setText(self.city) 
-                            self.ui.country_value.setText(self.country) 
-                            return (self.city , self.country)
-                        
-                        return "City not found"
-                    except:
-                        pass
-                except:
-                    QMessageBox.warning(self.ui, "Input Error", "No further inspections are available")
+                if 'longitude' in self.ui.data_method.columns:
+                    lon = float(self.ui.data_method.loc[self.cont_local, 'longitude'])
+                else:
+                    raise ValueError("The 'latitude' column is missing from the data.")
+                
+                self.ui.lat_value.setText(str(round(lat,8)))
+                self.ui.lon_value.setText(str(round(lon,8)))
+                
+                df = self.ui.data_method
+                matching_rows = df[(df['latitude'] == lat) & (df['longitude'] == lon)]
+            
+                self.n_images_local = len(matching_rows)
+                self.old_local = self.cont_local
+                self.cont_local = self.cont_local + self.n_images_local
                     
+                geolocator = Nominatim(user_agent="city_name_locator")
+                location = geolocator.reverse((lat, lon), exactly_one=True, language="en")
+                
+                if location and 'address' in location.raw:
+                    address = location.raw['address']
+                    self.city = address.get('city', address.get('town', address.get('village', 'Unknown')))
+                    self.country = address.get('country', 'Unknown')
+                    self.city_name_manual = self.city+"_"+self.country
+                    self.ui.city_value.setText(self.city) 
+                    self.ui.country_value.setText(self.country) 
+                    return (self.city , self.country)
+                
+                return "City not found"
+                 
             elif self.ui.insp_method == 0 or self.ui.insp_method == 1:                
                 self.ui.lat_value.setText(str(round(self.data_building.loc[self.click_count, 'latitude'], 8)))
                 self.ui.lon_value.setText(str(round(self.data_building.loc[self.click_count, 'longitude'], 8)))
@@ -1069,6 +1015,20 @@ class GUIMethods:
                     # block_position building image sets prediction
                     block_position_id[self.box_id].setCurrentIndex(block_position_index+1)
                     
+                    # Comboboxes for each image label
+                    roof_shape_id = [self.ui.roof_shape_cb_1,self.ui.roof_shape_cb_2,self.ui.roof_shape_cb_3]   
+                    # roof_shape building image prediction
+                    roof_shape_index = predict_roof_shape_img(image_file, self.ui.insp_method, self.box_id, self)
+                    # roof_shape building image sets prediction
+                    roof_shape_id[self.box_id].setCurrentIndex(roof_shape_index+1)
+                    
+                    # Comboboxes for each image label
+                    roof_material_id = [self.ui.roof_material_cb_1,self.ui.roof_material_cb_2,self.ui.roof_material_cb_3]   
+                    # roof_material building image prediction
+                    roof_material_index = predict_roof_material_img(image_file, self.ui.insp_method, self.box_id, self)
+                    # roof_material building image sets prediction
+                    roof_material_id[self.box_id].setCurrentIndex(roof_material_index+1)
+                    
                 # Message with special format
                 message = """
                 If you are making predictions using the AI-powered option, when a manual bounding box is created, 
@@ -1356,16 +1316,6 @@ class GUIMethods:
             - Handles exceptions gracefully when no previous CSV file exists.
             - Calls `self.inspection_database()` to gather new inspection data before saving.
         """
-        # # Conditional to avoid executing the method if there is no project folder
-        # if self.ui.output_folder_value == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no country name
-        # elif self.ui.country_value.text() == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no city name 
-        # elif self.ui.city_value.text() == "-":
-        #     pass
-        # else:
         # Load path 
         output_folder = self.ui.output_folder_value
 
@@ -1745,8 +1695,6 @@ class GUIMethods:
             #########################################################
             # Material
             # try:
-                print("")
-                print("left id: ", self.old_local)
                 if self.data_ai.iloc[self.old_local , 5] is None:
                     self.ui.material_cb_1.setCurrentText("Select Material")
                 elif pd.isna(self.data_ai.iloc[self.old_local , 5]) == True:
@@ -1776,7 +1724,7 @@ class GUIMethods:
                 elif pd.isna(self.data_ai.iloc[self.old_local , 8]) == True:
                     self.ui.n_stories_value_1.setCurrentText("Select Number of Stories")
                 else:
-                    self.setComboBoxByData(self.ui.n_stories_value_1, self.data_ai.iloc[self.old_local , 8])
+                    self.setComboBoxByData(self.ui.n_stories_value_1, str(self.data_ai.iloc[self.old_local , 8]))
                     
                 # Occupancy
                 if self.data_ai.iloc[self.old_local , 9] is None :
@@ -1795,14 +1743,19 @@ class GUIMethods:
                     self.setComboBoxByData(self.ui.bck_pos_cb_1 , self.data_ai.iloc[self.old_local , 10])
                     
                 # Epoch of construction
-                a = self.ui.epc_const_cb_1.setCurrentIndex(0)
+                # a = self.ui.epc_const_cb_1.setCurrentIndex(0)
+                print("Epoch: ", self.data_ai.iloc[self.old_local , 11])
                 if self.data_ai.iloc[self.old_local , 11] is None :
                     self.ui.epc_const_cb_1.setCurrentIndex(0)
+                    # print("entra +++++++++++++++++---------------------------")
                 elif pd.isna(self.data_ai.iloc[self.old_local , 11]) == True:
                     self.ui.epc_const_cb_1.setCurrentIndex(0)
+                    # print("entra aaaaaaaaaaaaaaaa---------------------------")
                 else:
-                    self.setComboBoxByData(self.ui.epc_const_cb_1 , self.data_ai.iloc[self.old_local , 11])
-                    
+                    self.setComboBoxByData(self.ui.epc_const_cb_1 , str(self.data_ai.iloc[self.old_local , 11]))
+                    # print("entra---------------------------")
+                    # self.ui.epc_const_cb_1.setCurrentText("dan")
+
                 # Roof Shape
                 if self.data_ai.iloc[self.old_local , 12] is None :
                     self.ui.roof_shape_cb_1.setCurrentText("Select Roof Shape")
@@ -1830,21 +1783,27 @@ class GUIMethods:
                 # ----------------------- CENTRAL -----------------------------
                 
                 # Restart default value of central building image
-                print("central id: ", self.old_local +1)
                 if self.data_ai.iloc[self.old_local + 1 , 5] is None:
                     self.ui.material_cb_2.setCurrentText("Select Material")
                 elif pd.isna(self.data_ai.iloc[self.old_local + 1 , 5]) == True:
                     self.ui.material_cb_2.setCurrentText("Select Material")
                 else:
-                    self.setComboBoxByData(self.ui.material_cb_2 , self.data_ai.iloc[self.old_local + 1 , 5])
-        
+                    aux = self.n_images_local - 1
+                    if aux > 0:
+                        self.setComboBoxByData(self.ui.material_cb_2 , self.data_ai.iloc[self.old_local + 1 , 5])
+                    else:
+                        self.ui.material_cb_2.setCurrentText("Select Material")
                 # LLRS
                 if self.data_ai.iloc[self.old_local + 1 , 6] is None :
                     self.ui.llrs_cb_2.setCurrentText("Select LLRS")
                 elif pd.isna(self.data_ai.iloc[self.old_local + 1 , 6]) == True:
                     self.ui.llrs_cb_2.setCurrentText("Select LLRS")
                 else:
-                    self.setComboBoxByData(self.ui.llrs_cb_2 , self.data_ai.iloc[self.old_local + 1 , 6])
+                    aux = self.n_images_local - 1
+                    if aux > 0:
+                        self.setComboBoxByData(self.ui.llrs_cb_2 , self.data_ai.iloc[self.old_local + 1 , 6])
+                    else:
+                        self.ui.llrs_cb_2.setCurrentText("Select LLRS")
                     
                 # Code level
                 if self.data_ai.iloc[self.old_local + 1 , 7] is None :
@@ -1852,124 +1811,182 @@ class GUIMethods:
                 elif pd.isna(self.data_ai.iloc[self.old_local + 1 , 7]) == True:
                     self.ui.age_cb_2.setCurrentText("Select Code Level")
                 else:
-                    self.setComboBoxByData(self.ui.age_cb_2 , self.data_ai.iloc[self.old_local + 1 , 7])
-                
+                    aux = self.n_images_local - 1
+                    if aux > 0:
+                        self.setComboBoxByData(self.ui.age_cb_2 , self.data_ai.iloc[self.old_local + 1 , 7])
+                    else:
+                        self.ui.age_cb_2.setCurrentText("Select Code Level")              
                 # Number of stories
                 if self.data_ai.iloc[self.old_local + 1 , 8] is None :
                     self.ui.n_stories_value_2.setCurrentText("Select Number of Stories")
                 elif pd.isna(self.data_ai.iloc[self.old_local + 1 , 8]) == True:
                     self.ui.n_stories_value_2.setCurrentText("Select Number of Stories")
                 else:
-                    self.setComboBoxByData(self.ui.n_stories_value_2, self.data_ai.iloc[self.old_local + 1, 8])
-                    
+                    aux = self.n_images_local - 1
+                    if aux > 0:
+                        self.setComboBoxByData(self.ui.n_stories_value_2, str(self.data_ai.iloc[self.old_local + 1, 8]))
+                    else:
+                        self.ui.n_stories_value_2.setCurrentText("Select Number of Stories")
+                                        
                 # Occupancy
                 if self.data_ai.iloc[self.old_local + 1 , 9] is None :
                     self.ui.occup_cb_2.setCurrentText("Select Occupancy Type")
                 elif pd.isna(self.data_ai.iloc[self.old_local + 1 , 9]) == True:
                     self.ui.occup_cb_2.setCurrentText("Select Occupancy Type")
                 else:
-                    self.setComboBoxByData(self.ui.occup_cb_2 , self.data_ai.iloc[self.old_local + 1 , 9])
-                
+                    aux = self.n_images_local - 1
+                    if aux > 0:
+                        self.setComboBoxByData(self.ui.occup_cb_2 , self.data_ai.iloc[self.old_local + 1 , 9])
+                    else:
+                        self.ui.occup_cb_2.setCurrentText("Select Occupancy Type")
+                    
                 # Block Position
                 if self.data_ai.iloc[self.old_local + 1 , 10] is None :
                     self.ui.bck_pos_cb_2.setCurrentText("Select Block Position")
                 elif pd.isna(self.data_ai.iloc[self.old_local + 1 , 10]) == True:
                     self.ui.bck_pos_cb_2.setCurrentText("Select Block Position")
                 else:
-                    self.setComboBoxByData(self.ui.bck_pos_cb_2 , self.data_ai.iloc[self.old_local + 1 , 10])
-                    
+                    aux = self.n_images_local - 1
+                    if aux > 0:
+                        self.setComboBoxByData(self.ui.bck_pos_cb_2 , self.data_ai.iloc[self.old_local + 1 , 10])
+                    else:
+                        self.ui.bck_pos_cb_2.setCurrentText("Select Block Position")
+                                        
                 # Epoch of construction
                 if self.data_ai.iloc[self.old_local + 1, 11] is None :
                     self.ui.epc_const_cb_2.setCurrentIndex(0)
                 elif pd.isna(self.data_ai.iloc[self.old_local + 1, 11]) == True:
                     self.ui.epc_const_cb_2.setCurrentText("Select Epoch of Construction")
                 else:
-                    self.setComboBoxByData(self.ui.epc_const_cb_2 , self.data_ai.iloc[self.old_local + 1 , 11])
-                
+                    aux = self.n_images_local - 1
+                    if aux > 0:
+                        self.setComboBoxByData(self.ui.epc_const_cb_2 , str(self.data_ai.iloc[self.old_local + 1 , 11]))
+                    else:
+                        self.ui.epc_const_cb_2.setCurrentText("Select Epoch of Construction")
+                    
                 # Roof Shape
                 if self.data_ai.iloc[self.old_local + 1 , 12] is None :
                     self.ui.roof_shape_cb_2.setCurrentText("Select Roof Shape")
                 elif pd.isna(self.data_ai.iloc[self.old_local + 1 , 12]) == True:
                     self.ui.roof_shape_cb_2.setCurrentText("Select Roof Shape")
                 else:
-                    self.setComboBoxByData(self.ui.roof_shape_cb_2 , self.data_ai.iloc[self.old_local + 1 , 12])
-                    
+                    aux = self.n_images_local - 1
+                    if aux > 0:
+                        self.setComboBoxByData(self.ui.roof_shape_cb_2 , self.data_ai.iloc[self.old_local + 1 , 12])
+                    else:
+                        self.ui.roof_shape_cb_2.setCurrentText("Select Roof Shape")
+                                    
                 # Roof Material
                 if self.data_ai.iloc[self.old_local + 1 , 13] is None :
                     self.ui.roof_material_cb_2.setCurrentText("Select Roof Material")
                 elif pd.isna(self.data_ai.iloc[self.old_local + 1 , 13]) == True:
                     self.ui.roof_material_cb_2.setCurrentText("Select Roof Material")
                 else:
-                    self.setComboBoxByData(self.ui.roof_material_cb_2 , self.data_ai.iloc[self.old_local + 1 , 13])
-        
+                    aux = self.n_images_local - 1
+                    if aux > 0:
+                        self.setComboBoxByData(self.ui.roof_material_cb_2 , self.data_ai.iloc[self.old_local + 1 , 13])
+                    else:
+                        self.ui.roof_material_cb_2.setCurrentText("Select Roof Material")
+                    
                 # Image quality
                 if self.data_ai.iloc[self.old_local + 1 , 14] is None :
                     self.ui.img_q_cb_2.setCurrentText("Select Image Quality")
                 elif pd.isna(self.data_ai.iloc[self.old_local + 1 , 14]) == True:
                     self.ui.img_q_cb_2.setCurrentText("Select Image Quality")
                 else:
-                    self.setComboBoxByData(self.ui.img_q_cb_2 , self.data_ai.iloc[self.old_local + 1 , 14])
-        
-        
+                    aux = self.n_images_local - 1
+                    if aux > 0:
+                        self.setComboBoxByData(self.ui.img_q_cb_2 , self.data_ai.iloc[self.old_local + 1 , 14])
+                    else:
+                        self.ui.img_q_cb_2.setCurrentText("Select Image Quality")
+                    
                 # ----------------------- RIGHT -----------------------------
                 
                 # Restart default value of right building image
                 # Material
-                print("right id: ", self.old_local +2)
                 if self.data_ai.iloc[self.old_local + 2 , 5] is None:
                     self.ui.material_cb_3.setCurrentText("Select Material")
                 elif pd.isna(self.data_ai.iloc[self.old_local + 2 , 5]) == True:
                     self.ui.material_cb_3.setCurrentText("Select Material")
                 else:
-                    self.setComboBoxByData(self.ui.material_cb_3 , self.data_ai.iloc[self.old_local + 2 , 5])
-        
+                    aux = self.n_images_local - 1
+                    if aux > 1:
+                        self.setComboBoxByData(self.ui.material_cb_3 , self.data_ai.iloc[self.old_local + 2 , 5])
+                    else:
+                        self.ui.material_cb_3.setCurrentText("Select Material")
+                       
                 # LLRS
                 if self.data_ai.iloc[self.old_local + 2 , 6] is None :
                     self.ui.llrs_cb_3.setCurrentText("Select LLRS")
                 elif pd.isna(self.data_ai.iloc[self.old_local + 2 , 6]) == True:
                     self.ui.llrs_cb_3.setCurrentText("Select LLRS")
                 else:
-                    self.setComboBoxByData(self.ui.llrs_cb_3 , self.data_ai.iloc[self.old_local + 2 , 6])
-                    
+                    aux = self.n_images_local - 1
+                    if aux > 1:
+                        self.setComboBoxByData(self.ui.llrs_cb_3 , self.data_ai.iloc[self.old_local + 2 , 6])
+                    else:
+                        self.ui.llrs_cb_3.setCurrentText("Select LLRS")
+                      
                 # Code level
                 if self.data_ai.iloc[self.old_local + 2 , 7] is None :
                     self.ui.age_cb_3.setCurrentText("Select Code Level")
                 elif pd.isna(self.data_ai.iloc[self.old_local + 2 , 7]) == True:
                     self.ui.age_cb_3.setCurrentText("Select Code Level")
                 else:
-                    self.setComboBoxByData(self.ui.age_cb_3 , self.data_ai.iloc[self.old_local + 2 , 7])
-                
+                    aux = self.n_images_local - 1
+                    if aux > 1:
+                        self.setComboBoxByData(self.ui.age_cb_3 , self.data_ai.iloc[self.old_local + 2 , 7])
+                    else:
+                        self.ui.age_cb_3.setCurrentText("Select Code Level")
+                    
                 # Number of stories
                 if self.data_ai.iloc[self.old_local + 2 , 8] is None :
                     self.ui.n_stories_value_3.setCurrentText("Select Number of Stories")
                 elif pd.isna(self.data_ai.iloc[self.old_local + 2 , 8]) == True:
                     self.ui.n_stories_value_3.setCurrentText("Select Number of Stories")
                 else:
-                    self.setComboBoxByData(self.ui.n_stories_value_3, self.data_ai.iloc[self.old_local + 2, 8])
-                    
+                    aux = self.n_images_local - 1
+                    if aux > 1:
+                        self.setComboBoxByData(self.ui.n_stories_value_3, str(self.data_ai.iloc[self.old_local + 2 , 8]))
+                    else:
+                        self.ui.n_stories_value_3.setCurrentText("Select Number of Stories")
+                         
                 # Occupancy
                 if self.data_ai.iloc[self.old_local + 2 , 9] is None :
                     self.ui.occup_cb_3.setCurrentText("Select Occupancy Type")
                 elif pd.isna(self.data_ai.iloc[self.old_local + 2 , 9]) == True:
                     self.ui.occup_cb_3.setCurrentText("Select Occupancy Type")
                 else:
-                    self.setComboBoxByData(self.ui.occup_cb_3 , self.data_ai.iloc[self.old_local + 2 , 9])
-                
+                    aux = self.n_images_local - 1
+                    if aux > 1:
+                        self.setComboBoxByData(self.ui.occup_cb_3 , self.data_ai.iloc[self.old_local + 2 , 9])
+                    else:
+                        self.ui.occup_cb_3.setCurrentText("Select Occupancy Type")
+                    
                 # Block Position
                 if self.data_ai.iloc[self.old_local + 2 , 10] is None :
                     self.ui.bck_pos_cb_3.setCurrentText("Select Block Position")
                 elif pd.isna(self.data_ai.iloc[self.old_local + 2 , 10]) == True:
                     self.ui.bck_pos_cb_3.setCurrentText("Select Block Position")
                 else:
-                    self.setComboBoxByData(self.ui.bck_pos_cb_3 , self.data_ai.iloc[self.old_local + 2 , 10])
-        
+                    aux = self.n_images_local - 1
+                    if aux > 1:
+                        self.setComboBoxByData(self.ui.bck_pos_cb_3 , self.data_ai.iloc[self.old_local + 2 , 10])
+                    else:
+                        self.ui.bck_pos_cb_3.setCurrentText("Select Block Position")
+                    
                 # Epoch of construction
                 if self.data_ai.iloc[self.old_local + 2 , 11] is None :
                     self.ui.epc_const_cb_3.setCurrentIndex(0)
                 elif pd.isna(self.data_ai.iloc[self.old_local + 2, 11]) == True:
                     self.ui.epc_const_cb_3.setCurrentIndex(0)
                 else:
-                    self.setComboBoxByData(self.ui.epc_const_cb_3 , self.data_ai.iloc[self.old_local + 2 , 11])
+                    aux = self.n_images_local - 1
+                    if aux > 1:
+                        self.setComboBoxByData(self.ui.epc_const_cb_3 , str(self.data_ai.iloc[self.old_local + 2 , 11]))
+                    else:
+                        self.ui.bck_pos_cb_3.setCurrentText("Select Epoch of Construction")
+                    
                     
                 # Roof Shape
                 if self.data_ai.iloc[self.old_local + 2 , 12] is None :
@@ -1977,7 +1994,11 @@ class GUIMethods:
                 elif pd.isna(self.data_ai.iloc[self.old_local + 2 , 12]) == True:
                     self.ui.roof_shape_cb_3.setCurrentText("Select Roof Shape")
                 else:
-                    self.setComboBoxByData(self.ui.roof_shape_cb_3 , self.data_ai.iloc[self.old_local + 2 , 12])
+                    aux = self.n_images_local - 1
+                    if aux > 1:
+                        self.setComboBoxByData(self.ui.roof_shape_cb_3 , self.data_ai.iloc[self.old_local + 2 , 12])
+                    else:
+                        self.ui.roof_shape_cb_3.setCurrentText("Select Roof Shape")
                     
                 # Roof Material
                 if self.data_ai.iloc[self.old_local + 2 , 13] is None :
@@ -1985,7 +2006,11 @@ class GUIMethods:
                 elif pd.isna(self.data_ai.iloc[self.old_local + 2 , 13]) == True:
                     self.ui.roof_material_cb_3.setCurrentText("Select Roof Material")
                 else:
-                    self.setComboBoxByData(self.ui.roof_material_cb_3 , self.data_ai.iloc[self.old_local + 2 , 13])
+                    aux = self.n_images_local - 1
+                    if aux > 1:
+                        self.setComboBoxByData(self.ui.roof_material_cb_3 , self.data_ai.iloc[self.old_local + 2 , 13])
+                    else:
+                        self.ui.roof_material_cb_3.setCurrentText("Select Roof Material")
                     
                 # Image quality
                 if self.data_ai.iloc[self.old_local + 2 , 14] is None :
@@ -1993,7 +2018,12 @@ class GUIMethods:
                 elif pd.isna(self.data_ai.iloc[self.old_local + 2 , 14]) == True:
                     self.ui.img_q_cb_3.setCurrentText("Select Image Quality")
                 else:
-                    self.setComboBoxByData(self.ui.img_q_cb_3 , self.data_ai.iloc[self.old_local + 2 , 14])
+                    aux = self.n_images_local - 1
+                    if aux > 1:
+                        self.setComboBoxByData(self.ui.img_q_cb_3 , self.data_ai.iloc[self.old_local + 2 , 14])
+                    else:
+                        self.ui.img_q_cb_3.setCurrentText("Select Image Quality")
+                    
             # except:
             #     pass
     ############ Deep learning model for predict the LLRS Material ################
