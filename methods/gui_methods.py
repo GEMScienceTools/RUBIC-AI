@@ -440,7 +440,9 @@ class GUIMethods:
             - Ensures execution only if project details are correctly set.
         """
         # Input parameters
-        api_key = "AIzaSyB3ugs1aQmA9I6zkFouqllGjuIcdHZvjG4"
+        with open("gsv_api_key.txt", "r") as f:
+            api_key = f.read().strip()
+
         lat= self.ui.lat_value.text()
         lon= self.ui.lon_value.text() 
         url = "https://maps.googleapis.com/maps/api/streetview/metadata"
@@ -494,7 +496,8 @@ class GUIMethods:
             # Building coordinates
             location = (float(self.ui.lat_value.text()), float(self.ui.lon_value.text()))
             # API key is required; without it, access to GSV is not possible
-            api_key = "AIzaSyB3ugs1aQmA9I6zkFouqllGjuIcdHZvjG4"  
+            with open("gsv_api_key.txt", "r") as f:
+                api_key = f.read().strip() 
             
             
                                

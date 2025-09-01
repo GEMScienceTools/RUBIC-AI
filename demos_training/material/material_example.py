@@ -15,7 +15,7 @@ BATCH_SIZE = 16
 NUM_WORKERS = 0  # CPU systems often do better with 0 or 2 workers
 EPOCHS = 10
 PATIENCE = 3
-MODEL_SAVE_PATH = "densenet201_llrs.pt"
+MODEL_SAVE_PATH = "densenet201_material.pt"
 
 device = torch.device("cpu")  # Force CPU usage
 
