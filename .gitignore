@@ -76,3 +76,4 @@ venv.bak/
 
 # Ignore a google street view static api
 gsv_api_key.txt
+openai_api_key.txt
