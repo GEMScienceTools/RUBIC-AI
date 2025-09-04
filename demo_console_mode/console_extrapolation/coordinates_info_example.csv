@@ -1,5 +1,0 @@
-ID,Latitude,Longitude,Country,City,LLRS Material,LLRS,Code Level,Number of Stories,Occupancy,Block Position,Roof shape,Roof material,Taxonomy,Image filename or link
-1,11.00879398,-74.81448504,Perímetro Urbano Barranquilla,Colombia,CR,LFM,CDH,6-7,MIX,BP2,RSH1,RMN,CR/LFM+CDH/H:6-7/MIX/BP2/RSH1+RMN,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=11.00879398,-74.81448504&heading=207.94506527507735&pitch=5&fov=120"
-2,6.239855765,-75.58394375,Medellín,Colombia,MUR,LFM,CDN,2,RES,BP2,RSH2,RMT6,MUR/LFM+CDN/H:2/RES/BP2/RSH2+RMT6,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=6.239855765,-75.58394375&heading=178.19274507126238&pitch=5&fov=120"
-3,19.36700465,-99.1471469,Mexico City,Mexico,CR,LFM,CDH,4,RES,BP1,RSH1,RMN,CR/LFM+CDH/H:4/RES/BP1/RSH1+RMN,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=19.36700465,-99.1471469&heading=98.86732014158463&pitch=5&fov=120"
-4,25.70019152,-100.3337731,Monterrey,Mexico,CR,LFM,CDM,1,RES,BP2,RSH1,RMN,CR/LFM+CDM/H:1/RES/BP2/RSH1+RMN,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=25.70019152,-100.3337731&heading=6.752092989168318&pitch=5&fov=120"

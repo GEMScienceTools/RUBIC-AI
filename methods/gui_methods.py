@@ -308,7 +308,7 @@ class GUIMethods:
                 # Load the GeoPackage
                 gdf = gpd.read_file(centroid_file)
                 # Filter columns
-                filtered_gdf = gdf[['ID', 'latitude', 'longitude']]
+                filtered_gdf = gdf[['id', 'latitude', 'longitude']]
                 # Export to CSV
                 filtered_gdf.to_csv(database_file, index=False)             
                 print("Filtered CSV exported successfully!")
@@ -440,7 +440,7 @@ class GUIMethods:
             - Ensures execution only if project details are correctly set.
         """
         # Input parameters
-        with open("gsv_api_key.txt", "r") as f:
+        with open("methods/gsv_api_key.txt", "r") as f:
             api_key = f.read().strip()
 
         lat= self.ui.lat_value.text()
@@ -496,7 +496,7 @@ class GUIMethods:
             # Building coordinates
             location = (float(self.ui.lat_value.text()), float(self.ui.lon_value.text()))
             # API key is required; without it, access to GSV is not possible
-            with open("gsv_api_key.txt", "r") as f:
+            with open("methods/gsv_api_key.txt", "r") as f:
                 api_key = f.read().strip() 
             
             
@@ -2687,7 +2687,7 @@ class GUIMethods:
         is prompted to upload it.
     
         Notes:
-            - The search is performed on the `data_ai` DataFrame using the column 'ID'.
+            - The search is performed on the `data_ai` DataFrame using the column 'id'.
             - If no valid ID is entered, a message is set in the UI field instead of executing a search.
             - If the database is missing, the user is advised to upload it using the "Next Building" button.
         """
@@ -2711,7 +2711,7 @@ class GUIMethods:
 
         # Search in the DataFrame
         try:
-            result = self.data_ai[self.data_ai['ID'] == search_value]
+            result = self.data_ai[self.data_ai['id'] == search_value]
             n_building = result.iloc[0,0].split("_")[0]
         except:
             QMessageBox.warning(self.ui, "Data Error", "Please click the Next Building button to upload the inspection database")

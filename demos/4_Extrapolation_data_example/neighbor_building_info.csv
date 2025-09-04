@@ -1,4 +1,4 @@
-﻿ID,Latitude,Longitude,Country,City,LLRS Material,LLRS,Code Level,Number of Stories,Occupancy,Block Position,Taxonomy
+﻿id,latitude,longitude,country,city,material,llrs,code_level,n_stories,occupancy,block_position,taxonomy
 1,10.92224755,-74.78642608,Colombia,Barranquilla,MCF,LWAL,LC,1,RES,BP1,MCF/LWAL/HEX:1/CODE:LC/RES/BP1
 2,10.91268031,-74.80288191,Colombia,Soledad,CR,LFM,IC,3,RES,BP2,CR/LFM/HEX:3/CODE:IC/RES/BP2
 3,10.91647181,-74.76986198,Colombia,Soledad,CR,LFINF,IC,2,COM,BP1,CR/LFINF/HEX:2/CODE:IC/COM/BP1

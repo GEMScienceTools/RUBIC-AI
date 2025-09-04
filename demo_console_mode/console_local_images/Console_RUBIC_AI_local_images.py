@@ -409,7 +409,7 @@ def inspection_database (data_ai, image_folder):
         data_ai.iloc[i, 1] = footprint_data.loc[i , "latitude"]                                                 # Latitude
         data_ai.iloc[i, 2] = footprint_data.loc[i , "longitude"] 
         
-        img_id = footprint_data.loc[i , "ID"] 
+        img_id = footprint_data.loc[i , "id"] 
         img_path = image_folder +"/"+ img_id
         image_file = object_detector_building(float(footprint_data.loc[i,"latitude"]) , 
                                               float(footprint_data.loc[i,"longitude"]), img_path)

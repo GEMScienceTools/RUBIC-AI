@@ -280,8 +280,8 @@ def find_nearest_neighbors_geodesic(input_row, info_df, n_neighbors=10):
         lambda row: geodesic_distance(
             input_row['latitude'],
             input_row['longitude'],
-            row['Latitude'],
-            row['Longitude']
+            row['latitude'],
+            row['longitude']
         ), axis=1)
 
     nearest_indices = distances.nsmallest(n_neighbors).index
@@ -312,7 +312,7 @@ def compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row):
     # Assign weights to each neighbor based on the chosen kernel
     for _, row in nearest_neighbors.iterrows():
         dist = row['distance_km']
-        label = row['Taxonomy']
+        label = row['taxonomy']
         
         # Compute weight based on kernel
         weight = 1 / (dist + 1e-6)  # Avoid division by zero
@@ -326,22 +326,22 @@ def compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row):
     distribution_rows = []
     for taxonomy, prob in probs.items():
         # Take a representative row (first one with the taxonomy)
-        taxonomy_row = nearest_neighbors[nearest_neighbors['Taxonomy'] == taxonomy].iloc[0]
+        taxonomy_row = nearest_neighbors[nearest_neighbors['taxonomy'] == taxonomy].iloc[0]
         
         distribution_rows.append({
-            'ID': input_row['ID'],
-            'Latitude': input_row['latitude'],
-            'Longitude': input_row['longitude'],
-            'Country': taxonomy_row['Country'],
-            'City': taxonomy_row['City'],
-            'LLRS Material': taxonomy_row['LLRS Material'],
-            'LLRS': taxonomy_row['LLRS'],
-            'Code Level': taxonomy_row['Code Level'],
-            'Number of Stories': taxonomy_row['Number of Stories'],
-            'Occupancy': taxonomy_row['Occupancy'],
-            'Block Position': taxonomy_row['Block Position'],
-            'Taxonomy': taxonomy,
-            'Probability': prob
+            'id': input_row['id'],
+            'latitude': input_row['latitude'],
+            'longitude': input_row['longitude'],
+            'country': taxonomy_row['country'],
+            'city': taxonomy_row['city'],
+            'material': taxonomy_row['material'],
+            'llrs': taxonomy_row['llrs'],
+            'code_level': taxonomy_row['code_level'],
+            'n_stories': taxonomy_row['n_stories'],
+            'occupancy': taxonomy_row['occupancy'],
+            'block_position': taxonomy_row['block_position'],
+            'taxonomy': taxonomy,
+            'probability': prob
         })
 
     return distribution_rows

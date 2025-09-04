@@ -172,7 +172,7 @@ class PolygonSetting(QtWidgets.QDialog):
                     self.method.file_polygon_csv = file_path
 
                 df = self.df
-                required_columns = ['ID', 'latitude', 'longitude']
+                required_columns = ['id', 'latitude', 'longitude']
                 missing = [col for col in required_columns if col not in df.columns]
                 if missing:
                     QMessageBox.warning(self, "Missing Columns", f"Required columns missing: {', '.join(missing)}")
