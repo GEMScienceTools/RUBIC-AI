@@ -14,10 +14,10 @@ from sklearn.metrics import confusion_matrix
 # ======================
 # CONFIGURATION (edit)
 # ======================
-features_path = "dl_weights/densenet201_n_stories.pt"
-train_dir = "example_feature/n_stories_train"
-test_dir  = "example_feature/n_stories_test"
-save_path = "example_feature/densenet201_example_feature.pt"
+features_path = os.path.join("..", "dl_weights", "densenet201_n_stories.pt")
+train_dir = os.path.join("..", "example_feature", "n_stories_train")
+test_dir  = os.path.join("..", "example_feature", "n_stories_test")
+save_path = os.path.join("..", "example_feature", "densenet201_example_feature.pt")
 
 num_classes = 6
 IMAGE_SIZE  = (256, 180)   # (H, W)
