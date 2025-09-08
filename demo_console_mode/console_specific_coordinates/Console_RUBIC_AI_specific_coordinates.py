@@ -457,7 +457,6 @@ def inspection_database (data_ai):
             pass
         else:
             city, country = get_city_name(float(footprint_data.loc[i,"latitude"]) , float(footprint_data.loc[i,"longitude"]))
-                                             
             data_ai.iloc[i, 3], data_ai.iloc[i, 4] = city, country
             data_ai.iloc[i, 5] = predict_material_img (image_file)                            # LLRS Material
             data_ai.iloc[i, 6] = predict_llrs_img (image_file)                                # LLRS 

@@ -156,14 +156,7 @@ class LocalImageSetting(QtWidgets.QDialog):
         except:
             QMessageBox.warning(self, "Input Error", "First Please upload the data using the **Load Data button**")
             
-    # ############ Folder Selection ################
-    # def select_folder(self):
-    #     """Open a folder selection dialog and display the selected folder in a text output."""
-    #     self.method.folder_path = QFileDialog.getExistingDirectory(None, "Select Folder")
-    #     folder_display = self.method.folder_path.rsplit("/", 1)[-1]
-    #     if self.method.folder_path:  # If a folder is selected
-    #         self.local_folder_path.setText(folder_display)
-            
+    # ############ Folder Selection ################           
     def select_folder(self):
         """Open a folder selection dialog, display selected folder, and check for valid image files."""
         folder_path = QFileDialog.getExistingDirectory(None, "Select Folder")

@@ -48,17 +48,6 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         """ Methods applied with button and others elements """
         
-        # Selection of the project folder for saving data
-        # self.path_out_folder_bt.clicked.connect(self.methods.select_folder)
-        
-        # self.method_button.clicked.connect(self.methods.select_insp_method)
-        
-        # Excute a emergent window to upload coordinates of the analysis area
-        # self.set_cood_button.clicked.connect(self.methods.open_emergent_window)
-        
-        # # Normalize input data
-        # self.next_button.clicked.connect(self.geo_qgis.normalize_input)
-        
         # Create a *.csv file "Country_City_building_info.csv" with its OSM ID and its coordinates
         self.next_button.clicked.connect(self.methods.create_database)
         
@@ -206,35 +195,6 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.Tittle.setAlignment(QtCore.Qt.AlignCenter)
         self.Tittle.setObjectName("Tittle")
         
-        # """ Project folder elements """
-        # # Button for selecting the project folder
-        # self.path_out_folder_bt = QtWidgets.QPushButton(self.centralwidget)
-        # self.path_out_folder_bt.setGeometry(QtCore.QRect(int(20 * sf_x), int(90 * sf_y), int(131 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setBold(True)
-        # font.setPointSize(int(10 * sf_x))
-        # self.path_out_folder_bt.setFont(font)
-        # self.path_out_folder_bt.setObjectName("path_out_folder_bt")
-        
-        # # Project folder text value
-        # self.output_folder_value = QtWidgets.QLabel(self.centralwidget)
-        # self.output_folder_value.setGeometry(QtCore.QRect(int(160 * sf_x), int(90 * sf_y), int(311 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(8 * sf_x))
-        # self.output_folder_value.setFont(font)
-        # self.output_folder_value.setObjectName("output_folder_value")
-        
-        # # Label of project selection
-        # self.output_path_tittle = QtWidgets.QLabel(self.centralwidget)
-        # self.output_path_tittle.setGeometry(QtCore.QRect(int(20 * sf_x), int(50 * sf_y), int(181 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(12 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.output_path_tittle.setFont(font)
-        # self.output_path_tittle.setObjectName("output_path_tittle")
-        
-        
         """ Coordinates data elements """
         # Label of latitude 
         self.lat_label = QtWidgets.QLabel(self.centralwidget)
@@ -328,19 +288,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.frame_location.setStyleSheet("background-color: rgb(254, 255, 174);")
         self.frame_location.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_location.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.frame_location.setObjectName("frame_location")
-        
-        # # Location label
-        # self.location_label = QtWidgets.QLabel(self.frame_location)
-        # self.location_label.setGeometry(QtCore.QRect(int(260 * sf_x), int(10 * sf_y), int(111 * sf_x), int(21 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(14 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.location_label.setFont(font)
-        # self.location_label.setAlignment(QtCore.Qt.AlignCenter)
-        # self.location_label.setObjectName("location_label")
-        
+        self.frame_location.setObjectName("frame_location")       
         
         """ Button for next and previous building image """
         # Button to get the next building images
@@ -717,10 +665,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.img_q_cb_1.addItem("Intermediate", "Intermediate")
         self.img_q_cb_1.addItem("Bad", "Bad")
         self.img_q_cb_1.setCurrentIndex(0)
-        self.img_q_cb_1.view().setFixedWidth(int(250 * sf_x))
-
-
-        
+        self.img_q_cb_1.view().setFixedWidth(int(250 * sf_x)) 
        
         """ Central Building images elements """
         # Central image color frame
@@ -1463,21 +1408,6 @@ class GUIInterface(QtWidgets.QMainWindow):
         """ GEM icon GUI elements """
         self.setWindowIcon(QtGui.QIcon("help_img/RUBIC_logo.png"))
         
-        # """ GEM Logo elements """
-        # self.GEM_logo = QtWidgets.QLabel(self.centralwidget)
-        # self.GEM_logo.setGeometry(QtCore.QRect(int(1320 * sf_x), int(5 * sf_y), int(177 * sf_x), int(65 * sf_y)))
-        # self.GEM_logo.setText("")
-        # self.GEM_logo.setPixmap(QtGui.QPixmap("help_img/GEM_Logo.png"))
-        # self.GEM_logo.setScaledContents(True)
-        # self.GEM_logo.setObjectName("GEM_logo")
-        
-        # self.RUBIC_logo = QtWidgets.QLabel(self.centralwidget)
-        # self.RUBIC_logo.setGeometry(QtCore.QRect(int(1497 * sf_x), int(5 * sf_y), int(60 * sf_x), int(65 * sf_y)))
-        # self.RUBIC_logo.setText("")
-        # self.RUBIC_logo.setPixmap(QtGui.QPixmap("help_img/RUBIC_logo.png"))
-        # self.RUBIC_logo.setScaledContents(True)
-        # self.RUBIC_logo.setObjectName("GEM_logo")
-        
         """ GEM icon GUI elements """
         self.setWindowIcon(QtGui.QIcon("help_img/RUBIC_logo.png"))
         
@@ -1499,43 +1429,6 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.method_progress.setFont(font)
         self.method_progress.setObjectName("method_progress")
         
-        # """ Coordinates input by file button elements """
-        # # Button set coordinates
-        # self.set_cood_button = QtWidgets.QPushButton(self.centralwidget)
-        # self.set_cood_button.setGeometry(QtCore.QRect(int(500 * sf_x), int(90 * sf_y), int(131 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.set_cood_button.setFont(font)
-        # self.set_cood_button.setObjectName("set_cood_button")
-        
-        # Colored frame area
-        # self.frame_coord_val = QtWidgets.QFrame(self.centralwidget)
-        # self.frame_coord_val.setGeometry(QtCore.QRect(int(650 * sf_x), int(40 * sf_y), int(391 * sf_x), int(91 * sf_y)))
-        # self.frame_coord_val.setStyleSheet("background-color: rgb(254, 255, 174);")
-        # self.frame_coord_val.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        # self.frame_coord_val.setFrameShadow(QtWidgets.QFrame.Raised)
-        # self.frame_coord_val.setObjectName("frame_coord_val")
-        
-        # self.frame_input = QtWidgets.QFrame(self.centralwidget)
-        # self.frame_input.setGeometry(QtCore.QRect(int(10 * sf_x), int(40 * sf_y), int(661 * sf_x), int(91 * sf_y)))
-        # self.frame_input.setStyleSheet("background-color: rgb(214, 211, 192);")
-        # self.frame_input.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        # self.frame_input.setFrameShadow(QtWidgets.QFrame.Raised)
-        # self.frame_input.setObjectName("frame_input")
-        
-        # """ Method button elements """
-        # # Button set method
-        # self.method_button = QtWidgets.QPushButton(self.centralwidget)
-        # self.method_button.setGeometry(QtCore.QRect(int(500 * sf_x), int(50 * sf_y), int(131 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.method_button.setFont(font)
-        # self.method_button.setObjectName("method_button")
-        
         """ AI Powered activation elements """
         # AI checkbox activation
         self.ai_check = QtWidgets.QCheckBox(self.centralwidget)
@@ -1546,12 +1439,6 @@ class GUIInterface(QtWidgets.QMainWindow):
         font.setWeight(75)
         self.ai_check.setFont(font)
         self.ai_check.setObjectName("ai_check")
-        
-        # self.cover_ai = QtWidgets.QFrame(self.centralwidget)
-        # self.cover_ai.setGeometry(QtCore.QRect(int(390 * sf_x), int(880 * sf_y), int(151 * sf_x), int(51 * sf_y)))
-        # self.cover_ai.setStyleSheet("background-color: rgb(241, 241, 241);")
-        # self.cover_ai.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        # self.cover_ai.setObjectName("cover_ai")
         
         """ Save data button elements """ 
         # Save data button
@@ -1626,15 +1513,10 @@ class GUIInterface(QtWidgets.QMainWindow):
 
         
         """ Raise all elements """
-        # self.frame_coord_val.raise_()
-        # self.frame_input.raise_()
         self.frame_location.raise_()
-        # self.path_out_folder_bt.raise_()
         self.country_label_input.raise_()
         self.city_label.raise_()
         self.Tittle.raise_()
-        # self.output_folder_value.raise_()
-        # self.output_path_tittle.raise_()
         self.lat_label.raise_()
         self.lon_label.raise_()
         self.previous_button.raise_()
@@ -1688,10 +1570,8 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.occupancy_3.raise_()
         self.progress_bar_method.raise_()
         self.method_progress.raise_()
-        # self.set_cood_button.raise_()
         self.ai_check.raise_()
         self.save_data_button.raise_()
-        # self.method_button.raise_()
         self.n_stories_value_1.raise_()
         self.n_stories_value_2.raise_()
         self.n_stories_value_3.raise_()
@@ -1711,22 +1591,18 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.roof_shape_label_3.raise_()
         self.epc_const_cb_3.raise_()
         self.roof_shape_cb_3.raise_()
-        
         self.roof_material_label_1.raise_()
         self.roof_material_cb_1.raise_()
         self.roof_material_label_2.raise_()
         self.roof_material_cb_2.raise_()
         self.roof_material_label_3.raise_()
-        self.roof_material_cb_3.raise_()
-        
+        self.roof_material_cb_3.raise_()      
         self.bloc_pos_help.raise_()
         self.roof_shape_help.raise_()
-        self.roof_material_help.raise_()
-        
+        self.roof_material_help.raise_()  
         self.bloc_pos_help_2.raise_()
         self.roof_shape_help_2.raise_()
-        self.roof_material_help_2.raise_()
-        
+        self.roof_material_help_2.raise_() 
         self.bloc_pos_help_3.raise_()
         self.roof_shape_help_3.raise_()
         self.roof_material_help_3.raise_()
@@ -1741,12 +1617,9 @@ class GUIInterface(QtWidgets.QMainWindow):
     def retranslateUi(self, GUIInterface):
         _translate = QtCore.QCoreApplication.translate
         GUIInterface.setWindowTitle(_translate("GUIInterface", "RUBIC-AI: Building Inventory Classifier"))
-        # self.path_out_folder_bt.setText(_translate("GUIInterface", "Project Folder"))
         self.country_label_input.setText(_translate("GUIInterface", "Country:"))
         self.city_label.setText(_translate("GUIInterface", "City:"))
         self.Tittle.setText(_translate("GUIInterface", "RUBIC-AI: Building Inventory Classifier"))
-        # self.output_folder_value.setText(_translate("GUIInterface", "-"))
-        # self.output_path_tittle.setText(_translate("GUIInterface", "Input panel"))
         self.lat_label.setText(_translate("GUIInterface", "Latitude: "))
         self.lon_label.setText(_translate("GUIInterface", "Longitude:"))
         self.previous_button.setText(_translate("GUIInterface", "Previous Building"))
@@ -1779,7 +1652,6 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.img_q_cb_1.setItemText(0, _translate("GUIInterface", "Select Image Quality"))
         self.search_img_button.setText(_translate("GUIInterface", "Search Building"))
         self.search_img_label.setText(_translate("GUIInterface", "Image ID:"))
-        # self.location_label.setText(_translate("GUIInterface", "Location"))
         self.material_cb_2.setItemText(0, _translate("GUIInterface", "Select Material"))
         self.llrs_cb_2.setItemText(0, _translate("GUIInterface", "Select LLRS"))
         self.img_q_cb_2.setItemText(0, _translate("GUIInterface", "Select Image Quality"))
@@ -1804,10 +1676,8 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.age_3.setText(_translate("GUIInterface", "Code Level:"))
         self.occupancy_3.setText(_translate("GUIInterface", "Occupancy:"))
         self.method_progress.setText(_translate("GUIInterface", "-"))
-        # self.set_cood_button.setText(_translate("GUIInterface", "Input files"))
         self.ai_check.setText(_translate("GUIInterface", "AI Powered"))
         self.save_data_button.setText(_translate("GUIInterface", "Save data"))
-        # self.method_button.setText(_translate("GUIInterface", "Usage mode"))
         self.bounding_box_1.setText(_translate("search_img_value", "Manual box"))
         self.bounding_box_2.setText(_translate("search_img_value", "Manual box"))
         self.bounding_box_3.setText(_translate("search_img_value", "Manual box"))

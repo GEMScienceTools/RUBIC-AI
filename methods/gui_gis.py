@@ -12,93 +12,7 @@ import os
 class GUI_geofiles:
     def __init__(self, ui):
         self.ui = ui  # Link to the UI components
-        
-    ############ Normalize input method ################
-    # def normalize_input (self):
-    #     """
-    #     Normalize the input text for city and country names.
-        
-    #     This method retrieves the city and country names entered in the user interface (UI),
-    #     normalizes them by capitalizing the first letter of each word, and updates the respective
-    #     fields in the UI with the normalized text.
-        
-    #     Args:
-    #         None. The method operates on UI elements and updates instance attributes 
-    #         `country_method` and `city_method`.
-        
-    #     Returns:
-    #         None. Normalized city and country names are saved to instance attributes 
-    #         and updated in the UI.
-        
-    #     Effects:
-    #         - Updates `self.country_method` and `self.city_method` with the normalized values.
-    #         - Updates the UI fields `country_value` and `city_value` with normalized text.
-    #     """
-    #     # Normalize country input
-    #     country = str(self.ui.country_value.text()) # Retrieve text from QLineEdit
-    #     # Normalize the text
-    #     normalized_text = ' '.join(word.capitalize() for word in country.strip().split())
-    #     # Update the QLineEdit with normalized text
-    #     self.country_method = normalized_text
-    #     self.ui.country_value.setText(normalized_text)
-        
-    #     # Normalize city input
-    #     city = self.ui.city_value.text()
-    #     # Normalize the text
-    #     normalized_text = ' '.join(word.capitalize() for word in city.strip().split())
-    #     # Update the QLineEdit with normalized text
-    #     self.city_method = normalized_text
-    #     self.ui.city_value.setText(normalized_text)
-                
-    # ############ City boundary shape file ################
-    # def get_administrative_boundary(self):
-    #     """
-    #     Retrieve and save the administrative boundary of a specified city as a GeoPackage file.
-        
-    #     This method checks for a defined project folder and avoids creating duplicate files 
-    #     if the boundary file already exists. If no boundary file is found, it downloads the 
-    #     city's administrative boundary using OpenStreetMap data, then saves it to a GeoPackage.
-    
-    #     Args:
-    #         None. The method relies on instance attributes such as `city_method`, `country_method`, 
-    #         and the output folder path provided in the UI.
-    
-    #     Returns:
-    #         None. The administrative boundary is saved to a GeoPackage file in the specified 
-    #         output folder.
-    
-    #     Raises:
-    #         QMessageBox.Warning: If no project folder is defined in the UI.
-    #     """
-    
-    #     # # Conditional to avoid executing the method if there is no project folder
-    #     # if self.output_folder_value.text() == "-":
-    #     #     QMessageBox.warning(self, "Project Error", "Please select project folder")
-    #     # # Conditional to avoid executing the method if there is no country name
-    #     # elif self.country_value.text() == "-":
-    #     #     QMessageBox.warning(self, "Country Error", "Please sets country name")
-    #     # # Conditional to avoid executing the method if there is no city name 
-    #     # elif self.city_value.text() == "-":
-    #     #     QMessageBox.warning(self, "City Error", "Please sets city name")
-    #     # else:
-    #     # Concatenate city and country to save data
-    #     self.city_method = self.city_value.text()
-    #     self.country_method = self.country_value.text()
-    #     self.city_name = self.city_method +" , " + self.country_method
-    #     # Create output file for city's administrative boundary 
-    #     self.boundary_path = self.output_folder_value.text()+"/"+self.city_method+"_"+self.country_method+"_boundary.gpkg"
-    #     # Conditionional checks for an existing boundary file, and if it exists, avoids creating a duplicate
-    #     if os.path.exists(self.boundary_path):
-    #         self.method_progress.setText("Boundary is available")
-    #     else:
-    #         # Download the city's administrative boundary 
-    #         print("---------------- " + self.city_name + " -------------------")
-    #         boundary = ox.geocode_to_gdf(self.city_name)             
-    #         # Export the boundary as geopackage file 
-    #         boundary.to_file(self.boundary_path, driver="GPKG", layer="Boundary")
-    #         print("Done. Boundary is available")
-    
-    
+
     ############ City boundary shape file ################
     def download_building_footprints(self):
         """
@@ -126,16 +40,6 @@ class GUI_geofiles:
             - Logs messages if no building footprints are found or valid geometries are unavailable.
         """
     
-        # # Conditional to avoid executing the method if there is no project folder
-        # if self.output_folder_value.text() == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no country name
-        # elif self.country_value.text() == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no city name 
-        # elif self.city_value.text() == "-":
-        #     pass
-        # else:
         # Create output file for building footprints
         self.city_method = self.city
         self.country_method = self.country
@@ -146,12 +50,7 @@ class GUI_geofiles:
         else:
             # Check if a boundary file exists to download the building footprints within it
             if os.path.exists(self.boundary_path):
-                # Create a progress bar for users so they know the GUI is processing tasks in the backend
-                # for i in range (100):
-                #     time.sleep(0.0001)
-                #     self.progress_bar_method.setValue(i)
-                #     self.method_progress.setText("Method in progress ....")
-                
+                # Create a progress bar for users so they know the GUI is processing tasks in the backend              
                 # Define input and output file paths
                 geopackage_path = self.boundary_path
                 # Load the single layer from the GeoPackage
@@ -209,17 +108,7 @@ class GUI_geofiles:
             - The random sample is controlled by a predefined sample size (`sample_size`) and seed 
               (`seed`) for reproducibility.
         """
-    
-        # # Conditional to avoid executing the method if there is no project folder
-        # if self.output_folder_value.text() == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no country name
-        # elif self.country_value.text() == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no city name 
-        # elif self.city_value.text() == "-":
-        #     pass
-        # else:
+
         # Load buildng footprints
         footprint = self.method.output_folder_value+"/"+self.output_polygon.text()+"_buildings_footprint.gpkg"
         # Create output file for building footprints
@@ -281,16 +170,6 @@ class GUI_geofiles:
             - Ensures the output retains the same CRS as the input building footprints.
         """
 
-        # # Conditional to avoid executing the method if there is no project folder
-        # if self.output_folder_value.text() == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no country name
-        # elif self.country_value.text() == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no city name 
-        # elif self.city_value.text() == "-":
-        #     pass
-        # else:
         # Load selected subset building
         subset_file=self.method.output_folder_value+"/"+self.output_polygon.text()+"_subset_footprints.gpkg"
         # Create output file for building footprints

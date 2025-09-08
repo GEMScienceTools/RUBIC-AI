@@ -320,10 +320,7 @@ class GUIMethods:
         # Upload the create building info to get the size of the inspection dataset
         # Craete an empty dataframe with the exact size
         if self.data_building is None:
-            # Load the footprint database
-            # try:
-            # Footprint_data = size of inspection dataset
-            
+            # Load the footprint database           
             if self.ui.insp_method == 0:
                 footprint_data = pd.read_csv(self.ui.output_folder_value+"/"+self.ui.file_name+"_building_info.csv")
             elif self.ui.insp_method == 1:
@@ -332,8 +329,6 @@ class GUIMethods:
                 footprint_data = pd.read_csv(self.ui.file_local_csv)
             elif self.ui.insp_method == 3:
                 pass
-            # except:
-            #     pass
             
             # Define the column namesfor the inspection database
             column_names = ["ID", 
@@ -498,9 +493,7 @@ class GUIMethods:
             # API key is required; without it, access to GSV is not possible
             with open("methods/gsv_api_key.txt", "r") as f:
                 api_key = f.read().strip() 
-            
-            
-                               
+                                    
             # angles for taking the images
             angle = (-30,0,30)
             self.img_url = ["","",""]
@@ -1362,7 +1355,6 @@ class GUIMethods:
                                     +"Please close the file or check folder permissions.")
         ############################## Local #######################################
         elif self.ui.insp_method == 2:
-            # try:
             # Save the AI inspection data to a CSV file
             self.data_ai.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name_local.text()+"_AI_aux_cont.csv", index=False)
             final_df = self.data_ai
@@ -1370,10 +1362,6 @@ class GUIMethods:
             filtered_df.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name_local.text()+ "_AI_classification.csv", index=False)
             # Update the progress message in the GUI
             self.ui.method_progress.setText("Inspections exported successfully!")
-            # except:
-            #     # Show a warning message box if there's a permission error
-            #     QMessageBox.warning(self.ui, "File Error", "The file is open or the folder is inaccessible."
-            #                         +"Please close the file or check folder permissions.")
          ############################## Local #######################################
         elif self.ui.insp_method == 3:
             pass
@@ -1697,7 +1685,6 @@ class GUIMethods:
             ##########============  Local images ===========#########
             #########################################################
             # Material
-            # try:
                 if self.data_ai.iloc[self.old_local , 5] is None:
                     self.ui.material_cb_1.setCurrentText("Select Material")
                 elif pd.isna(self.data_ai.iloc[self.old_local , 5]) == True:
@@ -1746,19 +1733,14 @@ class GUIMethods:
                     self.setComboBoxByData(self.ui.bck_pos_cb_1 , self.data_ai.iloc[self.old_local , 10])
                     
                 # Epoch of construction
-                # a = self.ui.epc_const_cb_1.setCurrentIndex(0)
                 print("Epoch: ", self.data_ai.iloc[self.old_local , 11])
                 if self.data_ai.iloc[self.old_local , 11] is None :
                     self.ui.epc_const_cb_1.setCurrentIndex(0)
-                    # print("entra +++++++++++++++++---------------------------")
                 elif pd.isna(self.data_ai.iloc[self.old_local , 11]) == True:
                     self.ui.epc_const_cb_1.setCurrentIndex(0)
-                    # print("entra aaaaaaaaaaaaaaaa---------------------------")
                 else:
                     self.setComboBoxByData(self.ui.epc_const_cb_1 , str(self.data_ai.iloc[self.old_local , 11]))
-                    # print("entra---------------------------")
-                    # self.ui.epc_const_cb_1.setCurrentText("dan")
-
+                    
                 # Roof Shape
                 if self.data_ai.iloc[self.old_local , 12] is None :
                     self.ui.roof_shape_cb_1.setCurrentText("Select Roof Shape")
@@ -2053,16 +2035,6 @@ class GUIMethods:
             - Requires the AI-powered checkbox (`ai_check`) to be selected for predictions to proceed.
             - Assumes a predefined function `predict_material_img` for making predictions.
         """
-        # # Conditional to avoid executing the method if there is no project folder
-        # if self.ui.output_folder_value == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no country name
-        # elif self.ui.country_value.text() == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no city name 
-        # elif self.ui.city_value.text() == "-":
-        #     pass
-        # else:
         # Comboboxes for each image label
         material_id = [self.ui.material_cb_1,self.ui.material_cb_2,self.ui.material_cb_3]
         # Checkbox for the AI powered activation
@@ -2143,16 +2115,6 @@ class GUIMethods:
             - Requires the AI-powered checkbox (`ai_check`) to be selected for predictions to proceed.
             - Assumes a predefined function `predict_llrs_img` for making predictions.
         """
-        # # Conditional to avoid executing the method if there is no project folder
-        # if self.ui.output_folder_value == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no country name
-        # elif self.ui.country_value.text() == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no city name 
-        # elif self.ui.city_value.text() == "-":
-        #     pass
-        # else:
         # Comboboxes for each image label
         llrs_id = [self.ui.llrs_cb_1,self.ui.llrs_cb_2,self.ui.llrs_cb_3]
         # Checkbox for the AI powered activation
@@ -2226,16 +2188,6 @@ class GUIMethods:
               on local cropped images.
             - The `predict_code_img` function is called to generate predictions.
         """
-        # # Conditional to avoid executing the method if there is no project folder
-        # if self.ui.output_folder_value == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no country name
-        # elif self.ui.country_value.text() == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no city name 
-        # elif self.ui.city_value.text() == "-":
-        #     pass
-        # else:
         # Comboboxes for each image label
         code_level_id = [self.ui.age_cb_1,self.ui.age_cb_2,self.ui.age_cb_3]
         # Checkbox for the AI powered activation
@@ -2311,16 +2263,6 @@ class GUIMethods:
             - Requires the AI-powered checkbox (`ai_check`) to be selected for predictions to proceed.
             - Assumes a predefined function `predict_llrs_img` for making predictions.
         """
-        # # Conditional to avoid executing the method if there is no project folder
-        # if self.ui.output_folder_value == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no country name
-        # elif self.ui.country_value.text() == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no city name 
-        # elif self.ui.city_value.text() == "-":
-        #     pass
-        # else:
         # Comboboxes for each image label
         n_stories_id = [self.ui.n_stories_value_1,self.ui.n_stories_value_2,self.ui.n_stories_value_3]
         # Checkbox for the AI powered activation
@@ -2399,16 +2341,6 @@ class GUIMethods:
             - For manual inspection mode (`insp_method == 2`), predictions are performed 
               on local cropped images.
         """
-        # # Conditional to avoid executing the method if there is no project folder
-        # if self.ui.output_folder_value == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no country name
-        # elif self.ui.country_value.text() == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no city name 
-        # elif self.ui.city_value.text() == "-":
-        #     pass
-        # else:
         # Comboboxes for each image label
         occupancy_id = [self.ui.occup_cb_1,self.ui.occup_cb_2,self.ui.occup_cb_3]
         # Checkbox for the AI powered activation
@@ -2488,16 +2420,6 @@ class GUIMethods:
             - The predicted index is incremented by 1 before being assigned to the combo box.
         """
 
-        # # Conditional to avoid executing the method if there is no project folder
-        # if self.ui.output_folder_value == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no country name
-        # elif self.ui.country_value.text() == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no city name 
-        # elif self.ui.city_value.text() == "-":
-        #     pass
-        # else:
         # Comboboxes for each image label
         block_position_id = [self.ui.bck_pos_cb_1,self.ui.bck_pos_cb_2,self.ui.bck_pos_cb_3]
         if self.box_id == None:
@@ -2551,17 +2473,6 @@ class GUIMethods:
             
     ############ Deep learning model for predict the Roof shape ################
     def roof_shape_prediction (self):
-
-        # # Conditional to avoid executing the method if there is no project folder
-        # if self.ui.output_folder_value == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no country name
-        # elif self.ui.country_value.text() == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no city name 
-        # elif self.ui.city_value.text() == "-":
-        #     pass
-        # else:
         # Comboboxes for each image label
         roof_shape_id = [self.ui.roof_shape_cb_1,self.ui.roof_shape_cb_2,self.ui.roof_shape_cb_3]
         if self.box_id == None:
@@ -2614,17 +2525,6 @@ class GUIMethods:
             
     ############ Deep learning model for predict the Roof shape ################
     def roof_material_prediction (self):
-
-        # # Conditional to avoid executing the method if there is no project folder
-        # if self.ui.output_folder_value == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no country name
-        # elif self.ui.country_value.text() == "-":
-        #     pass
-        # # Conditional to avoid executing the method if there is no city name 
-        # elif self.ui.city_value.text() == "-":
-        #     pass
-        # else:
         # Comboboxes for each image label
         roof_material_id = [self.ui.roof_material_cb_1,self.ui.roof_material_cb_2,self.ui.roof_material_cb_3]
         if self.box_id == None:
@@ -2691,17 +2591,6 @@ class GUIMethods:
             - If no valid ID is entered, a message is set in the UI field instead of executing a search.
             - If the database is missing, the user is advised to upload it using the "Next Building" button.
         """
-
-        # # Conditional to avoid executing the method if there is no project folder
-        # if self.ui.output_folder_value == "-":
-        #     QMessageBox.warning(self.ui, "Project Error", "Please select project folder")
-        # # Conditional to avoid executing the method if there is no country name
-        # elif self.ui.country_value.text() == "-":
-        #     QMessageBox.warning(self.ui, "Country Error", "Please sets country name")
-        # # Conditional to avoid executing the method if there is no city name 
-        # elif self.ui.city_value.text() == "-":
-        #     QMessageBox.warning(self.ui, "City Error", "Please sets city name")
-        # else:
         # Get the value from the QLineEdit
         search_value = self.ui.search_img_value.text()
         # Check if the value is not empty
