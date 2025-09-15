@@ -1356,12 +1356,17 @@ class GUIMethods:
         ############################## Local #######################################
         elif self.ui.insp_method == 2:
             # Save the AI inspection data to a CSV file
-            self.data_ai.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name_local.text()+"_AI_aux_cont.csv", index=False)
-            final_df = self.data_ai
-            filtered_df = final_df[final_df['Number of Stories'].notna() | final_df['LLRS'].notna()]
-            filtered_df.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name_local.text()+ "_AI_classification.csv", index=False)
-            # Update the progress message in the GUI
-            self.ui.method_progress.setText("Inspections exported successfully!")
+            try:
+                self.data_ai.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name_local.text()+"_AI_aux_cont.csv", index=False)
+                final_df = self.data_ai
+                filtered_df = final_df[final_df['Number of Stories'].notna() | final_df['LLRS'].notna()]
+                filtered_df.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name_local.text()+ "_AI_classification.csv", index=False)
+                # Update the progress message in the GUI
+                self.ui.method_progress.setText("Inspections exported successfully!")
+            except:
+                # Show a warning message box if there's a permission error
+                QMessageBox.warning(self.ui, "File Error", "The file is open or the folder is inaccessible. "
+                                    +"Please close the file or check folder permissions.")
          ############################## Local #######################################
         elif self.ui.insp_method == 3:
             pass
