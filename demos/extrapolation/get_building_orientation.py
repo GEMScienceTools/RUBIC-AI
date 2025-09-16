@@ -2,6 +2,11 @@ import requests
 import math
 import numpy as np
 import cv2
+from pathlib import Path
+
+root_dir = Path(__file__).parent.resolve()
+gsv_dir = (root_dir / '..' / '..' / 'methods').resolve()
+
 def get_road_orientation(location):
     """
     Determine the road orientation (azimuth) near a specified location using the Google Roads API.
@@ -27,7 +32,7 @@ def get_road_orientation(location):
         - Handles API errors and missing road data gracefully.
     """
     # Model parameters
-    with open("gsv_api_key.txt", "r") as f:
+    with open(gsv_dir / "gsv_api_key.txt", "r") as f:
         api_key = f.read().strip()
     base_url = "https://roads.googleapis.com/v1/nearestRoads"
     params = {
@@ -125,7 +130,7 @@ def get_street_view_image(location, api_key, angle):
     # Compute the heading direction for the Street View API (ensuring it's within [0, 360] degrees)
     heading = (road_orientation + angle + 180) % 360
     # Google Maps API key (should be kept secure and not hardcoded in production)
-    with open("gsv_api_key.txt", "r") as f:
+    with open(gsv_dir / "gsv_api_key.txt", "r") as f:
         api_key = f.read().strip()
 
     # Define image capture parameters

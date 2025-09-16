@@ -10,10 +10,11 @@ import requests
 from get_building_orientation import get_street_view_image
 # Libries for shape and geopackage creation
 from shapely.geometry import Polygon
-from shapely.geometry import box
 import osmnx as ox
 import geopandas as gpd
 import os
+from pathlib import Path
+
 #########################################################
 #######===========  General functions ==========#########
 #########################################################
@@ -160,10 +161,13 @@ def create_database(polygon_name):
         
     return data_ai
 
+root_dir = Path(__file__).parent.resolve()
+gsv_dir = (root_dir / '..' / '..' / 'methods').resolve()
+
 ############ Checks if there is GSV availability ################  
 def check_street_view(lat, lon):
     # Input parameters
-    with open("gsv_api_key.txt", "r") as f:
+    with open(gsv_dir / "gsv_api_key.txt", "r") as f:
         api_key = f.read().strip()
     url = "https://maps.googleapis.com/maps/api/streetview/metadata"
     params = {
@@ -178,13 +182,12 @@ def check_street_view(lat, lon):
     else:
         return False  # No Street View coverage
     
-        
 ############# Downnload GSV building images ################   
 def fetch_three_step_views(lat, lon):                                                                             
     # Building coordinates
     location = (float(lat), float(lon))
     # API key is required; without it, access to GSV is not possible
-    with open("gsv_api_key.txt", "r") as f:
+    with open(gsv_dir / "gsv_api_key.txt", "r") as f:
         api_key = f.read().strip()  
     
     if check_street_view(lat, lon) == True:
@@ -199,14 +202,13 @@ def fetch_three_step_views(lat, lon):
         
     print
     return img_gsv, url_gsv
-        
-    
+
 ############ Building detector model ################
 def object_detector_building(lat, lon):
     global url_gsv
     # Class mapping (update this with your actual mappings)
     class_map = {0: "building-xzyh"}  # Replace with the correct mapping
-    weight_path = "dl_weights/building_detector.pt" # Replace with your YOLO .pt file
+    weight_path = dl_dir / "building_detector.pt" # Replace with your YOLO .pt file
     # Load the YOLO model
     model = YOLO(weight_path)
     # Set device GPU or CPU
@@ -276,6 +278,9 @@ transform = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
     
+root_dir = Path(__file__).parent.resolve()
+dl_dir = (root_dir / '..' / '..' / 'dl_weights').resolve()
+
 # Load the model_material architecture
 model_material = models.densenet201(weights=None)  # Initialize model_material without pre-trained weights
 num_features = model_material.classifier.in_features
@@ -288,7 +293,7 @@ model_material.classifier = torch.nn.Sequential(
 )
 
 # Load the trained weights
-model_material.load_state_dict(torch.load("dl_weights/densenet201_material.pt", map_location=device))
+model_material.load_state_dict(torch.load(str(dl_dir / "densenet201_material.pt"), map_location=device))
 model_material.to(device)
 model_material.eval()
 
@@ -308,7 +313,7 @@ model_llrs.classifier = torch.nn.Sequential(
 )
 
 # Load the trained weights
-model_llrs.load_state_dict(torch.load("dl_weights/densenet201_llrs.pt", map_location=device))
+model_llrs.load_state_dict(torch.load(str(dl_dir / "densenet201_llrs.pt"), map_location=device))
 model_llrs.to(device)
 model_llrs.eval()
 
@@ -328,7 +333,7 @@ model_code.classifier = torch.nn.Sequential(
 )
 
 # Load the trained weights
-model_code.load_state_dict(torch.load("dl_weights/densenet201_code.pt", map_location=device))
+model_code.load_state_dict(torch.load(str(dl_dir / "densenet201_code.pt"), map_location=device))
 model_code.to(device)
 model_code.eval()
 
@@ -348,7 +353,7 @@ model_n_stories.classifier = torch.nn.Sequential(
 )
 
 # Load the trained weights
-model_n_stories.load_state_dict(torch.load("dl_weights/densenet201_n_stories.pt", map_location=device))
+model_n_stories.load_state_dict(torch.load(str(dl_dir / "densenet201_n_stories.pt"), map_location=device))
 model_n_stories.to(device)
 model_n_stories.eval()
 
@@ -368,7 +373,7 @@ model_occupancy.classifier = torch.nn.Sequential(
 )
 
 # Load the trained weights
-model_occupancy.load_state_dict(torch.load("dl_weights/densenet201_occupancy.pt", map_location=device))
+model_occupancy.load_state_dict(torch.load(str(dl_dir / "densenet201_occupancy.pt"), map_location=device))
 model_occupancy.to(device)
 model_occupancy.eval()
 
@@ -388,7 +393,7 @@ model_bp.classifier = torch.nn.Sequential(
 )
 
 # Load the trained weights
-model_bp.load_state_dict(torch.load("dl_weights/densenet201_block.pt", map_location=device))
+model_bp.load_state_dict(torch.load(str(dl_dir / "densenet201_block.pt"), map_location=device))
 model_bp.to(device)
 model_bp.eval()
 
@@ -408,7 +413,7 @@ model_rshp.classifier = torch.nn.Sequential(
 )
 
 # Load the trained weights
-model_rshp.load_state_dict(torch.load("dl_weights/densenet201_roof_shape.pt", map_location=device))
+model_rshp.load_state_dict(torch.load(str(dl_dir / "densenet201_roof_shape.pt"), map_location=device))
 model_rshp.to(device)
 model_rshp.eval()
     
@@ -428,7 +433,7 @@ model_rmt.classifier = torch.nn.Sequential(
 )
 
 # Load the trained weights
-model_rmt.load_state_dict(torch.load("dl_weights/densenet201_roof_material.pt", map_location=device))
+model_rmt.load_state_dict(torch.load(str(dl_dir / "densenet201_roof_material.pt"), map_location=device))
 model_rmt.to(device)
 model_rmt.eval()
 
@@ -612,7 +617,7 @@ def inspection_database (data_ai):
 #########################################################
 
 saved_path = "example_prediction_result.csv"
-file_path = r"H:\My Drive\Sura_2025_AI\Console_polygon_method\polygon_method_example.csv"
+file_path = "polygon_method_example.csv"
 polygon_name = "proof_polygon"
 sample_size = 0.05
 #########################################################

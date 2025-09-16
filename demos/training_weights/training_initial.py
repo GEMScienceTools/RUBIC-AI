@@ -28,8 +28,8 @@ transform = transforms.Compose([
 ])
 
 # Load datasets
-train_dataset = datasets.ImageFolder("train", transform=transform)
-test_dataset = datasets.ImageFolder("test", transform=transform)
+train_dataset = datasets.ImageFolder("material/train", transform=transform)
+test_dataset = datasets.ImageFolder("material/test", transform=transform)
 
 train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True,
                           num_workers=NUM_WORKERS, pin_memory=False)

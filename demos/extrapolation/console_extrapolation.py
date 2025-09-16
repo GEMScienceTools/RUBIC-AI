@@ -10,6 +10,7 @@ import requests
 from get_building_orientation import get_street_view_image
 from geopy.distance import geodesic
 from collections import defaultdict
+from pathlib import Path
 
 # Function to calculate Geodesic distance (in km)
 def geodesic_distance(lat1, lon1, lat2, lon2):
@@ -138,10 +139,13 @@ def create_database(local_building_info):
         
     return data_ai
 
+root_dir = Path(__file__).parent.resolve()
+gsv_dir = (root_dir / '..' / '..' / 'methods').resolve()
+
 ############ Checks if there is GSV availability ################  
 def check_street_view(lat, lon):
     # Input parameters
-    with open("gsv_api_key.txt", "r") as f:
+    with open(gsv_dir / "gsv_api_key.txt", "r") as f:
         api_key = f.read().strip()
     url = "https://maps.googleapis.com/maps/api/streetview/metadata"
     params = {
@@ -162,7 +166,7 @@ def fetch_three_step_views(lat, lon):
     # Building coordinates
     location = (float(lat), float(lon))
     # API key is required; without it, access to GSV is not possible
-    with open("gsv_api_key.txt", "r") as f:
+    with open(gsv_dir / "gsv_api_key.txt", "r") as f:
         api_key = f.read().strip()  
     
     if check_street_view(lat, lon) == True:
@@ -184,7 +188,7 @@ def object_detector_building(lat, lon):
     global url_gsv
     # Class mapping (update this with your actual mappings)
     class_map = {0: "building-xzyh"}  # Replace with the correct mapping
-    weight_path = "dl_weights/building_detector.pt" # Replace with your YOLO .pt file
+    weight_path = dl_dir / "building_detector.pt" # Replace with your YOLO .pt file
     # Load the YOLO model
     model = YOLO(weight_path)
     # Set device GPU or CPU
@@ -252,9 +256,14 @@ transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
+
+# dl weight path
+root_dir = Path(__file__).parent.resolve()
+dl_dir = (root_dir / '..' / '..' / 'dl_weights').resolve()
     
 def dl_models():
     global model_material, model_llrs, model_code, model_n_stories, model_occupancy, model_bp, model_rshp, model_rmt
+       
     # Load the model_material architecture
     model_material = models.densenet201(weights=None)  # Initialize model_material without pre-trained weights
     num_features = model_material.classifier.in_features
@@ -265,149 +274,149 @@ def dl_models():
         torch.nn.Linear(num_features, 8),  # Match the number of classes
         torch.nn.LogSoftmax(dim=1)
     )
-    
+        
     # Load the trained weights
-    model_material.load_state_dict(torch.load("dl_weights/densenet201_material.pt", map_location=device))
+    model_material.load_state_dict(torch.load(str(dl_dir / "densenet201_material.pt"), map_location=device))
     model_material.to(device)
     model_material.eval()
     
     
     ################### LLRS model #########################
     # Define the device (CPU-only if no GPU is available)
-    
+
     # Load the model architecture
     model_llrs = models.densenet201(weights=None)  # Initialize model without pre-trained weights
     num_features = model_llrs.classifier.in_features
-    
+
     # Use the correct number of output classes (9 as indicated in the error)
     model_llrs.classifier = torch.nn.Sequential(
         torch.nn.Flatten(),
         torch.nn.Linear(num_features, 6),  # Match the number of classes
         torch.nn.LogSoftmax(dim=1)
     )
-    
+
     # Load the trained weights
-    model_llrs.load_state_dict(torch.load("dl_weights/densenet201_llrs.pt", map_location=device))
+    model_llrs.load_state_dict(torch.load(str(dl_dir / "densenet201_llrs.pt"), map_location=device))
     model_llrs.to(device)
     model_llrs.eval()
-    
-    
+
+
     ################### CODE model #########################
     # Define the device (CPU-only if no GPU is available)
-    
+
     # Load the model architecture
     model_code = models.densenet201(weights=None)  # Initialize model without pre-trained weights
     num_features = model_code.classifier.in_features
-    
+
     # Use the correct number of output classes (9 as indicated in the error)
     model_code.classifier = torch.nn.Sequential(
         torch.nn.Flatten(),
         torch.nn.Linear(num_features, 4),  # Match the number of classes
         torch.nn.LogSoftmax(dim=1)
     )
-    
+
     # Load the trained weights
-    model_code.load_state_dict(torch.load("dl_weights/densenet201_code.pt", map_location=device))
+    model_code.load_state_dict(torch.load(str(dl_dir / "densenet201_code.pt"), map_location=device))
     model_code.to(device)
     model_code.eval()
-    
-    
+
+
     ################### N STORIES model #########################
     # Define the device (CPU-only if no GPU is available)
-    
+
     # Load the model architecture
     model_n_stories = models.densenet201(weights=None)  # Initialize model without pre-trained weights
     num_features = model_n_stories.classifier.in_features
-    
+
     # Use the correct number of output classes (9 as indicated in the error)
     model_n_stories.classifier = torch.nn.Sequential(
         torch.nn.Flatten(),
         torch.nn.Linear(num_features, 9),  # Match the number of classes
         torch.nn.LogSoftmax(dim=1)
     )
-    
+
     # Load the trained weights
-    model_n_stories.load_state_dict(torch.load("dl_weights/densenet201_n_stories.pt", map_location=device))
+    model_n_stories.load_state_dict(torch.load(str(dl_dir / "densenet201_n_stories.pt"), map_location=device))
     model_n_stories.to(device)
     model_n_stories.eval()
-    
-    
+
+
     ################### OCCUPANCY model #########################
     # Define the device (CPU-only if no GPU is available)
-    
+
     # Load the model architecture
     model_occupancy = models.densenet201(weights=None)  # Initialize model without pre-trained weights
     num_features = model_occupancy.classifier.in_features
-    
+
     # Use the correct number of output classes (9 as indicated in the error)
     model_occupancy.classifier = torch.nn.Sequential(
         torch.nn.Flatten(),
         torch.nn.Linear(num_features, 7),  # Match the number of classes
         torch.nn.LogSoftmax(dim=1)
     )
-    
+
     # Load the trained weights
-    model_occupancy.load_state_dict(torch.load("dl_weights/densenet201_occupancy.pt", map_location=device))
+    model_occupancy.load_state_dict(torch.load(str(dl_dir / "densenet201_occupancy.pt"), map_location=device))
     model_occupancy.to(device)
     model_occupancy.eval()
-    
-    
+
+
     ################### BLOCK POSTION model #########################
     # Define the device (CPU-only if no GPU is available)
-    
+
     # Load the model architecture
     model_bp = models.densenet201(weights=None)  # Initialize model without pre-trained weights
     num_features = model_bp.classifier.in_features
-    
+
     # Use the correct number of output classes (9 as indicated in the error)
     model_bp.classifier = torch.nn.Sequential(
         torch.nn.Flatten(),
         torch.nn.Linear(num_features, 3),  # Match the number of classes
         torch.nn.LogSoftmax(dim=1)
     )
-    
+
     # Load the trained weights
-    model_bp.load_state_dict(torch.load("dl_weights/densenet201_block.pt", map_location=device))
+    model_bp.load_state_dict(torch.load(str(dl_dir / "densenet201_block.pt"), map_location=device))
     model_bp.to(device)
     model_bp.eval()
-    
-    
+
+
     ################### Roof Shape model #########################
     # Define the device (CPU-only if no GPU is available)
-    
+
     # Load the model architecture
     model_rshp = models.densenet201(weights=None)  # Initialize model without pre-trained weights
     num_features = model_rshp.classifier.in_features
-    
+
     # Use the correct number of output classes (9 as indicated in the error)
     model_rshp.classifier = torch.nn.Sequential(
         torch.nn.Flatten(),
         torch.nn.Linear(num_features, 3),  # Match the number of classes
         torch.nn.LogSoftmax(dim=1)
     )
-    
+
     # Load the trained weights
-    model_rshp.load_state_dict(torch.load("dl_weights/densenet201_roof_shape.pt", map_location=device))
+    model_rshp.load_state_dict(torch.load(str(dl_dir / "densenet201_roof_shape.pt"), map_location=device))
     model_rshp.to(device)
     model_rshp.eval()
         
-    
+
     ################### Roof Material model #########################
     # Define the device (CPU-only if no GPU is available)
-    
+
     # Load the model architecture
     model_rmt = models.densenet201(weights=None)  # Initialize model without pre-trained weights
     num_features = model_rmt.classifier.in_features
-    
+
     # Use the correct number of output classes (9 as indicated in the error)
     model_rmt.classifier = torch.nn.Sequential(
         torch.nn.Flatten(),
         torch.nn.Linear(num_features, 3),  # Match the number of classes
         torch.nn.LogSoftmax(dim=1)
     )
-    
+
     # Load the trained weights
-    model_rmt.load_state_dict(torch.load("dl_weights/densenet201_roof_material.pt", map_location=device))
+    model_rmt.load_state_dict(torch.load(str(dl_dir / "densenet201_roof_material.pt"), map_location=device))
     model_rmt.to(device)
     model_rmt.eval()
 
@@ -588,7 +597,7 @@ def inspection_database (data_ai):
 method = 0  for existing information of reference
 method = 1  for inference first a sample and create the information of reference before the extrapolation
 """
-method = 1
+method = 0
 
 
 if method == 0:
