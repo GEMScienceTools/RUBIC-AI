@@ -16,7 +16,7 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         sf_x = screen_geometry.width() / 1920
         sf_y = screen_geometry.height() / 1080
 
-        self.setWindowTitle("Specific Location Method Input")
+        self.setWindowTitle("Specific Coordinates Method Input")
         self.setWindowIcon(QtGui.QIcon("help_img/RUBIC_logo.png"))
         self.resize(int(643 * sf_x), int(218 * sf_y))
 
@@ -39,7 +39,7 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         title_font.setItalic(True)
         title_font.setUnderline(True)
         self.specific_label.setFont(title_font)
-        self.specific_label.setText("Specific Locations Method Input")
+        self.specific_label.setText("Specific Coordinates Method Input")
 
         # Output name
         self.output_label_specific = QtWidgets.QLabel(self.coord_frame)
@@ -71,7 +71,7 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         self.csv_button_specific = QtWidgets.QPushButton(self.coord_frame)
         self.csv_button_specific.setGeometry(QtCore.QRect(int(20 * sf_x), int(125 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         self.csv_button_specific.setFont(font)
-        self.csv_button_specific.setText("Upload building locations")
+        self.csv_button_specific.setText("Upload building coordinates")
         self.csv_button_specific.clicked.connect(self.upload_csv)
 
         self.specific_path = QtWidgets.QLabel(self.coord_frame)
