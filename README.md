@@ -56,6 +56,7 @@ Before you begin, make sure the following are installed on your system:
    source RUBIC-AI/bin/activate  # macOS/Linux
    ```
 2. **Clone the repository**
+
    Choose your preferred folder to clone the repository by opening the terminal and navigating to the desired location.
    ```bash
    cd /Users/your-username/Path/To/Your/Repo
@@ -66,12 +67,13 @@ Before you begin, make sure the following are installed on your system:
    git clone https://github.com/dangomezm/RUBIC-AI.git
    ```
 
-3. **Install dependencies**
+4. **Install dependencies**
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **(Optional) Restart your system**
+5. **(Optional) Restart your system**
+
 Restarting your system can help resolve potential issues related to environment path changes or incomplete installations.
 
 > 🔁 *This step is usually not required, but recommended if you encounter errors related to newly installed dependencies.*
@@ -82,14 +84,79 @@ Restarting your system can help resolve potential issues related to environment 
    ```
 
 ## 🕵️ Usage modes
-> ⚠️ **Note:**  
-> Some modes are currently unavailable:  
-> - **Polygon Method**  
-> - **Specific Coordinates Method**  
->  
-> We are working to restore these functionalities as soon as possible.
 
-### 1. Local Images Method ✅ *Available*
+### 1. Polygon Method ✅ *Available*
+**Best for:** Create a building stock from well defined area such as a neighborhood, city, and similars
+
+**Workflow:**
+1. **Set the usage mode**  
+   Select the **Polygon method** option, and then click the ***Save and continue*** button.
+   
+2. **Select the output project folder**  
+   Click the ***Select output folder*** button to open a pop-up window and navigate to the folder where outputs will be saved.  
+   > 📁 *Example:* `demos/polygon_method`
+    
+3. **Set input files**  
+   Click the ***Upload file with coordinates*** button to open a pop-up window and navigate to the file where the vertices of the polygon are stored. The outputs will be saved automatically 
+   > 📁 *Example:* `demos/polygon_method/polygon_method_example.csv`  
+   > 📝 *Required CSV format:*
+   
+   ```csv
+   id,latitude,longitude
+   1,10.9639,-74.7964
+   2,10.9640,-74.7965
+   ```
+   At this point, the file will be previewed in a table so you can verify the selected information.
+	
+4. Download the available building footprints in the defined area by clicking the ***Get footprints available*** button.  
+   **Currently, the footprints are downloaded from OSM, but more options will be available in the future.**
+
+   - **4.1. Footprint Sample**
+     - The number of available footprints will be displayed next to the text ***N° footprints***.  
+     - The user should define the sample size using the ***Sample size*** field. This value must be equal to or less than the total number of available building footprints.  
+     - The user can choose between **Manual** inspection, where classifications are made manually, or **AI-powered**, where the GUI uses a deep learning model to predict each feature.  
+	 - Contine by clicking the ***Save and continue*** button.
+     > ⚠️ **Important:** *Since this is the first version, it is strongly recommended to verify the results.*
+
+5. Setup Main Interface
+	Once in the main window, the user should click the ***Next Building*** button to fetch the image from Google Street View.  
+	Before starting, the GUI will ask for the most representative epoch of construction in the country under analysis.  
+	This must be defined in order to continue the process.  
+
+	After that, the user can either start with manual inspection by selecting each feature from the corresponding combo boxes,  
+	or wait for the deep learning models to process the image.
+
+	- **5.1 Manual Box**
+	     - If the automatic delimitation of the building is not adequate for proper isolation,  
+		   or if the selected building is not the building of interest, the user can define a manual bounding box by clicking on four points.
+	
+	- **5.2 Search Old Inspection**
+	     - By searching with the image ID and clicking the ***Search building*** button,  
+		   the GUI will display the corresponding saved inspection.
+		   > ⚠️ **Important:** *This only works for inspections that were previously saved.*
+	     
+	- **5.3 Save Data**
+		 - The results of the inspection will be saved in the corresponding folder by clicking the ***Save data*** button.  
+			The progress of the work is only saved if this button is clicked.
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 3. Local Images Method ✅ *Available*
 
 **Best for:** Create a building stock from images stored on your local device
 
@@ -140,7 +207,7 @@ You can navigate through the results using the ***Next Building*** and ***Previo
 If you want to check a specific image, use the ***Search Building*** button. First, enter the image ID (e.g., `1_1`) in the adjacent field, then click the ***Search Building*** button. The GUI will automatically display the corresponding image and its saved classification.
 
 
-### 2. Neighbor Extrapolation ✅ *Available*
+### 4. Neighbor Extrapolation ✅ *Available*
 
 **Best for:** Expanding known building data to classify unknown buildings
 
@@ -213,24 +280,7 @@ If you want to check a specific image, use the ***Search Building*** button. Fir
 
 
 
-### 3. Polygon Method 🚧 *Currently Unavailable*
 
-**Best for:** Area-based building surveys
-
-**Planned features:**
-- Rectangle definition by two coordinates
-- Define custom polygon areas by uploading vertex coordinates in a CSV file, ordered either clockwise or counterclockwise
-- Automated building footprint extraction
-- Sample size control for large areas
-
-### 4. Specific Location Method 🚧 *Currently Unavailable*
-
-**Best for:** Targeted building inspections
-
-**Planned features:**
-- Direct coordinate-based building selection
-- Batch processing of specific locations
-- Custom output naming
 
 ## 🖥️ Technical Architecture
 
