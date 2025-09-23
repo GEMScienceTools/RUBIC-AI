@@ -142,22 +142,11 @@ Restarting your system can help resolve potential issues related to environment 
 
 ---
 
+### 2. Specific Coordiantes Method
 
+---
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-### 3. Local Images Method ✅ *Available*
+### 3. Local Images Method 
 
 **Best for:** Create a building stock from images stored on your local device
 
@@ -207,6 +196,7 @@ To review or complete unfinished classifications, follow the steps up to **4.1 M
 You can navigate through the results using the ***Next Building*** and ***Previous Building*** buttons to move forward or backward between images and review the associated information.
 If you want to check a specific image, use the ***Search Building*** button. First, enter the image ID (e.g., `1_1`) in the adjacent field, then click the ***Search Building*** button. The GUI will automatically display the corresponding image and its saved classification.
 
+---
 
 ### 4. Neighbor Extrapolation ✅ *Available*
 
