@@ -130,7 +130,7 @@ Restarting your system can help resolve potential issues related to environment 
 	- **5.1 Manual Box**
 	     - If the automatic delimitation of the building is not adequate for proper isolation,  
 		   or if the selected building is not the building of interest, the user can define a manual bounding box by clicking on four points.
-	
+			<img src="help_img/manual_box.png">
 	- **5.2 Search Old Inspection**
 	     - By searching with the image ID and clicking the ***Search building*** button,  
 		   the GUI will display the corresponding saved inspection.
