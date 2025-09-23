@@ -305,24 +305,12 @@ If you want to check a specific image, use the ***Search Building*** button. Fir
 
 # © License
 
-[![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
+[PRIVATE AND CONFIDENTIAL](./LICENSE.txt)
 
-This work is licensed under a
-[Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License][cc-by-nc-sa], which requires:
+You should have received a specific license agreement along with
+this product.  If you did not, please contact the GEM Foundation
+at licensing@globalquakemodel.org.
 
-* Attribution (you must give appropriate credit, provide a link to the license, and indicate if changes were made)
-* Non-commercial (you may not use the material for commercial purposes)
-* ShareAlike (derivatives created must be made available under the same license as the original)
-
-If your use case deviates from the requirements of the offered license, but still want to explore the use of the data, please contact us at license@globalquakemodel.org  
-
-[![CC BY-NC-SA 4.0][cc-by-nc-sa-image]][cc-by-nc-sa]
-
-[cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
-[cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
-[cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg
-
-Any deviation from these terms incurs license infringement. For commercial use of the data contained within this work, a specific license agreement must be made tailored to your use case, in such instance please contact GEM at product@globalquakemodel.org.
 
 # Citation
 [WIP]
