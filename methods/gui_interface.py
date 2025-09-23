@@ -393,18 +393,22 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.material_cb_1.setObjectName("material_cb_1")
         # Adding material options
         self.material_cb_1.addItem("Select Material")
-        self.material_cb_1.addItem("Adobe-Earth-Stone", "ADO")
+        self.material_cb_1.addItem("Adobe", "ADO")
         self.material_cb_1.addItem("Concrete", "CR")
         self.material_cb_1.addItem("Masonry - Confined", "MCF")
         self.material_cb_1.addItem("Masonry - Reinforced", "MR")
         self.material_cb_1.addItem("Masonry - Unreinforced", "MUR")
-        self.material_cb_1.addItem("Hybrid (MCF-MUR)", "HYB(MCF;MUR)")
+        self.material_cb_1.addItem("Hybrid or composite (mixed) materials", "HYB")
         self.material_cb_1.addItem("Steel", "S")
         self.material_cb_1.addItem("Wood", "W")
+        self.material_cb_1.addItem("Informal materials", "INF")
+        self.material_cb_1.addItem("Different materials in the two directions", "MDD")
+        self.material_cb_1.addItem("Different materials in height ", "MDV")
+        self.material_cb_1.addItem("Other material", "MATO")
         # Set default index
         self.material_cb_1.setCurrentIndex(0)
         # Scale dropdown width
-        self.material_cb_1.view().setFixedWidth(int(250 * sf_x))
+        self.material_cb_1.view().setFixedWidth(int(350 * sf_x))
 
         
         # LLRS for left image label
@@ -430,11 +434,17 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.llrs_cb_1.addItem("Infilled Frames", "LFINF")
         self.llrs_cb_1.addItem("Moment Frames", "LFM")
         self.llrs_cb_1.addItem("Walls", "LWAL")
-        self.llrs_cb_1.addItem("Other", "LO")       
+        self.llrs_cb_1.addItem("Braced frame", "LFBR")
+        self.llrs_cb_1.addItem("Post and beam", "LPB") 
+        self.llrs_cb_1.addItem("Flat slab/plate or waffle slab", "LFLS") 
+        self.llrs_cb_1.addItem("Different LLRS in the two directions", "LDD")
+        self.llrs_cb_1.addItem("Differnet LLRS in height ", "LHV") 
+        self.llrs_cb_1.addItem("No lateral load-resisting system", "LN") 
+        self.llrs_cb_1.addItem("Other", "LO") 
         # Set default index
         self.llrs_cb_1.setCurrentIndex(0)       
         # Scale dropdown width
-        self.llrs_cb_1.view().setFixedWidth(int(250 * sf_x))
+        self.llrs_cb_1.view().setFixedWidth(int(350 * sf_x))
 
         
         # Code level for left image label
@@ -734,18 +744,22 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.material_cb_2.setObjectName("material_cb_2")
         # Adding material options
         self.material_cb_2.addItem("Select Material")
-        self.material_cb_2.addItem("Adobe-Earth-Stone", "ADO")
+        self.material_cb_2.addItem("Adobe", "ADO")
         self.material_cb_2.addItem("Concrete", "CR")
         self.material_cb_2.addItem("Masonry - Confined", "MCF")
         self.material_cb_2.addItem("Masonry - Reinforced", "MR")
         self.material_cb_2.addItem("Masonry - Unreinforced", "MUR")
-        self.material_cb_2.addItem("Hybrid (MCF-MUR)", "HYB(MCF;MUR)")
+        self.material_cb_2.addItem("Hybrid or composite (mixed) materials", "HYB")
         self.material_cb_2.addItem("Steel", "S")
         self.material_cb_2.addItem("Wood", "W")
+        self.material_cb_2.addItem("Informal materials", "INF")
+        self.material_cb_2.addItem("Different materials in the two directions", "MDD")
+        self.material_cb_2.addItem("Different materials in height ", "MDV")
+        self.material_cb_2.addItem("Other material", "MATO")
         # Set default index
         self.material_cb_2.setCurrentIndex(0)
         # Scale dropdown width
-        self.material_cb_2.view().setFixedWidth(int(250 * sf_x))
+        self.material_cb_2.view().setFixedWidth(int(350 * sf_x))
 
         
         # LLRS Central image label
@@ -771,11 +785,17 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.llrs_cb_2.addItem("Infilled Frames", "LFINF")
         self.llrs_cb_2.addItem("Moment Frames", "LFM")
         self.llrs_cb_2.addItem("Walls", "LWAL")
-        self.llrs_cb_2.addItem("Other", "LO")
+        self.llrs_cb_2.addItem("Braced frame", "LFBR")
+        self.llrs_cb_2.addItem("Post and beam", "LPB") 
+        self.llrs_cb_2.addItem("Flat slab/plate or waffle slab", "LFLS") 
+        self.llrs_cb_2.addItem("Different LLRS in the two directions", "LDD")
+        self.llrs_cb_2.addItem("Differnet LLRS in height ", "LHV") 
+        self.llrs_cb_2.addItem("No lateral load-resisting system", "LN") 
+        self.llrs_cb_2.addItem("Other", "LO") 
         # Set default index
         self.llrs_cb_2.setCurrentIndex(0)
         # Scale dropdown width
-        self.llrs_cb_2.view().setFixedWidth(int(250 * sf_x))
+        self.llrs_cb_2.view().setFixedWidth(int(350 * sf_x))
 
         
         # Code level for central image
@@ -1081,18 +1101,22 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.material_cb_3.setObjectName("material_cb_3")
         # Adding material options
         self.material_cb_3.addItem("Select Material")
-        self.material_cb_3.addItem("Adobe-Earth-Stone", "ADO")
+        self.material_cb_3.addItem("Adobe", "ADO")
         self.material_cb_3.addItem("Concrete", "CR")
         self.material_cb_3.addItem("Masonry - Confined", "MCF")
         self.material_cb_3.addItem("Masonry - Reinforced", "MR")
         self.material_cb_3.addItem("Masonry - Unreinforced", "MUR")
-        self.material_cb_3.addItem("Hybrid (MCF-MUR)", "HYB(MCF;MUR)")
+        self.material_cb_3.addItem("Hybrid or composite (mixed) materials", "HYB")
         self.material_cb_3.addItem("Steel", "S")
         self.material_cb_3.addItem("Wood", "W")
+        self.material_cb_3.addItem("Informal materials", "INF")
+        self.material_cb_3.addItem("Different materials in the two directions", "MDD")
+        self.material_cb_3.addItem("Different materials in height ", "MDV")
+        self.material_cb_3.addItem("Other material", "MATO")
         # Set default index
         self.material_cb_3.setCurrentIndex(0)
         # Scale dropdown width
-        self.material_cb_3.view().setFixedWidth(int(250 * sf_x))
+        self.material_cb_3.view().setFixedWidth(int(350 * sf_x))
 
         
         # LLRS for right image label
@@ -1118,11 +1142,17 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.llrs_cb_3.addItem("Infilled Frames", "LFINF")
         self.llrs_cb_3.addItem("Moment Frames", "LFM")
         self.llrs_cb_3.addItem("Walls", "LWAL")
-        self.llrs_cb_3.addItem("Other", "LO")   
+        self.llrs_cb_3.addItem("Braced frame", "LFBR")
+        self.llrs_cb_3.addItem("Post and beam", "LPB") 
+        self.llrs_cb_3.addItem("Flat slab/plate or waffle slab", "LFLS") 
+        self.llrs_cb_3.addItem("Different LLRS in the two directions", "LDD")
+        self.llrs_cb_3.addItem("Differnet LLRS in height ", "LHV") 
+        self.llrs_cb_3.addItem("No lateral load-resisting system", "LN") 
+        self.llrs_cb_3.addItem("Other", "LO")    
         # Set default index
         self.llrs_cb_3.setCurrentIndex(0)
         # Scale dropdown width
-        self.llrs_cb_3.view().setFixedWidth(int(250 * sf_x))
+        self.llrs_cb_3.view().setFixedWidth(int(350 * sf_x))
         
         # Code level for right image label
         self.age_3 = QtWidgets.QLabel(self.centralwidget)
