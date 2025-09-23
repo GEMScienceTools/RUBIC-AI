@@ -85,7 +85,7 @@ Restarting your system can help resolve potential issues related to environment 
 
 ## 🕵️ Usage modes
 
-### 1. Polygon Method ✅ *Available*
+### 1. Polygon Method 
 **Best for:** Create a building stock from well defined area such as a neighborhood, city, and similars
 
 **Workflow:**
