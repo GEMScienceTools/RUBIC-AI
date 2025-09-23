@@ -142,39 +142,67 @@ Restarting your system can help resolve potential issues related to environment 
 
 ---
 
-### 2. Specific Coordiantes Method
+### 2. Specific Coordinates Method 
+**Best for:** Ideal for characterizing specific buildings, which may even be located in different countries.
 
+**Workflow:**
+1. **Set the usage mode**  
+   Select the **Specific coordinates** option, and then click the ***Save and continue*** button.
+   
+2. **Select the output project folder**  
+   Click the ***Select output folder*** button to open a pop-up window and navigate to the folder where outputs will be saved.  
+   > 📁 *Example:* `demos/specific_coordinates`
+    
+3. **Set input files**  
+   Click the ***Upload file with coordinates*** button to open a pop-up window and navigate to the file where the vertices of the polygon are stored. The outputs will be saved automatically 
+   > 📁 *Example:* `demos/specific_coordinates/specific_coordinates_example_data.csv`  
+   > 📝 *Required CSV format:*
+   
+   ```csv
+   id,latitude,longitude
+   1,10.9639,-74.7964
+   2,10.9640,-74.7965
+   ```
+	After this, the user should check the input files by using the ***Load data*** button.  
+	If everything is correct, please click the ***Save and continue*** button 
+
+4. Setup Main Interface
+   
+	The process and available feature are the same that the presented in the first method.
 ---
 
 ### 3. Local Images Method 
 
-**Best for:** Create a building stock from images stored on your local device
+**Best for:** Create a building stock from images stored on your local device. Ideal for characterizing buildings in locations where there is no access with GSV and whose images already exist, e.g., inside a factory.
 
 **Workflow:**
-1. **Select the project folder**  
-   Click the ***Project Folder*** button to open a pop-up window and navigate to the folder where outputs will be saved.  
-   > 📁 *Example:* `demos/Local_images_data_example`
+1. **Set the usage mode**  
+   Select the **Local images** option, and then click the ***Save and continue*** button.
    
-2. **Set the usage mode**  
-   Click the ***Insp. Method*** button, select the **Local images** option, and then click the ***Save and continue*** button.
+2. **Select the output project folder**  
+   Click the ***Select output folder*** button to open a pop-up window and navigate to the folder where outputs will be saved.  
+   > 📁 *Example:* `demos/local_images`
+    
+3. **Select local image folder**  
+   Click the ***Select image folder*** button to open a pop-up window and navigate to the folder where the images are stored.  
+   > 📁 *Example:* `demos/local_images/images_ex1`
    
-3. **Set input files**  
-   Click the ***Set Coord.*** button and follow these steps:
-	- 3.1. Click the ***Select image folder*** button to select the folder containing building images stored locally.  
-	   > 📁 *Example:* `demos/Local_images_data_example/images_buildings`  
-	- 3.2. Click the ***Upload buildings information*** button and upload a CSV file containing the image ID and coordinates.  
-	   > 📁 *Example:* `demos/Local_images_data_example/local_images_data.csv`  
-	   > 📝 *Required CSV format:*
-	   ```csv
-	   ID,Latitude,Longitude,City,Country
-	   1,10.9639,-74.7964,Barranquilla,Colombia
-	   2,10.9640,-74.7965,Barranquilla,Colombia
-	   ```
-	- 3.3. The results will be saved using the name specified in the ***Output name*** field (default: **"Local"**) as a `.csv` file. This file will contain all the building features, along with metadata such as city, country, coordinates, and the path to the corresponding building image.
-	- 3.4. Select the number of images available per location (1 to 3).
-	- 3.5. Upload the information and check the format by clicking the ***Load data*** button. Once a confirmation message appears, click ***Save and continue*** to proceed to the next step.
+4. **Set Input Files**  
+   Click the ***Upload building information*** button to open a pop-up window and navigate to the file containing the building locations.  
+   
+   > 📁 *Example:* `demos/local_images/data_ex1.csv`  
+   > 📝 *Required CSV format:*
+   
+   ```csv
+   id,latitude,longitude
+   1,10.9639,-74.7964
+   2,10.9640,-74.7965
+   ```
+	- 4.1. The results will be saved using the name specified in the ***Output name*** field (default: **"Local_images"**) as a `.csv` file. This file will contain all the building features, along with metadata such as city, country, coordinates, and the path to the corresponding building image.
+	- 4.2. A maximum of three windows can display the same location (ideally the same building). These will be displayed automatically if they share the same coordinates.  
+	- 4.3. Upload the information and check the format by clicking the ***Load data*** button. Once a confirmation message appears, click ***Save and continue*** to proceed to the next step.
 
-4. In this step, the user can classify building features in two ways:  
+5. In this step, the user can classify building features in two ways:  
    **I) Manually** or **II) Using Deep Learning models with verification of predicted attributes.**
 
 	- 4.1. 📝 Manual Classification
@@ -195,6 +223,7 @@ Restarting your system can help resolve potential issues related to environment 
 To review or complete unfinished classifications, follow the steps up to **4.1 Manual Classification** to upload the CSV file containing the classification data.
 You can navigate through the results using the ***Next Building*** and ***Previous Building*** buttons to move forward or backward between images and review the associated information.
 If you want to check a specific image, use the ***Search Building*** button. First, enter the image ID (e.g., `1_1`) in the adjacent field, then click the ***Search Building*** button. The GUI will automatically display the corresponding image and its saved classification.
+
 
 ---
 
