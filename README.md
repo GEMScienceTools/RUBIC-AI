@@ -86,7 +86,7 @@ Restarting your system can help resolve potential issues related to environment 
 ## 🕵️ Usage modes
 
 ### 1. Polygon Method 
-**Best for:** Create a building stock from well defined area such as a neighborhood, city, and similars
+**Best for:** Create a building stock from well defined area such as a neighborhood, city, and similar
 
 **Workflow:**
 1. **Set the usage mode**  
@@ -119,6 +119,7 @@ Restarting your system can help resolve potential issues related to environment 
      > ⚠️ **Important:** *Since this is the first version, it is strongly recommended to verify the results.*
 
 5. Setup Main Interface
+   
 	Once in the main window, the user should click the ***Next Building*** button to fetch the image from Google Street View.  
 	Before starting, the GUI will ask for the most representative epoch of construction in the country under analysis.  
 	This must be defined in order to continue the process.  
