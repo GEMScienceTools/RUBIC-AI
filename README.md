@@ -86,7 +86,7 @@ Restarting your system can help resolve potential issues related to environment 
 ## 🕵️ Usage modes
 
 ### 1. Polygon Method 
-**Best for:** Create a building stock from well defined area such as a neighborhood, city, and similar
+**Best for:** Create a building stock from well defined area such as a neighborhood, city, or similar
 
 **Workflow:**
 1. **Set the usage mode**  
@@ -114,36 +114,45 @@ Restarting your system can help resolve potential issues related to environment 
    - **4.1. Footprint Sample**
      - The number of available footprints will be displayed next to the text ***N° footprints***.  
      - The user should define the sample size using the ***Sample size*** field. This value must be equal to or less than the total number of available building footprints.  
-     - The user can choose between **Manual** inspection, where classifications are made manually, or **AI-powered**, where the GUI uses a deep learning model to predict each feature.  
+
+5. Classification options, the user can classify building features in two ways:  
+   **I) Manually** or **II) Using Deep Learning models with verification of predicted attributes.**
+
+	- 5.1. 📝 Manual Classification
+		- **5.1.1.** Click the ***Next Building*** button to upload and display the first building image.
+		- **5.1.2.** Specify the construction epoch that is most relevant to the area under analysis (this step is only required for the first analysis).
+		- **5.1.3.** Use the corresponding combo boxes to select the appropriate features based on the displayed image (e.g., select "Concrete" as the LLRS material).
+		- **5.1.4.** Click the ***Next Building*** button again to proceed to the next image, and repeat this process until all images have been reviewed.
+		- **5.1.5.** Save either all results or a partial set by clicking the ***Save data*** button. When the GUI is launched again, previously saved results will be reloaded, allowing the classification process to resume from where it left off.  
+		> ⚠️ **Important:** *If you do not save your data before closing the GUI, your work will be lost.*
+
+	- 5.2. 🤖 AI-Powered Classification
+		- **5.2.1.** Click the ***AI Powered*** checkbox to activate the deep learning models.
+		- **5.2.2.** Upload the images by clicking the ***Next Building*** button. At this step, the tool will automatically predict the building features.
+		- **5.2.3.** The user should manually define the epoch of construction and image quality, since there is currently no model available for these features
+		- **5.2.4.** Click the ***Next Building*** button again to proceed to the next image, and repeat this process until all images have been reviewed.
+		- **5.2.5.** Save either all results or a partial set by clicking the ***Save data*** button. When the GUI is launched again, previously saved results will be reloaded, allowing the classification process to resume from where it left off.  
+		> ⚠️ **Important:** *If you do not save your data before closing the GUI, your work will be lost.*
+
+   The user can choose between **Manual** inspection, where classifications are made manually, or **AI-powered**, where the GUI uses a deep learning model to predict each feature.  
 	 - Contine by clicking the ***Save and continue*** button.
      > ⚠️ **Important:** *Since this is the first version, it is strongly recommended to verify the results.*
 
-5. Setup Main Interface
+6. Main interface features
    
-	Once in the main window, the user should click the ***Next Building*** button to fetch the image from Google Street View.  
-	Before starting, the GUI will ask for the most representative epoch of construction in the country under analysis.  
-	This must be defined in order to continue the process.  
-
-	After that, the user can either start with manual inspection by selecting each feature from the corresponding combo boxes,  
-	or wait for the deep learning models to process the image.
-
-	- **5.1 Manual Box**
+	- **6.1 Manual Box**
 	     - If the automatic delimitation of the building is not adequate for proper isolation,  
 		   or if the selected building is not the building of interest, the user can define a manual bounding box by clicking on four points.
 			<img src="help_img/manual_box.png">
-	- **5.2 Search Old Inspection**
+	- **6.2 Search Old Inspection**
 	     - By searching with the image ID and clicking the ***Search building*** button,  
 		   the GUI will display the corresponding saved inspection.
 		   > ⚠️ **Important:** *This only works for inspections that were previously saved.*
 	     
-	- **5.3 Save Data**
-		 - The results of the inspection will be saved in the corresponding folder by clicking the ***Save data*** button.  
-			The progress of the work is only saved if this button is clicked.
-
 ---
 
 ### 2. Specific Coordinates Method 
-**Best for:** Ideal for characterizing specific buildings, which may even be located in different countries.
+**Best for:** Characterizing specific buildings, such as reviewing all hospitals in the area of analysis, even if they are located in different countries.
 
 **Workflow:**
 1. **Set the usage mode**  
@@ -154,7 +163,7 @@ Restarting your system can help resolve potential issues related to environment 
    > 📁 *Example:* `demos/specific_coordinates`
     
 3. **Set input files**  
-   Click the ***Upload file with coordinates*** button to open a pop-up window and navigate to the file where the vertices of the polygon are stored. The outputs will be saved automatically 
+   Click the ***Upload file with coordinates*** button to open a pop-up window and navigate to the file where the coordinates of the building of interest are stored.
    > 📁 *Example:* `demos/specific_coordinates/specific_coordinates_example_data.csv`  
    > 📝 *Required CSV format:*
    
