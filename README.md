@@ -134,8 +134,9 @@ However, the user can easily switch back to manual inspection by clicking the ch
 		- **5.2.4.** Click the ***Next Building*** button again to proceed to the next image, and repeat this process until all images have been reviewed.
 		- **5.2.5.** Save either all results or a partial set by clicking the ***Save data*** button. When the GUI is launched again, previously saved results will be reloaded, allowing the classification process to resume from where it left off.  
 		> ⚠️ **Important:** *If you do not save your data before closing the GUI, your work will be lost.*
-  
-		> ⚠️ **Important:** *Since this is the first version, it is strongly recommended to verify the results.*
+	
+	- 5.3. The results will be saved using the name specified in the ***Output name*** field (default: **"polygon_building"**) as a `.csv` file. This file will contain all the building features, along with metadata such as city, country, coordinates, and the path to the corresponding building image.
+		> ⚠️ **Important:** *Since this is the first version, it is strongly recommended to verify the results from the AI-powered mode.*
 
 6. Main interface features
    
@@ -143,9 +144,8 @@ However, the user can easily switch back to manual inspection by clicking the ch
 	     - If the automatic delimitation of the building is not adequate for proper isolation,  
 		   or if the selected building is not the building of interest, the user can define a manual bounding box by clicking on four points.
 			<img src="help_img/manual_box.png">
-	- **6.2 Search Old Inspection**
-	     - By searching with the image ID and clicking the ***Search building*** button,  
-		   the GUI will display the corresponding saved inspection.
+	- **6.2 Review Previous Classifications**
+	     - If you want to check a specific image, use the ***Search Building*** button. First, enter the image ID (e.g., `1_1`) in the adjacent field, then click the ***Search Building*** button. The GUI will automatically display the corresponding image and its saved classification.
 		   > ⚠️ **Important:** *This only works for inspections that were previously saved.*
 	    
 ---
@@ -175,10 +175,13 @@ However, the user can easily switch back to manual inspection by clicking the ch
 	  After this, the user should check the input files by clicking the ***Load data*** button.  
 	  If any field is missing or contains an error in its name, the GUI will display a message indicating which fields are missing.  
 	  If everything is correct, click the ***Save and continue*** button.
-
-4. Classification options and setup main interface
    
-	The process and available feature are the same than the presented in the ***polygon method***.
+	- 3.1. The results will be saved using the name specified in the ***Output name*** field (default: **"specific_coord"**) as a `.csv` file. This file will contain all the building features, along with metadata such as city, country, coordinates, and the path to the corresponding building image.
+ - 
+4. Classification options and setup main interface
+
+   - The process and available features are the same as those presented in sections 5 and 6 of the ***Polygon Method***.
+
 ---
 
 ### 3. Local Images Method 
@@ -198,7 +201,7 @@ However, the user can easily switch back to manual inspection by clicking the ch
    > 📁 *Example:* `demos/local_images/images_ex1`
    
 4. **Set Input Files**  
-   Click the ***Upload building information*** button to open a pop-up window and navigate to the file containing the building locations.  
+   Click the ***Upload building information*** button to open a pop-up window and navigate to the file containing the building coordinates.  
    
    > 📁 *Example:* `demos/local_images/data_ex1.csv`  
    > 📝 *Required CSV format:*
@@ -208,32 +211,15 @@ However, the user can easily switch back to manual inspection by clicking the ch
    1,10.9639,-74.7964
    2,10.9640,-74.7965
    ```
+   At this point, the file will be previewed in a table so you can verify the selected information.
+   
 	- 4.1. The results will be saved using the name specified in the ***Output name*** field (default: **"Local_images"**) as a `.csv` file. This file will contain all the building features, along with metadata such as city, country, coordinates, and the path to the corresponding building image.
 	- 4.2. A maximum of three windows can display the same location (ideally the same building). These will be displayed automatically if they share the same coordinates.  
 	- 4.3. Upload the information and check the format by clicking the ***Load data*** button. Once a confirmation message appears, click ***Save and continue*** to proceed to the next step.
 
-5. In this step, the user can classify building features in two ways:  
-   **I) Manually** or **II) Using Deep Learning models with verification of predicted attributes.**
+6. Classification options and setup main interface
 
-	- 4.1. 📝 Manual Classification
-		- **4.1.1.** Click the ***Next Building*** button to upload and display the first building image.
-		- **4.1.2.** Use the corresponding comboboxes to select the appropriate features based on the displayed image (e.g., select "Concrete" as the LLRS material).
-		- **4.1.3.** Click the ***Next Building*** button again to proceed to the next image, and repeat this process until all images have been reviewed.
-		- **4.1.4.** Save either all results or a partial set by clicking the ***Save data*** button. When the GUI is launched again, previously saved results will be reloaded, allowing the classification process to resume from where it left off.  
-		> ⚠️ **Important:** *If you do not save your data before closing the GUI, your work will be lost.*
-
-	- 4.2. 🤖 AI-Powered Classification
-		- **4.2.1.** Click the ***AI Powered*** checkbox to activate the deep learning models.
-		- **4.2.2.** Upload the images by clicking the ***Next Building*** button. At this step, the tool will automatically predict the building features.
-		- **4.2.3.** Click the ***Next Building*** button again to proceed to the next image, and repeat this process until all images have been reviewed.
-		- **4.2.4.** Save either all results or a partial set by clicking the ***Save data*** button. When the GUI is launched again, previously saved results will be reloaded, allowing the classification process to resume from where it left off.  
-		> ⚠️ **Important:** *If you do not save your data before closing the GUI, your work will be lost.*
-
-5. ***Review Previous Classifications***
-To review or complete unfinished classifications, follow the steps up to **4.1 Manual Classification** to upload the CSV file containing the classification data.
-You can navigate through the results using the ***Next Building*** and ***Previous Building*** buttons to move forward or backward between images and review the associated information.
-If you want to check a specific image, use the ***Search Building*** button. First, enter the image ID (e.g., `1_1`) in the adjacent field, then click the ***Search Building*** button. The GUI will automatically display the corresponding image and its saved classification.
-
+   The process and available features are the same as those presented in sections 5 and 6 of the ***Polygon Method***.
 
 ---
 
