@@ -127,17 +127,14 @@ Restarting your system can help resolve potential issues related to environment 
 		> ⚠️ **Important:** *If you do not save your data before closing the GUI, your work will be lost.*
 
 	- 5.2. 🤖 AI-Powered Classification
-		- **5.2.1.** Click the ***AI Powered*** checkbox to activate the deep learning models.
+		- **5.2.1.** The ***AI Powered*** checkbox will be activated, which means the feature will be predicted using AI.  
+However, the user can easily switch back to manual inspection by clicking the checkbox again.
 		- **5.2.2.** Upload the images by clicking the ***Next Building*** button. At this step, the tool will automatically predict the building features.
 		- **5.2.3.** The user should manually define the epoch of construction and image quality, since there is currently no model available for these features
 		- **5.2.4.** Click the ***Next Building*** button again to proceed to the next image, and repeat this process until all images have been reviewed.
 		- **5.2.5.** Save either all results or a partial set by clicking the ***Save data*** button. When the GUI is launched again, previously saved results will be reloaded, allowing the classification process to resume from where it left off.  
 		> ⚠️ **Important:** *If you do not save your data before closing the GUI, your work will be lost.*
-
-   The user can choose between **Manual** inspection, where classifications are made manually, or **AI-powered**, where the GUI uses a deep learning model to predict each feature.  
-	 - Contine by clicking the ***Save and continue*** button.
-     > ⚠️ **Important:** *Since this is the first version, it is strongly recommended to verify the results.*
-
+		> ⚠️ **Important:** *Since this is the first version, it is strongly recommended to verify the results.*
 6. Main interface features
    
 	- **6.1 Manual Box**
@@ -148,7 +145,7 @@ Restarting your system can help resolve potential issues related to environment 
 	     - By searching with the image ID and clicking the ***Search building*** button,  
 		   the GUI will display the corresponding saved inspection.
 		   > ⚠️ **Important:** *This only works for inspections that were previously saved.*
-	     
+	    
 ---
 
 ### 2. Specific Coordinates Method 
