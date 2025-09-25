@@ -134,7 +134,9 @@ However, the user can easily switch back to manual inspection by clicking the ch
 		- **5.2.4.** Click the ***Next Building*** button again to proceed to the next image, and repeat this process until all images have been reviewed.
 		- **5.2.5.** Save either all results or a partial set by clicking the ***Save data*** button. When the GUI is launched again, previously saved results will be reloaded, allowing the classification process to resume from where it left off.  
 		> ⚠️ **Important:** *If you do not save your data before closing the GUI, your work will be lost.*
+  
 		> ⚠️ **Important:** *Since this is the first version, it is strongly recommended to verify the results.*
+
 6. Main interface features
    
 	- **6.1 Manual Box**
@@ -149,7 +151,7 @@ However, the user can easily switch back to manual inspection by clicking the ch
 ---
 
 ### 2. Specific Coordinates Method 
-**Best for:** Characterizing specific buildings, such as reviewing all hospitals in the area of analysis, even if they are located in different countries.
+**Best for:** Characterizing specific buildings, for example: reviewing all hospitals in the area of analysis, even if they are located in different countries.
 
 **Workflow:**
 1. **Set the usage mode**  
@@ -169,12 +171,14 @@ However, the user can easily switch back to manual inspection by clicking the ch
    1,10.9639,-74.7964
    2,10.9640,-74.7965
    ```
-	After this, the user should check the input files by using the ***Load data*** button.  
-	If everything is correct, please click the ***Save and continue*** button 
+	  At this point, the file will be previewed in a table so you can verify the selected information.  
+	  After this, the user should check the input files by clicking the ***Load data*** button.  
+	  If any field is missing or contains an error in its name, the GUI will display a message indicating which fields are missing.  
+	  If everything is correct, click the ***Save and continue*** button.
 
-4. Setup Main Interface
+4. Classification options and setup main interface
    
-	The process and available feature are the same that the presented in the first method.
+	The process and available feature are the same than the presented in the ***polygon method***.
 ---
 
 ### 3. Local Images Method 
