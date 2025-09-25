@@ -18,13 +18,13 @@ class SpecificLocationSetting(QtWidgets.QDialog):
 
         self.setWindowTitle("Specific Coordinates Method Input")
         self.setWindowIcon(QtGui.QIcon("help_img/RUBIC_logo.png"))
-        self.resize(int(643 * sf_x), int(218 * sf_y))
+        self.resize(int(643 * sf_x), int(483 * sf_y))
 
         self.coord_frame = QtWidgets.QWidget(self)
 
         # Background
         self.backg_4 = QtWidgets.QLabel(self.coord_frame)
-        self.backg_4.setGeometry(QtCore.QRect(int(10 * sf_x), int(9 * sf_y), int(621 * sf_x), int(161 * sf_y)))
+        self.backg_4.setGeometry(QtCore.QRect(int(10 * sf_x), int(9 * sf_y), int(621 * sf_x), int(411 * sf_y)))
         self.backg_4.setStyleSheet("background-color: rgb(212, 206, 255);")
 
         font = QtGui.QFont()
@@ -53,7 +53,7 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         self.output_specific = QtWidgets.QLineEdit(self.coord_frame)
         self.output_specific.setGeometry(QtCore.QRect(int(160 * sf_x), int(39 * sf_y), int(271 * sf_x), int(31 * sf_y)))
         self.output_specific.setFont(font)
-        self.output_specific.setText("specific_location")
+        self.output_specific.setText("specific_coord")
 
         # Output folder
         self.path_out_folder_bt = QtWidgets.QPushButton(self.coord_frame)
@@ -85,16 +85,44 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         bold_font.setBold(True)
 
         self.load_data_button = QtWidgets.QPushButton(self.coord_frame)
-        self.load_data_button.setGeometry(QtCore.QRect(int(100 * sf_x), int(180 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.load_data_button.setGeometry(QtCore.QRect(int(100 * sf_x), int(430 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         self.load_data_button.setFont(bold_font)
         self.load_data_button.setText("Load data")
         self.load_data_button.clicked.connect(self.save_coordinates)
 
         self.save_button = QtWidgets.QPushButton(self.coord_frame)
-        self.save_button.setGeometry(QtCore.QRect(int(320 * sf_x), int(180 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.save_button.setGeometry(QtCore.QRect(int(340 * sf_x), int(430 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         self.save_button.setFont(bold_font)
         self.save_button.setText("Save and continue")
         self.save_button.clicked.connect(self.building_sample)
+              
+        # Feature Collection Label
+        self.feature_collection_label = QtWidgets.QLabel(self.coord_frame)
+        self.feature_collection_label.setGeometry(QtCore.QRect(int(20 * sf_x), int(170 * sf_y), int(221 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        font.setBold(True)
+        font.setWeight(75)
+        self.feature_collection_label.setFont(font)
+        self.feature_collection_label.setObjectName("feature_collection_label")
+        self.feature_collection_label.setText("Feature collection mode:")
+        
+        # ComboBox for Collection Mode
+        self.collection_mode = QtWidgets.QComboBox(self.coord_frame)
+        self.collection_mode.setGeometry(QtCore.QRect(int(250 * sf_x), int(170 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        self.collection_mode.setFont(font)
+        self.collection_mode.setObjectName("collection_mode")
+        self.collection_mode.addItem("Manual")
+        self.collection_mode.addItem("AI Powered")
+        
+        # TableWidget
+        self.tableWidget = QtWidgets.QTableWidget(self.coord_frame)
+        self.tableWidget.setGeometry(QtCore.QRect(int(20 * sf_x), int(210 * sf_y), int(601 * sf_x), int(192 * sf_y)))
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(0)
+        self.tableWidget.setRowCount(0)
 
         # Raise stacking
         self.backg_4.raise_()
@@ -107,7 +135,10 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         self.specific_path.raise_()
         self.load_data_button.raise_()
         self.save_button.raise_()
-
+        self.tableWidget.raise_()
+        self.collection_mode.raise_()
+        self.feature_collection_label.raise_()
+        
     def select_output_folder(self):
         folder_path = QFileDialog.getExistingDirectory(None, "Select Folder")
         self.method.output_folder_value = folder_path
@@ -125,6 +156,7 @@ class SpecificLocationSetting(QtWidgets.QDialog):
                 self.df = pd.read_csv(file_path)
                 display_name = os.path.basename(file_path)
                 self.specific_path.setText(display_name)
+                self.preview_data()
             except Exception as e:
                 self.specific_path.setText(f"Error: {str(e)}")
                 QMessageBox.warning(self, "Input Error", "Invalid file selected or parsing error.")
@@ -161,13 +193,37 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         gdf.to_file(output_gpkg, driver='GPKG')  # This saves as GeoPackage
         
         
-
     def building_sample(self):
         try:
             if self.population == True:
                 self.method.specific_output_name = self.output_specific
+                self.mode_use()
                 self.accept()
         except:
             QMessageBox.warning(self, "Input Error", "Please load the data first using **Load Data**")
 
 
+    def preview_data(self):
+        if hasattr(self, 'df') and not self.df.empty:
+            preview_df = self.df.head(10)  # Only show first 10 rows
+    
+            self.tableWidget.clear()
+            self.tableWidget.setRowCount(len(preview_df))
+            self.tableWidget.setColumnCount(len(preview_df.columns))
+            self.tableWidget.setHorizontalHeaderLabels(preview_df.columns)
+    
+            for row in range(len(preview_df)):
+                for column in range(len(preview_df.columns)):
+                    value = str(preview_df.iloc[row, column])
+                    item = QtWidgets.QTableWidgetItem(value)
+                    self.tableWidget.setItem(row, column, item)
+    
+            self.tableWidget.resizeColumnsToContents()
+        else:
+            QMessageBox.warning(self, "No Data", "No data available to preview. Please upload a valid CSV first.")
+
+    def mode_use(self):
+        if self.collection_mode.currentText() == "Manual":
+            self.ai_value = False 
+        elif self.collection_mode.currentText() == "AI Powered":
+            self.ai_value = True

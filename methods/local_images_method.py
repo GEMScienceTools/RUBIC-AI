@@ -15,14 +15,14 @@ class LocalImageSetting(QtWidgets.QDialog):
         sf_y = screen_geometry.height() / 1080
 
         self.setWindowTitle("Local Images Method Input")
-        self.resize(int(611 * sf_x), int(260 * sf_y))
+        self.resize(int(611 * sf_x), int(512 * sf_y))
 
         # Main Frame
         self.coord_frame = QtWidgets.QWidget(self)
 
         # Background
         self.backg_4 = QtWidgets.QLabel(self.coord_frame)
-        self.backg_4.setGeometry(QtCore.QRect(int(10 * sf_x), int(9 * sf_y), int(591 * sf_x), int(201 * sf_y)))
+        self.backg_4.setGeometry(QtCore.QRect(int(10 * sf_x), int(9 * sf_y), int(591 * sf_x), int(451 * sf_y)))
         self.backg_4.setStyleSheet("background-color: rgb(255, 253, 187);")
 
         # Upload CSV
@@ -81,13 +81,13 @@ class LocalImageSetting(QtWidgets.QDialog):
         # Buttons
         font.setBold(True)
         self.load_data_button = QtWidgets.QPushButton(self.coord_frame)
-        self.load_data_button.setGeometry(QtCore.QRect(int(100 * sf_x), int(220 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.load_data_button.setGeometry(QtCore.QRect(int(100 * sf_x), int(470 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         self.load_data_button.setFont(font)
         self.load_data_button.setText("Load data")
         self.load_data_button.clicked.connect(self.save_coordinates)
         
         self.save_button = QtWidgets.QPushButton(self.coord_frame)
-        self.save_button.setGeometry(QtCore.QRect(int(320 * sf_x), int(220 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.save_button.setGeometry(QtCore.QRect(int(320 * sf_x), int(470 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         self.save_button.setFont(font)
         self.save_button.setText("Save and continue")
         self.save_button.clicked.connect(self.building_sample)
@@ -105,6 +105,34 @@ class LocalImageSetting(QtWidgets.QDialog):
 
         """ GEM icon GUI elements """
         self.setWindowIcon(QtGui.QIcon("help_img/RUBIC_logo.png"))
+        
+        # Feature Collection Label
+        self.feature_collection_label = QtWidgets.QLabel(self.coord_frame)
+        self.feature_collection_label.setGeometry(QtCore.QRect(int(20 * sf_x), int(210 * sf_y), int(221 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        font.setBold(True)
+        font.setWeight(75)
+        self.feature_collection_label.setFont(font)
+        self.feature_collection_label.setObjectName("feature_collection_label")
+        self.feature_collection_label.setText("Feature collection mode:")
+        
+        # ComboBox for Collection Mode
+        self.collection_mode = QtWidgets.QComboBox(self.coord_frame)
+        self.collection_mode.setGeometry(QtCore.QRect(int(250 * sf_x), int(210 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        self.collection_mode.setFont(font)
+        self.collection_mode.setObjectName("collection_mode")
+        self.collection_mode.addItem("Manual")
+        self.collection_mode.addItem("AI Powered")
+        
+        # TableWidget
+        self.tableWidget = QtWidgets.QTableWidget(self.coord_frame)
+        self.tableWidget.setGeometry(QtCore.QRect(int(20 * sf_x), int(250 * sf_y), int(571 * sf_x), int(192 * sf_y)))
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(0)
+        self.tableWidget.setRowCount(0)
          
         # Raise (stack order)
         self.backg_4.raise_()
@@ -119,8 +147,9 @@ class LocalImageSetting(QtWidgets.QDialog):
         self.save_button.raise_()
         self.path_out_folder_bt.raise_()
         self.output_folder_value.raise_()
-        
-
+        self.tableWidget.raise_()
+        self.collection_mode.raise_()
+        self.feature_collection_label.raise_()
         
     ############ Save coordinates ################
     def save_coordinates(self):
@@ -152,6 +181,7 @@ class LocalImageSetting(QtWidgets.QDialog):
         try:
             if self.population == False:
                 self.method.local_output_name = self.output_local
+                self.mode_use()
                 self.accept()
         except:
             QMessageBox.warning(self, "Input Error", "First Please upload the data using the **Load Data button**")
@@ -202,6 +232,7 @@ class LocalImageSetting(QtWidgets.QDialog):
                 self.df = pd.read_csv(file_path)
                 file_path = file_path.rsplit("/", 1)[-1]
                 self.local_path.setText(file_path)
+                self.preview_data()
             except FileNotFoundError:
                 self.local_path.setText("File not found.")
             except pd.errors.ParserError:
@@ -211,3 +242,28 @@ class LocalImageSetting(QtWidgets.QDialog):
         else:
             self.local_path.setText("No file selected.")
             QMessageBox.warning(self, "Input Error", "No file selected.")
+            
+    def preview_data(self):
+        if hasattr(self, 'df') and not self.df.empty:
+            preview_df = self.df.head(10)  # Only show first 10 rows
+    
+            self.tableWidget.clear()
+            self.tableWidget.setRowCount(len(preview_df))
+            self.tableWidget.setColumnCount(len(preview_df.columns))
+            self.tableWidget.setHorizontalHeaderLabels(preview_df.columns)
+    
+            for row in range(len(preview_df)):
+                for column in range(len(preview_df.columns)):
+                    value = str(preview_df.iloc[row, column])
+                    item = QtWidgets.QTableWidgetItem(value)
+                    self.tableWidget.setItem(row, column, item)
+    
+            self.tableWidget.resizeColumnsToContents()
+        else:
+            QMessageBox.warning(self, "No Data", "No data available to preview. Please upload a valid CSV first.")
+
+    def mode_use(self):
+        if self.collection_mode.currentText() == "Manual":
+            self.ai_value = False 
+        elif self.collection_mode.currentText() == "AI Powered":
+            self.ai_value = True

@@ -28,12 +28,16 @@ class GUIInterface(QtWidgets.QMainWindow):
         elif self.insp_method == 1:
             self.output_folder_value = self.method_dialog.output_folder_value
             self.file_name = self.method_dialog.specific_output_name.text()
+            self.ai_value = self.method_dialog.ai_value 
+            
         elif self.insp_method == 2:
             self.data_method = self.method_dialog.data_local
             self.folder_path = self.method_dialog.folder_path
             self.file_local_csv = self.method_dialog.file_local_csv
             self.output_folder_value = self.method_dialog.output_folder_value
             self.file_name_local = self.method_dialog.local_output_name
+            self.ai_value = self.method_dialog.ai_value 
+            
         elif self.insp_method == 3:
             self.building_extra_path = self.method_dialog.info_pending
             self.example_building_path = self.method_dialog.info_existing

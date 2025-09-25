@@ -189,7 +189,7 @@ class InspectionSetting(QDialog):
         font.setWeight(75)
         self.default_check.setFont(font)
         self.default_check.setObjectName("default_check")
-        self.default_check.setText("Polygon Method")  # Set text directly
+        self.default_check.setText("Polygon method")  # Set text directly
         
         # Specific method checkbox
         self.specific_check = QtWidgets.QCheckBox(self.method_frame)
@@ -345,6 +345,7 @@ class InspectionSetting(QDialog):
                 self.specific_dialog = SpecificLocationSetting(method=self)  # Pass main window reference if needed
                 self.specific_dialog.exec_()
                 self.data_specific = self.specific_dialog.df 
+                self.ai_value = self.specific_dialog.ai_value 
                 
             if self.local_check.isChecked():
                 self.insp_method = 2
@@ -352,6 +353,7 @@ class InspectionSetting(QDialog):
                 self.local_dialog = LocalImageSetting(method=self)  # Pass main window reference if needed
                 self.local_dialog.exec_()
                 self.data_local = self.local_dialog.df
+                self.ai_value = self.local_dialog.ai_value 
                 
             if self.extrapolation_check.isChecked():
                 self.insp_method = 3

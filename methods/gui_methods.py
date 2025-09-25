@@ -47,6 +47,7 @@ class GUIMethods:
         self.cropped_image = ["","",""]
         self.start_click = True
         self.aux_previous =  True 
+        self.aux_ai_check = True
         """Get screen resolution to adapt to different screen sizes"""
         # Get screen resolution
         screen = QApplication.primaryScreen()
@@ -136,11 +137,13 @@ class GUIMethods:
             # ID increaser
             self.click_count += 1
             
-            try:
-                self.ui.ai_check.setChecked(self.ui.ai_value)
-            except:
-                pass
-            
+            if self.aux_ai_check == True:
+                try:
+                    self.ui.ai_check.setChecked(self.ui.ai_value)
+                except:
+                    pass
+                self.aux_ai_check = False
+                
             if self.start_click == True:
                 if self.click_count >= self.data_building.shape[0] - 1:
                     self.click_count = self.data_building.shape[0] - 1
