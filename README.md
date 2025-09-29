@@ -254,7 +254,8 @@ However, the user can easily switch back to manual inspection by clicking the ch
 				4,10.91647181,-74.76986198,Colombia,Soledad,CR,LFINF,CDM,2,COM,BP1,CR/LFINF+CDM/H:2/COM/BP1
 				5,10.90251035,-74.79685532,Colombia,Soledad,CR,LFM,CDL,2,RES,BP2,CR/LFM+CDL/H:2/RES/BP27
 			   ```
-			- Click the ***Unclassified building locations*** button and upload a CSV file containing ID and coordinates of the building that the user want to classify based on the information of the building of reference due to there is not information availabe for them.
+		
+		Click the ***Unclassified building locations*** button and upload a CSV file containing ID and coordinates of the building that the user want to classify based on the information of the building of reference due to there is not information availabe for them.
 			   > 📁 *Example:* `demos/Extrapolation_data_example/building_with_no_image.csv`
 			   > 📝 *Required CSV format:*
 			   ```csv
