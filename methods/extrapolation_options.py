@@ -115,6 +115,13 @@ class ExtrapolationOptions(QtWidgets.QDialog):
                 try:
                     self.info_existing = dialog.info_existing
                     self.info_pending = dialog.info_pending
+                    try:
+                        self.coord_reference = dialog.coord_reference
+                        self.knn_dl_saved_path = dialog.knn_dl_saved_path
+                        self.coord_reference_building_feature_path = dialog.coord_reference_building_feature_path
+                    except:
+                        self.coord_reference = True
+                        
                     self.extrapolation_name = dialog.output_manual_value.text()
                     QtWidgets.QMessageBox.information(
                         self,
@@ -122,7 +129,6 @@ class ExtrapolationOptions(QtWidgets.QDialog):
                         "✅ Setup complete!\n\n"
                         "Please click **Save and continue** button."
                     )
-                    
                 except Exception:
                     QtWidgets.QMessageBox.warning(
                         self, "Inspection Method Error",

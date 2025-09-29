@@ -28,6 +28,7 @@ from methods.bounding_box_manual import BoundingBoxWindow
 from methods.epoch_construction import EpochSelectionDialog
 from methods.help_window import HelpDialog
 from methods.neighbor_building_extrapolation_feature import find_nearest_neighbors_geodesic, compute_taxonomy_distribution_full_structure
+from methods.dl_extrapolation import create_database, dl_models, inspection_database, extrapolation_existing_reference
 
 class GUIMethods:
     def __init__(self, ui):
@@ -2624,26 +2625,34 @@ class GUIMethods:
     def neighbor_extrapolation(self):
         
         if self.ui.insp_method == 3:
-            building_no_info = self.ui.building_extra_path
-            building_reference = self.ui.example_building_path
-            final_distribution_list_full = []
-               
-            # Iterate over each building with no image
-            for idx, input_row in building_no_info.iterrows():
-                # Find 3 nearest neighbors using geodesic distance
-                nearest_neighbors = find_nearest_neighbors_geodesic(input_row, building_reference)
-                # Compute taxonomy-based distributions with full structure
-                distribution_rows = compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row)
-                
-                # Append to final result
-                final_distribution_list_full.extend(distribution_rows)
-       
-            # Convert final list to DataFrame
-            final_distribution_df_full = pd.DataFrame(final_distribution_list_full)
-            # Export to CSV
-            saved_path = "demos/4_Extrapolation_data_example/"+self.ui.extrapolation_name+".csv"
-            final_distribution_df_full.to_csv(saved_path, index=False)
-            self.ui.method_progress.setText("Successful extrapolation process")
+            if self.ui.coord_reference is not True:
+                #######===========  Function results =========###########
+                data_existing_dl = create_database(self.ui.coord_reference)
+                dl_models()
+                inspection_database(data_existing_dl)
+                data_existing_dl.to_csv(self.ui.coord_reference_building_feature_path, index= False)
+                extrapolation_existing_reference(data_existing_dl , self.ui.example_building_path, self.ui.knn_dl_saved_path)
+            else:
+                building_no_info = self.ui.building_extra_path
+                building_reference = self.ui.example_building_path
+                final_distribution_list_full = []
+                   
+                # Iterate over each building with no image
+                for idx, input_row in building_no_info.iterrows():
+                    # Find 3 nearest neighbors using geodesic distance
+                    nearest_neighbors = find_nearest_neighbors_geodesic(input_row, building_reference)
+                    # Compute taxonomy-based distributions with full structure
+                    distribution_rows = compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row)
+                    
+                    # Append to final result
+                    final_distribution_list_full.extend(distribution_rows)
+           
+                # Convert final list to DataFrame
+                final_distribution_df_full = pd.DataFrame(final_distribution_list_full)
+                # Export to CSV
+                saved_path = "demos/extrapolation/"+self.ui.extrapolation_name+".csv"
+                final_distribution_df_full.to_csv(saved_path, index=False)
+                self.ui.method_progress.setText("Successful extrapolation process")
         
     def epoch_construction(self):
         if self.ui.insp_method != 3:

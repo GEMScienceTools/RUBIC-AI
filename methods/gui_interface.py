@@ -41,6 +41,9 @@ class GUIInterface(QtWidgets.QMainWindow):
         elif self.insp_method == 3:
             self.building_extra_path = self.method_dialog.info_pending
             self.example_building_path = self.method_dialog.info_existing
+            self.coord_reference = self.method_dialog.coord_reference
+            self.knn_dl_saved_path = self.method_dialog.knn_dl_saved_path
+            self.coord_reference_building_feature_path = self.method_dialog.coord_reference_building_feature_path
             self.extrapolation_name = self.method_dialog.extrapolation_name
         QtWidgets.QMessageBox.information(
             self,
@@ -442,7 +445,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.llrs_cb_1.addItem("Post and beam", "LPB") 
         self.llrs_cb_1.addItem("Flat slab/plate or waffle slab", "LFLS") 
         self.llrs_cb_1.addItem("Different LLRS in the two directions", "LDD")
-        self.llrs_cb_1.addItem("Differnet LLRS in height ", "LHV") 
+        self.llrs_cb_1.addItem("Different LLRS in height ", "LHV") 
         self.llrs_cb_1.addItem("No lateral load-resisting system", "LN") 
         self.llrs_cb_1.addItem("Other", "LO") 
         # Set default index
@@ -793,7 +796,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.llrs_cb_2.addItem("Post and beam", "LPB") 
         self.llrs_cb_2.addItem("Flat slab/plate or waffle slab", "LFLS") 
         self.llrs_cb_2.addItem("Different LLRS in the two directions", "LDD")
-        self.llrs_cb_2.addItem("Differnet LLRS in height ", "LHV") 
+        self.llrs_cb_2.addItem("Different LLRS in height ", "LHV") 
         self.llrs_cb_2.addItem("No lateral load-resisting system", "LN") 
         self.llrs_cb_2.addItem("Other", "LO") 
         # Set default index
@@ -1150,7 +1153,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.llrs_cb_3.addItem("Post and beam", "LPB") 
         self.llrs_cb_3.addItem("Flat slab/plate or waffle slab", "LFLS") 
         self.llrs_cb_3.addItem("Different LLRS in the two directions", "LDD")
-        self.llrs_cb_3.addItem("Differnet LLRS in height ", "LHV") 
+        self.llrs_cb_3.addItem("Different LLRS in height ", "LHV") 
         self.llrs_cb_3.addItem("No lateral load-resisting system", "LN") 
         self.llrs_cb_3.addItem("Other", "LO")    
         # Set default index

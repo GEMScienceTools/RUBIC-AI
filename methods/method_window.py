@@ -43,7 +43,7 @@ class InspectionSetting(QDialog):
         sf_x_font = sf_factor * scale
 
         # Window Title
-        self.setWindowTitle("Selects Inspection Method")
+        self.setWindowTitle("Select Inspection Method")
         self.resize(int(808*sf_x), int(800*sf_y))
         
         # Main widget
@@ -362,6 +362,9 @@ class InspectionSetting(QDialog):
                 self.extra_dialog.exec_()
                 self.info_existing = self.extra_dialog.info_existing
                 self.info_pending = self.extra_dialog.info_pending
+                self.coord_reference = self.extra_dialog.coord_reference
+                self.knn_dl_saved_path = self.extra_dialog.knn_dl_saved_path
+                self.coord_reference_building_feature_path = self.extra_dialog.coord_reference_building_feature_path
                 self.extrapolation_name = self.extra_dialog.extrapolation_name
                 
         
