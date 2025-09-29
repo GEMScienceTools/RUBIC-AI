@@ -223,34 +223,31 @@ However, the user can easily switch back to manual inspection by clicking the ch
 
 ---
 
-### 4. Neighbor Extrapolation ✅ *Available*
+### 4. Neighbor Extrapolation
 
 **Best for:** Expanding known building data to classify unknown buildings
 
 **Workflow:**
-1. **Select the project folder**  
-   Click the ***Project Folder*** button to open a pop-up window and navigate to the folder where the outputs will be saved.  
-   > 📁 *Example:* `demos/Extrapolation_data_example`
+1. **Set the usage mode**  
+   Select the **Neighbor extrapolation** option, and then click the ***Save and continue*** button.
 
-2. **Set the usage mode**  
-   Click the ***Insp. Method*** button, select the **Neighbor extrapolation** option, and then click the ***Save and continue*** button.
+2. **Set the Extrapolation Mode**  
+   Currently, there are two options available:  
 
-3. **Set input files**  
-   Click the ***Set Coord.*** button and follow these steps:
+   - **KNN with soft voting** – a basic extrapolation strategy based on the distance to the closest examples.  
+   - **Stratified sampling** – a hierarchical fallback strategy that provides better results when sufficient information is available for the area of analysis.  
 
-	- **3.1.** Click the ***Extrapolation options*** button. This will display a pop-up window with two available options:  
-		- **KNN with soft voting**  
-		- **Stratified sampling**  
-
-	- Select one of the two options and then click the ***Load Files*** button. A new pop-up window will appear for setting the input files.
-		- **3.1.1.** Set the input files using either the **Manual method** or the **Deep Learning model** method.
-		     - 3.1.1.1 📄 Upload Data Manually
-			- Define the output file name using the ***Output name*** field (default: **"KNN"**).
-			- Click the ***Buildings with information*** button and upload a CSV file containing the reference buildings — that is, buildings that have already been classified and include all the features of interest.  
-			  > 📁 *Example:* `demos/Extrapolation_data_example/neighbor_building_info.csv`  
-			  > 📝 *Required CSV format:*
+   Select one of the two options and then click the ***Load files*** button. A new pop-up window will appear for setting the input files.
+   
+4. **Set input files**
+   Set the input files using either the **Manual method** or the **Deep Learning model** method.
+	- 3.1.1.1 📄 ***Upload data manually***
+	- Define the output file name using the ***Output name*** field (default: **"KNN_manual"**).
+	- Click the ***Buildings with information*** button and upload a CSV file containing the reference buildings, this mean, buildings that have already been classified and include all the features of interest.  
+		> 📁 *Example:* `demos/extrapolatione/neighbor_building_info.csv`  
+		> 📝 *Required CSV format:*
 			   ```csv
-			  	ID,Latitude,Longitude,Country,City,LLRS Material,LLRS,Code Level,Number of Stories,Occupancy,Block Position,Taxonomy
+			  	id,latitude,longitude,country,city,material,llrs,code_level,n_stories,occupancy,block_position,taxonomy
 				1,10.92224755,-74.78642608,Colombia,Barranquilla,MCF,LWAL,CDL,1,RES,BP1,MCF/LWAL+CDL/H:1/RES/BP1
 				2,10.91268031,-74.80288191,Colombia,Soledad,CR,LFM,CDM,3,RES,BP2,CR/LFM+CDM/H:3/RES/BP2
 				3,10.91968505,-74.79215175,Colombia,Barranquilla,MUR,LWAL,CDL,1,RES,BP1,MUR/LWAL+CDL/H:1/RES/BP1
@@ -291,7 +288,7 @@ However, the user can easily switch back to manual inspection by clicking the ch
 	- 3.2. Click the ***Save and continue*** button in the ***Setting Input Files*** window, and then click the ***Save and continue*** button in the ***Setting Extrapolation Method*** window.
 	- 3.3. In the ***Setting Polygon Coordinates*** window, click the ***Load data*** button to check the format, then click the ***Save and continue*** button.
 
-4. Click the ***Next Building*** button to perform the extrapolation. The results will be saved in the output path selected in Step 1.  
+6. Click the ***Next Building*** button to perform the extrapolation. The results will be saved in the output path selected in Step 1.  
    > 📁 *Example:* `demos/Extrapolation_data_example/Extrapolation.csv`
 
 
