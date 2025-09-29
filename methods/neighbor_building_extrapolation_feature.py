@@ -19,7 +19,7 @@ class data_options_window(QtWidgets.QDialog):
         sf_y = screen_height / 1080
 
         self.setObjectName("DataSetting")
-        self.resize(int(1210 * sf_x), int(570 * sf_y))
+        self.resize(int(1210 * sf_x), int(600 * sf_y))
         self.setWindowTitle("Setting input files")
 
         # === UI Elements Start ===
@@ -37,7 +37,7 @@ class data_options_window(QtWidgets.QDialog):
         self.w_title.setFont(font)
 
         self.save_button = QtWidgets.QPushButton(self.data_frame)
-        self.save_button.setGeometry(QtCore.QRect(int(510 * sf_x), int(510 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.save_button.setGeometry(QtCore.QRect(int(510 * sf_x), int(530 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -47,20 +47,20 @@ class data_options_window(QtWidgets.QDialog):
         self.save_button.clicked.connect(self.select_method)
         
         self.backg_1 = QtWidgets.QLabel(self.data_frame)
-        self.backg_1.setGeometry(QtCore.QRect(int(10 * sf_x), int(39 * sf_y), int(591 * sf_x), int(221 * sf_y)))
+        self.backg_1.setGeometry(QtCore.QRect(int(10 * sf_x), int(39 * sf_y), int(591 * sf_x), int(291 * sf_y)))
         self.backg_1.setStyleSheet("background-color: rgb(209, 255, 165);")
         self.backg_1.setText("")
         self.backg_1.setObjectName("backg_1")
         
         self.unclassfied_path = QtWidgets.QLabel(self.data_frame)
-        self.unclassfied_path.setGeometry(QtCore.QRect(int(280 * sf_x), int(180 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        self.unclassfied_path.setGeometry(QtCore.QRect(int(280 * sf_x), int(220 * sf_y), int(291 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.unclassfied_path.setFont(font)
         self.unclassfied_path.setObjectName("unclassfied_path")
         
         self.unclassified_button = QtWidgets.QPushButton(self.data_frame)
-        self.unclassified_button.setGeometry(QtCore.QRect(int(30 * sf_x), int(175 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        self.unclassified_button.setGeometry(QtCore.QRect(int(30 * sf_x), int(215 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(False)
@@ -86,14 +86,14 @@ class data_options_window(QtWidgets.QDialog):
         self.output_manual_value.setObjectName("output_manual_value")
         
         self.manual_info_path = QtWidgets.QLabel(self.data_frame)
-        self.manual_info_path.setGeometry(QtCore.QRect(int(280 * sf_x), int(140 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        self.manual_info_path.setGeometry(QtCore.QRect(int(280 * sf_x), int(180 * sf_y), int(291 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.manual_info_path.setFont(font)
         self.manual_info_path.setObjectName("manual_info_path")
         
         self.b_info_button = QtWidgets.QPushButton(self.data_frame)
-        self.b_info_button.setGeometry(QtCore.QRect(int(30 * sf_x), int(135 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        self.b_info_button.setGeometry(QtCore.QRect(int(30 * sf_x), int(175 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(False)
@@ -112,7 +112,7 @@ class data_options_window(QtWidgets.QDialog):
         self.manual_op.setObjectName("manual_op")
         
         self.backg_2 = QtWidgets.QLabel(self.data_frame)
-        self.backg_2.setGeometry(QtCore.QRect(int(610 * sf_x), int(40 * sf_y), int(591 * sf_x), int(221 * sf_y)))
+        self.backg_2.setGeometry(QtCore.QRect(int(610 * sf_x), int(40 * sf_y), int(591 * sf_x), int(291 * sf_y)))
         self.backg_2.setStyleSheet("background-color: rgb(255, 233, 167);")
         self.backg_2.setText("")
         self.backg_2.setObjectName("backg_2")
@@ -127,21 +127,21 @@ class data_options_window(QtWidgets.QDialog):
         self.dl_op.setObjectName("dl_op")
         
         self.folder_img_path = QtWidgets.QLabel(self.data_frame)
-        self.folder_img_path.setGeometry(QtCore.QRect(int(890 * sf_x), int(175 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        self.folder_img_path.setGeometry(QtCore.QRect(int(890 * sf_x), int(210 * sf_y), int(291 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.folder_img_path.setFont(font)
         self.folder_img_path.setObjectName("folder_img_path")
         
         self.folder_local_button = QtWidgets.QPushButton(self.data_frame)
-        self.folder_local_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(170 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        self.folder_local_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(205 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(False)
         font.setWeight(50)
         self.folder_local_button.setFont(font)
         self.folder_local_button.setObjectName("folder_local_button")
-        self.folder_local_button.clicked.connect(self.select_output_folder)
+        self.folder_local_button.clicked.connect(self.select_folder)
         
         self.output_label_dl = QtWidgets.QLabel(self.data_frame)
         self.output_label_dl.setGeometry(QtCore.QRect(int(640 * sf_x), int(85 * sf_y), int(121 * sf_x), int(31 * sf_y)))
@@ -160,14 +160,14 @@ class data_options_window(QtWidgets.QDialog):
         self.output_dl_value.setObjectName("output_dl_value")
         
         self.unclassfied_dl_path = QtWidgets.QLabel(self.data_frame)
-        self.unclassfied_dl_path.setGeometry(QtCore.QRect(int(890 * sf_x), int(220 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        self.unclassfied_dl_path.setGeometry(QtCore.QRect(int(890 * sf_x), int(250 * sf_y), int(291 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.unclassfied_dl_path.setFont(font)
         self.unclassfied_dl_path.setObjectName("unclassfied_dl_path")
         
         self.unclassified_dl_button = QtWidgets.QPushButton(self.data_frame)
-        self.unclassified_dl_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(215 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        self.unclassified_dl_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(245 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(False)
@@ -178,7 +178,7 @@ class data_options_window(QtWidgets.QDialog):
         
         # KNN Coordinate Button
         self.coord_knn_button = QtWidgets.QPushButton(self.data_frame)
-        self.coord_knn_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(125 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        self.coord_knn_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(165 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(False)
@@ -189,18 +189,94 @@ class data_options_window(QtWidgets.QDialog):
                                            
         # KNN Coordinate Value Label
         self.coord_value_knn = QtWidgets.QLabel(self.data_frame)
-        self.coord_value_knn.setGeometry(QtCore.QRect(int(890 * sf_x), int(130 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        self.coord_value_knn.setGeometry(QtCore.QRect(int(890 * sf_x), int(170 * sf_y), int(291 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.coord_value_knn.setFont(font)
         self.coord_value_knn.setObjectName("coord_value_knn")
         
         self.tableWidget = QtWidgets.QTableWidget(self.data_frame)
-        self.tableWidget.setGeometry(QtCore.QRect(int(10 * sf_x), int(270 * sf_y), int(1170 * sf_x), int(231 * sf_y)))
+        self.tableWidget.setGeometry(QtCore.QRect(int(10 * sf_x), int(350 * sf_y), int(1170 * sf_x), int(171 * sf_y)))
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
         
+        # K Value Label (Manual)
+        self.k_value_label = QtWidgets.QLabel(self.data_frame)
+        self.k_value_label.setGeometry(QtCore.QRect(int(30 * sf_x), int(259 * sf_y), int(81 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        font.setBold(True)
+        font.setWeight(75)
+        self.k_value_label.setFont(font)
+        self.k_value_label.setObjectName("k_value_label")
+        
+        # K Value SpinBox (Manual)
+        self.k_value_manual = QtWidgets.QSpinBox(self.data_frame)
+        self.k_value_manual.setGeometry(QtCore.QRect(int(110 * sf_x), int(260 * sf_y), int(51 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        self.k_value_manual.setFont(font)
+        self.k_value_manual.setProperty("value", 10)
+        self.k_value_manual.setObjectName("k_value_manual")
+        
+        # K Value Label (Deep Learning)
+        self.k_value_label_dl = QtWidgets.QLabel(self.data_frame)
+        self.k_value_label_dl.setGeometry(QtCore.QRect(int(640 * sf_x), int(290 * sf_y), int(81 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        font.setBold(True)
+        font.setWeight(75)
+        self.k_value_label_dl.setFont(font)
+        self.k_value_label_dl.setObjectName("k_value_label_dl")
+        
+        # K Value SpinBox (Deep Learning)
+        self.k_value_dl = QtWidgets.QSpinBox(self.data_frame)
+        self.k_value_dl.setGeometry(QtCore.QRect(int(720 * sf_x), int(290 * sf_y), int(51 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        self.k_value_dl.setFont(font)
+        self.k_value_dl.setProperty("value", 10)
+        self.k_value_dl.setObjectName("k_value_dl")
+        
+        # Saved Path Label (Manual)
+        self.saved_path_manual = QtWidgets.QLabel(self.data_frame)
+        self.saved_path_manual.setGeometry(QtCore.QRect(int(280 * sf_x), int(140 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        self.saved_path_manual.setFont(font)
+        self.saved_path_manual.setObjectName("saved_path_manual")
+        
+        # Output Path Button (Manual)
+        self.output_path_button = QtWidgets.QPushButton(self.data_frame)
+        self.output_path_button.setGeometry(QtCore.QRect(int(30 * sf_x), int(135 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        font.setBold(False)
+        font.setWeight(50)
+        self.output_path_button.setFont(font)
+        self.output_path_button.setObjectName("output_path_button")
+        self.output_path_button.clicked.connect(self.select_output_folder_manual)
+          
+        # Saved Path Label (DL)
+        self.saved_path_dl = QtWidgets.QLabel(self.data_frame)
+        self.saved_path_dl.setGeometry(QtCore.QRect(int(890 * sf_x), int(130 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        self.saved_path_dl.setFont(font)
+        self.saved_path_dl.setObjectName("saved_path_dl")
+        
+        # Output Path Button (DL)
+        self.output_path_dl_button = QtWidgets.QPushButton(self.data_frame)
+        self.output_path_dl_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(125 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        font.setBold(False)
+        font.setWeight(50)
+        self.output_path_dl_button.setFont(font)
+        self.output_path_dl_button.setObjectName("output_path_dl_button")
+        self.output_path_dl_button.clicked.connect(self.select_output_folder_dl)
+            
         # Set default values manually
         self.output_manual_value.setText("KNN_manual")
         self.output_dl_value.setText("KNN_dl")
@@ -220,7 +296,13 @@ class data_options_window(QtWidgets.QDialog):
         self.unclassified_dl_button.setText("Unclassified building coords")
         self.coord_knn_button.setText("Upload building coordinates")
         self.coord_value_knn.setText("filename.csv")
-                                     
+        self.k_value_label.setText("K value:")
+        self.k_value_label_dl.setText("K value:")
+        self.saved_path_dl.setText("path/where/save/the/results")
+        self.output_path_dl_button.setText("Select output folder")
+        self.output_path_button.setText("Select output folder")
+        self.saved_path_manual.setText("path/where/save/the/results")
+              
     def select_method(self):
         # Check how many checkboxes are checked
         checked_count = sum([self.manual_op.isChecked(), 
@@ -246,13 +328,11 @@ class data_options_window(QtWidgets.QDialog):
             elif self.dl_op.isChecked():
                 #######===========  Input parameters =========###########
                 self.coord_reference = self.info_existing
-                self.coord_reference_building_feature_path = "demos/extrapolation/"+self.output_dl_value.text()+"_reference_results.csv"
+                self.coord_reference_building_feature_path = self.output_dl_value.text()+"_reference_results.csv"
                 self. data_extrapolation = self.info_pending
-                self.knn_dl_saved_path = "demos/extrapolation/extrapolation_"+self.output_dl_value.text()+".csv"
-                
-
+                self.knn_dl_saved_path = self.output_dl_value.text()+".csv"
                 self.accept()
-                
+                              
     def data_existing(self):
         self.info_existing = self.upload_csv(self.manual_info_path)
         self.preview_data(self.info_existing)
@@ -315,14 +395,43 @@ class data_options_window(QtWidgets.QDialog):
         return self.df
     
     ############ Folder Selection ################
-    def select_output_folder(self):
+    def select_output_folder_manual(self):
         """Open a folder selection dialog and display the selected folder in a text output."""
+        self.folder_path = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Folder")
+        if self.folder_path:  # If a folder is selected
+            folder_display = os.path.basename(self.folder_path)    
+            self.saved_path_manual.setText(folder_display)
+    
+    def select_output_folder_dl(self):
+        """Open a folder selection dialog and display the selected folder in a text output."""
+        self.folder_path = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Folder")
+        if self.folder_path:  # If a folder is selected
+            folder_display = os.path.basename(self.folder_path)    
+            self.saved_path_dl.setText(folder_display)
+            
+    # ############ Folder Selection ################           
+    def select_folder(self):
+        """Open a folder selection dialog, display selected folder, and check for valid image files."""
         folder_path = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Folder")
-        if folder_path:  # If a folder is selected
-            folder_display = os.path.basename(folder_path)    
+    
+        if folder_path:
+            self.folder_path = folder_path
+            folder_display = os.path.basename(folder_path)
             self.folder_img_path.setText(folder_display)
     
-
+            # List files in folder
+            files = os.listdir(folder_path)
+            valid_ext = ('.jpg', '.jpeg', '.png')
+            supported_imgs = [f for f in files if f.lower().endswith(valid_ext)]
+            unsupported_imgs = [f for f in files if f.lower().endswith('.heic')]
+    
+            if not supported_imgs:
+                QtWidgets.QMessageBox.warning(self, "No Valid Images",
+                                    "The selected folder does not contain any valid image files (.jpg, .jpeg, .png).")
+            elif unsupported_imgs:
+                QtWidgets.QMessageBox.information(self, "Unsupported Formats Found",
+                                        f"The folder contains unsupported image formats like HEIC:\n\n" +
+                                        "\n".join(unsupported_imgs))
 # Function to calculate Geodesic distance (in km)
 def geodesic_distance(lat1, lon1, lat2, lon2):
     coords_1 = (lat1, lon1)
@@ -396,10 +505,11 @@ def compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row):
             'n_stories': taxonomy_row['n_stories'],
             'occupancy': taxonomy_row['occupancy'],
             'block_position': taxonomy_row['block_position'],
+            'roof_shape': taxonomy_row['roof_shape'],
+            'roof_material': taxonomy_row['roof_material'],
             'taxonomy': taxonomy,
             'probability': prob
         })
 
     return distribution_rows
-
 

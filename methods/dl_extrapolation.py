@@ -85,6 +85,8 @@ def compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row):
             'n_stories': taxonomy_row['n_stories'],
             'occupancy': taxonomy_row['occupancy'],
             'block_position': taxonomy_row['block_position'],
+            'roof_shape': taxonomy_row['roof_shape'],
+            'roof_material': taxonomy_row['roof_material'],
             'taxonomy': taxonomy,
             'probability': prob
         })

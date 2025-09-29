@@ -362,10 +362,15 @@ class InspectionSetting(QDialog):
                 self.extra_dialog.exec_()
                 self.info_existing = self.extra_dialog.info_existing
                 self.info_pending = self.extra_dialog.info_pending
-                self.coord_reference = self.extra_dialog.coord_reference
-                self.knn_dl_saved_path = self.extra_dialog.knn_dl_saved_path
-                self.coord_reference_building_feature_path = self.extra_dialog.coord_reference_building_feature_path
                 self.extrapolation_name = self.extra_dialog.extrapolation_name
+                self.coord_reference = self.extra_dialog.coord_reference
+                self.output_path = self.extra_dialog.output_path
+                
+                try:
+                    self.knn_dl_saved_path = self.extra_dialog.knn_dl_saved_path
+                    self.coord_reference_building_feature_path = self.extra_dialog.coord_reference_building_feature_path
+                except:
+                    pass
                 
         
         

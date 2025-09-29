@@ -41,10 +41,15 @@ class GUIInterface(QtWidgets.QMainWindow):
         elif self.insp_method == 3:
             self.building_extra_path = self.method_dialog.info_pending
             self.example_building_path = self.method_dialog.info_existing
-            self.coord_reference = self.method_dialog.coord_reference
-            self.knn_dl_saved_path = self.method_dialog.knn_dl_saved_path
-            self.coord_reference_building_feature_path = self.method_dialog.coord_reference_building_feature_path
             self.extrapolation_name = self.method_dialog.extrapolation_name
+            self.coord_reference = self.method_dialog.coord_reference
+            self.output_path = self.method_dialog.output_path
+            try:
+                self.knn_dl_saved_path = self.method_dialog.knn_dl_saved_path
+                self.coord_reference_building_feature_path = self.method_dialog.coord_reference_building_feature_path
+            except:
+                pass
+            
         QtWidgets.QMessageBox.information(
             self,
             "Success",

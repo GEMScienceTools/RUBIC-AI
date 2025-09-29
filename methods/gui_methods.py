@@ -2630,8 +2630,10 @@ class GUIMethods:
                 data_existing_dl = create_database(self.ui.coord_reference)
                 dl_models()
                 inspection_database(data_existing_dl)
-                data_existing_dl.to_csv(self.ui.coord_reference_building_feature_path, index= False)
-                extrapolation_existing_reference(data_existing_dl , self.ui.example_building_path, self.ui.knn_dl_saved_path)
+                predicted_path =  self.ui.output_path+"/"+self.ui.coord_reference_building_feature_path
+                data_existing_dl.to_csv(predicted_path, index= False)
+                extra_path =  self.ui.output_path+"/"+self.ui.knn_dl_saved_path
+                extrapolation_existing_reference(data_existing_dl , self.ui.building_extra_path, extra_path)
             else:
                 building_no_info = self.ui.building_extra_path
                 building_reference = self.ui.example_building_path
@@ -2650,7 +2652,8 @@ class GUIMethods:
                 # Convert final list to DataFrame
                 final_distribution_df_full = pd.DataFrame(final_distribution_list_full)
                 # Export to CSV
-                saved_path = "demos/extrapolation/"+self.ui.extrapolation_name+".csv"
+                saved_path = self.ui.output_path+"/"+self.ui.extrapolation_name+".csv"
+                
                 final_distribution_df_full.to_csv(saved_path, index=False)
                 self.ui.method_progress.setText("Successful extrapolation process")
         
