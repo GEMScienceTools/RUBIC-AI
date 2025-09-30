@@ -117,11 +117,13 @@ class ExtrapolationOptions(QtWidgets.QDialog):
                     self.info_pending = dialog.info_pending
                     self.extrapolation_name = dialog.output_manual_value.text()
                     self.output_path = dialog.folder_path
+                    self.k_value = dialog.k_value_manual.value()
                     # DL method
                     try:
                         self.coord_reference = dialog.coord_reference
                         self.knn_dl_saved_path = dialog.knn_dl_saved_path
-                        self.coord_reference_building_feature_path = dialog.coord_reference_building_feature_path                 
+                        self.coord_reference_building_feature_path = dialog.coord_reference_building_feature_path
+                        self.k_value = dialog.k_value_dl.value()
                     except:
                         self.coord_reference = True
                         

@@ -44,6 +44,7 @@ class GUIInterface(QtWidgets.QMainWindow):
             self.extrapolation_name = self.method_dialog.extrapolation_name
             self.coord_reference = self.method_dialog.coord_reference
             self.output_path = self.method_dialog.output_path
+            self.k_value = self.method_dialog.k_value
             try:
                 self.knn_dl_saved_path = self.method_dialog.knn_dl_saved_path
                 self.coord_reference_building_feature_path = self.method_dialog.coord_reference_building_feature_path

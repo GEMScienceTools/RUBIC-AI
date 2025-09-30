@@ -2633,7 +2633,8 @@ class GUIMethods:
                 predicted_path =  self.ui.output_path+"/"+self.ui.coord_reference_building_feature_path
                 data_existing_dl.to_csv(predicted_path, index= False)
                 extra_path =  self.ui.output_path+"/"+self.ui.knn_dl_saved_path
-                extrapolation_existing_reference(data_existing_dl , self.ui.building_extra_path, extra_path)
+                n_neighbors = self.ui.k_value
+                extrapolation_existing_reference(data_existing_dl , self.ui.building_extra_path, extra_path, n_neighbors)
             else:
                 building_no_info = self.ui.building_extra_path
                 building_reference = self.ui.example_building_path
@@ -2642,7 +2643,8 @@ class GUIMethods:
                 # Iterate over each building with no image
                 for idx, input_row in building_no_info.iterrows():
                     # Find 3 nearest neighbors using geodesic distance
-                    nearest_neighbors = find_nearest_neighbors_geodesic(input_row, building_reference)
+                    n_neighbors = self.ui.k_value
+                    nearest_neighbors = find_nearest_neighbors_geodesic(input_row, building_reference, n_neighbors)
                     # Compute taxonomy-based distributions with full structure
                     distribution_rows = compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row)
                     

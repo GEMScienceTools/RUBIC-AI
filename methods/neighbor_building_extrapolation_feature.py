@@ -47,7 +47,7 @@ class data_options_window(QtWidgets.QDialog):
         self.save_button.clicked.connect(self.select_method)
         
         self.backg_1 = QtWidgets.QLabel(self.data_frame)
-        self.backg_1.setGeometry(QtCore.QRect(int(10 * sf_x), int(39 * sf_y), int(591 * sf_x), int(291 * sf_y)))
+        self.backg_1.setGeometry(QtCore.QRect(int(10 * sf_x), int(39 * sf_y), int(591 * sf_x), int(271 * sf_y)))
         self.backg_1.setStyleSheet("background-color: rgb(209, 255, 165);")
         self.backg_1.setText("")
         self.backg_1.setObjectName("backg_1")
@@ -112,7 +112,7 @@ class data_options_window(QtWidgets.QDialog):
         self.manual_op.setObjectName("manual_op")
         
         self.backg_2 = QtWidgets.QLabel(self.data_frame)
-        self.backg_2.setGeometry(QtCore.QRect(int(610 * sf_x), int(40 * sf_y), int(591 * sf_x), int(291 * sf_y)))
+        self.backg_2.setGeometry(QtCore.QRect(int(610 * sf_x), int(40 * sf_y), int(591 * sf_x), int(271 * sf_y)))
         self.backg_2.setStyleSheet("background-color: rgb(255, 233, 167);")
         self.backg_2.setText("")
         self.backg_2.setObjectName("backg_2")
@@ -125,23 +125,6 @@ class data_options_window(QtWidgets.QDialog):
         font.setWeight(75)
         self.dl_op.setFont(font)
         self.dl_op.setObjectName("dl_op")
-        
-        self.folder_img_path = QtWidgets.QLabel(self.data_frame)
-        self.folder_img_path.setGeometry(QtCore.QRect(int(890 * sf_x), int(210 * sf_y), int(291 * sf_x), int(21 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        self.folder_img_path.setFont(font)
-        self.folder_img_path.setObjectName("folder_img_path")
-        
-        self.folder_local_button = QtWidgets.QPushButton(self.data_frame)
-        self.folder_local_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(205 * sf_y), int(231 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        font.setBold(False)
-        font.setWeight(50)
-        self.folder_local_button.setFont(font)
-        self.folder_local_button.setObjectName("folder_local_button")
-        self.folder_local_button.clicked.connect(self.select_folder)
         
         self.output_label_dl = QtWidgets.QLabel(self.data_frame)
         self.output_label_dl.setGeometry(QtCore.QRect(int(640 * sf_x), int(85 * sf_y), int(121 * sf_x), int(31 * sf_y)))
@@ -160,14 +143,14 @@ class data_options_window(QtWidgets.QDialog):
         self.output_dl_value.setObjectName("output_dl_value")
         
         self.unclassfied_dl_path = QtWidgets.QLabel(self.data_frame)
-        self.unclassfied_dl_path.setGeometry(QtCore.QRect(int(890 * sf_x), int(250 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        self.unclassfied_dl_path.setGeometry(QtCore.QRect(int(890 * sf_x), int(210 * sf_y), int(291 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.unclassfied_dl_path.setFont(font)
         self.unclassfied_dl_path.setObjectName("unclassfied_dl_path")
         
         self.unclassified_dl_button = QtWidgets.QPushButton(self.data_frame)
-        self.unclassified_dl_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(245 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        self.unclassified_dl_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(210 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(False)
@@ -178,7 +161,7 @@ class data_options_window(QtWidgets.QDialog):
         
         # KNN Coordinate Button
         self.coord_knn_button = QtWidgets.QPushButton(self.data_frame)
-        self.coord_knn_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(165 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        self.coord_knn_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(170 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(False)
@@ -189,14 +172,14 @@ class data_options_window(QtWidgets.QDialog):
                                            
         # KNN Coordinate Value Label
         self.coord_value_knn = QtWidgets.QLabel(self.data_frame)
-        self.coord_value_knn.setGeometry(QtCore.QRect(int(890 * sf_x), int(170 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        self.coord_value_knn.setGeometry(QtCore.QRect(int(890 * sf_x), int(170 * sf_y), int(291 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.coord_value_knn.setFont(font)
         self.coord_value_knn.setObjectName("coord_value_knn")
         
         self.tableWidget = QtWidgets.QTableWidget(self.data_frame)
-        self.tableWidget.setGeometry(QtCore.QRect(int(10 * sf_x), int(350 * sf_y), int(1170 * sf_x), int(171 * sf_y)))
+        self.tableWidget.setGeometry(QtCore.QRect(int(10 * sf_x), int(320 * sf_y), int(1170 * sf_x), int(201 * sf_y)))
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
@@ -222,7 +205,7 @@ class data_options_window(QtWidgets.QDialog):
         
         # K Value Label (Deep Learning)
         self.k_value_label_dl = QtWidgets.QLabel(self.data_frame)
-        self.k_value_label_dl.setGeometry(QtCore.QRect(int(640 * sf_x), int(290 * sf_y), int(81 * sf_x), int(31 * sf_y)))
+        self.k_value_label_dl.setGeometry(QtCore.QRect(int(640 * sf_x), int(260 * sf_y), int(81 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -232,7 +215,7 @@ class data_options_window(QtWidgets.QDialog):
         
         # K Value SpinBox (Deep Learning)
         self.k_value_dl = QtWidgets.QSpinBox(self.data_frame)
-        self.k_value_dl.setGeometry(QtCore.QRect(int(720 * sf_x), int(290 * sf_y), int(51 * sf_x), int(31 * sf_y)))
+        self.k_value_dl.setGeometry(QtCore.QRect(int(720 * sf_x), int(260 * sf_y), int(51 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.k_value_dl.setFont(font)
@@ -260,7 +243,7 @@ class data_options_window(QtWidgets.QDialog):
           
         # Saved Path Label (DL)
         self.saved_path_dl = QtWidgets.QLabel(self.data_frame)
-        self.saved_path_dl.setGeometry(QtCore.QRect(int(890 * sf_x), int(130 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        self.saved_path_dl.setGeometry(QtCore.QRect(int(890 * sf_x), int(130 * sf_y), int(291 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.saved_path_dl.setFont(font)
@@ -268,7 +251,7 @@ class data_options_window(QtWidgets.QDialog):
         
         # Output Path Button (DL)
         self.output_path_dl_button = QtWidgets.QPushButton(self.data_frame)
-        self.output_path_dl_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(125 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        self.output_path_dl_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(130 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(False)
@@ -288,9 +271,7 @@ class data_options_window(QtWidgets.QDialog):
         self.output_label_manual.setText( "Output name:")
         self.b_info_button.setText("Buildings with information")
         self.manual_op.setText("Upload data manually")
-        self.manual_info_path.setText("filename.csv")
-        self.folder_img_path.setText("------------")
-        self.folder_local_button.setText( "Image folder")
+        self.manual_info_path.setText("filename.csv")       
         self.output_label_dl.setText("Output name:")
         self.unclassfied_dl_path.setText("filename.csv")
         self.unclassified_dl_button.setText("Unclassified building coords")
@@ -409,29 +390,7 @@ class data_options_window(QtWidgets.QDialog):
             folder_display = os.path.basename(self.folder_path)    
             self.saved_path_dl.setText(folder_display)
             
-    # ############ Folder Selection ################           
-    def select_folder(self):
-        """Open a folder selection dialog, display selected folder, and check for valid image files."""
-        folder_path = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Folder")
-    
-        if folder_path:
-            self.folder_path = folder_path
-            folder_display = os.path.basename(folder_path)
-            self.folder_img_path.setText(folder_display)
-    
-            # List files in folder
-            files = os.listdir(folder_path)
-            valid_ext = ('.jpg', '.jpeg', '.png')
-            supported_imgs = [f for f in files if f.lower().endswith(valid_ext)]
-            unsupported_imgs = [f for f in files if f.lower().endswith('.heic')]
-    
-            if not supported_imgs:
-                QtWidgets.QMessageBox.warning(self, "No Valid Images",
-                                    "The selected folder does not contain any valid image files (.jpg, .jpeg, .png).")
-            elif unsupported_imgs:
-                QtWidgets.QMessageBox.information(self, "Unsupported Formats Found",
-                                        f"The folder contains unsupported image formats like HEIC:\n\n" +
-                                        "\n".join(unsupported_imgs))
+
 # Function to calculate Geodesic distance (in km)
 def geodesic_distance(lat1, lon1, lat2, lon2):
     coords_1 = (lat1, lon1)
@@ -439,7 +398,7 @@ def geodesic_distance(lat1, lon1, lat2, lon2):
     return geodesic(coords_1, coords_2).km
 
 # Function to find 3 nearest neighbors using geodesic distance
-def find_nearest_neighbors_geodesic(input_row, info_df, n_neighbors=10):
+def find_nearest_neighbors_geodesic(input_row, info_df, n_neighbors):
     # Apply geodesic distance for each row in reference dataframe
     distances = info_df.apply(
         lambda row: geodesic_distance(

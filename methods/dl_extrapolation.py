@@ -19,7 +19,7 @@ def geodesic_distance(lat1, lon1, lat2, lon2):
     return geodesic(coords_1, coords_2).km
 
 # Function to find 3 nearest neighbors using geodesic distance
-def find_nearest_neighbors_geodesic(input_row, info_df, n_neighbors=2):
+def find_nearest_neighbors_geodesic(input_row, info_df, n_neighbors):
     # Apply geodesic distance for each row in reference dataframe
     distances = info_df.apply(
         lambda row: geodesic_distance(
@@ -93,12 +93,12 @@ def compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row):
 
     return distribution_rows
 
-def extrapolation_existing_reference(data_existing , data_extrapolation, saved_path):
+def extrapolation_existing_reference(data_existing , data_extrapolation, saved_path, n_neigh):
   final_distribution_list_full = []   
   # Iterate over each building with no image
   for idx, input_row in data_extrapolation.iterrows():
       # Find 3 nearest neighbors using geodesic distance
-      nearest_neighbors = find_nearest_neighbors_geodesic(input_row, data_existing)
+      nearest_neighbors = find_nearest_neighbors_geodesic(input_row, data_existing, n_neigh)
       # Compute taxonomy-based distributions with full structure
       distribution_rows = compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row)
       

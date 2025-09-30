@@ -365,6 +365,7 @@ class InspectionSetting(QDialog):
                 self.extrapolation_name = self.extra_dialog.extrapolation_name
                 self.coord_reference = self.extra_dialog.coord_reference
                 self.output_path = self.extra_dialog.output_path
+                self.k_value = self.extra_dialog.k_value
                 
                 try:
                     self.knn_dl_saved_path = self.extra_dialog.knn_dl_saved_path
