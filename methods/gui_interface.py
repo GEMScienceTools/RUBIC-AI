@@ -371,19 +371,45 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Image ID for left frame
         self.img_id_value_1 = QtWidgets.QLineEdit(self.frame_left_img)
-        self.img_id_value_1.setGeometry(QtCore.QRect(int(130 * sf_x), int(10 * sf_y), int(111 * sf_x), int(21 * sf_y)))
+        self.img_id_value_1.setGeometry(QtCore.QRect(int(120 * sf_x), int(10 * sf_y), int(111 * sf_x), int(21 * sf_y)))
         self.img_id_value_1.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.img_id_value_1.setObjectName("img_id_value_1")
         
         # Bounding box for image left frame
         self.bounding_box_1 = QtWidgets.QPushButton(self.centralwidget)
-        self.bounding_box_1.setGeometry(QtCore.QRect(int(310 * sf_x), int(110 * sf_y), int(161 * sf_x), int(21 * sf_y)))
+        self.bounding_box_1.setGeometry(QtCore.QRect(int(280 * sf_x), int(110 * sf_y), int(131 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
         font.setWeight(75)
         self.bounding_box_1.setFont(font)
         self.bounding_box_1.setObjectName("bounding_box_1")
+        
+        # Year label for left image
+        self.year_label_1 = QtWidgets.QLabel(self.frame_left_img)
+        self.year_label_1.setGeometry(QtCore.QRect(int(430 * sf_x), int(10 * sf_y), int(21 * sf_x), int(21 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        font.setBold(True)
+        font.setWeight(75)
+        self.year_label_1.setFont(font)
+        self.year_label_1.setAlignment(QtCore.Qt.AlignCenter)
+        self.year_label_1.setObjectName("year_label_1")
+        self.year_label_1.setText("Y:")
+        
+        # Year value for left image
+        self.year_value_1 = QtWidgets.QLabel(self.frame_left_img)
+        self.year_value_1.setGeometry(QtCore.QRect(int(450 * sf_x), int(10 * sf_y), int(51 * sf_x), int(21 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        font.setBold(False)
+        font.setWeight(75)
+        self.year_value_1.setFont(font)
+        self.year_value_1.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.year_value_1.setFrameShape(QtWidgets.QFrame.Box)
+        self.year_value_1.setObjectName("year_value_1")
+        self.year_value_1.setAlignment(QtCore.Qt.AlignCenter)
+        self.year_value_1.setText("----")
         
         ################## Form for building feature ##########################
         
@@ -728,7 +754,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.img_id_value_2.setObjectName("img_id_value_2")
         # Bounding box for image central frame
         self.bounding_box_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.bounding_box_2.setGeometry(QtCore.QRect(int(830 * sf_x), int(110 * sf_y), int(161 * sf_x), int(21 * sf_y)))
+        self.bounding_box_2.setGeometry(QtCore.QRect(int(810 * sf_x), int(110 * sf_y), int(131 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -736,6 +762,31 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.bounding_box_2.setFont(font)
         self.bounding_box_2.setObjectName("bounding_box_2")
 
+        # Year label for central image
+        self.year_label_2 = QtWidgets.QLabel(self.frame_central_img)
+        self.year_label_2.setGeometry(QtCore.QRect(int(430 * sf_x), int(10 * sf_y), int(21 * sf_x), int(21 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        font.setBold(True)
+        font.setWeight(75)
+        self.year_label_2.setFont(font)
+        self.year_label_2.setAlignment(QtCore.Qt.AlignCenter)
+        self.year_label_2.setObjectName("year_label_2")
+        self.year_label_2.setText("Y:")
+        
+        # Year value for left image
+        self.year_value_2 = QtWidgets.QLabel(self.frame_central_img)
+        self.year_value_2.setGeometry(QtCore.QRect(int(450 * sf_x), int(10 * sf_y), int(51 * sf_x), int(21 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        font.setBold(False)
+        font.setWeight(75)
+        self.year_value_2.setFont(font)
+        self.year_value_2.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.year_value_2.setFrameShape(QtWidgets.QFrame.Box)
+        self.year_value_2.setObjectName("year_value_2")
+        self.year_value_2.setAlignment(QtCore.Qt.AlignCenter)
+        self.year_value_2.setText("----")
         
         ################## Form for building feature ##########################
         # Material for central image label 
@@ -1079,12 +1130,12 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.right_gsv_bb.addWidget(self.right_gsv_img)
         # Image ID for right frame
         self.img_id_value_3 = QtWidgets.QLineEdit(self.frame_right_img)
-        self.img_id_value_3.setGeometry(QtCore.QRect(int(150 * sf_x), int(10 * sf_y), int(111 * sf_x), int(21 * sf_y)))
+        self.img_id_value_3.setGeometry(QtCore.QRect(int(130 * sf_x), int(10 * sf_y), int(111 * sf_x), int(21 * sf_y)))
         self.img_id_value_3.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.img_id_value_3.setObjectName("img_id_value_3")
         # Bounding box for image right frame
         self.bounding_box_3 = QtWidgets.QPushButton(self.centralwidget)
-        self.bounding_box_3.setGeometry(QtCore.QRect(int(1360 * sf_x), int(110 * sf_y), int(161 * sf_x), int(21 * sf_y)))
+        self.bounding_box_3.setGeometry(QtCore.QRect(int(1320 * sf_x), int(110 * sf_y), int(131 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -1092,6 +1143,31 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.bounding_box_3.setFont(font)
         self.bounding_box_3.setObjectName("bounding_box_3")
 
+        # Year label for central image
+        self.year_label_3 = QtWidgets.QLabel(self.frame_right_img)
+        self.year_label_3.setGeometry(QtCore.QRect(int(430 * sf_x), int(10 * sf_y), int(21 * sf_x), int(21 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        font.setBold(True)
+        font.setWeight(75)
+        self.year_label_3.setFont(font)
+        self.year_label_3.setAlignment(QtCore.Qt.AlignCenter)
+        self.year_label_3.setObjectName("year_label_3")
+        self.year_label_3.setText("Y:")
+        
+        # Year value for left image
+        self.year_value_3 = QtWidgets.QLabel(self.frame_right_img)
+        self.year_value_3.setGeometry(QtCore.QRect(int(450 * sf_x), int(10 * sf_y), int(51 * sf_x), int(21 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        font.setBold(False)
+        font.setWeight(75)
+        self.year_value_3.setFont(font)
+        self.year_value_3.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.year_value_3.setFrameShape(QtWidgets.QFrame.Box)
+        self.year_value_3.setObjectName("year_value_3")
+        self.year_value_3.setAlignment(QtCore.Qt.AlignCenter)
+        self.year_value_3.setText("----")
         
         ################## Form for building feature ##########################
         

@@ -504,15 +504,18 @@ class GUIMethods:
             for aux in range (3):
                 if self.check_street_view() == True:
                     # Get image from GSV
-                    self.img_url[aux] = get_street_view_image(location, api_key, angle[aux])[0]
                     if aux == 0:
-                        self.img_original_1 = get_street_view_image(location, api_key, angle[aux])[1]
+                        self.img_url[aux] , self.img_original_1, self.year_left = get_street_view_image(location, api_key, angle[aux])
                     elif aux == 1:
-                        self.img_original_2 = get_street_view_image(location, api_key, angle[aux])[1]
+                        self.img_url[aux] , self.img_original_2, self.year_center = get_street_view_image(location, api_key, angle[aux])
                     else:
-                        self.img_original_3 = get_street_view_image(location, api_key, angle[aux])[1]
+                        self.img_url[aux] , self.img_original_3, self.year_right = get_street_view_image(location, api_key, angle[aux])
                 else:
                     print("Street View not available")
+                    
+            self.ui.year_value_1.setText(str(self.year_left))
+            self.ui.year_value_2.setText(str(self.year_center))
+            self.ui.year_value_3.setText(str(self.year_right))
         else:
             pass
 

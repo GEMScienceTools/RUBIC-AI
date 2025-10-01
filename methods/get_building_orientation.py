@@ -119,6 +119,20 @@ def get_street_view_image(location, api_key, angle):
         - Uses a scale factor of 2 for higher image resolution.
         - Returns both the image and a Google Maps URL for additional visualization.
     """
+    
+    meta_url = "https://maps.googleapis.com/maps/api/streetview/metadata"
+    meta_params = {
+        "location": f"{location[0]},{location[1]}",
+        "key": api_key
+    }
+    meta_response = requests.get(meta_url, params=meta_params)
+    meta_data = meta_response.json()
+
+    year = None
+    if meta_data.get("status") == "OK":
+        # Sometimes "date" is available directly in metadata (YYYY-MM format)
+        if "date" in meta_data:
+            year = meta_data["date"].split("-")[0]
 
     # Retrieve the road orientation at the given location
     road_orientation = get_road_orientation(location)
@@ -168,7 +182,7 @@ def get_street_view_image(location, api_key, angle):
         print("Error fetching image:", response.status_code)
         img = None
 
-    return maps_url, img
+    return maps_url, img, year
 
 
 

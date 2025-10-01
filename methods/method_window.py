@@ -338,7 +338,9 @@ class InspectionSetting(QDialog):
                 self.polygon_dialog.exec_()
                 self.output_polygon = self.polygon_dialog.output_polygon
                 self.ai_value = self.polygon_dialog.ai_value 
-
+                self.city = self.polygon_dialog.city 
+                self.country = self.polygon_dialog.country 
+                
             if self.specific_check.isChecked():
                 self.insp_method = 1
                 self.accept()
