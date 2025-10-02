@@ -117,7 +117,6 @@ Restarting your system can help resolve potential issues related to environment 
 4. **Define the Source of the Building Footprint**  
 Select the desired option from the menu next to ***Footprint source***.  
 By default, the selected option is **OpenStreetMap**, but the following alternatives are also available:  
-	- **Open Buildings (Google)**  
 	- **Microsoft Building Footprints**  
 	- **Overture Maps**
    
