@@ -15,3 +15,5 @@ ultralytics==8.3.40
 matplotlib==3.10.3
 chardet==5.2.0
 openai==1.77.0
+mercantile==1.2.1
+overturemaps==0.17.0

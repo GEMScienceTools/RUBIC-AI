@@ -136,14 +136,54 @@ class ExtrapolationOptions(QtWidgets.QDialog):
                 except Exception:
                     QtWidgets.QMessageBox.warning(
                         self, "Inspection Method Error",
-                        "Please upload the input files. Press again the **Load files** button"
+                        "An error occurred while reading the input files. Please click **Load files** button \n" 
+                        "again and confirm that all files follow the required structure, or upload your data"
                     )
-        elif self.stratified_check.isChecked():
-            QtWidgets.QMessageBox.warning(
-                self, "Inspection Method Error",
-                "This option is currently unavailable"
-            )
             
+                    
+                    
+ #####################################################################################################    
+ #####################################################################################################  
+ #####################################################################################################  
+ #####################################################################################################  
+
+               
+        elif self.stratified_check.isChecked():
+            dialog = data_options_window(parent=self)
+            self.load_check = True
+            if dialog.exec_() == QtWidgets.QDialog.Accepted:
+                try:
+                    self.info_existing = dialog.info_existing
+                    self.info_pending = dialog.info_pending
+                    self.extrapolation_name = dialog.output_manual_value.text()
+                    self.output_path = dialog.folder_path
+                    self.k_value = dialog.k_value_manual.value()
+                    # DL method
+                    try:
+                        self.coord_reference = dialog.coord_reference
+                        self.knn_dl_saved_path = dialog.knn_dl_saved_path
+                        self.coord_reference_building_feature_path = dialog.coord_reference_building_feature_path
+                        self.k_value = dialog.k_value_dl.value()
+                    except:
+                        self.coord_reference = True
+                        
+                    QtWidgets.QMessageBox.information(
+                        self,
+                        "Success",
+                        "✅ Setup complete!\n\n"
+                        "Please click **Save and continue** button."
+                    )
+                except Exception:
+                    QtWidgets.QMessageBox.warning(
+                        self, "Inspection Method Error",
+                        "An error occurred while reading the input files. Please click **Load files** button \n" 
+                        "again and confirm that all files follow the required structure, or upload your data"
+                    )
+            
+ #####################################################################################################    
+ #####################################################################################################  
+ #####################################################################################################  
+ ##################################################################################################### 
             
     def save_and_continue(self):
         try:

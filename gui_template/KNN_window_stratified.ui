@@ -1,0 +1,714 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DataSetting</class>
+ <widget class="QMainWindow" name="DataSetting">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1213</width>
+    <height>731</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="data_frame">
+   <widget class="QLabel" name="w_tittle">
+    <property name="geometry">
+     <rect>
+      <x>510</x>
+      <y>0</y>
+      <width>191</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Setting input files</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="save_buttom">
+    <property name="geometry">
+     <rect>
+      <x>510</x>
+      <y>690</y>
+      <width>191</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Save and continue</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="backg_1">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>39</y>
+      <width>591</width>
+      <height>421</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(209, 255, 165);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="unclassified_button">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>415</y>
+      <width>241</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Upload population data</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="unclassfied_path">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>420</y>
+      <width>291</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>filename.csv</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="output_label_manual">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>90</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Output name:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="output_manual_value">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>90</y>
+      <width>331</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>existing_strat</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="b_info_button">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>260</y>
+      <width>241</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Upload feature distribution</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="manual_op">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>50</y>
+      <width>261</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Use existing distribution</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="manual_info_path">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>265</y>
+      <width>151</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>filename.csv</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="output_path_button">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>135</y>
+      <width>241</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Select output folder</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="saved_path_manual">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>140</y>
+      <width>291</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>path/where/save/the/results</string>
+    </property>
+   </widget>
+   <widget class="QTableWidget" name="tableWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>470</y>
+      <width>1191</width>
+      <height>211</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="dl_op">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>45</y>
+      <width>301</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>There is no existing information</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="output_label_dl">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>85</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Output name:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="output_dl_value">
+    <property name="geometry">
+     <rect>
+      <x>780</x>
+      <y>85</y>
+      <width>331</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>new_strat</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="backg_2">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>40</y>
+      <width>591</width>
+      <height>421</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 255, 127);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="folder_local_button_2">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>215</y>
+      <width>241</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Upload population data</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="folder_img_path_2">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>220</y>
+      <width>291</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>filename.csv</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="saved_path_dl">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>130</y>
+      <width>291</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>path/where/save/the/results</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="output_path_dl_button">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>125</y>
+      <width>241</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Select output folder</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="output_label_manual_2">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>220</y>
+      <width>431</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Is the distribution valid for the entire population?</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>220</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <item>
+     <property name="text">
+      <string>YES</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>NO</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="output_label_manual_3">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>180</y>
+      <width>181</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Extrapolation mode:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_2">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>180</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <item>
+     <property name="text">
+      <string>Deep learning models</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Manually</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="manual_info_path_2">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>300</y>
+      <width>231</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>(Only if the previous answer is</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="manual_info_path_3">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>300</y>
+      <width>41</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>NO</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="manual_info_path_4">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>300</y>
+      <width>41</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>)</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="output_label_manual_4">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>330</y>
+      <width>321</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>How to manage partial distribution:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_3">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>331</y>
+      <width>241</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <item>
+     <property name="text">
+      <string>Keep the partial distribution</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Keep and mix until &quot;x&quot; distance</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="output_label_manual_5">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>370</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Mix distance [m]:</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="spinBox">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>370</y>
+      <width>61</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_4">
+    <property name="geometry">
+     <rect>
+      <x>830</x>
+      <y>170</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <item>
+     <property name="text">
+      <string>Deep learning models</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Manually</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="output_label_manual_6">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>170</y>
+      <width>181</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Extrapolation mode:</string>
+    </property>
+   </widget>
+   <zorder>backg_2</zorder>
+   <zorder>w_tittle</zorder>
+   <zorder>save_buttom</zorder>
+   <zorder>backg_1</zorder>
+   <zorder>unclassified_button</zorder>
+   <zorder>unclassfied_path</zorder>
+   <zorder>output_label_manual</zorder>
+   <zorder>output_manual_value</zorder>
+   <zorder>b_info_button</zorder>
+   <zorder>manual_op</zorder>
+   <zorder>manual_info_path</zorder>
+   <zorder>output_path_button</zorder>
+   <zorder>saved_path_manual</zorder>
+   <zorder>tableWidget</zorder>
+   <zorder>dl_op</zorder>
+   <zorder>output_label_dl</zorder>
+   <zorder>output_dl_value</zorder>
+   <zorder>folder_local_button_2</zorder>
+   <zorder>folder_img_path_2</zorder>
+   <zorder>saved_path_dl</zorder>
+   <zorder>output_path_dl_button</zorder>
+   <zorder>output_label_manual_2</zorder>
+   <zorder>comboBox</zorder>
+   <zorder>output_label_manual_3</zorder>
+   <zorder>comboBox_2</zorder>
+   <zorder>manual_info_path_2</zorder>
+   <zorder>manual_info_path_3</zorder>
+   <zorder>manual_info_path_4</zorder>
+   <zorder>output_label_manual_4</zorder>
+   <zorder>comboBox_3</zorder>
+   <zorder>output_label_manual_5</zorder>
+   <zorder>spinBox</zorder>
+   <zorder>comboBox_4</zorder>
+   <zorder>output_label_manual_6</zorder>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

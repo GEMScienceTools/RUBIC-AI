@@ -132,10 +132,8 @@ class PolygonSetting(QtWidgets.QDialog):
         font.setPointSize(int(10 * sf_x))
         self.footprint_mode.setFont(font)
         self.footprint_mode.setObjectName("footprint_mode")
-        self.footprint_mode.addItem("Open Street Maps",0)
-        self.footprint_mode.addItem("Open Buildings",1)
-        self.footprint_mode.addItem("Microsoft buildings",2)
-        self.footprint_mode.addItem("Overture",3)
+        self.footprint_mode.addItem("OpenStreetMap",0)
+        self.footprint_mode.addItem("Overture",1)
 
         self.n_building = QtWidgets.QLabel(self.coord_frame)
         self.n_building.setGeometry(QtCore.QRect(int(20 * sf_x), int(340 * sf_y), int(121 * sf_x), int(31 * sf_y)))

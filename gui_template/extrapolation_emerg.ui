@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ExtrapolationSetting</class>
+ <widget class="QMainWindow" name="ExtrapolationSetting">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1033</width>
+    <height>842</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="method_frame">
+   <widget class="QLabel" name="w_tittle">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>0</y>
+      <width>301</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Setting Extrapolation Method</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="save_button">
+    <property name="geometry">
+     <rect>
+      <x>590</x>
+      <y>800</y>
+      <width>191</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Save and continue</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="backg_1">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>1011</width>
+      <height>351</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 224, 185);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QTextBrowser" name="knn_descrip">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>80</y>
+      <width>981</width>
+      <height>301</height>
+     </rect>
+    </property>
+    <property name="html">
+     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;This method considers the distance to the &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;K nearest neighbors&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; and uses &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;soft voting&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;, meaning that closer neighbors carry more weight in determining the final class. It is based on the assumption that nearby buildings are more likely to share similar characteristics and applies &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;inverse kernel weighting&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; to reflect this relationship.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;The process begins with an &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;initial sample representing 10% of the population&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;. Building information can be provided either by uploading a CSV file or by using the built-in &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;deep learning model&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; integrated into the tool.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Convergence&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; is evaluated based on the stability of the variable of interest—in this case, &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;building taxonomies&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;. If the distribution of taxonomies changes by no more than &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;5%&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; in the subsequent iteration, convergence is assumed. Otherwise, the sample size is incrementally increased by &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;5%&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; in each iteration (e.g., 1st iteration = 10%, 2nd iteration = 15%, and so on) until convergence is reached.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Once convergence is achieved, the &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;sampling stage is complete&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;, and the &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;extrapolation process&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; begins. At this stage, the tool analyzes the buildings of interest, calculates the &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;geodesic distance&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; to all available sampled buildings, and selects the 10 closest ones to estimate a &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;probabilistic distribution of likely taxonomies&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="backg_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>420</y>
+      <width>1011</width>
+      <height>371</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(215, 213, 255)</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QTextBrowser" name="stratified_descrip">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>460</y>
+      <width>981</width>
+      <height>321</height>
+     </rect>
+    </property>
+    <property name="html">
+     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;This method uses a &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;stratified sampling process based on Scheaffer et al. (1986)&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;, aimed at estimating the distribution of building taxonomy classes. It begins by calculating a &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;pilot sample size&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; using a conservative formula that assumes maximum uncertainty in class proportions. Based on this pilot sample, the method estimates class proportions.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;The process adheres to the principles of stratified sampling, ensuring that each class (or stratum) is proportionally represented according to its estimated frequency and variance. Users can iteratively upload new CSV files or use the built-in &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;deep learning model&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; to classify images and expand the sample—&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;increasing by 5% of the population per iteration&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;After each iteration, the method checks whether the estimated class proportions have &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;converged&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;, meaning they remain stable across samples. If convergence is achieved, the process stops; otherwise, sampling continues, ensuring both &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;statistical robustness&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; and &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;data efficiency&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Once convergence is reached, the &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;assignment process&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; begins. This step uses a &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;hierarchical fallback strategy&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; that depends on the availability of information. The method prioritizes the use of &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;specific local data&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; where available, and progressively falls back to &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;more general or global information&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; when needed, ensuring the most accurate classification possible based on the data at hand.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="knn_check">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>50</y>
+      <width>231</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>K-NN with Soft Voting</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="stratified_check">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>430</y>
+      <width>201</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Stratified Sampling</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="load_buton">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>800</y>
+      <width>191</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Load files</string>
+    </property>
+   </widget>
+   <zorder>backg_2</zorder>
+   <zorder>backg_1</zorder>
+   <zorder>w_tittle</zorder>
+   <zorder>save_button</zorder>
+   <zorder>knn_descrip</zorder>
+   <zorder>stratified_descrip</zorder>
+   <zorder>knn_check</zorder>
+   <zorder>stratified_check</zorder>
+   <zorder>load_buton</zorder>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
