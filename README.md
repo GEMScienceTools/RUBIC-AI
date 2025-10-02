@@ -116,10 +116,9 @@ Restarting your system can help resolve potential issues related to environment 
 
 4. **Define the Source of the Building Footprint**  
 Select the desired option from the menu next to ***Footprint source***.  
-By default, the selected option is **OpenStreetMap**, but the following alternatives are also available:  
-	- **Open Buildings (Google)**  
-	- **Microsoft Building Footprints**  
-	- **Overture Maps**
+By default, the selected option is **OpenStreetMap**, but **Overture Maps** is also available.  
+Overture combines different sources of information, such as Google Open Buildings, Microsoft Building Footprints, and OpenStreetMap.  
+However, this option may take more time to retrieve the footprints.
    
 5. Download the available building footprints in the defined area by clicking the ***Get footprints available*** button.  
 
