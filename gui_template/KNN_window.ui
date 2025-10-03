@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1213</width>
-    <height>731</height>
+    <height>582</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -38,7 +38,7 @@
     <property name="geometry">
      <rect>
       <x>510</x>
-      <y>690</y>
+      <y>540</y>
       <width>191</width>
       <height>31</height>
      </rect>
@@ -60,7 +60,7 @@
       <x>10</x>
       <y>39</y>
       <width>591</width>
-      <height>421</height>
+      <height>271</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -70,12 +70,12 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="population_button">
+   <widget class="QPushButton" name="unclassified_button">
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>415</y>
-      <width>241</width>
+      <y>215</y>
+      <width>231</width>
       <height>31</height>
      </rect>
     </property>
@@ -87,14 +87,14 @@
      </font>
     </property>
     <property name="text">
-     <string>Upload population data</string>
+     <string>Unclassified building coords</string>
     </property>
    </widget>
-   <widget class="QLabel" name="population_data_path">
+   <widget class="QLabel" name="unclassfied_path">
     <property name="geometry">
      <rect>
       <x>280</x>
-      <y>420</y>
+      <y>220</y>
       <width>291</width>
       <height>21</height>
      </rect>
@@ -108,7 +108,7 @@
      <string>filename.csv</string>
     </property>
    </widget>
-   <widget class="QLabel" name="output_label_existing">
+   <widget class="QLabel" name="output_label_manual">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -128,12 +128,12 @@
      <string>Output name:</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="output_existing_value">
+   <widget class="QLineEdit" name="output_manual_value">
     <property name="geometry">
      <rect>
       <x>170</x>
       <y>90</y>
-      <width>331</width>
+      <width>111</width>
       <height>31</height>
      </rect>
     </property>
@@ -143,15 +143,15 @@
      </font>
     </property>
     <property name="text">
-     <string>existing_strat</string>
+     <string>KNN_manual</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="distribution_button">
+   <widget class="QPushButton" name="b_info_button">
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>260</y>
-      <width>241</width>
+      <y>175</y>
+      <width>231</width>
       <height>31</height>
      </rect>
     </property>
@@ -163,15 +163,15 @@
      </font>
     </property>
     <property name="text">
-     <string>Upload feature distribution</string>
+     <string>Buildings with information</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="existing_check">
+   <widget class="QCheckBox" name="manual_op">
     <property name="geometry">
      <rect>
       <x>30</x>
       <y>50</y>
-      <width>261</width>
+      <width>221</width>
       <height>31</height>
      </rect>
     </property>
@@ -183,15 +183,15 @@
      </font>
     </property>
     <property name="text">
-     <string>Use existing distribution</string>
+     <string>Upload data manually</string>
     </property>
    </widget>
-   <widget class="QLabel" name="distrib_path">
+   <widget class="QLabel" name="manual_info_path">
     <property name="geometry">
      <rect>
       <x>280</x>
-      <y>265</y>
-      <width>151</width>
+      <y>180</y>
+      <width>291</width>
       <height>21</height>
      </rect>
     </property>
@@ -204,12 +204,50 @@
      <string>filename.csv</string>
     </property>
    </widget>
+   <widget class="QLabel" name="unclassfied_dl_path">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>210</y>
+      <width>291</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>filename.csv</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="unclassified_dl_button">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>210</y>
+      <width>231</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Unclassified building coords</string>
+    </property>
+   </widget>
    <widget class="QPushButton" name="output_path_button">
     <property name="geometry">
      <rect>
       <x>30</x>
       <y>135</y>
-      <width>241</width>
+      <width>231</width>
       <height>31</height>
      </rect>
     </property>
@@ -224,7 +262,7 @@
      <string>Select output folder</string>
     </property>
    </widget>
-   <widget class="QLabel" name="saved_path_existing">
+   <widget class="QLabel" name="saved_path_manual">
     <property name="geometry">
      <rect>
       <x>280</x>
@@ -245,19 +283,19 @@
    <widget class="QTableWidget" name="tableWidget">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>470</y>
+      <x>20</x>
+      <y>320</y>
       <width>1191</width>
       <height>211</height>
      </rect>
     </property>
    </widget>
-   <widget class="QCheckBox" name="new_check">
+   <widget class="QCheckBox" name="dl_op">
     <property name="geometry">
      <rect>
       <x>640</x>
       <y>45</y>
-      <width>301</width>
+      <width>221</width>
       <height>31</height>
      </rect>
     </property>
@@ -269,10 +307,10 @@
      </font>
     </property>
     <property name="text">
-     <string>There is no existing information</string>
+     <string>Deep learning model</string>
     </property>
    </widget>
-   <widget class="QLabel" name="output_label_new">
+   <widget class="QLabel" name="output_label_dl">
     <property name="geometry">
      <rect>
       <x>640</x>
@@ -292,12 +330,12 @@
      <string>Output name:</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="output_new_value">
+   <widget class="QLineEdit" name="output_dl_value">
     <property name="geometry">
      <rect>
       <x>780</x>
       <y>85</y>
-      <width>331</width>
+      <width>111</width>
       <height>31</height>
      </rect>
     </property>
@@ -307,7 +345,7 @@
      </font>
     </property>
     <property name="text">
-     <string>new_strat</string>
+     <string>KNN_dl</string>
     </property>
    </widget>
    <widget class="QLabel" name="backg_2">
@@ -316,7 +354,7 @@
       <x>610</x>
       <y>40</y>
       <width>591</width>
-      <height>421</height>
+      <height>271</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -326,12 +364,12 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="population_new_button">
+   <widget class="QPushButton" name="coord_knn_button">
     <property name="geometry">
      <rect>
       <x>640</x>
-      <y>215</y>
-      <width>241</width>
+      <y>170</y>
+      <width>231</width>
       <height>31</height>
      </rect>
     </property>
@@ -343,16 +381,16 @@
      </font>
     </property>
     <property name="text">
-     <string>Upload population data</string>
+     <string>Upload building coordinates</string>
     </property>
    </widget>
-   <widget class="QLabel" name="population_new_path">
+   <widget class="QLabel" name="folder_img_path_2">
     <property name="geometry">
      <rect>
       <x>890</x>
-      <y>220</y>
+      <y>170</y>
       <width>291</width>
-      <height>21</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="font">
@@ -364,13 +402,89 @@
      <string>filename.csv</string>
     </property>
    </widget>
-   <widget class="QLabel" name="saved_path_new">
+   <widget class="QLabel" name="k_value_label">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>259</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>K value:</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="k_value_manual">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>260</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="value">
+     <number>10</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="k_value_label_dl">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>260</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>K value:</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="k_value_dl">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>260</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="value">
+     <number>10</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="saved_path_dl">
     <property name="geometry">
      <rect>
       <x>890</x>
       <y>130</y>
       <width>291</width>
-      <height>21</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="font">
@@ -382,12 +496,12 @@
      <string>path/where/save/the/results</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="output_path_new_button">
+   <widget class="QPushButton" name="output_path_dl_button">
     <property name="geometry">
      <rect>
       <x>640</x>
-      <y>125</y>
-      <width>241</width>
+      <y>130</y>
+      <width>231</width>
       <height>31</height>
      </rect>
     </property>
@@ -402,341 +516,33 @@
      <string>Select output folder</string>
     </property>
    </widget>
-   <widget class="QLabel" name="valid_label">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>220</y>
-      <width>431</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Is the distribution valid for the entire population?</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="valid_value">
-    <property name="geometry">
-     <rect>
-      <x>480</x>
-      <y>220</y>
-      <width>91</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <item>
-     <property name="text">
-      <string>YES</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>NO</string>
-     </property>
-    </item>
-   </widget>
-   <widget class="QLabel" name="extra_label">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>180</y>
-      <width>181</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Extrapolation mode:</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="extrap_mode">
-    <property name="geometry">
-     <rect>
-      <x>230</x>
-      <y>180</y>
-      <width>201</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <item>
-     <property name="text">
-      <string>Deep learning models</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Manually</string>
-     </property>
-    </item>
-   </widget>
-   <widget class="QLabel" name="ask_1">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>300</y>
-      <width>231</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>(Only if the previous answer is</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="ask_2">
-    <property name="geometry">
-     <rect>
-      <x>270</x>
-      <y>300</y>
-      <width>41</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>NO</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="ask_3">
-    <property name="geometry">
-     <rect>
-      <x>300</x>
-      <y>300</y>
-      <width>41</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>)</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="manage_dist">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>330</y>
-      <width>321</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>How to manage partial distribution:</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="manage_value">
-    <property name="geometry">
-     <rect>
-      <x>350</x>
-      <y>331</y>
-      <width>241</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <item>
-     <property name="text">
-      <string>Keep the partial distribution</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Keep and mix until &quot;x&quot; distance</string>
-     </property>
-    </item>
-   </widget>
-   <widget class="QLabel" name="distance_label">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>370</y>
-      <width>161</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Mix distance [m]:</string>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="distance_value">
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>370</y>
-      <width>91</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="extrap_mode_new">
-    <property name="geometry">
-     <rect>
-      <x>830</x>
-      <y>170</y>
-      <width>201</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <item>
-     <property name="text">
-      <string>Deep learning models</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Manually</string>
-     </property>
-    </item>
-   </widget>
-   <widget class="QLabel" name="extra_label_new">
-    <property name="geometry">
-     <rect>
-      <x>640</x>
-      <y>170</y>
-      <width>181</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Extrapolation mode:</string>
-    </property>
-   </widget>
-   <widget class="QListWidget" name="listWidget">
-    <property name="geometry">
-     <rect>
-      <x>860</x>
-      <y>260</y>
-      <width>161</width>
-      <height>31</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="population_new_path_2">
-    <property name="geometry">
-     <rect>
-      <x>640</x>
-      <y>300</y>
-      <width>541</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>filename.csv</string>
-    </property>
-   </widget>
    <zorder>backg_2</zorder>
    <zorder>w_tittle</zorder>
    <zorder>save_buttom</zorder>
    <zorder>backg_1</zorder>
-   <zorder>population_button</zorder>
-   <zorder>population_data_path</zorder>
-   <zorder>output_label_existing</zorder>
-   <zorder>output_existing_value</zorder>
-   <zorder>distribution_button</zorder>
-   <zorder>existing_check</zorder>
-   <zorder>distrib_path</zorder>
+   <zorder>unclassified_button</zorder>
+   <zorder>unclassfied_path</zorder>
+   <zorder>output_label_manual</zorder>
+   <zorder>output_manual_value</zorder>
+   <zorder>b_info_button</zorder>
+   <zorder>manual_op</zorder>
+   <zorder>manual_info_path</zorder>
+   <zorder>unclassfied_dl_path</zorder>
+   <zorder>unclassified_dl_button</zorder>
    <zorder>output_path_button</zorder>
-   <zorder>saved_path_existing</zorder>
+   <zorder>saved_path_manual</zorder>
    <zorder>tableWidget</zorder>
-   <zorder>new_check</zorder>
-   <zorder>output_label_new</zorder>
-   <zorder>output_new_value</zorder>
-   <zorder>population_new_button</zorder>
-   <zorder>population_new_path</zorder>
-   <zorder>saved_path_new</zorder>
-   <zorder>output_path_new_button</zorder>
-   <zorder>valid_label</zorder>
-   <zorder>valid_value</zorder>
-   <zorder>extra_label</zorder>
-   <zorder>extrap_mode</zorder>
-   <zorder>ask_1</zorder>
-   <zorder>ask_2</zorder>
-   <zorder>ask_3</zorder>
-   <zorder>manage_dist</zorder>
-   <zorder>manage_value</zorder>
-   <zorder>distance_label</zorder>
-   <zorder>distance_value</zorder>
-   <zorder>extrap_mode_new</zorder>
-   <zorder>extra_label_new</zorder>
-   <zorder>listWidget</zorder>
-   <zorder>population_new_path_2</zorder>
+   <zorder>dl_op</zorder>
+   <zorder>output_label_dl</zorder>
+   <zorder>output_dl_value</zorder>
+   <zorder>coord_knn_button</zorder>
+   <zorder>folder_img_path_2</zorder>
+   <zorder>k_value_label</zorder>
+   <zorder>k_value_manual</zorder>
+   <zorder>k_value_label_dl</zorder>
+   <zorder>k_value_dl</zorder>
+   <zorder>saved_path_dl</zorder>
+   <zorder>output_path_dl_button</zorder>
   </widget>
  </widget>
  <resources/>

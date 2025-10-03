@@ -20,8 +20,8 @@ class InspectionSetting(QDialog):
         screen_height = screen_geometry.height()
 
         # Scale the GUI based on resolution
-        sf_x = screen_width / 1920 
-        sf_y = screen_height / 1080 
+        sf_x = screen_width / 1920
+        sf_y = screen_height / 1080
         sf_factor = np.sqrt(sf_x**2 * sf_y**2)
 
         try:

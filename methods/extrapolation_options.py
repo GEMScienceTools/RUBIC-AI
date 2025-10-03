@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from methods.neighbor_building_extrapolation_feature import data_options_window
-import os
+from methods.stratified_extrapolation_feature import stratified_extrapolation
 
 class ExtrapolationOptions(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -149,30 +149,11 @@ class ExtrapolationOptions(QtWidgets.QDialog):
 
                
         elif self.stratified_check.isChecked():
-            dialog = data_options_window(parent=self)
+            dialog = stratified_extrapolation(parent=self)
             self.load_check = True
             if dialog.exec_() == QtWidgets.QDialog.Accepted:
                 try:
-                    self.info_existing = dialog.info_existing
-                    self.info_pending = dialog.info_pending
-                    self.extrapolation_name = dialog.output_manual_value.text()
-                    self.output_path = dialog.folder_path
-                    self.k_value = dialog.k_value_manual.value()
-                    # DL method
-                    try:
-                        self.coord_reference = dialog.coord_reference
-                        self.knn_dl_saved_path = dialog.knn_dl_saved_path
-                        self.coord_reference_building_feature_path = dialog.coord_reference_building_feature_path
-                        self.k_value = dialog.k_value_dl.value()
-                    except:
-                        self.coord_reference = True
-                        
-                    QtWidgets.QMessageBox.information(
-                        self,
-                        "Success",
-                        "✅ Setup complete!\n\n"
-                        "Please click **Save and continue** button."
-                    )
+                    pass
                 except Exception:
                     QtWidgets.QMessageBox.warning(
                         self, "Inspection Method Error",
