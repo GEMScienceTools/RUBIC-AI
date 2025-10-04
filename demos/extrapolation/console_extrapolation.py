@@ -597,7 +597,7 @@ def inspection_database (data_ai):
 method = 0  for existing information of reference
 method = 1  for inference first a sample and create the information of reference before the extrapolation
 """
-method = 0
+method = 1
 
 
 if method == 0:
@@ -605,7 +605,7 @@ if method == 0:
     #######===========  Input parameters =========###########
     #########################################################
     data_existing = pd.read_csv("neighbor_building_info.csv")
-    data_extrapolation = pd.read_csv("building_with_no_image.csv")
+    data_extrapolation = pd.read_csv("unclassified_building_coord.csv")
     saved_path = "extrapolation_data_example.csv"
     
     #########################################################
@@ -617,9 +617,9 @@ elif method == 1:
     #########################################################
     #######===========  Input parameters =========###########
     #########################################################
-    coord_reference = "coordinates_example.csv"
+    coord_reference = "building_coordinates_example.csv"
     coord_reference_building_feature_path = "coordinates_reference_results.csv"
-    data_extrapolation = pd.read_csv("building_with_no_image.csv")
+    data_extrapolation = pd.read_csv("unclassified_building_coord.csv")
     saved_path = "extrapolation_data_example_using_ai.csv"
     #########################################################
     #######===========  Function results =========###########

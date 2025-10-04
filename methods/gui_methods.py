@@ -334,23 +334,23 @@ class GUIMethods:
                 pass
             
             # Define the column namesfor the inspection database
-            column_names = ["ID", 
-                            "Latitude", 
-                            "Longitude",
-                            "Country",
-                            "City",
-                            "LLRS Material",
-                            "LLRS",
-                            "Code Level",
-                            "Number of Stories",
-                            "Occupancy",
-                            "Block Position",
-                            "Epoch of construction",
-                            "Roof shape",
-                            "Roof material",
-                            "Image Quality",
-                            "Taxonomy",
-                            "Image filename or link"]
+            column_names = ["id", 
+                            "latitude", 
+                            "longitude",
+                            "country",
+                            "city",
+                            "material",
+                            "llrs",
+                            "code_level",
+                            "n_stories",
+                            "occupancy",
+                            "block_position",
+                            "epoch_construction",
+                            "roof_shape",
+                            "roof_material",
+                            "image_quality",
+                            "taxonomy",
+                            "image filename or link"]
             
             # Create an empty DataFrame for number of footprint available
             try:

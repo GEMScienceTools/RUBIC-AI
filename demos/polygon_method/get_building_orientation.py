@@ -32,7 +32,7 @@ def get_road_orientation(location):
         - Handles API errors and missing road data gracefully.
     """
     # Model parameters   
-    with open(gsv_dir / "gsv_api_key.txt", "r") as f:
+    with open(gsv_dir / "roads_api_key.txt", "r") as f:
         api_key = f.read().strip()
     base_url = "https://roads.googleapis.com/v1/nearestRoads"
     params = {

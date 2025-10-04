@@ -330,7 +330,7 @@
     <property name="geometry">
      <rect>
       <x>640</x>
-      <y>215</y>
+      <y>165</y>
       <width>241</width>
       <height>31</height>
      </rect>
@@ -350,7 +350,7 @@
     <property name="geometry">
      <rect>
       <x>890</x>
-      <y>220</y>
+      <y>170</y>
       <width>291</width>
       <height>21</height>
      </rect>
@@ -628,56 +628,11 @@
      </font>
     </property>
    </widget>
-   <widget class="QComboBox" name="extrap_mode_new">
-    <property name="geometry">
-     <rect>
-      <x>830</x>
-      <y>170</y>
-      <width>201</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <item>
-     <property name="text">
-      <string>Deep learning models</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Manually</string>
-     </property>
-    </item>
-   </widget>
-   <widget class="QLabel" name="extra_label_new">
-    <property name="geometry">
-     <rect>
-      <x>640</x>
-      <y>170</y>
-      <width>181</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Extrapolation mode:</string>
-    </property>
-   </widget>
    <widget class="QListWidget" name="listWidget">
     <property name="geometry">
      <rect>
-      <x>860</x>
-      <y>260</y>
+      <x>880</x>
+      <y>210</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -687,7 +642,7 @@
     <property name="geometry">
      <rect>
       <x>640</x>
-      <y>300</y>
+      <y>250</y>
       <width>541</width>
       <height>21</height>
      </rect>
@@ -699,6 +654,26 @@
     </property>
     <property name="text">
      <string>filename.csv</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="output_label_new_2">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>210</y>
+      <width>241</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Feature</string>
     </property>
    </widget>
    <zorder>backg_2</zorder>
@@ -733,10 +708,9 @@
    <zorder>manage_value</zorder>
    <zorder>distance_label</zorder>
    <zorder>distance_value</zorder>
-   <zorder>extrap_mode_new</zorder>
-   <zorder>extra_label_new</zorder>
    <zorder>listWidget</zorder>
    <zorder>population_new_path_2</zorder>
+   <zorder>output_label_new_2</zorder>
   </widget>
  </widget>
  <resources/>

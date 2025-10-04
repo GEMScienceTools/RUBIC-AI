@@ -7,6 +7,15 @@ from torchvision import models
 from PIL import Image
 import numpy as np
 
+import pandas as pd
+import numpy as np
+from methods.get_building_orientation import get_street_view_image
+import requests
+     
+from dl_stratified import predict_llrs_img, predict_material_img, predict_code_img, predict_roof_shape_img
+from dl_stratified import predict_occupancy_img, predict_block_position_img, predict_n_stories_img, predict_roof_material_img
+####################################################
+
 class stratified_extrapolation(QtWidgets.QDialog):
     def __init__(self, parent=None, main_window=None):
         super().__init__(parent)
@@ -50,7 +59,6 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.save_button.setFont(font)
         self.save_button.setObjectName("save_button")
         self.save_button.clicked.connect(self.select_method)
-        self.save_button.clicked.connect(self.stratified_manually)
         
         # Background Label
         self.backg_1 = QtWidgets.QLabel(self.data_frame)
@@ -187,7 +195,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         
         # Population Button - New
         self.population_new_button = QtWidgets.QPushButton(self.data_frame)
-        self.population_new_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(215 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.population_new_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(165 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(False)
@@ -198,7 +206,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         
         # Population Path - New
         self.population_new_path = QtWidgets.QLabel(self.data_frame)
-        self.population_new_path.setGeometry(QtCore.QRect(int(890 * sf_x), int(220 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        self.population_new_path.setGeometry(QtCore.QRect(int(890 * sf_x), int(170 * sf_y), int(291 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.population_new_path.setFont(font)
@@ -321,27 +329,9 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.distance_value.setObjectName("distance_value")
         self.distance_value.setMaximum(9999)
         
-        self.extrap_mode_new = QtWidgets.QComboBox(self.data_frame)
-        self.extrap_mode_new.setGeometry(QtCore.QRect(int(830 * sf_x), int(170 * sf_y), int(201 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        self.extrap_mode_new.setFont(font)
-        self.extrap_mode_new.setObjectName("extrap_mode_new")
-        self.extrap_mode_new.addItem("")
-        self.extrap_mode_new.addItem("")
-        
-        self.extra_label_new = QtWidgets.QLabel(self.data_frame)
-        self.extra_label_new.setGeometry(QtCore.QRect(int(640 * sf_x), int(170 * sf_y), int(181 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
-        font.setBold(True)
-        font.setWeight(75)
-        self.extra_label_new.setFont(font)
-        self.extra_label_new.setObjectName("extra_label_new")
-        
         # --- Features of Interest filter (Excel-like) ---
         self.features_label = QtWidgets.QLabel(self.data_frame)
-        self.features_label.setGeometry(QtCore.QRect(int(640 * sf_x), int(260 * sf_y), int(181 * sf_x), int(31 * sf_y)))
+        self.features_label.setGeometry(QtCore.QRect(int(640 * sf_x), int(210 * sf_y), int(181 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -349,18 +339,14 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.features_label.setText("Features of interest:")
         
         self.features_btn = CheckFilterButton(values=[""], parent=self.data_frame, text="Feature strata")
-        self.features_btn.setGeometry(QtCore.QRect(int(830 * sf_x), int(260 * sf_y), int(161 * sf_x), int(31 * sf_y)))
+        self.features_btn.setGeometry(QtCore.QRect(int(830 * sf_x), int(210 * sf_y), int(161 * sf_x), int(31 * sf_y)))
         
         self.features_selected = QtWidgets.QLabel(self.data_frame)
-        self.features_selected.setGeometry(QtCore.QRect(int(640 * sf_x), int(290 * sf_y), int(540 * sf_x), int(31 * sf_y)))
+        self.features_selected.setGeometry(QtCore.QRect(int(640 * sf_x), int(250 * sf_y), int(540 * sf_x), int(31 * sf_y)))
         self.features_selected.setText("Selected: ----")
         
         self.features_btn.selectionChanged.connect(self.on_features_changed)
         self.feature_strata = []   # initialize
-        # # connect to update label
-        # self.features_btn.selectionChanged.connect(
-        #     lambda vals: self.features_selected.setText("Selected: " + (", ".join(vals) if vals else "(none)")))
-        # self.feature_strata = vals
 
         self.w_title.setText("Setting input files")
         self.save_button.setText("Save and continue")
@@ -392,11 +378,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.manage_dist.setText("How to manage partial distribution:")
         self.manage_value.setItemText(0, "Keep the partial distribution")
         self.manage_value.setItemText(1, "Keep and mix until \"x\" distance")
-        self.distance_label.setText("Mix distance [m]:")
-        self.extrap_mode_new.setItemText(0, "Deep learning models")
-        self.extrap_mode_new.setItemText(1, "Manually")
-        self.extra_label_new.setText("Extrapolation mode:")
-        
+        self.distance_label.setText("Mix distance [m]:")       
         
     def select_method(self):
         # Check how many checkboxes are checked
@@ -414,12 +396,10 @@ class stratified_extrapolation(QtWidgets.QDialog):
             QtWidgets.QMessageBox.warning(self, "Input Error", "Please select one method")
         else:
             if self.new_check.isChecked():
-                try:
-                    self.data_population
-                    self.accept()
-                except:
-                    QtWidgets.QMessageBox.warning(self, "Input Error", "There are missing the inputs files")
+                self.stratified_manually()
+                self.accept()
             elif self.existing_check.isChecked():
+                self.stratified_dl()
                 self.accept()
                 
     def preview_data(self, database):
@@ -477,15 +457,17 @@ class stratified_extrapolation(QtWidgets.QDialog):
     
     def select_output_folder_new(self):
         """Open a folder selection dialog and display the selected folder in a text output."""
-        self.folder_path = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Folder")
-        if self.folder_path:  # If a folder is selected
-            folder_display = os.path.basename(self.folder_path)    
+        self.folder_path_new = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Folder")
+        if self.folder_path_new:  # If a folder is selected
+            folder_display = os.path.basename(self.folder_path_new)    
             self.saved_path_new.setText(folder_display)
     
     def data_population(self):
         self.data_population = self.upload_csv(self.population_new_path)
         self.preview_data(self.data_population)
-        unique_vals = self.data_population.columns.tolist()
+        # unique_vals = self.data_population.columns.tolist()
+        unique_vals = ["material", "llrs", "code_level","n_stories","occupancy","block_position",
+                       "epoch_construction","roof_shape", "roof_material"]
         self.features_btn.set_values(unique_vals)
  
     def on_features_changed(self, vals):
@@ -501,7 +483,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         
         for feature in analysis_features:
             print(" ========== " + feature + " ===========")
-            final_sample, class_dist, final_size = iterative_distribution_stability(
+            final_sample, class_dist, final_size = iterative_distribution_stability_manual(
                 data=building_data,
                 id_feature=feature,
                 id_column='id',
@@ -511,11 +493,36 @@ class stratified_extrapolation(QtWidgets.QDialog):
                 max_iterations=10,
                 stability_threshold=0.05
             )
-            final_sample.to_csv(f"C:/Users/daniel.gomez/Documents/GitHub/RUBIC-AI/demos/extrapolation//stratified_{feature}.csv", index=False)
+            final_sample.to_csv(f"{self.folder_path_new}/stratified_{feature}.csv", index=False)
             print("")
-
+            
+    def stratified_dl(self):
+        building_data = self.data_population
+        # ========== Run sampling for each feature ==========
+        analysis_features = self.feature_strata
+        extra_mode = 1
+        sample_size_def = []
+        for aux in analysis_features:
+            print(" ========== " + aux + " ===========")
+            final_sample, class_dist, final_size = iterative_label_discovery_cached_fractional(
+                data=building_data,
+                labeling_function=lambda x: labeling_function(x, aux, extra_mode),
+                id_column='id',
+                id_feature=aux,
+                initial_fraction=0.10,
+                step_fraction=5/100,
+                max_fraction=0.20,
+                max_iterations=1,
+                stability_threshold=0.05
+            )
+            final_sample.to_csv(f"{self.folder_path_new}/stratified_dl_{aux}.csv", index=False)
+            print("")
+            
+        print("Sample size definitive: ", np.max(sample_size_def))
+            
+       
 # ========== Iterative sampling using existing labels ==========
-def iterative_distribution_stability(
+def iterative_distribution_stability_manual(
     id_feature,
     data: pd.DataFrame,
     id_column,
@@ -586,6 +593,193 @@ def iterative_distribution_stability(
 
     print("⚠️ Reached max iterations or sample limit without convergence.")
     return all_sampled, current_dist, len(all_sampled)
+
+
+#########################################################################
+#########################################################################
+#########################################################################
+#########################################################################
+
+# ========== Main Iterative Sampling Function ==========
+def iterative_label_discovery_cached_fractional( self,
+    id_feature,
+    data: pd.DataFrame,
+    labeling_function,
+    id_column: str = 'id',
+    initial_fraction: float = 0.10,
+    step_fraction: float = 0.05,
+    max_fraction: float = 1.00,
+    stability_threshold: float = 0.05,
+    max_iterations: int = 20,
+    random_state: int = 42
+):
+    """
+    Iteratively samples and labels data using a labeling function until label distribution stabilizes.
+
+    Args:
+        data (pd.DataFrame): Input dataset with unique IDs.
+        labeling_function (callable): Function to assign labels based on the ID.
+        id_column (str): Column name with unique IDs (default: 'ID').
+        initial_fraction (float): Initial fraction of data to label.
+        step_fraction (float): Additional fraction added each iteration.
+        max_fraction (float): Maximum fraction of data to label.
+        stability_threshold (float): Maximum allowed change in class distribution for convergence.
+        max_iterations (int): Maximum number of iterations.
+        random_state (int): Seed for reproducibility.
+
+    Returns:
+        tuple: (DataFrame of labeled samples, label distribution as dict, final sample size)
+    """
+      
+    if check_street_view(self.lat_dl, self.lon_dl) == True:
+        population_size = len(data)
+        all_labeled = pd.DataFrame(columns=[id_column, id_feature])  # Initialize labeled dataset
+        previous_dist = None  # Store label distribution from previous iteration
+        iteration = 0  # Iteration counter
+    
+        # Shuffle the dataset for randomized sampling
+        np.random.seed(random_state)
+        shuffled_data = data.sample(frac=1, random_state=random_state).reset_index(drop=True)
+    
+        # === Iterative sampling loop ===
+        while iteration < max_iterations:
+            # Calculate current target sample size
+            current_fraction = min(initial_fraction + step_fraction * iteration, max_fraction)
+            target_size = min(int(population_size * current_fraction), population_size)
+    
+            # Filter out already labeled IDs and select next batch
+            already_labeled_ids = set(all_labeled[id_column])
+            next_sample = shuffled_data[~shuffled_data[id_column].isin(already_labeled_ids)].head(target_size - len(all_labeled))
+    
+            if next_sample.empty:
+                break  # Stop if no more samples to process
+    
+            # Apply labeling function to new samples
+            next_sample[id_feature] = next_sample[id_column].apply(labeling_function)
+            all_labeled = pd.concat([all_labeled, next_sample], ignore_index=True)
+    
+            # Calculate class distribution
+            current_counts = all_labeled[id_feature].value_counts(normalize=True).sort_index()
+            current_dist = current_counts.to_dict()
+    
+            # Check for stabilization in label distribution
+            if previous_dist is not None:
+                all_keys = set(previous_dist) | set(current_dist)
+                print("Previous dist: ")
+                print(previous_dist)
+                max_change = max(abs(previous_dist.get(k, 0) - current_dist.get(k, 0)) for k in all_keys)
+                print(f"Iteration {iteration+1}: Sample size = {len(all_labeled)}, Max Δ = {max_change:.4f}")
+    
+                if max_change < stability_threshold:
+                    print("✅ Class proportions stabilized.")
+                    return all_labeled, current_dist, len(all_labeled)
+    
+            previous_dist = current_dist
+            iteration += 1
+    
+        print("⚠️ Reached max iterations or sample limit without convergence.")
+        return all_labeled, current_dist, len(all_labeled)
+
+####################################################
+####################################################
+####################################################
+
+# =========== Data to change ============
+############ Checks if there is GSV availability ################  
+def check_street_view(lat,lon):
+    # Input parameters
+    with open("methods/gsv_api_key.txt", "r") as f:
+        api_key = f.read().strip()
+
+    url = "https://maps.googleapis.com/maps/api/streetview/metadata"
+    params = {
+        "location": f"{lat},{lon}",
+        "key": api_key
+    }
+    response = requests.get(url, params=params)
+    data = response.json()
+    # Check status
+    if data.get("status") == "OK":
+        return True  # Street View is available
+    else:
+        return False  # No Street View coverage
+
+
+# ========== Labeling Function ==========
+def labeling_function(self, image_id, id_feature, extra_mode):
+    
+    """
+    Applies a prediction model to a building image given its ID.
+
+    Args:
+        image_id (str): Unique identifier for the image.
+
+    Returns:
+        str: Predicted LLRS Material class for the building.
+    """
+    if extra_mode == 0:
+        lat_row = self.data_population.loc[self.data_population["id"] == image_id, "latitude"]
+        lon_row = self.data_population.loc[self.data_population["id"] == image_id, "longitude"]
+        self.lat_dl = lat_row.iloc[0]
+        self.lon_dl = lon_row.iloc[0]
+        # Building coordinates
+        location = (self.lat_dl,self.lon_dl)
+        # angles for taking the images
+        angle = 0
+        # Input parameters
+        with open("methods/gsv_api_key.txt", "r") as f:
+            api_key = f.read().strip()
+        
+        #Image from GSV
+        image_path = get_street_view_image(location, api_key, angle) 
+    else:
+        # Local image path
+        image_path = f"C:/Users/User/Documents/GitHub/RUBIC-AI/demos/local_images/images_ex1/{image_id}"
+    
+    # Deep learning models
+    if id_feature == "LLRS":
+        return predict_llrs_img(image_path)
+    elif id_feature == "LLRS Material":
+        return predict_material_img(image_path, extra_mode)
+    elif id_feature == "Number of Stories":
+        return predict_n_stories_img(image_path)
+    elif id_feature == "Occupancy":
+        return predict_occupancy_img(image_path)
+    elif id_feature == "Code Level":
+        return predict_code_img(image_path)
+    elif id_feature == "Block Position":
+        return predict_block_position_img(image_path)
+    elif id_feature == "Roof Shape":
+        return predict_roof_shape_img(image_path)
+    elif id_feature == "Roof Material":
+        return predict_roof_material_img(image_path)
+    else:
+        return None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #########################################################################
 #########################################################################
