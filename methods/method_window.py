@@ -8,6 +8,7 @@ from methods.polygon_method import PolygonSetting
 from methods.specific_locations_method import SpecificLocationSetting
 from methods.local_images_method import LocalImageSetting 
 from methods.extrapolation_options import ExtrapolationOptions
+from methods.extrapolation_options import ExtrapolationOptions
 
 class InspectionSetting(QDialog):
     def __init__(self, parent=None):
@@ -362,12 +363,25 @@ class InspectionSetting(QDialog):
                 self.accept()
                 self.extra_dialog = ExtrapolationOptions()  # Pass main window reference if needed
                 self.extra_dialog.exec_()
-                self.info_existing = self.extra_dialog.info_existing
-                self.info_pending = self.extra_dialog.info_pending
-                self.extrapolation_name = self.extra_dialog.extrapolation_name
-                self.coord_reference = self.extra_dialog.coord_reference
-                self.output_path = self.extra_dialog.output_path
-                self.k_value = self.extra_dialog.k_value
+                self.extrapolation_mode = self.extra_dialog.extrapolation_mode
+                # KNN method
+                if self.extrapolation_mode == 2:
+                    self.info_existing = self.extra_dialog.info_existing
+                    self.info_pending = self.extra_dialog.info_pending
+                    self.extrapolation_name = self.extra_dialog.extrapolation_name
+                    self.coord_reference = self.extra_dialog.coord_reference
+                    self.output_path = self.extra_dialog.output_path
+                    self.k_value = self.extra_dialog.k_value
+                else:
+                    # Stratified method
+                    self.data_population = self.extra_dialog.data_population
+                    self.initial_fraction = self.extra_dialog.initial_fraction
+                    self.step_fraction = self.extra_dialog.step_fraction
+                    self.max_fraction = self.extra_dialog.max_fraction
+                    self.max_iterations = self.extra_dialog.max_iterations
+                    self.stability_threshold = self.extra_dialog.stability_threshold
+                    
+                    self.feature_strata = self.extra_dialog.feature_strata
                 
                 try:
                     self.knn_dl_saved_path = self.extra_dialog.knn_dl_saved_path

@@ -83,7 +83,7 @@ class ExtrapolationOptions(QtWidgets.QDialog):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
 "<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">This method uses a </span><span style=\" font-size:10pt; font-weight:600;\">stratified sampling process based on Scheaffer et al. (1986)</span><span style=\" font-size:10pt;\">, aimed at estimating the distribution of building taxonomy classes. It begins by calculating a </span><span style=\" font-size:10pt; font-weight:600;\">pilot sample size</span><span style=\" font-size:10pt;\"> using a conservative formula that assumes maximum uncertainty in class proportions. Based on this pilot sample, the method estimates class proportions.</span></p>\n"
-"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">The process adheres to the principles of stratified sampling, ensuring that each class (or stratum) is proportionally represented according to its estimated frequency and variance. Users can iteratively upload new CSV files or use the built-in </span><span style=\" font-size:10pt; font-weight:600;\">deep learning model</span><span style=\" font-size:10pt;\"> to classify images and expand the sample—</span><span style=\" font-size:10pt; font-weight:600;\">increasing by 5% of the population per iteration</span><span style=\" font-size:10pt;\">.</span></p>\n"
+"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">The process adheres to the principles of stratified sampling, ensuring that each class (or stratum) is proportionally represented according to its estimated frequency and variance. Users can iteratively upload </span><span style=\" font-size:10pt; font-weight:600;\">new</span><span style=\" font-size:10pt;\"> </span><span style=\" font-size:10pt; font-weight:600;\">CSV files (manually)</span><span style=\" font-size:10pt;\"> or use the built-in </span><span style=\" font-size:10pt; font-weight:600;\">deep learning model</span><span style=\" font-size:10pt;\"> to classify images and expand the sample—</span><span style=\" font-size:10pt; font-weight:600;\">increasing by a step value provided by the user (5% by default) of the population per iteration</span><span style=\" font-size:10pt;\">.</span></p>\n"
 "<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">After each iteration, the method checks whether the estimated class proportions have </span><span style=\" font-size:10pt; font-weight:600;\">converged</span><span style=\" font-size:10pt;\">, meaning they remain stable across samples. If convergence is achieved, the process stops; otherwise, sampling continues, ensuring both </span><span style=\" font-size:10pt; font-weight:600;\">statistical robustness</span><span style=\" font-size:10pt;\"> and </span><span style=\" font-size:10pt; font-weight:600;\">data efficiency</span><span style=\" font-size:10pt;\">.</span></p>\n"
 "<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">Once convergence is reached, the </span><span style=\" font-size:10pt; font-weight:600;\">assignment process</span><span style=\" font-size:10pt;\"> begins. This step uses a </span><span style=\" font-size:10pt; font-weight:600;\">hierarchical fallback strategy</span><span style=\" font-size:10pt;\"> that depends on the availability of information. The method prioritizes the use of </span><span style=\" font-size:10pt; font-weight:600;\">specific local data</span><span style=\" font-size:10pt;\"> where available, and progressively falls back to </span><span style=\" font-size:10pt; font-weight:600;\">more general or global information</span><span style=\" font-size:10pt;\"> when needed, ensuring the most accurate classification possible based on the data at hand.</span></p></body></html>")
         
@@ -118,6 +118,7 @@ class ExtrapolationOptions(QtWidgets.QDialog):
                     self.extrapolation_name = dialog.output_manual_value.text()
                     self.output_path = dialog.folder_path
                     self.k_value = dialog.k_value_manual.value()
+                    self.extrapolation_mode = 2
                     # DL method
                     try:
                         self.coord_reference = dialog.coord_reference
@@ -139,21 +140,34 @@ class ExtrapolationOptions(QtWidgets.QDialog):
                         "An error occurred while reading the input files. Please click **Load files** button \n" 
                         "again and confirm that all files follow the required structure, or upload your data"
                     )
-            
-                    
-                    
+                           
  #####################################################################################################    
+ ########################## ---------Stratified method ---------------################################   
  #####################################################################################################  
- #####################################################################################################  
- #####################################################################################################  
-
-               
+           
         elif self.stratified_check.isChecked():
             dialog = stratified_extrapolation(parent=self)
             self.load_check = True
             if dialog.exec_() == QtWidgets.QDialog.Accepted:
                 try:
-                    pass
+                    self.extrapolation_mode = dialog.stratified_mode
+                    self.data_population = dialog.data_population
+                    
+                    #Stratified manually
+                    self.initial_fraction= dialog.ini_fract_new_value.value()
+                    self.step_fraction= dialog.step_new_value.value()
+                    self.max_fraction= dialog.max_frac_new_value.value()
+                    self.max_iterations=dialog.n_iter_new_value.value()
+                    self.stability_threshold=dialog.threshold_new_value.value()
+                    # Stratified dl
+                    self.feature_strata = dialog.feature_strata
+                    
+                    QtWidgets.QMessageBox.information(
+                        self,
+                        "Success",
+                        "✅ Setup complete!\n\n"
+                        "Please click **Save and continue** button.")
+                        
                 except Exception:
                     QtWidgets.QMessageBox.warning(
                         self, "Inspection Method Error",

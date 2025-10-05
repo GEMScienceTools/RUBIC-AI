@@ -39,18 +39,32 @@ class GUIInterface(QtWidgets.QMainWindow):
             self.ai_value = self.method_dialog.ai_value 
             
         elif self.insp_method == 3:
-            self.building_extra_path = self.method_dialog.info_pending
-            self.example_building_path = self.method_dialog.info_existing
-            self.extrapolation_name = self.method_dialog.extrapolation_name
-            self.coord_reference = self.method_dialog.coord_reference
-            self.output_path = self.method_dialog.output_path
-            self.k_value = self.method_dialog.k_value
-            try:
-                self.knn_dl_saved_path = self.method_dialog.knn_dl_saved_path
-                self.coord_reference_building_feature_path = self.method_dialog.coord_reference_building_feature_path
-            except:
-                pass
+            # Variable which define the extrapolation mode
+            self.extrapolation_mode = self.method_dialog.extrapolation_mode
             
+            if self.extrapolation_mode == 2:
+                #KNN method
+                self.building_extra_path = self.method_dialog.info_pending
+                self.example_building_path = self.method_dialog.info_existing
+                self.extrapolation_name = self.method_dialog.extrapolation_name
+                self.coord_reference = self.method_dialog.coord_reference
+                self.output_path = self.method_dialog.output_path
+                self.k_value = self.method_dialog.k_value
+                try:
+                    self.knn_dl_saved_path = self.method_dialog.knn_dl_saved_path
+                    self.coord_reference_building_feature_path = self.method_dialog.coord_reference_building_feature_path
+                except:
+                    pass
+            else:
+                #Stratified method
+                self.data_population = self.method_dialog.data_population
+                self.initial_fraction = self.method_dialog.initial_fraction
+                self.step_fraction = self.method_dialog.step_fraction
+                self.max_fraction = self.method_dialog.max_fraction
+                self.max_iterations = self.method_dialog.max_iterations
+                self.stability_threshold = self.method_dialog.stability_threshold
+                self.feature_strata = self.method_dialog.feature_strata
+                    
         QtWidgets.QMessageBox.information(
             self,
             "Success",

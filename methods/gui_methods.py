@@ -30,6 +30,13 @@ from methods.help_window import HelpDialog
 from methods.neighbor_building_extrapolation_feature import find_nearest_neighbors_geodesic, compute_taxonomy_distribution_full_structure
 from methods.dl_extrapolation import create_database, dl_models, inspection_database, extrapolation_existing_reference
 
+from methods.dl_stratified import iterative_distribution_stability_manual , iterative_label_discovery_cached_fractional, labeling_function
+# from methods.dl_stratified import predict_llrs_img_stratified, predict_material_img_stratified, predict_code_img_stratified
+# from methods.dl_stratified import predict_roof_shape_img_stratified, predict_roof_material_img_stratified
+# from methods.dl_stratified import predict_occupancy_img_stratified, predict_block_position_img_stratified, predict_n_stories_img_stratified
+
+
+
 class GUIMethods:
     def __init__(self, ui):
         self.ui = ui  # Link to the UI components
@@ -2628,39 +2635,96 @@ class GUIMethods:
     def neighbor_extrapolation(self):
         
         if self.ui.insp_method == 3:
-            if self.ui.coord_reference is not True:
-                #######===========  Function results =========###########
-                data_existing_dl = create_database(self.ui.coord_reference)
-                dl_models()
-                inspection_database(data_existing_dl)
-                predicted_path =  self.ui.output_path+"/"+self.ui.coord_reference_building_feature_path
-                data_existing_dl.to_csv(predicted_path, index= False)
-                extra_path =  self.ui.output_path+"/"+self.ui.knn_dl_saved_path
-                n_neighbors = self.ui.k_value
-                extrapolation_existing_reference(data_existing_dl , self.ui.building_extra_path, extra_path, n_neighbors)
-            else:
-                building_no_info = self.ui.building_extra_path
-                building_reference = self.ui.example_building_path
-                final_distribution_list_full = []
-                   
-                # Iterate over each building with no image
-                for idx, input_row in building_no_info.iterrows():
-                    # Find 3 nearest neighbors using geodesic distance
+            if self.ui.extrapolation_mode == 2:
+                #####################################
+                ######## KNN mode ############
+                #####################################
+                if self.ui.coord_reference is not True:
+                    #######===========  Function results =========###########
+                    data_existing_dl = create_database(self.ui.coord_reference)
+                    dl_models()
+                    inspection_database(data_existing_dl)
+                    predicted_path =  self.ui.output_path+"/"+self.ui.coord_reference_building_feature_path
+                    data_existing_dl.to_csv(predicted_path, index= False)
+                    extra_path =  self.ui.output_path+"/"+self.ui.knn_dl_saved_path
                     n_neighbors = self.ui.k_value
-                    nearest_neighbors = find_nearest_neighbors_geodesic(input_row, building_reference, n_neighbors)
-                    # Compute taxonomy-based distributions with full structure
-                    distribution_rows = compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row)
+                    extrapolation_existing_reference(data_existing_dl , self.ui.building_extra_path, extra_path, n_neighbors)
+                else:
+                    building_no_info = self.ui.building_extra_path
+                    building_reference = self.ui.example_building_path
+                    final_distribution_list_full = []
+                       
+                    # Iterate over each building with no image
+                    for idx, input_row in building_no_info.iterrows():
+                        # Find 3 nearest neighbors using geodesic distance
+                        n_neighbors = self.ui.k_value
+                        nearest_neighbors = find_nearest_neighbors_geodesic(input_row, building_reference, n_neighbors)
+                        # Compute taxonomy-based distributions with full structure
+                        distribution_rows = compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row)
+                        
+                        # Append to final result
+                        final_distribution_list_full.extend(distribution_rows)
+               
+                    # Convert final list to DataFrame
+                    final_distribution_df_full = pd.DataFrame(final_distribution_list_full)
+                    # Export to CSV
+                    saved_path = self.ui.output_path+"/"+self.ui.extrapolation_name+".csv"
                     
-                    # Append to final result
-                    final_distribution_list_full.extend(distribution_rows)
-           
-                # Convert final list to DataFrame
-                final_distribution_df_full = pd.DataFrame(final_distribution_list_full)
-                # Export to CSV
-                saved_path = self.ui.output_path+"/"+self.ui.extrapolation_name+".csv"
-                
-                final_distribution_df_full.to_csv(saved_path, index=False)
-                self.ui.method_progress.setText("Successful extrapolation process")
+                    final_distribution_df_full.to_csv(saved_path, index=False)
+                    self.ui.method_progress.setText("Successful extrapolation process")
+             
+            #####################################
+            ######## Stratified mode ############
+            #####################################
+            else:
+                if self.ui.extrapolation_mode == 0:
+                    building_data = self.ui.data_population
+                    self.lat_dl = building_data.loc[0, "latitude"]
+                    self.lon_dl = building_data.loc[0, "longitude"]
+                    # ========== Run sampling for each feature ==========
+                    analysis_features = self.ui.feature_strata
+                    sample_size_def = []
+                    for aux in analysis_features:
+                        print(" ========== " + aux + " ===========")
+                        final_sample, class_dist, final_size = iterative_label_discovery_cached_fractional(
+                            data=building_data,
+                            labeling_function=lambda x: labeling_function(x, aux, building_data),
+                            id_column='id',
+                            id_feature=aux,
+                            initial_fraction = self.ui.initial_fraction,
+                            step_fraction = self.ui.step_fraction,
+                            max_fraction = self.ui.max_fraction,
+                            max_iterations = self.ui.max_iterations,
+                            stability_threshold = self.ui.stability_threshold
+                        )
+                        sample_size_def.append(len(final_sample))
+                        final_sample.to_csv(f"stratified_dl_{aux}.csv", index=False)
+                        print("")
+                        
+                    print("Sample size definitive: ", np.max(sample_size_def))
+                    
+                elif self.ui.extrapolation_mode == 1:
+                    
+                    building_data = self.ui.data_population
+                    # ========== Run sampling for each feature ==========
+                    analysis_features = ["material", "llrs", "code_level","n_stories","occupancy","block_position",
+                                   "roof_shape", "roof_material"]
+                    
+                    for feature in analysis_features:
+                        print(" ========== " + feature + " ===========")
+                        final_sample, class_dist, final_size = iterative_distribution_stability_manual(
+                            data=building_data,
+                            id_feature=feature,
+                            id_column='id',
+                            initial_fraction = self.ui.initial_fraction,
+                            step_fraction = self.ui.step_fraction,
+                            max_fraction = self.ui.max_fraction,
+                            max_iterations = self.ui.max_iterations,
+                            stability_threshold = self.ui.stability_threshold
+                        )
+                        
+                        final_sample.to_csv(f"stratified_{feature}.csv", index=False)
+                        print("")
         
     def epoch_construction(self):
         if self.ui.insp_method != 3:

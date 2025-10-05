@@ -393,7 +393,7 @@ def iterative_label_discovery_cached_fractional(
     id_feature,
     data: pd.DataFrame,
     labeling_function,
-    id_column: str = 'id',
+    id_column: str = 'ID',
     initial_fraction: float = 0.10,
     step_fraction: float = 0.05,
     max_fraction: float = 1.00,
@@ -452,6 +452,12 @@ def iterative_label_discovery_cached_fractional(
         # Check for stabilization in label distribution
         if previous_dist is not None:
             all_keys = set(previous_dist) | set(current_dist)
+            print("Previous:")
+            print(previous_dist)
+            print()
+            print("Current:")
+            print(current_dist)
+            print("-------------------------")
             max_change = max(abs(previous_dist.get(k, 0) - current_dist.get(k, 0)) for k in all_keys)
             print(f"Iteration {iteration+1}: Sample size = {len(all_labeled)}, Max Δ = {max_change:.4f}")
 
@@ -483,7 +489,8 @@ def labeling_function(image_id, id_feature):
     Returns:
         str: Predicted LLRS Material class for the building.
     """
-    image_path = f"H:/My Drive/Sura_2025_AI/Microsoft_buildings/el_socorro_images/{image_id}.jpg"
+    image_path = "C:/Users/daniel.gomez/Downloads/img_medellin/"+str(image_id)+".jpg"
+    # image_path = r"C:\Users\daniel.gomez\Downloads\img_medellin\MED_05.jpg"
     if id_feature == "LLRS":
         return predict_llrs_img(image_path)
     elif id_feature == "LLRS Material":
@@ -503,3 +510,24 @@ def labeling_function(image_id, id_feature):
     else:
         return None
 
+# ========== Load Dataset ==========
+local_building_info = r"C:\Users\daniel.gomez\Downloads\el_socorro_iter_1.csv"
+building_data = pd.read_csv(local_building_info)  # Dataset must include an 'ID' column
+
+# ========== Run the Optimized Sampling ==========
+analysis_features = ["LLRS"]
+for aux in analysis_features:
+    print(" ========== " + aux + " ===========")
+    final_sample, class_dist, final_size = iterative_label_discovery_cached_fractional(
+        data=building_data,
+        labeling_function=lambda x: labeling_function(x, aux),
+        id_column='ID',
+        id_feature=aux,
+        initial_fraction=25/75,
+        step_fraction=5/75,
+        max_fraction=1.00,
+        max_iterations=10,
+        stability_threshold=0.05
+    )
+    final_sample.to_csv(f"C:/Users/daniel.gomez/Downloads/el_socorro_{aux}.csv", index=False)
+    print("")

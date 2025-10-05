@@ -330,7 +330,7 @@
     <property name="geometry">
      <rect>
       <x>640</x>
-      <y>165</y>
+      <y>215</y>
       <width>241</width>
       <height>31</height>
      </rect>
@@ -350,7 +350,7 @@
     <property name="geometry">
      <rect>
       <x>890</x>
-      <y>170</y>
+      <y>220</y>
       <width>291</width>
       <height>21</height>
      </rect>
@@ -632,7 +632,7 @@
     <property name="geometry">
      <rect>
       <x>880</x>
-      <y>210</y>
+      <y>260</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -642,7 +642,7 @@
     <property name="geometry">
      <rect>
       <x>640</x>
-      <y>250</y>
+      <y>300</y>
       <width>541</width>
       <height>21</height>
      </rect>
@@ -660,7 +660,7 @@
     <property name="geometry">
      <rect>
       <x>640</x>
-      <y>210</y>
+      <y>260</y>
       <width>241</width>
       <height>31</height>
      </rect>
@@ -674,6 +674,268 @@
     </property>
     <property name="text">
      <string>Feature</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="extra_label_new">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>170</y>
+      <width>181</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Extrapolation mode:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="extrap_mode_new">
+    <property name="geometry">
+     <rect>
+      <x>830</x>
+      <y>170</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <item>
+     <property name="text">
+      <string>Deep learning models</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Manually</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="ini_fract_new_label">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>330</y>
+      <width>141</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Initial fraction:</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="ini_fract_new_value">
+    <property name="geometry">
+     <rect>
+      <x>780</x>
+      <y>330</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="maximum">
+     <double>90.000000000000000</double>
+    </property>
+    <property name="singleStep">
+     <double>0.500000000000000</double>
+    </property>
+    <property name="value">
+     <double>0.100000000000000</double>
+    </property>
+   </widget>
+   <widget class="QLabel" name="step_new_label">
+    <property name="geometry">
+     <rect>
+      <x>870</x>
+      <y>330</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Step:</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="step_new_value">
+    <property name="geometry">
+     <rect>
+      <x>930</x>
+      <y>330</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="maximum">
+     <double>90.000000000000000</double>
+    </property>
+    <property name="singleStep">
+     <double>0.500000000000000</double>
+    </property>
+    <property name="value">
+     <double>0.100000000000000</double>
+    </property>
+   </widget>
+   <widget class="QLabel" name="max_frac_new_label">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>370</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Max fraction:</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="max_frac_new_value">
+    <property name="geometry">
+     <rect>
+      <x>760</x>
+      <y>370</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="maximum">
+     <double>90.000000000000000</double>
+    </property>
+    <property name="singleStep">
+     <double>0.500000000000000</double>
+    </property>
+    <property name="value">
+     <double>0.100000000000000</double>
+    </property>
+   </widget>
+   <widget class="QLabel" name="n_iter_new_label">
+    <property name="geometry">
+     <rect>
+      <x>1020</x>
+      <y>330</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>N° iter:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="threshold_new">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>370</y>
+      <width>181</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Maximum threshold:</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="threshold_new_value">
+    <property name="geometry">
+     <rect>
+      <x>1030</x>
+      <y>370</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="maximum">
+     <double>90.000000000000000</double>
+    </property>
+    <property name="singleStep">
+     <double>0.500000000000000</double>
+    </property>
+    <property name="value">
+     <double>0.100000000000000</double>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="n_iter_new_value">
+    <property name="geometry">
+     <rect>
+      <x>1090</x>
+      <y>330</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="maximum">
+     <number>100</number>
+    </property>
+    <property name="value">
+     <number>5</number>
     </property>
    </widget>
    <zorder>backg_2</zorder>
@@ -711,6 +973,18 @@
    <zorder>listWidget</zorder>
    <zorder>population_new_path_2</zorder>
    <zorder>output_label_new_2</zorder>
+   <zorder>extra_label_new</zorder>
+   <zorder>extrap_mode_new</zorder>
+   <zorder>ini_fract_new_label</zorder>
+   <zorder>ini_fract_new_value</zorder>
+   <zorder>step_new_label</zorder>
+   <zorder>step_new_value</zorder>
+   <zorder>max_frac_new_label</zorder>
+   <zorder>max_frac_new_value</zorder>
+   <zorder>n_iter_new_label</zorder>
+   <zorder>threshold_new</zorder>
+   <zorder>threshold_new_value</zorder>
+   <zorder>n_iter_new_value</zorder>
   </widget>
  </widget>
  <resources/>

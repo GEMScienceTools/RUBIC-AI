@@ -1,10 +1,74 @@
 import pandas as pd
+import torch
+import torchvision.transforms as transforms
+from torchvision import models
+from PIL import Image
 import numpy as np
+
 from methods.get_building_orientation import get_street_view_image
-import requests
-     
-from dl_stratified import predict_llrs_img, predict_material_img, predict_code_img, predict_roof_shape_img
-from dl_stratified import predict_occupancy_img, predict_block_position_img, predict_n_stories_img, predict_roof_material_img
+
+############ LLRS prediction ################
+def predict_llrs_img (image_path, cont):
+    print("Image: ", cont)
+    cont += 1
+    # Define the device (CPU-only if no GPU is available)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
+    # Load the model architecture
+    model = models.densenet201(weights=None)  # Initialize model without pre-trained weights
+    num_features = model.classifier.in_features
+    
+    # Use the correct number of output classes (9 as indicated in the error)
+    model.classifier = torch.nn.Sequential(
+        torch.nn.Flatten(),
+        torch.nn.Linear(num_features, 6),  # Match the number of classes
+        torch.nn.LogSoftmax(dim=1)
+    )
+    
+    # Load the trained weights
+    model.load_state_dict(torch.load("dl_weights/densenet201_llrs.pt", map_location=device))
+    model.to(device)
+    model.eval()
+    
+    # Define the image transformation (must match training)
+    transform = transforms.Compose([
+        transforms.Resize((256, 320)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+    
+    
+    # Function to predict the class of an image
+    # Accept ndarray or (url, ndarray)
+    img_arr = None
+    if isinstance(image_path, tuple):
+        img_arr = image_path[1]
+    else:
+        img_arr = image_path
+    
+    if not _is_valid_img(img_arr):
+        print("[WARN] Skipping: invalid/empty image passed to predict_llrs_img")
+        return None  # will be ignored in value_counts
+    
+    # Ensure 3-channel RGB
+    if img_arr.shape[2] == 4:  # RGBA
+        img_arr = img_arr[:, :, :3]
+    
+    image = Image.fromarray(np.uint8(img_arr)).convert("RGB")
+    image = transform(image).unsqueeze(0).to(device)
+
+    # Perform inference
+    with torch.no_grad():
+        output = model(image)
+        prediction = torch.argmax(output, dim=1).item()
+        
+    # LLRS building image sets prediction
+    llrs_classes = ['LDUAL', 'LFINF', 'LFM', 'LWAL', 'TW', 'W']
+    llrs_id = llrs_classes[prediction]
+    
+    return llrs_id
+
+
 ####################################################
 ####################################################
 ####################################################
@@ -39,8 +103,7 @@ def iterative_label_discovery_cached_fractional(
     Returns:
         tuple: (DataFrame of labeled samples, label distribution as dict, final sample size)
     """
-      
-    # if check_street_view(lat,lon) == True:
+    
     population_size = len(data)
     all_labeled = pd.DataFrame(columns=[id_column, id_feature])  # Initialize labeled dataset
     previous_dist = None  # Store label distribution from previous iteration
@@ -74,8 +137,6 @@ def iterative_label_discovery_cached_fractional(
         # Check for stabilization in label distribution
         if previous_dist is not None:
             all_keys = set(previous_dist) | set(current_dist)
-            print("Previous dist: ")
-            print(previous_dist)
             max_change = max(abs(previous_dist.get(k, 0) - current_dist.get(k, 0)) for k in all_keys)
             print(f"Iteration {iteration+1}: Sample size = {len(all_labeled)}, Max Δ = {max_change:.4f}")
 
@@ -94,29 +155,10 @@ def iterative_label_discovery_cached_fractional(
 ####################################################
 
 # =========== Data to change ============
-############ Checks if there is GSV availability ################  
-def check_street_view(lat,lon):
-    # Input parameters
-    with open("methods/gsv_api_key.txt", "r") as f:
-        api_key = f.read().strip()
-
-    url = "https://maps.googleapis.com/maps/api/streetview/metadata"
-    params = {
-        "location": f"{lat},{lon}",
-        "key": api_key
-    }
-    response = requests.get(url, params=params)
-    data = response.json()
-    # Check status
-    if data.get("status") == "OK":
-        return True  # Street View is available
-    else:
-        return False  # No Street View coverage
 
 
 # ========== Labeling Function ==========
-def labeling_function(image_id, id_feature, extra_mode):
-    
+def labeling_function(image_id, id_feature):
     """
     Applies a prediction model to a building image given its ID.
 
@@ -126,65 +168,77 @@ def labeling_function(image_id, id_feature, extra_mode):
     Returns:
         str: Predicted LLRS Material class for the building.
     """
-    if extra_mode == 0:
-        lat_row = building_data.loc[building_data["id"] == image_id, "latitude"]
-        lon_row = building_data.loc[building_data["id"] == image_id, "longitude"]
-        lat = lat_row.iloc[0]
-        lon = lon_row.iloc[0]
-        # Building coordinates
-        location = (lat,lon)
-        # angles for taking the images
-        angle = 0
-        # Input parameters
-        with open("methods/gsv_api_key.txt", "r") as f:
-            api_key = f.read().strip()
-            
-        image_path = get_street_view_image(location, api_key, angle) 
-    else:
-        
-        image_path = f"C:/Users/User/Documents/GitHub/RUBIC-AI/demos/local_images/images_ex1/{image_id}"
-    if id_feature == "LLRS":
-        return predict_llrs_img(image_path)
-    elif id_feature == "LLRS Material":
-        return predict_material_img(image_path, extra_mode)
-    elif id_feature == "Number of Stories":
-        return predict_n_stories_img(image_path)
-    elif id_feature == "Occupancy":
-        return predict_occupancy_img(image_path)
-    elif id_feature == "Code Level":
-        return predict_code_img(image_path)
-    elif id_feature == "Block Position":
-        return predict_block_position_img(image_path)
-    elif id_feature == "Roof Shape":
-        return predict_roof_shape_img(image_path)
-    elif id_feature == "Roof Material":
-        return predict_roof_material_img(image_path)
-    else:
+    
+    # image_path = f"C:/Users/User/Documents/GitHub/RUBIC-AI/demos/local_images/images_ex1/{image_id}"
+    
+    # Building coordinates
+    row = building_data.loc[building_data["id"] == image_id, ["latitude", "longitude"]]
+    if row.empty:
+        print(f"[WARN] Missing lat/lon for id={image_id}")
         return None
+    lat = float(row.iloc[0]["latitude"])
+    lon = float(row.iloc[0]["longitude"])
+    
+    location = (lat,lon)
+    # API key is required; without it, access to GSV is not possible
+    with open("methods/gsv_api_key.txt", "r") as f:
+        api_key = f.read().strip() 
+                            
+    img = safe_get_gsv_image(location, api_key, 0)
+   
+    if img is None:
+        # No GSV available here; return None so pandas ignores it in value_counts
+        print(f"[INFO] No GSV imagery for id={image_id} at {location}. Skipping.")
+        return None
+    
+    if id_feature == "LLRS":
+        return predict_llrs_img(img, 1)
+
+def _is_valid_img(arr):
+    """Return True if arr is a non-empty HxWx3 uint8 NumPy image."""
+    import numpy as np
+    return (
+        isinstance(arr, np.ndarray) and
+        arr.ndim == 3 and arr.shape[2] in (3, 4) and
+        arr.size > 0
+    )
+
+def safe_get_gsv_image(location, api_key, heading=0):
+    """
+    Call get_street_view_image and return ONLY the ndarray,
+    or None if GSV is unavailable / request fails.
+    """
+    try:
+        result = get_street_view_image(location, api_key, heading)
+        # result can be (url, ndarray) or just ndarray depending on your impl
+        if isinstance(result, tuple):
+            img = result[1]
+        else:
+            img = result
+        return img if _is_valid_img(img) else None
+    except Exception as e:
+        print(f"[WARN] GSV fetch failed at {location}: {e}")
+        return None
+
 
 # ========== Load Dataset ==========
 local_building_info = r"C:\Users\User\Documents\GitHub\RUBIC-AI\demos\local_images\data_ex1.csv"
 building_data = pd.read_csv(local_building_info)  # Dataset must include an 'ID' column
 
 # ========== Run the Optimized Sampling ==========
-analysis_features = ["LLRS Material"]
-extra_mode = 1
-sample_size_def = []
+analysis_features = ["LLRS"]
 for aux in analysis_features:
     print(" ========== " + aux + " ===========")
     final_sample, class_dist, final_size = iterative_label_discovery_cached_fractional(
         data=building_data,
-        labeling_function=lambda x: labeling_function(x, aux, extra_mode),
+        labeling_function=lambda x: labeling_function(x, aux),
         id_column='id',
         id_feature=aux,
-        initial_fraction=5/15,
-        step_fraction=3/15,
+        initial_fraction=3/6,
+        step_fraction=1/6,
         max_fraction=1.00,
-        max_iterations=3,
+        max_iterations=2,
         stability_threshold=0.05
     )
-    sample_size_def.append(len(final_sample))
-    final_sample.to_csv(f"C:/Users/User/Documents/GitHub/RUBIC-AI/demos/extrapolation/stratified_dl_{aux}.csv", index=False)
+    final_sample.to_csv(f"C:/Users/User/Documents/GitHub/RUBIC-AI/demos/extrapolation/stratified/stratified_{aux}.csv", index=False)
     print("")
-    
-print("Sample size definitive: ", np.max(sample_size_def))
