@@ -152,7 +152,8 @@ class ExtrapolationOptions(QtWidgets.QDialog):
                 try:
                     self.extrapolation_mode = dialog.stratified_mode
                     self.data_population = dialog.data_population
-                    
+                    self.folder_path_new = dialog.folder_path_new
+
                     #Stratified manually
                     self.initial_fraction= dialog.ini_fract_new_value.value()
                     self.step_fraction= dialog.step_new_value.value()

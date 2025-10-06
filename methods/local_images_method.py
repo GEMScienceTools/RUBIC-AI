@@ -157,7 +157,7 @@ class LocalImageSetting(QtWidgets.QDialog):
             # Load the uploaded file
             df = pd.read_csv(self.file_local_csv)  # Make sure self.path_csv_input stores the uploaded file path
             # Define the required columns
-            required_columns = ['ID', 'latitude', 'longitude']
+            required_columns = ['id', 'latitude', 'longitude']
     
             # Check if all required columns are present
             missing_columns = [col for col in required_columns if col not in df.columns]

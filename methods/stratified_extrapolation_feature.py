@@ -1,13 +1,7 @@
 import os
 from PyQt5 import QtCore, QtGui, QtWidgets
 import pandas as pd
-import numpy as np
 
-# from methods.get_building_orientation import get_street_view_image
-     
-# from methods.dl_stratified import predict_llrs_img, predict_material_img, predict_code_img, predict_roof_shape_img
-# from methods.dl_stratified import predict_occupancy_img, predict_block_position_img, predict_n_stories_img, predict_roof_material_img
-####################################################
 
 class stratified_extrapolation(QtWidgets.QDialog):
     def __init__(self, parent=None, main_window=None):
@@ -498,12 +492,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
                               self.new_check.isChecked()])
         
         if checked_count > 1:
-            # Show a warning if more than one checkbox is checked
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Warning)
-            msg.setText("You can only select one method at a time.")
-            msg.setWindowTitle("Selection Warning")
-            msg.exec_()
+            QtWidgets.QMessageBox.warning(self, "Selection Warning", "Only one method can be selected at a time.")
         elif checked_count == 0:
             QtWidgets.QMessageBox.warning(self, "Input Error", "Please select one method")
         else:
@@ -517,7 +506,8 @@ class stratified_extrapolation(QtWidgets.QDialog):
                     # self.stratified_manually()
                     self.accept()
             elif self.existing_check.isChecked():
-                QtWidgets.QMessageBox.warning(self, "Input error", "This mode is currently no available")
+                QtWidgets.QMessageBox.warning(self, "Feature Unavailable", "This mode is not available at the moment. Please select a different option.")
+
 
                 
     def preview_data(self, database):
@@ -593,280 +583,6 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.features_selected.setText(
             "Selected: " + (", ".join(vals) if vals else "(none)")
         )
-
-    # def stratified_manually(self):
-    #     building_data = self.data_population
-    #     # ========== Run sampling for each feature ==========
-    #     analysis_features = self.feature_strata
-        
-    #     for feature in analysis_features:
-            
-    #         print(" ========== " + feature + " ===========")
-    #         final_sample, class_dist, final_size = iterative_distribution_stability_manual(self,
-    #             data=building_data,
-    #             id_feature=feature,
-    #             id_column='id',
-    #             initial_fraction= self.ini_fract_new_value.value(),
-    #             step_fraction= self.step_new_value.value(),
-    #             max_fraction= self.max_frac_new_value.value(),
-    #             max_iterations=self.n_iter_new_value.value(),
-    #             stability_threshold=self.threshold_new_value.value()
-    #         )
-    #         final_sample.to_csv(f"{self.folder_path_new}/stratified_{feature}.csv", index=False)
-    #         print("")
-            
-    # def stratified_dl(self):
-    #     building_data = self.data_population
-    #     self.lat_dl = building_data.loc[0, "latitude"]
-    #     self.lon_dl = building_data.loc[0, "longitude"]
-    #     # ========== Run sampling for each feature ==========
-    #     analysis_features = self.feature_strata
-    #     sample_size_def = []
-    #     for aux in analysis_features:
-    #         print(" ========== " + aux + " ===========")
-    #         final_sample, class_dist, final_size = iterative_label_discovery_cached_fractional(self,
-    #             data=building_data,
-    #             labeling_function=lambda x: labeling_function(self, x, aux),
-    #             id_column='id',
-    #             id_feature=aux,
-    #             initial_fraction= self.ini_fract_new_value.value(),
-    #             step_fraction= self.step_new_value.value(),
-    #             max_fraction= self.max_frac_new_value.value(),
-    #             max_iterations=self.n_iter_new_value.value(),
-    #             stability_threshold=self.threshold_new_value.value()
-    #         )
-    #         sample_size_def.append(len(final_sample))
-    #         final_sample.to_csv(f"{self.folder_path_new}/stratified_dl_{aux}.csv", index=False)
-    #         print("")
-            
-    #     print("Sample size definitive: ", np.max(sample_size_def))
-            
-       
-# # ========== Iterative sampling using existing labels ==========
-# def iterative_distribution_stability_manual(self,
-#     id_feature,
-#     data: pd.DataFrame,
-#     id_column,
-#     initial_fraction,
-#     step_fraction,
-#     max_fraction,
-#     stability_threshold,
-#     max_iterations,
-#     random_state: int = 42
-# ):
-#     """
-#     Iteratively samples data using existing class labels until label distribution stabilizes.
-
-#     Args:
-#         id_feature (str): Column name with class labels (e.g., 'LLRS', 'Taxonomy').
-#         data (pd.DataFrame): Dataset containing existing labels.
-#         id_column (str): Column used as unique identifier.
-#         initial_fraction (float): Starting fraction of dataset.
-#         step_fraction (float): Step increase per iteration.
-#         max_fraction (float): Maximum sample fraction.
-#         stability_threshold (float): Max change in distribution to stop iterations.
-#         max_iterations (int): Maximum number of iterations.
-#         random_state (int): Random seed.
-
-#     Returns:
-#         DataFrame: Final sampled data.
-#         dict: Final class distribution.
-#         int: Final sample size.
-#     """
-
-#     population_size = len(data)
-#     all_sampled = pd.DataFrame(columns=data.columns)
-#     previous_dist = None
-#     iteration = 0
-
-#     # Shuffle dataset
-#     np.random.seed(random_state)
-#     shuffled_data = data.sample(frac=1, random_state=random_state).reset_index(drop=True)
-#     while iteration < max_iterations:
-#         current_fraction = min(initial_fraction + step_fraction * iteration, max_fraction)
-#         target_size = int(population_size * current_fraction)
-
-#         # Select next sample
-#         remaining = shuffled_data[~shuffled_data[id_column].isin(all_sampled[id_column])]
-#         next_sample = remaining.head(target_size - len(all_sampled))
-
-#         if next_sample.empty:
-#             break
-
-#         all_sampled = pd.concat([all_sampled, next_sample], ignore_index=True)
-
-#         # Compute current distribution
-#         current_counts = all_sampled[id_feature].value_counts(normalize=True).sort_index()
-#         current_dist = current_counts.to_dict()
-
-#         # Check stabilization
-#         if previous_dist is not None:
-#             all_keys = set(previous_dist) | set(current_dist)
-#             max_change = max(abs(previous_dist.get(k, 0) - current_dist.get(k, 0)) for k in all_keys)
-#             print(f"Iteration {iteration+1}: Sample size = {len(all_sampled)}, Max Δ = {max_change:.4f}")
-
-#             if max_change < stability_threshold:
-#                 print("✅ Class proportions stabilized.")
-#                 return all_sampled, current_dist, len(all_sampled)
-
-#         previous_dist = current_dist
-#         iteration += 1
-
-#     print("⚠️ Reached max iterations or sample limit without convergence.")
-#     return all_sampled, current_dist, len(all_sampled)
-
-
-
-# # ========== Main Iterative Sampling Function ==========
-# def iterative_label_discovery_cached_fractional(self,
-#     id_feature,
-#     data: pd.DataFrame,
-#     labeling_function,
-#     id_column: str = 'id',
-#     initial_fraction: float = 0.10,
-#     step_fraction: float = 0.05,
-#     max_fraction: float = 1.00,
-#     stability_threshold: float = 0.05,
-#     max_iterations: int = 20,
-#     random_state: int = 42
-# ):
-#     """
-#     Iteratively samples and labels data using a labeling function until label distribution stabilizes.
-
-#     Args:
-#         data (pd.DataFrame): Input dataset with unique IDs.
-#         labeling_function (callable): Function to assign labels based on the ID.
-#         id_column (str): Column name with unique IDs (default: 'ID').
-#         initial_fraction (float): Initial fraction of data to label.
-#         step_fraction (float): Additional fraction added each iteration.
-#         max_fraction (float): Maximum fraction of data to label.
-#         stability_threshold (float): Maximum allowed change in class distribution for convergence.
-#         max_iterations (int): Maximum number of iterations.
-#         random_state (int): Seed for reproducibility.
-
-#     Returns:
-#         tuple: (DataFrame of labeled samples, label distribution as dict, final sample size)
-#     """
-#     population_size = len(data)
-#     all_labeled = pd.DataFrame(columns=[id_column, id_feature])  # Initialize labeled dataset
-#     previous_dist = None  # Store label distribution from previous iteration
-#     iteration = 0  # Iteration counter
-
-#     # Shuffle the dataset for randomized sampling
-#     np.random.seed(random_state)
-#     shuffled_data = data.sample(frac=1, random_state=random_state).reset_index(drop=True)
-
-#     # === Iterative sampling loop ===
-#     while iteration < max_iterations:
-#         # Calculate current target sample size
-#         current_fraction = min(initial_fraction + step_fraction * iteration, max_fraction)
-#         target_size = min(int(population_size * current_fraction), population_size)
-
-#         # Filter out already labeled IDs and select next batch
-#         already_labeled_ids = set(all_labeled[id_column])
-#         next_sample = shuffled_data[~shuffled_data[id_column].isin(already_labeled_ids)].head(target_size - len(all_labeled))
-
-#         if next_sample.empty:
-#             break  # Stop if no more samples to process
-
-#         # Apply labeling function to new samples
-#         next_sample[id_feature] = next_sample[id_column].apply(labeling_function)
-#         all_labeled = pd.concat([all_labeled, next_sample], ignore_index=True)
-
-#         # Calculate class distribution
-#         current_counts = all_labeled[id_feature].value_counts(normalize=True).sort_index()
-#         current_dist = current_counts.to_dict()
-
-#         # Check for stabilization in label distribution
-#         if previous_dist is not None:
-#             all_keys = set(previous_dist) | set(current_dist)
-#             print("Previous dist: ")
-#             print(previous_dist)
-#             max_change = max(abs(previous_dist.get(k, 0) - current_dist.get(k, 0)) for k in all_keys)
-#             print(f"Iteration {iteration+1}: Sample size = {len(all_labeled)}, Max Δ = {max_change:.4f}")
-
-#             if max_change < stability_threshold:
-#                 print("✅ Class proportions stabilized.")
-#                 return all_labeled, current_dist, len(all_labeled)
-
-#         previous_dist = current_dist
-#         iteration += 1
-
-#     print("⚠️ Reached max iterations or sample limit without convergence.")
-#     return all_labeled, current_dist, len(all_labeled)
-
-# # ========== Labeling Function ==========
-# def labeling_function(self, image_id, id_feature):
-#     """
-#     Applies a prediction model to a building image given its ID.
-
-#     Args:
-#         image_id (str): Unique identifier for the image.
-
-#     Returns:
-#         str: Predicted LLRS Material class for the building.
-#     """
-#     # Building coordinates
-#     row = self.data_population.loc[self.data_population["id"] == image_id, ["latitude", "longitude"]]
-#     if row.empty:
-#         print(f"[WARN] Missing lat/lon for id={image_id}")
-#         return None
-#     lat = float(row.iloc[0]["latitude"])
-#     lon = float(row.iloc[0]["longitude"])
-    
-#     location = (lat,lon)
-#     # API key is required; without it, access to GSV is not possible
-#     with open("methods/gsv_api_key.txt", "r") as f:
-#         api_key = f.read().strip() 
-                            
-#     img = safe_get_gsv_image(location, api_key, 0)
-   
-#     if img is None:
-#         # No GSV available here; return None so pandas ignores it in value_counts
-#         print(f"[INFO] No GSV imagery for id={image_id} at {location}. Skipping.")
-#         return None
-    
-#     if id_feature == "llrs":
-#         return predict_llrs_img(img)
-#     elif id_feature == "material":
-#         return predict_material_img(img)
-#     elif id_feature == "n_stories":
-#         return predict_n_stories_img(img)
-#     elif id_feature == "occupancy":
-#         return predict_occupancy_img(img)
-#     elif id_feature == "code_level":
-#         return predict_code_img(img)
-#     elif id_feature == "block_position":
-#         return predict_block_position_img(img)
-#     elif id_feature == "roof_shape":
-#         return predict_roof_shape_img(img)
-#     elif id_feature == "roof_material":
-#         return predict_roof_material_img(img)
-
-# def _is_valid_img(arr):
-#     """Return True if arr is a non-empty HxWx3 uint8 NumPy image."""
-#     return (
-#         isinstance(arr, np.ndarray) and
-#         arr.ndim == 3 and arr.shape[2] in (3, 4) and
-#         arr.size > 0
-#     )
-
-# def safe_get_gsv_image(location, api_key, heading=0):
-#     """
-#     Call get_street_view_image and return ONLY the ndarray,
-#     or None if GSV is unavailable / request fails.
-#     """
-#     try:
-#         result = get_street_view_image(location, api_key, heading)
-#         # result can be (url, ndarray) or just ndarray depending on your impl
-#         if isinstance(result, tuple):
-#             img = result[1]
-#         else:
-#             img = result
-#         return img if _is_valid_img(img) else None
-#     except Exception as e:
-#         print(f"[WARN] GSV fetch failed at {location}: {e}")
-#         return None
 
 class CheckFilterPopup(QtWidgets.QWidget):
     selectionChanged = QtCore.pyqtSignal(list)

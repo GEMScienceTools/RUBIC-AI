@@ -58,6 +58,7 @@ class GUIInterface(QtWidgets.QMainWindow):
             else:
                 #Stratified method
                 self.data_population = self.method_dialog.data_population
+                self.folder_path_new = self.method_dialog.folder_path_new
                 self.initial_fraction = self.method_dialog.initial_fraction
                 self.step_fraction = self.method_dialog.step_fraction
                 self.max_fraction = self.method_dialog.max_fraction

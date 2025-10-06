@@ -31,10 +31,6 @@ from methods.neighbor_building_extrapolation_feature import find_nearest_neighbo
 from methods.dl_extrapolation import create_database, dl_models, inspection_database, extrapolation_existing_reference
 
 from methods.dl_stratified import iterative_distribution_stability_manual , iterative_label_discovery_cached_fractional, labeling_function
-# from methods.dl_stratified import predict_llrs_img_stratified, predict_material_img_stratified, predict_code_img_stratified
-# from methods.dl_stratified import predict_roof_shape_img_stratified, predict_roof_material_img_stratified
-# from methods.dl_stratified import predict_occupancy_img_stratified, predict_block_position_img_stratified, predict_n_stories_img_stratified
-
 
 
 class GUIMethods:
@@ -1346,7 +1342,7 @@ class GUIMethods:
                 img_prefix = f"{output_folder}/{self.ui.file_name}"
                 self.data_ai.to_csv(img_prefix + "_AI_aux_cont.csv", index=False)
                 final_df = self.data_ai
-                filtered_df = final_df[final_df['Number of Stories'].notna() | final_df['LLRS'].notna()]
+                filtered_df = final_df[final_df['n_stories'].notna() | final_df['llrs'].notna()]
                 filtered_df.to_csv(img_prefix + "_AI_classification.csv", index=False)
                 # Update the progress message in the GUI
                 self.ui.method_progress.setText("Inspections exported successfully!")
@@ -1360,7 +1356,7 @@ class GUIMethods:
                 # Save the AI inspection data to a CSV file
                 self.data_ai.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name+"_AI_aux_cont.csv", index=False)
                 final_df = self.data_ai
-                filtered_df = final_df[final_df['Number of Stories'].notna() | final_df['LLRS'].notna()]
+                filtered_df = final_df[final_df['n_stories'].notna() | final_df['llrs'].notna()]
                 filtered_df.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name+ "_AI_classification.csv", index=False)
                 # Update the progress message in the GUI
                 self.ui.method_progress.setText("Inspections exported successfully!")
@@ -1374,7 +1370,7 @@ class GUIMethods:
             try:
                 self.data_ai.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name_local.text()+"_AI_aux_cont.csv", index=False)
                 final_df = self.data_ai
-                filtered_df = final_df[final_df['Number of Stories'].notna() | final_df['LLRS'].notna()]
+                filtered_df = final_df[final_df['n_stories'].notna() | final_df['llrs'].notna()]
                 filtered_df.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name_local.text()+ "_AI_classification.csv", index=False)
                 # Update the progress message in the GUI
                 self.ui.method_progress.setText("Inspections exported successfully!")
@@ -2698,7 +2694,7 @@ class GUIMethods:
                             stability_threshold = self.ui.stability_threshold
                         )
                         sample_size_def.append(len(final_sample))
-                        final_sample.to_csv(f"stratified_dl_{aux}.csv", index=False)
+                        final_sample.to_csv(f"{self.ui.folder_path_new}/stratified_dl_{aux}.csv", index=False)
                         print("")
                         
                     print("Sample size definitive: ", np.max(sample_size_def))
@@ -2707,8 +2703,7 @@ class GUIMethods:
                     
                     building_data = self.ui.data_population
                     # ========== Run sampling for each feature ==========
-                    analysis_features = ["material", "llrs", "code_level","n_stories","occupancy","block_position",
-                                   "roof_shape", "roof_material"]
+                    analysis_features = self.ui.feature_strata
                     
                     for feature in analysis_features:
                         print(" ========== " + feature + " ===========")
@@ -2723,7 +2718,7 @@ class GUIMethods:
                             stability_threshold = self.ui.stability_threshold
                         )
                         
-                        final_sample.to_csv(f"stratified_{feature}.csv", index=False)
+                        final_sample.to_csv(f"{self.ui.folder_path_new}/stratified_{feature}.csv", index=False)
                         print("")
         
     def epoch_construction(self):

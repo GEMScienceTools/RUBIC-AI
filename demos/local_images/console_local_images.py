@@ -23,21 +23,21 @@ def create_database(local_building_info):
     footprint_data.columns = footprint_data.columns.str.lower()
 
     # Define the column namesfor the inspection database
-    column_names = ["ID", 
-                    "Latitude", 
-                    "Longitude",
-                    "Country",
-                    "City",
-                    "LLRS Material",
-                    "LLRS",
-                    "Code Level",
-                    "Number of Stories",
-                    "Occupancy",
-                    "Block Position",
-                    "Roof shape",
-                    "Roof material",
-                    "Taxonomy",
-                    "Image filename or link"]
+    column_names = ["id", 
+                    "latitude", 
+                    "longitude",
+                    "country",
+                    "city",
+                    "material",
+                    "llrs",
+                    "code_level",
+                    "n_stories",
+                    "occupancy",
+                    "block_position",
+                    "roof_shape",
+                    "roof_material",
+                    "taxonomy",
+                    "image filename or link"]
     
     # Create an empty DataFrame for number of footprint available
     data_ai = pd.DataFrame(np.full((footprint_data.shape[0], len(column_names)), None), columns=column_names)
@@ -451,9 +451,9 @@ def inspection_database (data_ai, image_folder):
 
 # Input parameters using Path
 dir_path = Path(__file__).parent.resolve()
-local_building_info = dir_path / "data_ex1.csv"
-image_folder = dir_path / "images_ex1"
-saved_path = dir_path / "local_results_ex1.csv"
+local_building_info = dir_path / "data_ex2.csv"
+image_folder = dir_path / "images_ex2"
+saved_path = dir_path / "local_results_ex2.csv"
 
 #########################################################
 #######===========  Function results =========###########

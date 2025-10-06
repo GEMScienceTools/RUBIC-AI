@@ -375,6 +375,7 @@ class InspectionSetting(QDialog):
                 else:
                     # Stratified method
                     self.data_population = self.extra_dialog.data_population
+                    self.folder_path_new = self.extra_dialog.folder_path_new
                     self.initial_fraction = self.extra_dialog.initial_fraction
                     self.step_fraction = self.extra_dialog.step_fraction
                     self.max_fraction = self.extra_dialog.max_fraction

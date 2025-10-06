@@ -33,11 +33,11 @@ def get_road_orientation(location):
     """
     # Model parameters   
     with open(gsv_dir / "roads_api_key.txt", "r") as f:
-        api_key = f.read().strip()
+        roads_api_key = f.read().strip()
     base_url = "https://roads.googleapis.com/v1/nearestRoads"
     params = {
         "points": f"{location[0]},{location[1]}",
-        "key": api_key,
+        "key": roads_api_key,
     }
     # Request for Google roads metadata
     response = requests.get(base_url, params=params)

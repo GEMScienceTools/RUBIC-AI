@@ -20,21 +20,21 @@ def create_database(local_building_info):
     footprint_data = pd.read_csv(local_building_info)
     
     # Define the column namesfor the inspection database
-    column_names = ["ID", 
-                    "Latitude", 
-                    "Longitude",
-                    "Country",
-                    "City",
-                    "LLRS Material",
-                    "LLRS",
-                    "Code Level",
-                    "Number of Stories",
-                    "Occupancy",
-                    "Block Position",
-                    "Roof shape",
-                    "Roof material",
-                    "Taxonomy",
-                    "Image filename or link"]
+    column_names = ["id", 
+                    "latitude", 
+                    "longitude",
+                    "country",
+                    "city",
+                    "material",
+                    "llrs",
+                    "code_level",
+                    "n_stories",
+                    "occupancy",
+                    "block_position",
+                    "roof_shape",
+                    "roof_material",
+                    "taxonomy",
+                    "image filename or link"]
     
     # Create an empty DataFrame for number of footprint available
     data_ai = pd.DataFrame(np.full((footprint_data.shape[0], len(column_names)), None), columns=column_names)
@@ -489,7 +489,7 @@ def inspection_database (data_ai):
 #######===========  Input parameters =========###########
 #########################################################
 
-local_building_info = "coordinates_example.csv"
+local_building_info = "specific_coordinates_example_data.csv"
 saved_path = "example_prediction_result.csv"
 
 #########################################################

@@ -64,6 +64,7 @@ def download_building_footprints_polygon(polygon_name):
             buildings.to_file(output_file, driver="GPKG")
     
     return len(buildings)
+
 ############ Random subset buildings ################  
 def extract_random_subset(polygon_name , sample_size):
     # Load buildng footprints
@@ -140,21 +141,21 @@ def create_database(polygon_name):
     footprint_data = pd.read_csv(polygon_name + "_building_info.csv")
     
     # Define the column namesfor the inspection database
-    column_names = ["ID", 
-                    "Latitude", 
-                    "Longitude",
-                    "Country",
-                    "City",
-                    "LLRS Material",
-                    "LLRS",
-                    "Code Level",
-                    "Number of Stories",
-                    "Occupancy",
-                    "Block Position",
-                    "Roof shape",
-                    "Roof material",
-                    "Taxonomy",
-                    "Image filename or link"]
+    column_names = ["id", 
+                    "latitude", 
+                    "longitude",
+                    "country",
+                    "city",
+                    "material",
+                    "llrs",
+                    "code_level",
+                    "n_stories",
+                    "occupancy",
+                    "block_position",
+                    "roof_shape",
+                    "roof_material",
+                    "taxonomy",
+                    "image filename or link"]
     
     # Create an empty DataFrame for number of footprint available
     data_ai = pd.DataFrame(np.full((footprint_data.shape[0], len(column_names)), None), columns=column_names)
@@ -617,9 +618,12 @@ def inspection_database (data_ai):
 #########################################################
 
 saved_path = "example_prediction_result.csv"
+# File with polygon vertices
 file_path = "polygon_method_example.csv"
+# Polygon name
 polygon_name = "proof_polygon"
-sample_size = 0.05
+# Percentage of the population that will be included in the sample
+sample_size = 0.17
 #########################################################
 #######===========  Function results =========###########
 #########################################################
