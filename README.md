@@ -155,6 +155,7 @@ However, the user can easily switch back to manual inspection by clicking the ch
 	- **7.1 Manual Box**
 	     - If the automatic delimitation of the building is not adequate for proper isolation,  
 		   or if the selected building is not the building of interest, the user can define a manual bounding box by clicking on four points.
+
 			<img src="help_img/manual_box.png">
 	- **7.2 Review Previous Classifications**
 	     - If you want to check a specific image, use the ***Search Building*** button. First, enter the image ID (e.g., `1_1`) in the adjacent field, then click the ***Search Building*** button. The GUI will automatically display the corresponding image and its saved classification.
@@ -200,7 +201,7 @@ Both files should be placed inside the `methods` folder.
 	  If everything is correct, click the ***Save and continue*** button.
    
 	- 3.1. The results will be saved using the name specified in the ***Output name*** field (default: **"specific_coord"**) as a `.csv` file. This file will contain all the building features, along with metadata such as city, country, coordinates, and the path to the corresponding building image.
- - 
+
 4. **Classification options and setup main interface**
 
    - The process and available features are the same as those presented in sections 5 and 6 of the ***Polygon Method***.
@@ -271,37 +272,38 @@ Both files should be placed inside the `methods` folder.
 		- Define the output file name using the ***Output name*** field (default: **"KNN_manual"**).
 	 	- Define output folder  
 		- Click the ***Buildings with information*** button and upload a CSV file containing the reference buildings, this mean, buildings that have already been classified and include all the features of interest.  
-		> 📁 *Example:* `demos/extrapolatione/neighbor_building_info.csv`  
-		> 📝 *Required CSV format:*
-			   ```csv
-				id,latitude,longitude,country,city,material,llrs,code_level,n_stories,occupancy,block_position,taxonomy
-				1,10.92224755,-74.78642608,Colombia,Barranquilla,MCF,LWAL,CDL,1,RES,BP1,MCF/LWAL+CDL/H:1/RES/BP1
-				2,10.91268031,-74.80288191,Colombia,Soledad,CR,LFM,CDM,3,RES,BP2,CR/LFM+CDM/H:3/RES/BP2
-				3,10.91968505,-74.79215175,Colombia,Barranquilla,MUR,LWAL,CDL,1,RES,BP1,MUR/LWAL+CDL/H:1/RES/BP1
-				4,10.91647181,-74.76986198,Colombia,Soledad,CR,LFINF,CDM,2,COM,BP1,CR/LFINF+CDM/H:2/COM/BP1
-				5,10.90251035,-74.79685532,Colombia,Soledad,CR,LFM,CDL,2,RES,BP2,CR/LFM+CDL/H:2/RES/BP27
-			   ```
+		> 📁 *Example:* `demos/extrapolation/neighbor_building_info.csv`  
+	    > 📝 *Required CSV format:*
+	 
+	    ```
+	    id,latitude,longitude,country,city,material,llrs,code_level,n_stories,occupancy,block_position,taxonomy
+	    1,10.92224755,-74.78642608,Colombia,Barranquilla,MCF,LWAL,CDL,1,RES,BP1,MCF/LWAL+CDL/H:1/RES/BP1
+	    2,10.91268031,-74.80288191,Colombia,Soledad,CR,LFM,CDM,3,RES,BP2,CR/LFM+CDM/H:3/RES/BP2
+	    3,10.91968505,-74.79215175,Colombia,Barranquilla,MUR,LWAL,CDL,1,RES,BP1,MUR/LWAL+CDL/H:1/RES/BP1
+	    4,10.91647181,-74.76986198,Colombia,Soledad,CR,LFINF,CDM,2,COM,BP1,CR/LFINF+CDM/H:2/COM/BP1
+	    5,10.90251035,-74.79685532,Colombia,Soledad,CR,LFM,CDL,2,RES,BP2,CR/LFM+CDL/H:2/RES/BP2
+	    ```
 		
 		- Click the ***Unclassified building coords*** button and upload a CSV file containing the ID and coordinates of the buildings that you want to classify based on the information from the reference buildings, since no information is available for them.
-	   > 📁 *Example:* `demos/Extrapolation_data_example/building_with_no_image.csv`
-	   > 📝 *Required CSV format:*
-	   ```csv
-	   ID,Latitude,Longitude
-	   1,10.9639,-74.7964
-	   2,10.9640,-74.7965
-	   ```
+		> 📁 *Example:* `demos/Extrapolation_data_example/building_with_no_image.csv`
+		> 📝 *Required CSV format:*
+		```csv
+		id,latitude,longitude
+		1,10.9639,-74.7964
+		2,10.9640,-74.7965
+		```
 
 	- 3.2 🤖 ***Deep learning model***
 		- Define the output file name using the ***Output name*** field (default: **"KNN_dl"**).
 		- Define output folder
 	 	- Click the **Upload building coordinates** button and select the file containing the coordinates of the reference buildings for the extrapolation process.
-		 > 📁 *Example:* `demos/Extrapolation_data_example/building_with_no_image.csv`
-			   > 📝 *Required CSV format:*
-			   ```csv
-			   ID,Latitude,Longitude
-			   1,10.9639,-74.7964
-			   2,10.9640,-74.7965
-		   ```
+		> 📁 *Example:* `demos/Extrapolation_data_example/building_with_no_image.csv`
+		> 📝 *Required CSV format:*
+		```csv
+		ID,Latitude,Longitude
+		1,10.9639,-74.7964
+		2,10.9640,-74.7965
+		```
 		- Click the ***Image Folder*** button to select the folder containing the building images stored locally.  
 		> 📁 *Example:* `demos/Extrapolation_data_example/images_buildings`
 	
@@ -314,14 +316,69 @@ Both files should be placed inside the `methods` folder.
 		2,10.9640,-74.7965
 		```
 
-		- Click the ***Unclassified building locations*** button and follow the same process described in the last step of the previous mode.
+		- Click the **Upload building coordinates** button and select the file containing the coordinates of the reference buildings
+	- **3.3** Click the ***Save and continue*** button and follow the instructions provided by the GUI.  
+  Then, click the ***Next Building*** button in the main panel to start the extrapolation analysis.
 
-5. **Set input files - Stratified sampling**
-   Set the input files using either the **Existing distribution** or the **New distribution** method.
-	- 3.1.1.1 📄 ***use existing distribution***
+4. **Set Input Files – Stratified Sampling**  
 
+Set the input files using either the **Existing Distribution** or the **New Distribution** method.  
 
+- **4.1 📄 New Distribution**  
+  - Define the output file name using the ***Output name*** field (default: **"new_strat"**).  
+  - Define the output folder.  
+  - Define the extrapolation mode: **(I)** Deep Learning Model or **(II)** Manual.  
+  - Provide population data:  
+    - For the deep learning model, this refers to the coordinates of the reference buildings.  
+    - For the manual option, this refers to the full information of the reference buildings.  
 
+    > 📁 *Example:* `demos/extrapolation/neighbor_building_info.csv`  
+    > 📝 *Required CSV format:*
+ 
+    ```
+    id,latitude,longitude,country,city,material,llrs,code_level,n_stories,occupancy,block_position,taxonomy
+    1,10.92224755,-74.78642608,Colombia,Barranquilla,MCF,LWAL,CDL,1,RES,BP1,MCF/LWAL+CDL/H:1/RES/BP1
+    2,10.91268031,-74.80288191,Colombia,Soledad,CR,LFM,CDM,3,RES,BP2,CR/LFM+CDM/H:3/RES/BP2
+    3,10.91968505,-74.79215175,Colombia,Barranquilla,MUR,LWAL,CDL,1,RES,BP1,MUR/LWAL+CDL/H:1/RES/BP1
+    4,10.91647181,-74.76986198,Colombia,Soledad,CR,LFINF,CDM,2,COM,BP1,CR/LFINF+CDM/H:2/COM/BP1
+    5,10.90251035,-74.79685532,Colombia,Soledad,CR,LFM,CDL,2,RES,BP2,CR/LFM+CDL/H:2/RES/BP2
+    ```
+
+  - Select the **feature strata** of interest.  
+<details>
+<summary>📚 Click to expand: Learn how strata influence the results</summary>
+
+In stratified sampling, the population is divided into homogeneous subgroups, called **strata**, based on a relevant characteristic.  
+For example, if we want to analyze the number of stories of buildings in a city, we can divide the entire building stock into several strata according to their height:
+
+- **Stratum 1:** 1–2-story buildings (e.g., 6,000 buildings)  
+- **Stratum 2:** 3–5-story buildings (e.g., 3,000 buildings)  
+- **Stratum 3:** More than 5 stories (e.g., 1,000 buildings)  
+
+If we decide to sample 10% of all buildings, stratified sampling ensures that the sample maintains the same proportions as the population. Therefore, we would select approximately:  
+
+- 600 buildings from Stratum 1  
+- 300 buildings from Stratum 2  
+- 100 buildings from Stratum 3  
+
+This way, the final sample (1,000 buildings) accurately represents the city’s building-height distribution.  
+Without stratification, a simple random sample might over- or under-represent certain strata (for instance, selecting too many low-rise buildings), leading to biased results.
+
+</details>
+
+- Define the parameters for stratified sampling or keep the default values.  
+
+- **4.2  🚧 Existing Distribution**  
+  ⚙️ *This feature is currently under development and will be available in a future release.* 
+
+- **4.3** Click the ***Save and continue*** button and follow the instructions provided by the GUI.  
+  Then, click the ***Next Building*** button in the main panel to start the extrapolation analysis.
+
+5. **API Key Configuration**
+
+   - Same process as explained in the ***Polygon Method***.
+
+---
 
 ## 🖥️ Technical Architecture
 
@@ -329,8 +386,12 @@ Both files should be placed inside the `methods` folder.
 
 - **Base Architecture:** DenseNet201
 - **Training Strategy:** Transfer learning from ImageNet with fine-tuning
-- **Inference:** Real-time feature prediction with human verification
-### 🔧 *Currently Working on Improvements*
+- **Inference:** Real-time feature prediction with or without human verification.  
+  > ⚠️ **Warning:**  
+  > As this is the first version, we strongly recommend checking a few prediction examples to ensure the desired level of confidence in the model.  
+  > However, as shown further below, these models are not perfect — they have certain accuracy limitations and perform better for specific classes and applications.
+
+### 🔧 **Model performance**
 
 #### 🏗️ Lateral Load Resistant System (LLRS) Classifier Performance
 - **Current Accuracy:** **~75.6%**
