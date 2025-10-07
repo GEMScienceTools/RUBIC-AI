@@ -344,29 +344,29 @@ Set the input files using either the **Existing Distribution** or the **New Dist
     5,10.90251035,-74.79685532,Colombia,Soledad,CR,LFM,CDL,2,RES,BP2,CR/LFM+CDL/H:2/RES/BP2
     ```
 
-  - Select the **feature strata** of interest.  
-<details>
-<summary>📚 Click to expand: Learn how strata influence the results</summary>
-
-In stratified sampling, the population is divided into homogeneous subgroups, called **strata**, based on a relevant characteristic.  
-For example, if we want to analyze the number of stories of buildings in a city, we can divide the entire building stock into several strata according to their height:
-
-- **Stratum 1:** 1–2-story buildings (e.g., 6,000 buildings)  
-- **Stratum 2:** 3–5-story buildings (e.g., 3,000 buildings)  
-- **Stratum 3:** More than 5 stories (e.g., 1,000 buildings)  
-
-If we decide to sample 10% of all buildings, stratified sampling ensures that the sample maintains the same proportions as the population. Therefore, we would select approximately:  
-
-- 600 buildings from Stratum 1  
-- 300 buildings from Stratum 2  
-- 100 buildings from Stratum 3  
-
-This way, the final sample (1,000 buildings) accurately represents the city’s building-height distribution.  
-Without stratification, a simple random sample might over- or under-represent certain strata (for instance, selecting too many low-rise buildings), leading to biased results.
-
-</details>
-
-- Define the parameters for stratified sampling or keep the default values.  
+	- Select the **feature strata** of interest.  
+		<details>
+		<summary>📚 Click to expand: Learn how strata influence the results</summary>
+		
+		In stratified sampling, the population is divided into homogeneous subgroups, called **strata**, based on a relevant characteristic.  
+		For example, if we want to analyze the number of stories of buildings in a city, we can divide the entire building stock into several strata according to their height:
+		
+		- **Stratum 1:** 1–2-story buildings (e.g., 6,000 buildings)  
+		- **Stratum 2:** 3–5-story buildings (e.g., 3,000 buildings)  
+		- **Stratum 3:** More than 5 stories (e.g., 1,000 buildings)  
+		
+		If we decide to sample 10% of all buildings, stratified sampling ensures that the sample maintains the same proportions as the population. Therefore, we would select approximately:  
+		
+		- 600 buildings from Stratum 1  
+		- 300 buildings from Stratum 2  
+		- 100 buildings from Stratum 3  
+		
+		This way, the final sample (1,000 buildings) accurately represents the city’s building-height distribution.  
+		Without stratification, a simple random sample might over- or under-represent certain strata (for instance, selecting too many low-rise buildings), leading to biased results.
+		
+		</details>
+	
+	- ***4.1.1*** Define the parameters for stratified sampling or keep the default values.  
 
 - **4.2  🚧 Existing Distribution**  
   ⚙️ *This feature is currently under development and will be available in a future release.* 
@@ -380,7 +380,7 @@ Without stratification, a simple random sample might over- or under-represent ce
 
 ---
 
-## 🖥️ Technical Architecture
+## 🖥️ AI Models and Performance
 
 ### AI Models
 
@@ -409,6 +409,9 @@ Without stratification, a simple random sample might over- or under-represent ce
 -  **Current Accuracy:** **~87.3%**
 #### 🔨 Roof Material Classifier Performance 
 -  **Current Accuracy:** **~84.9%**
+
+For each application, there are additional metrics of interest.  
+Below is the information from the confusion matrices, which allows users to determine whether these models work for their specific needs.  
 
 <details>
 <summary>📊 Confusion Matrices (Click to Expand)</summary>
@@ -447,7 +450,7 @@ Without stratification, a simple random sample might over- or under-represent ce
 
 </details>
 
-### Image input specifications:**
+### Image input specifications:
 - Supported formats: *[JPG, JPEG, PNG]*
 - Minimum resolution: *640x480*
   
