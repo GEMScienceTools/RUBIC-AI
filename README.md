@@ -394,21 +394,21 @@ Set the input files using either the **Existing Distribution** or the **New Dist
 ### 🔧 **Model performance**
 
 #### 🏗️ Lateral Load Resistant System (LLRS) Classifier Performance
-- **Current Accuracy:** **~75.6%**
+- Current Accuracy: **~75.6%**
 #### 🧱 LLRS Material Classifier Performance
-- **Current Accuracy:** **~51.1%**
+- Current Accuracy: **~51.1%**
 #### 🏢 Number of Stories Classifier Performance
-- **Current Accuracy:** **~79.6%**
+- Current Accuracy: **~79.6%**
 #### 🏠 Occupancy Classifier Performance 
--  **Current Accuracy:** **~61.7%**
+-  Current Accuracy: **~61.7%**
 #### 🧾 Code Level Classifier Performance 
--  **Current Accuracy:** **~70.0%**
+-  Current Accuracy: **~70.0%**
 #### 📍 Block Position Classifier Performance 
--  **Current Accuracy:** **~64.7%**
+-  Current Accuracy: **~64.7%**
 #### 🏛️ Roof Shape Classifier Performance 
--  **Current Accuracy:** **~87.3%**
+-  Current Accuracy: **~87.3%**
 #### 🔨 Roof Material Classifier Performance 
--  **Current Accuracy:** **~84.9%**
+-  Current Accuracy: **~84.9%**
 
 For each application, there are additional metrics of interest.  
 Below is the information from the confusion matrices, which allows users to determine whether these models work for their specific needs.  
