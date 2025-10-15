@@ -1106,7 +1106,7 @@ class GUIMethods:
         # -------------------  Left building image ---------------------- 
         
         if self.ui.insp_method == 0 or self.ui.insp_method == 1:
-            self.data_ai.iloc[self.click_count * 3 , 0] = self.ui.img_id_value_1.text()                  # ID
+            self.data_ai.iloc[self.click_count * 3 , 0] = self.ui.img_id_value_1.text()[:-2]                 # ID
             self.data_ai.iloc[self.click_count * 3 , 1] = self.data_building.loc[self.click_count, 'latitude']    # latitude
             self.data_ai.iloc[self.click_count * 3 , 2] = self.data_building.loc[self.click_count, 'longitude']    # longitude
             self.data_ai.iloc[self.click_count * 3 , 3] = self.ui.country_value.text()                   # Country
@@ -1141,7 +1141,7 @@ class GUIMethods:
         # ------------------- Local  -----------------------
         elif self.ui.insp_method == 2:
             # Left building image
-            self.data_ai.iloc[self.old_local , 0] = self.ui.img_id_value_1.text()                  # ID
+            self.data_ai.iloc[self.old_local , 0] = self.ui.img_id_value_1.text()[:-2]                  # ID
             self.data_ai.iloc[self.old_local , 1] = self.data_building.loc[self.old_local,'latitude']      # latitude
             self.data_ai.iloc[self.old_local , 2] = self.data_building.loc[self.old_local,'longitude']      # longitude
             self.data_ai.iloc[self.old_local , 3] = self.ui.country_value.text()                   # Country
