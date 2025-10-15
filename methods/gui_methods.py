@@ -52,6 +52,7 @@ class GUIMethods:
         self.start_click = True
         self.aux_previous =  True 
         self.aux_ai_check = True
+        self.limit_local = True
         """Get screen resolution to adapt to different screen sizes"""
         # Get screen resolution
         screen = QApplication.primaryScreen()
@@ -90,7 +91,16 @@ class GUIMethods:
                 self.data_building = pd.DataFrame(np.zeros((2,1)))
                 
         # Verify that the building ID is less than the number of sample
-        if self.click_count >= self.data_building.shape[0] - 1:
+        if self.ui.insp_method != 2:
+            limit_insp = self.data_building.shape[0] - 1
+        elif self.ui.insp_method == 2:
+            if self.limit_local == True:
+                limit_insp = self.data_building.shape[0] - 1
+            else:
+                limit_insp = len(self.index_id)-1
+        self.limit_local = False
+        
+        if self.click_count >= limit_insp:
             QMessageBox.warning(self.ui, "Database Error", "No further inspections are available")
         else:
             self.ui.method_progress.setText("Loading images ...")
@@ -155,7 +165,7 @@ class GUIMethods:
                     self.click_count = self.data_building.shape[0] - 1
                     QMessageBox.information(self.ui, "Inspections available", "The next building displayed is the final one in the database")
                     self.start_click = False
-                    
+                
         
     ############ Counts the number of clicks made on the previous button ################ 
     def count_clicks_previous(self):
@@ -200,6 +210,7 @@ class GUIMethods:
                 if self.data_old_local == True:
                     self.cont_local = self.n_insp
                     self.data_old_local = False
+                
                 self.cont_local = int(self.index_id[self.click_count])
                 if 'latitude' in self.ui.data_method.columns:
                     lat = float(self.ui.data_method.loc[self.cont_local, 'latitude'])
@@ -406,7 +417,7 @@ class GUIMethods:
                     self.cont_local_data = pd.read_csv(insp_path+"_AI_aux_cont.csv")
                     # Replace empty rows with the existing information
                     self.data_ai.iloc[:self.data_ai_existing.shape[0], :] = self.data_ai_existing.iloc[:self.data_ai_existing.shape[0], :]
-                    self.cont_local_data.iloc[:self.cont_local_data.shape[0], :] = self.cont_local_data.iloc[:self.cont_local_data.shape[0], :]     
+                    self.cont_local_data.iloc[:self.cont_local_data.shape[0], :] = self.cont_local_data.iloc[:self.cont_local_data.shape[0], :] 
                     print("Upload existing data sucessfully")
                     self.data_old = "OK"  # THERE IS EXISTING DATA
                     self.data_old_local = True
@@ -979,6 +990,7 @@ class GUIMethods:
                 image_file = dialog.prediction_img
                 
                 if self.ui.ai_check.isChecked():
+                    print("BOX: ", self.box_id)
                     # Comboboxes for each image label
                     material_id = [self.ui.material_cb_1,self.ui.material_cb_1,self.ui.material_cb_1]
                     material_index = predict_material_img(image_file, self.ui.insp_method, self.box_id, self)
@@ -1036,6 +1048,7 @@ class GUIMethods:
                     # roof_material building image sets prediction
                     roof_material_id[self.box_id].setCurrentIndex(roof_material_index+1)
                     
+                    self.box_id = None
                 # Message with special format
                 message = """
                 If you are making predictions using the AI-powered option, when a manual bounding box is created, 
@@ -1373,6 +1386,7 @@ class GUIMethods:
                 self.data_ai.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name_local.text()+"_AI_aux_cont.csv", index=False)
                 final_df = self.data_ai
                 filtered_df = final_df[final_df['n_stories'].notna() | final_df['llrs'].notna()]
+                filtered_df = filtered_df.drop_duplicates(subset='id', keep='first')
                 filtered_df.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name_local.text()+ "_AI_classification.csv", index=False)
                 # Update the progress message in the GUI
                 self.ui.method_progress.setText("Inspections exported successfully!")
