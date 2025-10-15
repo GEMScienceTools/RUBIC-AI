@@ -990,7 +990,6 @@ class GUIMethods:
                 image_file = dialog.prediction_img
                 
                 if self.ui.ai_check.isChecked():
-                    print("BOX: ", self.box_id)
                     # Comboboxes for each image label
                     material_id = [self.ui.material_cb_1,self.ui.material_cb_1,self.ui.material_cb_1]
                     material_index = predict_material_img(image_file, self.ui.insp_method, self.box_id, self)
