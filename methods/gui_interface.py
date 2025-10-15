@@ -688,7 +688,7 @@ class GUIInterface(QtWidgets.QMainWindow):
 
         # Epoch of construction for left image label
         self.epc_const_label_1 = QtWidgets.QLabel(self.centralwidget)
-        self.epc_const_label_1.setGeometry(QtCore.QRect(int(960 * sf_x), int(470 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        self.epc_const_label_1.setGeometry(QtCore.QRect(int(960 * sf_x), int(470 * sf_y), int(201 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -696,7 +696,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.epc_const_label_1.setFont(font)
         self.epc_const_label_1.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.epc_const_label_1.setObjectName("epc_const_label_1")
-        self.epc_const_label_1.setText("Epoch of const:")
+        self.epc_const_label_1.setText("Epoch of construction:")
         
         self.epc_const_cb_1 = QtWidgets.QComboBox(self.centralwidget)
         self.epc_const_cb_1.setGeometry(QtCore.QRect(int(1170 * sf_x), int(470 * sf_y), int(241 * sf_x), int(31 * sf_y)))
