@@ -23,10 +23,17 @@ with open("gsv_api_key.txt", "r") as f:
 with open("openai_api_key.txt", "r") as f:
     openai.api_key = f.read().strip()
 
+####################################################################
+################## --- user-------------############################
+####################################################################
 # I/O
 INPUT_CSV  = "proof_coordinates.csv"
 OUTPUT_CSV = "proof_results_coordinates.csv"
 CHECKPOINT_EVERY = 20  # rows
+
+####################################################################
+################## --- user-------------############################
+####################################################################
 
 # YOLO
 YOLO_WEIGHTS = "building_detector.pt"  # your trained weights
@@ -56,24 +63,12 @@ SYSTEM_PROMPT = """
 You are an expert in architectural analysis and computer vision. Given a facade image of a commercial or industrial 
 building, predict the following attributes:
 
-1) Use (occupancy type) – choose ONE:
-- Commercial – Retail/Office
-- Commercial – Warehouse/Big-box
-- Industrial – Light
-- Industrial – Heavy
-- Mixed-use
-- Unknown
+1) Use 
 
-(Consider signage, glazing style, dock doors, open bays, facade repetition, and building scale.)
+2) Height in meters 
 
-2) Height in meters – estimate total building height. Use facade proportions, number of levels, and reference objects 
-(cars, trucks, loading docks, doors, people, trees, streetlights, fences). If uncertain, you may return a RANGE (e.g., "8–12").
+3) Primary construction material 
 
-3) Primary construction material – choose ONE of:
-- Concrete, Steel, Reinforced masonry, Confined masonry, Unreinforced masonry, Wood, Other, Unknown
-
-Return ONLY compact JSON on a single line:
-{"use":"...","height_m":"...","material":"..."}
 """
 
 # =========================
