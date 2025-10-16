@@ -141,14 +141,6 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.roof_shape_help.clicked.connect(self.methods.help_roof_shape)
         self.roof_material_help.clicked.connect(self.methods.help_roof_material)
         
-        # self.bloc_pos_help_2.clicked.connect(self.methods.help_block_position)
-        # self.roof_shape_help_2.clicked.connect(self.methods.help_roof_shape)
-        # self.roof_material_help_2.clicked.connect(self.methods.help_roof_material)
-        
-        # self.bloc_pos_help_3.clicked.connect(self.methods.help_block_position)
-        # self.roof_shape_help_3.clicked.connect(self.methods.help_roof_shape)
-        # self.roof_material_help_3.clicked.connect(self.methods.help_roof_material)
-        
     # Method which close the GUI in the console     
     def closeEvent(self, event):
         """Handle the default close button (X) event with a confirmation dialog."""
@@ -688,7 +680,7 @@ class GUIInterface(QtWidgets.QMainWindow):
 
         # Epoch of construction for left image label
         self.epc_const_label_1 = QtWidgets.QLabel(self.centralwidget)
-        self.epc_const_label_1.setGeometry(QtCore.QRect(int(960 * sf_x), int(470 * sf_y), int(201 * sf_x), int(31 * sf_y)))
+        self.epc_const_label_1.setGeometry(QtCore.QRect(int(1010 * sf_x), int(470 * sf_y), int(201 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -699,7 +691,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.epc_const_label_1.setText("Epoch of construction:")
         
         self.epc_const_cb_1 = QtWidgets.QComboBox(self.centralwidget)
-        self.epc_const_cb_1.setGeometry(QtCore.QRect(int(1170 * sf_x), int(470 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.epc_const_cb_1.setGeometry(QtCore.QRect(int(1220 * sf_x), int(470 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.epc_const_cb_1.setFont(font)
@@ -709,7 +701,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Image quality for left image label
         self.img_quality = QtWidgets.QLabel(self.centralwidget)
-        self.img_quality.setGeometry(QtCore.QRect(int(960 * sf_x), int(510 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        self.img_quality.setGeometry(QtCore.QRect(int(1010 * sf_x), int(510 * sf_y), int(131 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         font.setBold(True)
@@ -720,7 +712,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Image quality Combobox elements
         self.img_q_cb_1 = QtWidgets.QComboBox(self.centralwidget)
-        self.img_q_cb_1.setGeometry(QtCore.QRect(int(1170 * sf_x), int(510 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.img_q_cb_1.setGeometry(QtCore.QRect(int(1220 * sf_x), int(510 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_x))
         self.img_q_cb_1.setFont(font)
@@ -805,315 +797,6 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.year_value_2.setAlignment(QtCore.Qt.AlignCenter)
         self.year_value_2.setText("----")
         
-        # ################## Form for building feature ##########################
-        # # Material for central image label 
-        # self.material_2 = QtWidgets.QLabel(self.centralwidget)
-        # self.material_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(460 * sf_y), int(121 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.material_2.setFont(font)
-        # self.material_2.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.material_2.setObjectName("material_2")
-        # # Material Combobox elements
-        # self.material_cb_2 = QtWidgets.QComboBox(self.centralwidget)
-        # self.material_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(460 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.material_cb_2.setFont(font)
-        # self.material_cb_2.setObjectName("material_cb_2")
-        # # Adding material options
-        # self.material_cb_2.addItem("Select Material")
-        # self.material_cb_2.addItem("Adobe", "ADO")
-        # self.material_cb_2.addItem("Concrete", "CR")
-        # self.material_cb_2.addItem("Masonry - Confined", "MCF")
-        # self.material_cb_2.addItem("Masonry - Reinforced", "MR")
-        # self.material_cb_2.addItem("Masonry - Unreinforced", "MUR")
-        # self.material_cb_2.addItem("Hybrid or composite (mixed) materials", "HYB")
-        # self.material_cb_2.addItem("Steel", "S")
-        # self.material_cb_2.addItem("Wood", "W")
-        # self.material_cb_2.addItem("Informal materials", "INF")
-        # self.material_cb_2.addItem("Different materials in the two directions", "MDD")
-        # self.material_cb_2.addItem("Different materials in height ", "MDV")
-        # self.material_cb_2.addItem("Other material", "MATO")
-        # # Set default index
-        # self.material_cb_2.setCurrentIndex(0)
-        # # Scale dropdown width
-        # self.material_cb_2.view().setFixedWidth(int(350 * sf_x))
-
-        
-        # # LLRS Central image label
-        # self.llrs_2 = QtWidgets.QLabel(self.centralwidget)
-        # self.llrs_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(500 * sf_y), int(121 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.llrs_2.setFont(font)
-        # self.llrs_2.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.llrs_2.setObjectName("llrs_2")
-        # # LLRS Combobox elements
-        # self.llrs_cb_2 = QtWidgets.QComboBox(self.centralwidget)
-        # self.llrs_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(500 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.llrs_cb_2.setFont(font)
-        # self.llrs_cb_2.setObjectName("llrs_cb_2")
-        # # Adding LLRS options
-        # self.llrs_cb_2.addItem("Select LLRS")
-        # self.llrs_cb_2.addItem("Dual System", "LDUAL")
-        # self.llrs_cb_2.addItem("Infilled Frames", "LFINF")
-        # self.llrs_cb_2.addItem("Moment Frames", "LFM")
-        # self.llrs_cb_2.addItem("Walls", "LWAL")
-        # self.llrs_cb_2.addItem("Braced frame", "LFBR")
-        # self.llrs_cb_2.addItem("Post and beam", "LPB") 
-        # self.llrs_cb_2.addItem("Flat slab/plate or waffle slab", "LFLS") 
-        # self.llrs_cb_2.addItem("Different LLRS in the two directions", "LDD")
-        # self.llrs_cb_2.addItem("Different LLRS in height ", "LHV") 
-        # self.llrs_cb_2.addItem("No lateral load-resisting system", "LN") 
-        # self.llrs_cb_2.addItem("Other", "LO") 
-        # # Set default index
-        # self.llrs_cb_2.setCurrentIndex(0)
-        # # Scale dropdown width
-        # self.llrs_cb_2.view().setFixedWidth(int(350 * sf_x))
-
-        
-        # # Code level for central image
-        # self.age_2 = QtWidgets.QLabel(self.frame_central_img)
-        # self.age_2.setGeometry(QtCore.QRect(int(10 * sf_x), int(440 * sf_y), int(121 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.age_2.setFont(font)
-        # self.age_2.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.age_2.setObjectName("age_2")
-        # # Code level Combobox elements
-        # self.age_cb_2 = QtWidgets.QComboBox(self.centralwidget)
-        # self.age_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(540 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.age_cb_2.setFont(font)
-        # self.age_cb_2.setObjectName("age_cb_2")
-        # # Adding Code Level options
-        # self.age_cb_2.addItem("Select Code Level")
-        # self.age_cb_2.addItem("High-Code", "CDH")
-        # self.age_cb_2.addItem("Moderate-code", "CDM")
-        # self.age_cb_2.addItem("Low-Code", "CDL")
-        # self.age_cb_2.addItem("No-Code", "CDN")
-        # # Set default index
-        # self.age_cb_2.setCurrentIndex(0)
-        # # Scale dropdown width
-        # self.age_cb_2.view().setFixedWidth(int(250 * sf_x))
-
-        # # Number of stories elements
-        # self.n_stories_2 = QtWidgets.QLabel(self.centralwidget)
-        # self.n_stories_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(580 * sf_y), int(121 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.n_stories_2.setFont(font)
-        # self.n_stories_2.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.n_stories_2.setObjectName("n_stories_2")
-        # # Number of stories value
-        # self.n_stories_value_2 = QtWidgets.QComboBox(self.centralwidget)
-        # self.n_stories_value_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(580 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.n_stories_value_2.setFont(font)
-        # self.n_stories_value_2.setObjectName("n_stories_value_2")
-        # # Adding Number of Stories options
-        # self.n_stories_value_2.addItem("Select Number of Stories")
-        # self.n_stories_value_2.addItem("1", "1")
-        # self.n_stories_value_2.addItem("2", "2")
-        # self.n_stories_value_2.addItem("3", "3")
-        # self.n_stories_value_2.addItem("4", "4")
-        # self.n_stories_value_2.addItem("5", "5")
-        # self.n_stories_value_2.addItem("6-7", "6.0-7.0")
-        # self.n_stories_value_2.addItem("8-9", "8.0-9.0")
-        # self.n_stories_value_2.addItem("10-12", "10.0-12.0")
-        # self.n_stories_value_2.addItem("13+", "13+")
-        # # Set default index
-        # self.n_stories_value_2.setCurrentIndex(0)
-        # # Scale dropdown width
-        # self.n_stories_value_2.view().setFixedWidth(int(250 * sf_x))
-        
-        # # Occupancy type label
-        # self.occupancy_2 = QtWidgets.QLabel(self.centralwidget)
-        # self.occupancy_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(620 * sf_y), int(121 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.occupancy_2.setFont(font)
-        # self.occupancy_2.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.occupancy_2.setObjectName("occupancy_2")
-        # # Occupancy type Combobox elements
-        # self.occup_cb_2 = QtWidgets.QComboBox(self.centralwidget)
-        # self.occup_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(620 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.occup_cb_2.setFont(font)
-        # self.occup_cb_2.setObjectName("occup_cb_2")
-        # # Adding Occupancy options
-        # self.occup_cb_2.addItem("Select Occupancy")
-        # self.occup_cb_2.addItem("Residential", "RES")
-        # self.occup_cb_2.addItem("Commercial", "COM")
-        # self.occup_cb_2.addItem("Mixed", "MIX")
-        # self.occup_cb_2.addItem("Educational", "EDU")
-        # self.occup_cb_2.addItem("Government", "GOV")
-        # self.occup_cb_2.addItem("Healthcare", "HEA")
-        # self.occup_cb_2.addItem("Industrial", "IND")
-        # self.occup_cb_2.addItem("Other", "OCO")
-        # # Set default index
-        # self.occup_cb_2.setCurrentIndex(0)
-        # # Scale dropdown width
-        # self.occup_cb_2.view().setFixedWidth(int(250 * sf_x))
-
-       
-        # # Block position label
-        # self.block_position_2 = QtWidgets.QLabel(self.centralwidget)
-        # self.block_position_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(660 * sf_y), int(131 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.block_position_2.setFont(font)
-        # self.block_position_2.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.block_position_2.setObjectName("block_position_2")
-        # # Block Position Combobox elements
-        # self.bck_pos_cb_2 = QtWidgets.QComboBox(self.centralwidget)
-        # self.bck_pos_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(660 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.bck_pos_cb_2.setFont(font)
-        # self.bck_pos_cb_2.setObjectName("bck_pos_cb_2")
-        # # Adding Block Position options
-        # self.bck_pos_cb_2.addItem("Select Block Position")
-        # self.bck_pos_cb_2.addItem("Detached building", "BDP")
-        # self.bck_pos_cb_2.addItem("Adjoining building(s) one side", "BP1")
-        # self.bck_pos_cb_2.addItem("Adjoining building(s) two sides", "BP2")
-        # self.bck_pos_cb_2.addItem("Adjoining building(s) three sides", "BP3")
-        # # Set default index
-        # self.bck_pos_cb_2.setCurrentIndex(0)
-        # # Scale dropdown width
-        # self.bck_pos_cb_2.view().setFixedWidth(int(250 * sf_x))
-        
-        # # Epoch of construction for left image label
-        # self.epc_const_label_2 = QtWidgets.QLabel(self.centralwidget)
-        # self.epc_const_label_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(700 * sf_y), int(131 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.epc_const_label_2.setFont(font)
-        # self.epc_const_label_2.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.epc_const_label_2.setObjectName("epc_const_label_2")
-        # self.epc_const_label_2.setText("Epoch of const:")
-
-        # self.epc_const_cb_2 = QtWidgets.QComboBox(self.centralwidget)
-        # self.epc_const_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(700 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.epc_const_cb_2.setFont(font)
-        # self.epc_const_cb_2.setObjectName("epc_const_cb_2")
-        # self.epc_const_cb_2.addItem("Select Epoch of construction")
-        
-        # # Roof shape for central image
-        # self.roof_shape_label_2 = QtWidgets.QLabel(self.centralwidget)
-        # self.roof_shape_label_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(740 * sf_y), int(131 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.roof_shape_label_2.setFont(font)
-        # self.roof_shape_label_2.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.roof_shape_label_2.setObjectName("roof_shape_label_2")
-        # self.roof_shape_label_2.setText("Roof Shape:")
-        
-        # self.roof_shape_cb_2 = QtWidgets.QComboBox(self.centralwidget)
-        # self.roof_shape_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(740 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.roof_shape_cb_2.setFont(font)
-        # self.roof_shape_cb_2.setObjectName("roof_shape_cb_2")
-        # self.roof_shape_cb_2.addItem("Select Roof Shape")
-        # self.roof_shape_cb_2.addItem("Flat", "RSH1")
-        # self.roof_shape_cb_2.addItem("Pitched with gable ends", "RSH2")
-        # self.roof_shape_cb_2.addItem("Pitched and hipped", "RSH3")
-        # self.roof_shape_cb_2.addItem("Pitched with dormers", "RSH4")
-        # self.roof_shape_cb_2.addItem("Monopitch", "RSH5")
-        # self.roof_shape_cb_2.addItem("Sawtooth", "RSH6")
-        # self.roof_shape_cb_2.addItem("Curved", "RSH7")
-        # self.roof_shape_cb_2.addItem("Complex regular", "RSH8")
-        # self.roof_shape_cb_2.addItem("Complex irregular", "RSH9")
-        # self.roof_shape_cb_2.addItem("Other", "RSHO")
-        # # Set default index
-        # self.roof_shape_cb_2.setCurrentIndex(0)
-        # # Scale dropdown width
-        # self.roof_shape_cb_2.view().setFixedWidth(int(250 * sf_x))
-        
-        # # Roof Material for central image label
-        # self.roof_material_label_2 = QtWidgets.QLabel(self.centralwidget)
-        # self.roof_material_label_2.setGeometry(QtCore.QRect(int(540 * sf_x), int(780 * sf_y), int(131 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.roof_material_label_2.setFont(font)
-        # self.roof_material_label_2.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.roof_material_label_2.setObjectName("roof_material_label_2")
-        # self.roof_material_label_2.setText("Roof Material:")
-        
-        # self.roof_material_cb_2 = QtWidgets.QComboBox(self.centralwidget)
-        # self.roof_material_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(780 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.roof_material_cb_2.setFont(font)
-        # self.roof_material_cb_2.setObjectName("roof_material_cb_2")
-        # self.roof_material_cb_2.addItem("Select Roof Material")
-        # self.roof_material_cb_2.addItem("Concrete", "RMN")
-        # self.roof_material_cb_2.addItem("Clay or concrete tile", "RMT1")
-        # self.roof_material_cb_2.addItem("Metal or asbestos sheets", "RMT6")
-        # self.roof_material_cb_2.addItem("Wooden and asphalt shingles", "RMT7")
-        # self.roof_material_cb_2.addItem("Slate", "RMT4")
-        # self.roof_material_cb_2.addItem("Solar panelled roofs", "RMT10")
-        # self.roof_material_cb_2.addItem("Other", "RMTO")
-        # # Set default index
-        # self.roof_material_cb_2.setCurrentIndex(0)
-        # # Scale dropdown width
-        # self.roof_material_cb_2.view().setFixedWidth(int(250 * sf_x))
-        
-        # self.img_quality_2 = QtWidgets.QLabel(self.frame_central_img)
-        # self.img_quality_2.setGeometry(QtCore.QRect(int(10 * sf_x), int(720 * sf_y), int(131 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.img_quality_2.setFont(font)
-        # self.img_quality_2.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.img_quality_2.setObjectName("img_quality_2")
-        
-        # # Image quality Combobox elements
-        # self.img_q_cb_2 = QtWidgets.QComboBox(self.centralwidget)
-        # self.img_q_cb_2.setGeometry(QtCore.QRect(int(690 * sf_x), int(820 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.img_q_cb_2.setFont(font)
-        # self.img_q_cb_2.setObjectName("img_q_cb_2")
-        # # Adding Image Quality options
-        # self.img_q_cb_2.addItem("Select Image quality")
-        # self.img_q_cb_2.addItem("Excellent", "Excellent")
-        # self.img_q_cb_2.addItem("Good", "Good")
-        # self.img_q_cb_2.addItem("Intermediate", "Intermediate")
-        # self.img_q_cb_2.addItem("Bad", "Bad")
-        # # Set default index
-        # self.img_q_cb_2.setCurrentIndex(0)
-        # # Scale dropdown width
-        # self.img_q_cb_2.view().setFixedWidth(int(250 * sf_x))
-        
         """ Right Building images elements """
         # Right image color frame
         self.frame_right_img = QtWidgets.QFrame(self.centralwidget)
@@ -1186,314 +869,6 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.year_value_3.setAlignment(QtCore.Qt.AlignCenter)
         self.year_value_3.setText("----")
         
-        # ################## Form for building feature ##########################
-        
-        # # Material for right image label
-        # self.material_3 = QtWidgets.QLabel(self.centralwidget)
-        # self.material_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(460 * sf_y), int(121 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.material_3.setFont(font)
-        # self.material_3.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.material_3.setObjectName("material_3")
-        # # Material right combobox elements
-        # self.material_cb_3 = QtWidgets.QComboBox(self.centralwidget)
-        # self.material_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(460 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.material_cb_3.setFont(font)
-        # self.material_cb_3.setObjectName("material_cb_3")
-        # # Adding material options
-        # self.material_cb_3.addItem("Select Material")
-        # self.material_cb_3.addItem("Adobe", "ADO")
-        # self.material_cb_3.addItem("Concrete", "CR")
-        # self.material_cb_3.addItem("Masonry - Confined", "MCF")
-        # self.material_cb_3.addItem("Masonry - Reinforced", "MR")
-        # self.material_cb_3.addItem("Masonry - Unreinforced", "MUR")
-        # self.material_cb_3.addItem("Hybrid or composite (mixed) materials", "HYB")
-        # self.material_cb_3.addItem("Steel", "S")
-        # self.material_cb_3.addItem("Wood", "W")
-        # self.material_cb_3.addItem("Informal materials", "INF")
-        # self.material_cb_3.addItem("Different materials in the two directions", "MDD")
-        # self.material_cb_3.addItem("Different materials in height ", "MDV")
-        # self.material_cb_3.addItem("Other material", "MATO")
-        # # Set default index
-        # self.material_cb_3.setCurrentIndex(0)
-        # # Scale dropdown width
-        # self.material_cb_3.view().setFixedWidth(int(350 * sf_x))
-
-        
-        # # LLRS for right image label
-        # self.llrs_3 = QtWidgets.QLabel(self.centralwidget)
-        # self.llrs_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(500 * sf_y), int(121 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.llrs_3.setFont(font)
-        # self.llrs_3.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.llrs_3.setObjectName("llrs_3")
-        # # LLRS right combobox elements
-        # self.llrs_cb_3 = QtWidgets.QComboBox(self.centralwidget)
-        # self.llrs_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(500 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.llrs_cb_3.setFont(font)
-        # self.llrs_cb_3.setObjectName("llrs_cb_3")
-        # # Adding LLRS options
-        # self.llrs_cb_3.addItem("Select LLRS")
-        # self.llrs_cb_3.addItem("Dual System", "LDUAL")
-        # self.llrs_cb_3.addItem("Infilled Frames", "LFINF")
-        # self.llrs_cb_3.addItem("Moment Frames", "LFM")
-        # self.llrs_cb_3.addItem("Walls", "LWAL")
-        # self.llrs_cb_3.addItem("Braced frame", "LFBR")
-        # self.llrs_cb_3.addItem("Post and beam", "LPB") 
-        # self.llrs_cb_3.addItem("Flat slab/plate or waffle slab", "LFLS") 
-        # self.llrs_cb_3.addItem("Different LLRS in the two directions", "LDD")
-        # self.llrs_cb_3.addItem("Different LLRS in height ", "LHV") 
-        # self.llrs_cb_3.addItem("No lateral load-resisting system", "LN") 
-        # self.llrs_cb_3.addItem("Other", "LO")    
-        # # Set default index
-        # self.llrs_cb_3.setCurrentIndex(0)
-        # # Scale dropdown width
-        # self.llrs_cb_3.view().setFixedWidth(int(350 * sf_x))
-        
-        # # Code level for right image label
-        # self.age_3 = QtWidgets.QLabel(self.centralwidget)
-        # self.age_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(540 * sf_y), int(121 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.age_3.setFont(font)
-        # self.age_3.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.age_3.setObjectName("age_3")
-        # # Code level right combobox elements
-        # self.age_cb_3 = QtWidgets.QComboBox(self.centralwidget)
-        # self.age_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(540 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.age_cb_3.setFont(font)
-        # self.age_cb_3.setObjectName("age_cb_3")
-        # # Adding Code Level options
-        # self.age_cb_3.addItem("Select Code Level")
-        # self.age_cb_3.addItem("High-Code", "CDH")
-        # self.age_cb_3.addItem("Moderate-code", "CDM")
-        # self.age_cb_3.addItem("Low-Code", "CDL")
-        # self.age_cb_3.addItem("No-Code", "CDN")
-        # # Set default index
-        # self.age_cb_3.setCurrentIndex(0)
-        # # Scale dropdown width
-        # self.age_cb_3.view().setFixedWidth(int(250 * sf_x))
-
-        
-        # # Number of stories for right image label
-        # self.n_stories_3 = QtWidgets.QLabel(self.centralwidget)
-        # self.n_stories_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(580 * sf_y), int(121 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.n_stories_3.setFont(font)
-        # self.n_stories_3.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.n_stories_3.setObjectName("n_stories_3")
-        # # Number of stories value
-        # self.n_stories_value_3 = QtWidgets.QComboBox(self.centralwidget)
-        # self.n_stories_value_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(580 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.n_stories_value_3.setFont(font)
-        # self.n_stories_value_3.setObjectName("n_stories_value_3")
-        # # Adding Number of Stories options
-        # self.n_stories_value_3.addItem("Select Number of Stories")
-        # self.n_stories_value_3.addItem("1", "1")
-        # self.n_stories_value_3.addItem("2", "2")
-        # self.n_stories_value_3.addItem("3", "3")
-        # self.n_stories_value_3.addItem("4", "4")
-        # self.n_stories_value_3.addItem("5", "5")
-        # self.n_stories_value_3.addItem("6-7", "6.0-7.0")
-        # self.n_stories_value_3.addItem("8-9", "8.0-9.0")
-        # self.n_stories_value_3.addItem("10-12", "10.0-12.0")
-        # self.n_stories_value_3.addItem("13+", "13+")
-        # # Set default index
-        # self.n_stories_value_3.setCurrentIndex(0)
-        # # Scale dropdown width
-        # self.n_stories_value_3.view().setFixedWidth(int(250 * sf_x))
-
-        
-        # # Occupancy type for right image label
-        # self.occupancy_3 = QtWidgets.QLabel(self.centralwidget)
-        # self.occupancy_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(620 * sf_y), int(121 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.occupancy_3.setFont(font)
-        # self.occupancy_3.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.occupancy_3.setObjectName("occupancy_3")
-        # # Occupancy type right combobox elements
-        # self.occup_cb_3 = QtWidgets.QComboBox(self.centralwidget)
-        # self.occup_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(620 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.occup_cb_3.setFont(font)
-        # self.occup_cb_3.setObjectName("occup_cb_3")
-        # # Adding Occupancy options
-        # self.occup_cb_3.addItem("Select Occupancy")
-        # self.occup_cb_3.addItem("Residential", "RES")
-        # self.occup_cb_3.addItem("Commercial", "COM")
-        # self.occup_cb_3.addItem("Mixed", "MIX")
-        # self.occup_cb_3.addItem("Educational", "EDU")
-        # self.occup_cb_3.addItem("Government", "GOV")
-        # self.occup_cb_3.addItem("Healthcare", "HEA")
-        # self.occup_cb_3.addItem("Industrial", "IND")
-        # self.occup_cb_3.addItem("Other", "OCO")
-        # # Set default index
-        # self.occup_cb_3.setCurrentIndex(0)
-        # # Scale dropdown width
-        # self.occup_cb_3.view().setFixedWidth(int(250 * sf_x))
-
-                     
-        # # Block position for right image label
-        # self.block_position_3 = QtWidgets.QLabel(self.centralwidget)
-        # self.block_position_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(660 * sf_y), int(131 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.block_position_3.setFont(font)
-        # self.block_position_3.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.block_position_3.setObjectName("block_position_3")
-        # # Block position right combobox elements
-        # self.bck_pos_cb_3 = QtWidgets.QComboBox(self.centralwidget)
-        # self.bck_pos_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(660 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.bck_pos_cb_3.setFont(font)
-        # self.bck_pos_cb_3.setObjectName("bck_pos_cb_3")
-        # # Adding Block Position options
-        # self.bck_pos_cb_3.addItem("Select Block Position")
-        # self.bck_pos_cb_3.addItem("Detached building", "BDP")
-        # self.bck_pos_cb_3.addItem("Adjoining building(s) one side", "BP1")
-        # self.bck_pos_cb_3.addItem("Adjoining building(s) two sides", "BP2")
-        # self.bck_pos_cb_3.addItem("Adjoining building(s) three sides", "BP3")
-        # # Set default index
-        # self.bck_pos_cb_3.setCurrentIndex(0)
-        # # Scale dropdown width
-        # self.bck_pos_cb_3.view().setFixedWidth(int(250 * sf_x))
-        
-        # # Epoch of construction for right image label
-        # self.epc_const_label_3 = QtWidgets.QLabel(self.centralwidget)
-        # self.epc_const_label_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(700 * sf_y), int(131 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.epc_const_label_3.setFont(font)
-        # self.epc_const_label_3.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.epc_const_label_3.setObjectName("epc_const_label_3")
-        # self.epc_const_label_3.setText("Epoch of const:")
-        
-        # self.epc_const_cb_3 = QtWidgets.QComboBox(self.centralwidget)
-        # self.epc_const_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(700 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.epc_const_cb_3.setFont(font)
-        # self.epc_const_cb_3.setObjectName("epc_const_cb_3")
-        # self.epc_const_cb_3.addItem("Select Epoch of construction")
-        
-        # # Roof shape for right image
-        # self.roof_shape_label_3 = QtWidgets.QLabel(self.centralwidget)
-        # self.roof_shape_label_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(740 * sf_y), int(131 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.roof_shape_label_3.setFont(font)
-        # self.roof_shape_label_3.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.roof_shape_label_3.setObjectName("roof_shape_label_3")
-        # self.roof_shape_label_3.setText("Roof Shape:")
-        
-        # self.roof_shape_cb_3 = QtWidgets.QComboBox(self.centralwidget)
-        # self.roof_shape_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(740 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.roof_shape_cb_3.setFont(font)
-        # self.roof_shape_cb_3.setObjectName("roof_shape_cb_3")
-        # self.roof_shape_cb_3.addItem("Select Roof Shape")
-        # self.roof_shape_cb_3.addItem("Flat", "RSH1")
-        # self.roof_shape_cb_3.addItem("Pitched with gable ends", "RSH2")
-        # self.roof_shape_cb_3.addItem("Pitched and hipped", "RSH3")
-        # self.roof_shape_cb_3.addItem("Pitched with dormers", "RSH4")
-        # self.roof_shape_cb_3.addItem("Monopitch", "RSH5")
-        # self.roof_shape_cb_3.addItem("Sawtooth", "RSH6")
-        # self.roof_shape_cb_3.addItem("Curved", "RSH7")
-        # self.roof_shape_cb_3.addItem("Complex regular", "RSH8")
-        # self.roof_shape_cb_3.addItem("Complex irregular", "RSH9")
-        # self.roof_shape_cb_3.addItem("Other", "RSHO")
-        
-        # # Roof Material for left image label
-        # self.roof_material_label_3 = QtWidgets.QLabel(self.centralwidget)
-        # self.roof_material_label_3.setGeometry(QtCore.QRect(int(1060 * sf_x), int(780 * sf_y), int(131 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.roof_material_label_3.setFont(font)
-        # self.roof_material_label_3.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.roof_material_label_3.setObjectName("roof_material_label_3")
-        # self.roof_material_label_3.setText("Roof Material:")
-        
-        # self.roof_material_cb_3 = QtWidgets.QComboBox(self.centralwidget)
-        # self.roof_material_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(780 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.roof_material_cb_3.setFont(font)
-        # self.roof_material_cb_3.setObjectName("roof_material_cb_3")
-        # self.roof_material_cb_3.addItem("Select Roof Material")
-        # self.roof_material_cb_3.addItem("Concrete", "RMN")
-        # self.roof_material_cb_3.addItem("Clay or concrete tile", "RMT1")
-        # self.roof_material_cb_3.addItem("Metal or asbestos sheets", "RMT6")
-        # self.roof_material_cb_3.addItem("Wooden and asphalt shingles", "RMT7")
-        # self.roof_material_cb_3.addItem("Slate", "RMT4")
-        # self.roof_material_cb_3.addItem("Solar panelled roofs", "RMT10")
-        # self.roof_material_cb_3.addItem("Other", "RMTO")
-        # # Set default index
-        # self.roof_material_cb_3.setCurrentIndex(0)
-        # # Scale dropdown width
-        # self.roof_material_cb_3.view().setFixedWidth(int(250 * sf_x))
-        
-        # # Image quality for right image label
-        # self.img_quality_3 = QtWidgets.QLabel(self.frame_right_img)
-        # self.img_quality_3.setGeometry(QtCore.QRect(int(10 * sf_x), int(720 * sf_y), int(131 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # font.setBold(True)
-        # font.setWeight(75)
-        # self.img_quality_3.setFont(font)
-        # self.img_quality_3.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        # self.img_quality_3.setObjectName("img_quality_3")
-        # # Image quality right combobox elements
-        # self.img_q_cb_3 = QtWidgets.QComboBox(self.centralwidget)
-        # self.img_q_cb_3.setGeometry(QtCore.QRect(int(1210 * sf_x), int(820 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        # font = QtGui.QFont()
-        # font.setPointSize(int(10 * sf_x))
-        # self.img_q_cb_3.setFont(font)
-        # self.img_q_cb_3.setObjectName("img_q_cb_3")
-        # # Adding Image Quality options
-        # self.img_q_cb_3.addItem("Select Image quality")
-        # self.img_q_cb_3.addItem("Excellent", "Excellent")
-        # self.img_q_cb_3.addItem("Good", "Good")
-        # self.img_q_cb_3.addItem("Intermediate", "Intermediate")
-        # self.img_q_cb_3.addItem("Bad", "Bad")
-        # # Set default index
-        # self.img_q_cb_3.setCurrentIndex(0)
-        # # Scale dropdown width
-        # self.img_q_cb_3.view().setFixedWidth(int(250 * sf_x))
-
-
         
 ###########################################################################################        
 ###########################################################################################   
@@ -1587,66 +962,84 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.save_data_button.setFont(font)
         self.save_data_button.setObjectName("save_data_button")
         
-        # Left image frame buttons
         icon_size = QtCore.QSize(int(31 * sf_x), int(31 * sf_x))  # Icon is square
-        self.bloc_pos_help = QtWidgets.QPushButton(self.frame_left_img)
-        pixmap = QtGui.QPixmap("help_img/help_icon.png").scaled(icon_size)
+        self.bloc_pos_help = QtWidgets.QPushButton(self.centralwidget)
+        
+        # Load and scale the icon
+        pixmap = QtGui.QPixmap("help_img/help_icon.png").scaled(
+            icon_size, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation
+        )
         icon = QtGui.QIcon(pixmap)
+        
         self.bloc_pos_help.setIcon(icon)
         self.bloc_pos_help.setIconSize(icon_size)
-        self.bloc_pos_help.setGeometry(QtCore.QRect(int(420 * sf_x), int(560 * sf_y), int(31 * sf_x), int(31 * sf_y)))
+        
+        # Remove borders, background, and relief
+        self.bloc_pos_help.setFlat(True)
+        self.bloc_pos_help.setStyleSheet("""
+            QPushButton {
+                border: none;
+                background-color: transparent;
+            }
+            QPushButton:hover {
+                background-color: rgba(0, 0, 0, 0.05); /* optional light hover effect */
+            }
+        """)
+        
+        # Geometry
+        self.bloc_pos_help.setGeometry(QtCore.QRect(
+            int(900 * sf_x), int(590 * sf_y),
+            int(31 * sf_x), int(31 * sf_y)
+        ))
         self.bloc_pos_help.setObjectName("bloc_pos_help")
         
-        self.roof_shape_help = QtWidgets.QPushButton(self.frame_left_img)
+        # ===========================
+        # Roof Shape Help Button
+        # ===========================
+        self.roof_shape_help = QtWidgets.QPushButton(self.centralwidget)
         self.roof_shape_help.setIcon(icon)
         self.roof_shape_help.setIconSize(icon_size)
-        self.roof_shape_help.setGeometry(QtCore.QRect(int(420 * sf_x), int(640 * sf_y), int(31 * sf_x), int(31 * sf_y)))
+        self.roof_shape_help.setGeometry(QtCore.QRect(
+            int(900 * sf_x), int(470 * sf_y),
+            int(31 * sf_x), int(31 * sf_y)
+        ))
         self.roof_shape_help.setObjectName("roof_shape_help")
         
-        self.roof_material_help = QtWidgets.QPushButton(self.frame_left_img)
+        # Flat, transparent style
+        self.roof_shape_help.setFlat(True)
+        self.roof_shape_help.setStyleSheet("""
+            QPushButton {
+                border: none;
+                background-color: transparent;
+            }
+            QPushButton:hover {
+                background-color: rgba(0, 0, 0, 0.05); /* optional hover glow */
+            }
+        """)
+        
+        # ===========================
+        # Roof Material Help Button
+        # ===========================
+        self.roof_material_help = QtWidgets.QPushButton(self.centralwidget)
         self.roof_material_help.setIcon(icon)
         self.roof_material_help.setIconSize(icon_size)
-        self.roof_material_help.setGeometry(QtCore.QRect(int(420 * sf_x), int(680 * sf_y), int(31 * sf_x), int(31 * sf_y)))
+        self.roof_material_help.setGeometry(QtCore.QRect(
+            int(900 * sf_x), int(510 * sf_y),
+            int(31 * sf_x), int(31 * sf_y)
+        ))
         self.roof_material_help.setObjectName("roof_material_help")
         
-        # # Central image frame buttons
-        # self.bloc_pos_help_2 = QtWidgets.QPushButton(self.frame_central_img)
-        # self.bloc_pos_help_2.setIcon(icon)
-        # self.bloc_pos_help_2.setIconSize(icon_size)
-        # self.bloc_pos_help_2.setGeometry(QtCore.QRect(int(420 * sf_x), int(560 * sf_y), int(31 * sf_x), int(31 * sf_y)))
-        # self.bloc_pos_help_2.setObjectName("bloc_pos_help_2")
-        
-        # self.roof_shape_help_2 = QtWidgets.QPushButton(self.frame_central_img)
-        # self.roof_shape_help_2.setIcon(icon)
-        # self.roof_shape_help_2.setIconSize(icon_size)
-        # self.roof_shape_help_2.setGeometry(QtCore.QRect(int(420 * sf_x), int(640 * sf_y), int(31 * sf_x), int(31 * sf_y)))
-        # self.roof_shape_help_2.setObjectName("roof_shape_help_2")
-        
-        # self.roof_material_help_2 = QtWidgets.QPushButton(self.frame_central_img)
-        # self.roof_material_help_2.setIcon(icon)
-        # self.roof_material_help_2.setIconSize(icon_size)
-        # self.roof_material_help_2.setGeometry(QtCore.QRect(int(420 * sf_x), int(680 * sf_y), int(31 * sf_x), int(31 * sf_y)))
-        # self.roof_material_help_2.setObjectName("roof_material_help_2")
-        
-        # # Right image frame buttons
-        # self.bloc_pos_help_3 = QtWidgets.QPushButton(self.frame_right_img)
-        # self.bloc_pos_help_3.setIcon(icon)
-        # self.bloc_pos_help_3.setIconSize(icon_size)
-        # self.bloc_pos_help_3.setGeometry(QtCore.QRect(int(420 * sf_x), int(560 * sf_y), int(31 * sf_x), int(31 * sf_y)))
-        # self.bloc_pos_help_3.setObjectName("bloc_pos_help_3")
-        
-        # self.roof_shape_help_3 = QtWidgets.QPushButton(self.frame_right_img)
-        # self.roof_shape_help_3.setIcon(icon)
-        # self.roof_shape_help_3.setIconSize(icon_size)
-        # self.roof_shape_help_3.setGeometry(QtCore.QRect(int(420 * sf_x), int(640 * sf_y), int(31 * sf_x), int(31 * sf_y)))
-        # self.roof_shape_help_3.setObjectName("roof_shape_help_3")
-        
-        # self.roof_material_help_3 = QtWidgets.QPushButton(self.frame_right_img)
-        # self.roof_material_help_3.setIcon(icon)
-        # self.roof_material_help_3.setIconSize(icon_size)
-        # self.roof_material_help_3.setGeometry(QtCore.QRect(int(420 * sf_x), int(680 * sf_y), int(31 * sf_x), int(31 * sf_y)))
-        # self.roof_material_help_3.setObjectName("roof_material_help_3")
-
+        # Flat, transparent style
+        self.roof_material_help.setFlat(True)
+        self.roof_material_help.setStyleSheet("""
+            QPushButton {
+                border: none;
+                background-color: transparent;
+            }
+            QPushButton:hover {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+        """)
         
         """ Raise all elements """
         self.frame_location.raise_()
@@ -1681,36 +1074,11 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.search_img_label.raise_()
         self.GEM_logo.raise_()
         self.RUBIC_logo.raise_()
-        # self.material_cb_2.raise_()
-        # self.llrs_cb_2.raise_()
-        # self.img_q_cb_2.raise_()
-        # self.age_cb_2.raise_()
-        # self.bck_pos_cb_2.raise_()
-        # self.n_stories_2.raise_()
-        # self.occup_cb_2.raise_()
-        # self.block_position_2.raise_()
-        # self.material_2.raise_()
-        # self.llrs_2.raise_()
-        # self.occupancy_2.raise_()
-        # self.material_cb_3.raise_()
-        # self.llrs_cb_3.raise_()
-        # self.img_q_cb_3.raise_()
-        # self.age_cb_3.raise_()
-        # self.bck_pos_cb_3.raise_()
-        # self.n_stories_3.raise_()
-        # self.occup_cb_3.raise_()
-        # self.block_position_3.raise_()
-        # self.material_3.raise_()
-        # self.llrs_3.raise_()
-        # self.age_3.raise_()
-        # self.occupancy_3.raise_()
         self.progress_bar_method.raise_()
         self.method_progress.raise_()
         self.ai_check.raise_()
         self.save_data_button.raise_()
         self.n_stories_value_1.raise_()
-        # self.n_stories_value_2.raise_()
-        # self.n_stories_value_3.raise_()
         self.bounding_box_1.raise_()
         self.bounding_box_2.raise_()
         self.bounding_box_3.raise_()
@@ -1719,29 +1087,11 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.roof_shape_cb_1.raise_()
         self.epc_const_label_1.raise_()
         self.roof_shape_label_1.raise_()
-        # self.epc_const_cb_2.raise_()
-        # self.roof_shape_cb_2.raise_()
-        # self.epc_const_label_2.raise_()
-        # self.roof_shape_label_2.raise_()
-        # self.epc_const_label_3.raise_()
-        # self.roof_shape_label_3.raise_()
-        # self.epc_const_cb_3.raise_()
-        # self.roof_shape_cb_3.raise_()
         self.roof_material_label_1.raise_()
-        self.roof_material_cb_1.raise_()
-        # self.roof_material_label_2.raise_()
-        # self.roof_material_cb_2.raise_()
-        # self.roof_material_label_3.raise_()
-        # self.roof_material_cb_3.raise_()      
+        self.roof_material_cb_1.raise_()     
         self.bloc_pos_help.raise_()
         self.roof_shape_help.raise_()
         self.roof_material_help.raise_()  
-        # self.bloc_pos_help_2.raise_()
-        # self.roof_shape_help_2.raise_()
-        # self.roof_material_help_2.raise_() 
-        # self.bloc_pos_help_3.raise_()
-        # self.roof_shape_help_3.raise_()
-        # self.roof_material_help_3.raise_()
         
         GUIInterface.setCentralWidget(self.centralwidget)
 
@@ -1765,11 +1115,8 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.city_value.setText(_translate("GUIInterface", "-"))
         self.img_id_label_2.setText(_translate("GUIInterface", "Image ID:"))
         self.img_id_value_2.setText(_translate("GUIInterface", "-"))
-        # self.img_quality_2.setText(_translate("GUIInterface", "Image Quality:"))
-        # self.age_2.setText(_translate("GUIInterface", "Code Level:"))
         self.img_id_label_3.setText(_translate("GUIInterface", "Image ID:"))
         self.img_id_value_3.setText(_translate("GUIInterface", "-"))
-        # self.img_quality_3.setText(_translate("GUIInterface", "Image Quality:"))
         self.img_id_label_1.setText(_translate("GUIInterface", "Image ID:"))
         self.img_id_value_1.setText(_translate("GUIInterface", "-"))
         self.img_quality.setText(_translate("GUIInterface", "Image Quality:"))
@@ -1788,29 +1135,6 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.img_q_cb_1.setItemText(0, _translate("GUIInterface", "Select Image Quality"))
         self.search_img_button.setText(_translate("GUIInterface", "Search Building"))
         self.search_img_label.setText(_translate("GUIInterface", "Image ID:"))
-        # self.material_cb_2.setItemText(0, _translate("GUIInterface", "Select Material"))
-        # self.llrs_cb_2.setItemText(0, _translate("GUIInterface", "Select LLRS"))
-        # self.img_q_cb_2.setItemText(0, _translate("GUIInterface", "Select Image Quality"))
-        # self.age_cb_2.setItemText(0, _translate("GUIInterface", "Select Code Level"))
-        # self.bck_pos_cb_2.setItemText(0, _translate("GUIInterface", "Select Block Position"))
-        # self.n_stories_2.setText(_translate("GUIInterface", "N° of Stories:"))
-        # self.occup_cb_2.setItemText(0, _translate("GUIInterface", "Select Occupancy Type"))
-        # self.block_position_2.setText(_translate("GUIInterface", "Block Position:"))
-        # self.material_2.setText(_translate("GUIInterface", "LLRS Material:"))
-        # self.llrs_2.setText(_translate("GUIInterface", "LLRS:"))
-        # self.occupancy_2.setText(_translate("GUIInterface", "Occupancy:"))
-        # self.material_cb_3.setItemText(0, _translate("GUIInterface", "Select Material"))
-        # self.llrs_cb_3.setItemText(0, _translate("GUIInterface", "Select LLRS"))
-        # self.img_q_cb_3.setItemText(0, _translate("GUIInterface", "Select Image Quality"))
-        # self.age_cb_3.setItemText(0, _translate("GUIInterface", "Select Code Level"))
-        # self.bck_pos_cb_3.setItemText(0, _translate("GUIInterface", "Select Block Position"))
-        # self.n_stories_3.setText(_translate("GUIInterface", "N° of Stories:"))
-        # self.occup_cb_3.setItemText(0, _translate("GUIInterface", "Select Occupancy Type"))
-        # self.block_position_3.setText(_translate("GUIInterface", "Block Position:"))
-        # self.material_3.setText(_translate("GUIInterface", "LLRS Material:"))
-        # self.llrs_3.setText(_translate("GUIInterface", "LLRS:"))
-        # self.age_3.setText(_translate("GUIInterface", "Code Level:"))
-        # self.occupancy_3.setText(_translate("GUIInterface", "Occupancy:"))
         self.method_progress.setText(_translate("GUIInterface", "-"))
         self.ai_check.setText(_translate("GUIInterface", "AI Powered"))
         self.save_data_button.setText(_translate("GUIInterface", "Save data"))
