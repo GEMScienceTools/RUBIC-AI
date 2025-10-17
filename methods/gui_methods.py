@@ -1242,8 +1242,9 @@ class GUIMethods:
                 self.data_ai.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name_local.text()+"_AI_aux_cont.csv", index=False)
                 final_df = self.data_ai
                 filtered_df = final_df[final_df['n_stories'].notna() | final_df['llrs'].notna()]
-                filtered_df = filtered_df.drop_duplicates(subset='id', keep='first')
-                filtered_df.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name_local.text()+ "_AI_classification.csv", index=False)
+                filtered_def = filtered_df.drop_duplicates(subset='id', keep='first') 
+                filtered_def = filtered_def.drop_duplicates(subset='image filename or link', keep='first') 
+                filtered_def.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name_local.text()+ "_AI_classification.csv", index=False)
                 # Update the progress message in the GUI
                 self.ui.method_progress.setText("Inspections exported successfully!")
             except:
