@@ -44,12 +44,16 @@ def predict_material_img (image_path, insp_method, box_id, self):
     model = models.densenet201(weights=None)  # Initialize model without pre-trained weights
     num_features = model.classifier.in_features
     
-    # Use the correct number of output classes (9 as indicated in the error)
-    model.classifier = torch.nn.Sequential(
-        torch.nn.Flatten(),
-        torch.nn.Linear(num_features, 8),  # Match the number of classes
-        torch.nn.LogSoftmax(dim=1)
-    )
+    # # Use the correct number of output classes (9 as indicated in the error)
+    # model.classifier = torch.nn.Sequential(
+    #     torch.nn.Flatten(),
+    #     torch.nn.Linear(num_features, 8),  # Match the number of classes
+    #     torch.nn.LogSoftmax(dim=1)
+    # )
+    
+    model = models.densenet201(weights=None)
+    num_features = model.classifier.in_features
+    model.classifier = torch.nn.Linear(num_features, 8)
     
     # Load the trained weights
     model.load_state_dict(torch.load("dl_weights/densenet201_material.pt", map_location=device))
@@ -58,7 +62,7 @@ def predict_material_img (image_path, insp_method, box_id, self):
     
     # Define the image transformation (must match training)
     transform = transforms.Compose([
-        transforms.Resize((256, 320)),
+        transforms.Resize((256, 256)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
@@ -334,12 +338,16 @@ def predict_n_stories_img (image_path, insp_method, box_id, self):
     num_features = model.classifier.in_features
     
     # Use the correct number of output classes (9 as indicated in the error)
-    model.classifier = torch.nn.Sequential(
-        torch.nn.Flatten(),
-        torch.nn.Linear(num_features, 9),  # Match the number of classes
-        torch.nn.LogSoftmax(dim=1)
-    )
+    # model.classifier = torch.nn.Sequential(
+    #     torch.nn.Flatten(),
+    #     torch.nn.Linear(num_features, 9),  # Match the number of classes
+    #     torch.nn.LogSoftmax(dim=1)
+    # )
     
+    model = models.densenet201(weights=None)
+    num_features = model.classifier.in_features
+    model.classifier = torch.nn.Linear(num_features, 9)
+
     # Load the trained weights
     model.load_state_dict(torch.load("dl_weights/densenet201_n_stories.pt", map_location=device))
     model.to(device)
@@ -347,7 +355,7 @@ def predict_n_stories_img (image_path, insp_method, box_id, self):
     
     # Define the image transformation (must match training)
     transform = transforms.Compose([
-        transforms.Resize((256, 320)),
+        transforms.Resize((256, 256)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])

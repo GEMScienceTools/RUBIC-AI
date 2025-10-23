@@ -992,6 +992,9 @@ class GUIMethods:
                     material_index = predict_material_img(image_file, self.ui.insp_method, self.box_id, self)
                     # LLRS building image sets prediction
                     material_id[self.box_id].setCurrentIndex(material_index+1)
+                    # class_names = ['Concrete', 'Hybrid or composite (mixed) materials', 'Informal materials', 
+                    #                'Masonry - Confined', 'Masonry - Reinforced', 'Masonry - Unreinforced', 'Steel', 'Wood']
+                    # material_id[self.box_id].setCurrentText(class_names[material_index])
                     
                     # Comboboxes for each image label
                     llrs_id = [self.ui.llrs_cb_1,self.ui.llrs_cb_1,self.ui.llrs_cb_1]
