@@ -144,6 +144,7 @@ class GUIMethods:
                         unique_coords = valid_coords.drop_duplicates()
                         # Count unique coordinate pairs
                         num_unique_coords = len(unique_coords)
+                        print("Values saved: ", num_unique_coords)
                         self.click_count = num_unique_coords - 1
                         self.sw_insp = False
             except:
@@ -622,7 +623,10 @@ class GUIMethods:
                         x1, y1, x2, y2 = map(int, highest_conf_box)
                         
                         # Crop the area within the selected bounding box
-                        self.cropped_image[aux] = org_img[aux][y1:y2, x1:x2] 
+                        # self.cropped_image[aux] = org_img[aux][y1:y2, x1:x2]
+                        # self.org_img_bp = org_img[aux]
+                        self.cropped_image[aux] = org_img[1][y1:y2, x1:x2]
+                        self.org_img_bp = org_img[1]
                         # Draw a dashed rectangle for the highest confidence box
                         for i in range(x1, x2, 14):
                             cv2.line(display_image, (i, y1), (min(i + 5, x2), y1), (0, 0, 255), 3)
@@ -992,14 +996,13 @@ class GUIMethods:
                     material_index = predict_material_img(image_file, self.ui.insp_method, self.box_id, self)
                     # LLRS building image sets prediction
                     material_id[self.box_id].setCurrentIndex(material_index+1)
-                    # class_names = ['Concrete', 'Hybrid or composite (mixed) materials', 'Informal materials', 
-                    #                'Masonry - Confined', 'Masonry - Reinforced', 'Masonry - Unreinforced', 'Steel', 'Wood']
-                    # material_id[self.box_id].setCurrentText(class_names[material_index])
                     
                     # Comboboxes for each image label
                     llrs_id = [self.ui.llrs_cb_1,self.ui.llrs_cb_1,self.ui.llrs_cb_1]
                     # LLRS building image prediction
                     llrs_index = predict_llrs_img(image_file, self.ui.insp_method, self.box_id, self)
+                    if llrs_index == 5:
+                        llrs_index = 4
                     # LLRS building image sets prediction
                     llrs_id[self.box_id].setCurrentIndex(llrs_index+1)
                                 
@@ -1023,7 +1026,7 @@ class GUIMethods:
                     # LLRS building image prediction
                     occupancy_index = predict_occupancy_img(image_file, self.ui.insp_method, self.box_id, self)
                     # LLRS building image sets prediction
-                    occupancy_class = ['Residential', 'Educational', 'Government', 'Industrial', 'Mixed', 'Other', 'Residential']
+                    occupancy_class = [ 'Commercial' , 'Industrial' ,'Mixed', 'Residential']
                     occupancy_id[self.box_id].setCurrentText(occupancy_class[occupancy_index])  
                     
                     # Comboboxes for each image label
@@ -1560,7 +1563,16 @@ class GUIMethods:
                                 +str(self.data_building.iloc[self.old_local + aux, 0]))
                 
                 cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
-       
+                
+                try:
+                    image = cv2.imread(cropped_path)
+                except:
+                    aux = 0
+                    aux_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    
+                    cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
+    
                 # LLRS building image prediction
                 material_index = predict_material_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
                 # LLRS building image sets prediction
@@ -1632,6 +1644,14 @@ class GUIMethods:
                                 +str(self.data_building.iloc[self.old_local + aux, 0]))
                 cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"                  
               
+                try:
+                    image = cv2.imread(cropped_path)
+                except:
+                    aux = 0
+                    aux_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    
+                    cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
                 # LLRS building image prediction
                 llrs_index = predict_llrs_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
                 # LLRS building image sets prediction
@@ -1709,6 +1729,15 @@ class GUIMethods:
                                 +str(self.data_building.iloc[self.old_local + aux, 0]))
                 cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                              
+                try:
+                    image = cv2.imread(cropped_path)
+                except:
+                    aux = 0
+                    aux_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    
+                    cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
+                
                 # LLRS building image prediction
                 code_level_index = predict_code_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
                 # LLRS building image sets prediction
@@ -1787,6 +1816,15 @@ class GUIMethods:
                                 +str(self.data_building.iloc[self.old_local + aux, 0]))
                 cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                 
+                try:
+                    image = cv2.imread(cropped_path)
+                except:
+                    aux = 0
+                    aux_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    
+                    cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
+                
                 # LLRS building image prediction
                 n_stories_index = predict_n_stories_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
                 # LLRS building image sets prediction
@@ -1836,13 +1874,12 @@ class GUIMethods:
                 if self.predicted_img[i] == 1:
                     # Image path
                     image_file = self.cropped_image[i]
-
                     # LLRS building image prediction
                     box_aux = None
                     occupancy_index = predict_occupancy_img(image_file, self.ui.insp_method, box_aux, self.ui)
 
                     # LLRS building image sets prediction
-                    occupancy_class = ['Residential', 'Educational', 'Government', 'Industrial', 'Mixed', 'Other', 'Residential']
+                    occupancy_class = [ 'Commercial' , 'Industrial' ,'Mixed', 'Residential']
                     if occupancy_index is None:
                         pass
                     else:
@@ -1865,10 +1902,19 @@ class GUIMethods:
                                 +str(self.data_building.iloc[self.old_local + aux, 0]))
                 cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"      
                 
+                try:
+                    image = cv2.imread(cropped_path)
+                except:
+                    aux = 0
+                    aux_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    
+                    cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
+                
                 # LLRS building image prediction
                 occupancy_index = predict_occupancy_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
                 # LLRS building image sets prediction
-                occupancy_class = ['Residential', 'Educational', 'Government', 'Industrial', 'Mixed', 'Other', 'Residential']
+                occupancy_class = [ 'Commercial' , 'Industrial' ,'Mixed', 'Residential']
                 if occupancy_index is None:
                     pass
                 else:
@@ -1917,7 +1963,8 @@ class GUIMethods:
                     i = 1
                     if self.predicted_img[i] == 1:
                         # Image path
-                        image_file = self.cropped_image[i]      
+                        # image_file = self.cropped_image[i]  
+                        image_file = self.org_img_bp
                         # block_position building image prediction
                         box_aux = None
                         block_position_index = predict_block_position_img(image_file, self.ui.insp_method, box_aux, self.ui)
@@ -1945,9 +1992,18 @@ class GUIMethods:
                                     +str(self.data_building.iloc[self.old_local + aux, 0]))
                     cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                     
-                    # block_position building image prediction
+                    try:
+                        image = cv2.imread(cropped_path)
+                    except:
+                        aux = 0
+                        aux_path = (self.ui.folder_path+"/Cropped_images/"
+                                        +str(self.data_building.iloc[self.old_local + aux, 0]))
+                        
+                        cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
                     
-                    block_position_index = predict_block_position_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
+                    org_path = (self.ui.folder_path+"/" +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    # block_position building image prediction
+                    block_position_index = predict_block_position_img(org_path, self.ui.insp_method, self.box_id, self.ui)
                     # block_position building image sets prediction
                     if block_position_index is None:
                         pass
@@ -2001,6 +2057,15 @@ class GUIMethods:
                                     +str(self.data_building.iloc[self.old_local + aux, 0]))
                     cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                     
+                    try:
+                        image = cv2.imread(cropped_path)
+                    except:
+                        aux = 0
+                        aux_path = (self.ui.folder_path+"/Cropped_images/"
+                                        +str(self.data_building.iloc[self.old_local + aux, 0]))
+                        
+                        cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
+                    
                     # roof_shape building image prediction
                     roof_shape_index = predict_roof_shape_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
                     # roof_shape building image sets prediction
@@ -2053,7 +2118,16 @@ class GUIMethods:
                     aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
                                     +str(self.data_building.iloc[self.old_local + aux, 0]))
                     cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
-                                                           
+                         
+                    try:
+                        image = cv2.imread(cropped_path)
+                    except:
+                        aux = 0
+                        aux_path = (self.ui.folder_path+"/Cropped_images/"
+                                        +str(self.data_building.iloc[self.old_local + aux, 0]))
+                        
+                        cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
+                           
                     # roof_material building image prediction
                     roof_material_index = predict_roof_material_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
                     # roof_material building image sets prediction

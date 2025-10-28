@@ -146,21 +146,25 @@ def predict_llrs_img (image_path, insp_method, box_id, self):
     model = models.densenet201(weights=None)  # Initialize model without pre-trained weights
     num_features = model.classifier.in_features
     
-    # Use the correct number of output classes (9 as indicated in the error)
-    model.classifier = torch.nn.Sequential(
-        torch.nn.Flatten(),
-        torch.nn.Linear(num_features, 6),  # Match the number of classes
-        torch.nn.LogSoftmax(dim=1)
-    )
+    # # Use the correct number of output classes (9 as indicated in the error)
+    # model.classifier = torch.nn.Sequential(
+    #     torch.nn.Flatten(),
+    #     torch.nn.Linear(num_features, 6),  # Match the number of classes
+    #     torch.nn.LogSoftmax(dim=1)
+    # )
+    
+    model = models.densenet201(weights=None)
+    num_features = model.classifier.in_features
+    model.classifier = torch.nn.Linear(num_features, 6)
     
     # Load the trained weights
-    model.load_state_dict(torch.load("dl_weights/densenet201_llrs.pt", map_location=device))
+    model.load_state_dict(torch.load("dl_weights/densenet201_llrs_v1.pt", map_location=device))
     model.to(device)
     model.eval()
     
     # Define the image transformation (must match training)
     transform = transforms.Compose([
-        transforms.Resize((256, 320)),
+        transforms.Resize((256, 256)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
@@ -242,15 +246,22 @@ def predict_code_img (image_path, insp_method, box_id, self):
     model = models.densenet201(weights=None)  # Initialize model without pre-trained weights
     num_features = model.classifier.in_features
     
-    # Use the correct number of output classes (9 as indicated in the error)
-    model.classifier = torch.nn.Sequential(
-        torch.nn.Flatten(),
-        torch.nn.Linear(num_features, 4),  # Match the number of classes
-        torch.nn.LogSoftmax(dim=1)
-    )
+    # # Use the correct number of output classes (9 as indicated in the error)
+    # model.classifier = torch.nn.Sequential(
+    #     torch.nn.Flatten(),
+    #     torch.nn.Linear(num_features, 4),  # Match the number of classes
+    #     torch.nn.LogSoftmax(dim=1)
+    # )
     
+    num_features = model.classifier.in_features  # or model.classifier.in_features if replaced earlier
+    model.classifier = torch.nn.Sequential(
+        torch.nn.Linear(num_features, 512),
+        torch.nn.ReLU(),
+        torch.nn.Dropout(0.4),
+        torch.nn.Linear(512, 4)
+    )
     # Load the trained weights
-    model.load_state_dict(torch.load("dl_weights/densenet201_code.pt", map_location=device))
+    model.load_state_dict(torch.load("dl_weights/densenet201_code_level_v1.pt", map_location=device))
     model.to(device)
     model.eval()
     
@@ -436,20 +447,33 @@ def predict_occupancy_img (image_path, insp_method, box_id, self):
     num_features = model.classifier.in_features
     
     # Use the correct number of output classes (9 as indicated in the error)
+    # model.classifier = torch.nn.Sequential(
+    #     torch.nn.Flatten(),
+    #     torch.nn.Linear(num_features, 7),  # Match the number of classes
+    #     torch.nn.LogSoftmax(dim=1)
+    # )
+    
+    # model = models.densenet201(weights=None)
+    # num_features = model.classifier.in_features
+    # model.classifier = torch.nn.Linear(num_features, 4)
+    
+    num_features = model.classifier.in_features  # or model.classifier.in_features if replaced earlier
     model.classifier = torch.nn.Sequential(
-        torch.nn.Flatten(),
-        torch.nn.Linear(num_features, 7),  # Match the number of classes
-        torch.nn.LogSoftmax(dim=1)
+        torch.nn.Linear(num_features, 512),
+        torch.nn.ReLU(),
+        torch.nn.Dropout(0.4),
+        torch.nn.Linear(512, 4)
     )
+
     
     # Load the trained weights
-    model.load_state_dict(torch.load("dl_weights/densenet201_occupancy.pt", map_location=device))
+    model.load_state_dict(torch.load("dl_weights/densenet201_occupancy_v1_test.pt", map_location=device))
     model.to(device)
     model.eval()
     
     # Define the image transformation (must match training)
     transform = transforms.Compose([
-        transforms.Resize((256, 320)),
+        transforms.Resize((256, 256)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
@@ -530,21 +554,29 @@ def predict_block_position_img (image_path, insp_method, box_id, self):
     model = models.densenet201(weights=None)  # Initialize model without pre-trained weights
     num_features = model.classifier.in_features
     
-    # Use the correct number of output classes (9 as indicated in the error)
+    # # Use the correct number of output classes (9 as indicated in the error)
+    # model.classifier = torch.nn.Sequential(
+    #     torch.nn.Flatten(),
+    #     torch.nn.Linear(num_features, 3),  # Match the number of classes
+    #     torch.nn.LogSoftmax(dim=1)
+    # )
+    
+    num_features = model.classifier.in_features  # or model.classifier.in_features if replaced earlier
     model.classifier = torch.nn.Sequential(
-        torch.nn.Flatten(),
-        torch.nn.Linear(num_features, 3),  # Match the number of classes
-        torch.nn.LogSoftmax(dim=1)
+        torch.nn.Linear(num_features, 512),
+        torch.nn.ReLU(),
+        torch.nn.Dropout(0.4),
+        torch.nn.Linear(512, 4)
     )
     
     # Load the trained weights
-    model.load_state_dict(torch.load("dl_weights/densenet201_block.pt", map_location=device))
+    model.load_state_dict(torch.load("dl_weights/densenet201_Block_position_v1.pt", map_location=device))
     model.to(device)
     model.eval()
     
     # Define the image transformation (must match training)
     transform = transforms.Compose([
-        transforms.Resize((256, 320)),
+        transforms.Resize((256, 256)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
@@ -624,21 +656,30 @@ def predict_roof_shape_img (image_path, insp_method, box_id, self):
     model = models.densenet201(weights=None)  # Initialize model without pre-trained weights
     num_features = model.classifier.in_features
     
-    # Use the correct number of output classes (9 as indicated in the error)
+    # # Use the correct number of output classes (9 as indicated in the error)
+    # model.classifier = torch.nn.Sequential(
+    #     torch.nn.Flatten(),
+    #     torch.nn.Linear(num_features, 3),  # Match the number of classes
+    #     torch.nn.LogSoftmax(dim=1)
+    # )
+    
+    num_features = model.classifier.in_features  # or model.classifier.in_features if replaced earlier
     model.classifier = torch.nn.Sequential(
-        torch.nn.Flatten(),
-        torch.nn.Linear(num_features, 3),  # Match the number of classes
-        torch.nn.LogSoftmax(dim=1)
+        torch.nn.Linear(num_features, 512),
+        torch.nn.ReLU(),
+        torch.nn.Dropout(0.4),
+        torch.nn.Linear(512, 5)
     )
+
     
     # Load the trained weights
-    model.load_state_dict(torch.load("dl_weights/densenet201_roof_shape.pt", map_location=device))
+    model.load_state_dict(torch.load("dl_weights/densenet201_roof_shp_v1.pt", map_location=device))
     model.to(device)
     model.eval()
     
     # Define the image transformation (must match training)
     transform = transforms.Compose([
-        transforms.Resize((256, 320)),
+        transforms.Resize((256, 256)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
@@ -718,21 +759,29 @@ def predict_roof_material_img (image_path, insp_method, box_id, self):
     model = models.densenet201(weights=None)  # Initialize model without pre-trained weights
     num_features = model.classifier.in_features
     
-    # Use the correct number of output classes (9 as indicated in the error)
+    # # Use the correct number of output classes (9 as indicated in the error)
+    # model.classifier = torch.nn.Sequential(
+    #     torch.nn.Flatten(),
+    #     torch.nn.Linear(num_features, 3),  # Match the number of classes
+    #     torch.nn.LogSoftmax(dim=1)
+    # )
+    
+    num_features = model.classifier.in_features  # or model.classifier.in_features if replaced earlier
     model.classifier = torch.nn.Sequential(
-        torch.nn.Flatten(),
-        torch.nn.Linear(num_features, 3),  # Match the number of classes
-        torch.nn.LogSoftmax(dim=1)
+        torch.nn.Linear(num_features, 512),
+        torch.nn.ReLU(),
+        torch.nn.Dropout(0.4),
+        torch.nn.Linear(512, 3)
     )
     
     # Load the trained weights
-    model.load_state_dict(torch.load("dl_weights/densenet201_roof_material.pt", map_location=device))
+    model.load_state_dict(torch.load("dl_weights/densenet201_roof_mat_v1.pt", map_location=device))
     model.to(device)
     model.eval()
     
     # Define the image transformation (must match training)
     transform = transforms.Compose([
-        transforms.Resize((256, 320)),
+        transforms.Resize((256, 256)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])

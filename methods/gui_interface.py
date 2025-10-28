@@ -479,13 +479,14 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.llrs_cb_1.addItem("Dual System", "LDUAL")
         self.llrs_cb_1.addItem("Infilled Frames", "LFINF")
         self.llrs_cb_1.addItem("Moment Frames", "LFM")
+        self.llrs_cb_1.addItem("No lateral load-resisting system", "LN")
         self.llrs_cb_1.addItem("Walls", "LWAL")
         self.llrs_cb_1.addItem("Braced frame", "LFBR")
         self.llrs_cb_1.addItem("Post and beam", "LPB") 
         self.llrs_cb_1.addItem("Flat slab/plate or waffle slab", "LFLS") 
         self.llrs_cb_1.addItem("Different LLRS in the two directions", "LDD")
         self.llrs_cb_1.addItem("Different LLRS in height ", "LHV") 
-        self.llrs_cb_1.addItem("No lateral load-resisting system", "LN") 
+        
         self.llrs_cb_1.addItem("Other", "LO") 
         # Set default index
         self.llrs_cb_1.setCurrentIndex(0)       
@@ -545,13 +546,13 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.occup_cb_1.setObjectName("occup_cb_1")
         # Adding Occupancy options
         self.occup_cb_1.addItem("Select Occupancy")
-        self.occup_cb_1.addItem("Residential", "RES")
         self.occup_cb_1.addItem("Commercial", "COM")
+        self.occup_cb_1.addItem("Industrial", "IND")
         self.occup_cb_1.addItem("Mixed", "MIX")
+        self.occup_cb_1.addItem("Residential", "RES")    
         self.occup_cb_1.addItem("Educational", "EDU")
         self.occup_cb_1.addItem("Government", "GOV")
-        self.occup_cb_1.addItem("Healthcare", "HEA")
-        self.occup_cb_1.addItem("Industrial", "IND")
+        self.occup_cb_1.addItem("Healthcare", "HEA")    
         self.occup_cb_1.addItem("Other", "OCO")
         # Set default index
         self.occup_cb_1.setCurrentIndex(0)
@@ -581,10 +582,10 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.roof_shape_cb_1.addItem("Flat", "RSH1")
         self.roof_shape_cb_1.addItem("Pitched with gable ends", "RSH2")
         self.roof_shape_cb_1.addItem("Pitched and hipped", "RSH3")
-        self.roof_shape_cb_1.addItem("Pitched with dormers", "RSH4")
         self.roof_shape_cb_1.addItem("Monopitch", "RSH5")
-        self.roof_shape_cb_1.addItem("Sawtooth", "RSH6")
         self.roof_shape_cb_1.addItem("Curved", "RSH7")
+        self.roof_shape_cb_1.addItem("Pitched with dormers", "RSH4")
+        self.roof_shape_cb_1.addItem("Sawtooth", "RSH6")
         self.roof_shape_cb_1.addItem("Complex regular", "RSH8")
         self.roof_shape_cb_1.addItem("Complex irregular", "RSH9")
         self.roof_shape_cb_1.addItem("Other", "RSHO")
@@ -641,8 +642,8 @@ class GUIInterface(QtWidgets.QMainWindow):
         # Adding Code Level options
         self.age_cb_1.addItem("Select Code Level")
         self.age_cb_1.addItem("High-Code", "CDH")
-        self.age_cb_1.addItem("Moderate-code", "CDM")
         self.age_cb_1.addItem("Low-Code", "CDL")
+        self.age_cb_1.addItem("Moderate-code", "CDM")
         self.age_cb_1.addItem("No-Code", "CDN")
         # Set default index
         self.age_cb_1.setCurrentIndex(0)
@@ -669,10 +670,10 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.bck_pos_cb_1.setObjectName("bck_pos_cb_1")
         # Adding Block Position options
         self.bck_pos_cb_1.addItem("Select Block Position")
-        self.bck_pos_cb_1.addItem("Detached building", "BDP")
         self.bck_pos_cb_1.addItem("Adjoining building(s) one side", "BP1")
         self.bck_pos_cb_1.addItem("Adjoining building(s) two side", "BP2")
         self.bck_pos_cb_1.addItem("Adjoining building(s) three side", "BP3")
+        self.bck_pos_cb_1.addItem("Detached building", "BDP")
         # Set default index
         self.bck_pos_cb_1.setCurrentIndex(0)
         # Scale dropdown width
