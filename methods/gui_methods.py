@@ -144,7 +144,6 @@ class GUIMethods:
                         unique_coords = valid_coords.drop_duplicates()
                         # Count unique coordinate pairs
                         num_unique_coords = len(unique_coords)
-                        print("Values saved: ", num_unique_coords)
                         self.click_count = num_unique_coords - 1
                         self.sw_insp = False
             except:
@@ -2168,17 +2167,26 @@ class GUIMethods:
 
         # Search in the DataFrame
         try:
-            result = self.data_ai[self.data_ai['id'] == search_value]
-            n_building = result.iloc[0,0].split("_")[0]
+            try:
+                result = self.data_ai[self.data_ai['id'] == int(search_value)]
+                if result.shape[0]<0:
+                    result = self.data_ai[self.data_ai['id'] == search_value]
+            except:
+                result = self.data_ai[self.data_ai['id'] == search_value]
+                if result.shape[0]<0:
+                    result = self.data_ai[self.data_ai['id'] == int(search_value)]
+            
+            n_building = result.iloc[0,0]
         except:
             QMessageBox.warning(self.ui, "Data Error", "Please click the Next Building button to upload the inspection database")
         
+        print(f"coordinates: {result.iloc[0,1]} , {result.iloc[0,2]}")
         if self.ui.insp_method == 0:
             self.click_count = int(n_building) - 1
         if self.ui.insp_method == 1:
             self.click_count = int(n_building) - 1
         if self.ui.insp_method == 2:
-            self.click_count = int(n_building)
+            self.click_count = int(n_building) - 1
 
     def neighbor_extrapolation(self):
         

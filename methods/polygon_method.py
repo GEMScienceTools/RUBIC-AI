@@ -347,7 +347,14 @@ class PolygonSetting(QtWidgets.QDialog):
         GUI_geofiles.create_centroid_layer(self)
         self.method.output_polygon = self.output_polygon
         self.mode_use()
-        self.accept()
+        
+        if self.building_value_polygon.text()=="0000":
+            QMessageBox.warning(self,
+                                "Error",
+                                "Building footprints have not been generated.\n"
+                                "Please click *Get footprints available* before saving and continuing.")
+        else:
+            self.accept()
         
         
         
