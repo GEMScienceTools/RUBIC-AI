@@ -525,6 +525,9 @@ class GUIMethods:
                         self.img_url[aux] , self.img_original_3, self.year_right = get_street_view_image(location, api_key, angle[aux])
                 else:
                     print("Street View not available")
+                    self.img_original_1, self.year_left = ["",""]
+                    self.img_original_2, self.year_center = ["",""]
+                    self.img_original_3, self.year_right = ["",""]
                     
             self.ui.year_value_1.setText(str(self.year_left))
             self.ui.year_value_2.setText(str(self.year_center))
@@ -858,29 +861,32 @@ class GUIMethods:
         inspection mode. If the inspection mode is not manual (`insp_method != 2`), the image is 
         retrieved from Google Street View (GSV). Otherwise, the image is loaded from the local device.
         """
-        # Getting the image depending of the inspection mode selected.
-        if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-            # From GSV (Polygon and Specific method)
-            self.image_bb = self.img_original_1
-        elif self.ui.insp_method == 2:
-            # From local device 
-            self.image_bb = self.ui.folder_path+"/"+str(self.data_building.iloc[self.old_local, 0])
-        # Left Frame to display
-        self.frame_bb_disp = self.ui.left_gsv_img
+        try:
+            # Getting the image depending of the inspection mode selected.
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+                # From GSV (Polygon and Specific method)
+                self.image_bb = self.img_original_1
+            elif self.ui.insp_method == 2:
+                # From local device 
+                self.image_bb = self.ui.folder_path+"/"+str(self.data_building.iloc[self.old_local, 0])
+            # Left Frame to display
+            self.frame_bb_disp = self.ui.left_gsv_img
+            
+            # Getting the path for image prediction
+            if self.ui.insp_method == 2:
+                try:   
+                    aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local, 0]))
+                    self.cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg" 
+                except:
+                    QMessageBox.warning(self.ui, "File Error", "This option is only available if there is a previous building detection.")
+            else:
+                self.cropped_path = None
         
-        # Getting the path for image prediction
-        if self.ui.insp_method == 2:
-            try:   
-                aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                +str(self.data_building.iloc[self.old_local, 0]))
-                self.cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg" 
-            except:
-                QMessageBox.warning(self.ui, "File Error", "This option is only available if there is a previous building detection.")
-        else:
-            self.cropped_path = None
-    
-        # Bounding box ID for prediction models
-        self.box_id = 0
+            # Bounding box ID for prediction models
+            self.box_id = 0
+        except:
+            pass
     
     ############ Left Bounding Box Manual Selection ################       
     def bounding_box_frame_central(self):
@@ -891,31 +897,34 @@ class GUIMethods:
         inspection mode. If the inspection mode is not manual (`insp_method != 2`), the image is 
         retrieved from Google Street View (GSV). Otherwise, the image is loaded from the local device.
         """
-        # Getting the image depending of the inspection mode selected.
-        if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-            # From GSV (Polygon and Specific method)
-            self.image_bb = self.img_original_2
-        elif self.ui.insp_method == 2:
-            # From local device 
-            self.image_bb = self.ui.folder_path+"/"+str(self.data_building.iloc[self.old_local + 1, 0])
-        # Central Frame to display 
-        self.frame_bb_disp = self.ui.central_gsv_img
+        try:
+            # Getting the image depending of the inspection mode selected.
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+                # From GSV (Polygon and Specific method)
+                self.image_bb = self.img_original_2
+            elif self.ui.insp_method == 2:
+                # From local device 
+                self.image_bb = self.ui.folder_path+"/"+str(self.data_building.iloc[self.old_local + 1, 0])
+            # Central Frame to display 
+            self.frame_bb_disp = self.ui.central_gsv_img
+            
+            # Getting the path for image prediction
+            if self.ui.insp_method == 2:
+                try:
+                    # Cropped image path
+                    aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + 1, 0]))
+                    self.cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
+                except:
+                    QMessageBox.warning(self.ui, "File Error", "This option is only available if there is a previous building detection.")
+            else:
+                self.cropped_path = None
         
-        # Getting the path for image prediction
-        if self.ui.insp_method == 2:
-            try:
-                # Cropped image path
-                aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                +str(self.data_building.iloc[self.old_local + 1, 0]))
-                self.cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
-            except:
-                QMessageBox.warning(self.ui, "File Error", "This option is only available if there is a previous building detection.")
-        else:
-            self.cropped_path = None
-    
-        # Bounding box ID for prediction models
-        self.box_id = 1
-       
+            # Bounding box ID for prediction models
+            self.box_id = 1
+        except:
+            pass
+            
     ############ Right Bounding Box Manual Selection ################
     def bounding_box_frame_right(self):
         """
@@ -925,29 +934,31 @@ class GUIMethods:
         inspection mode. If the inspection mode is not manual (`insp_method != 2`), the image is 
         retrieved from Google Street View (GSV). Otherwise, the image is loaded from the local device.
         """
-        # Getting the image depending of the inspection mode selected.
-        if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-            # From GSV (Polygon and Specific method)
-            self.image_bb = self.img_original_3
-        elif self.ui.insp_method == 2:
-            # From local device 
-            self.image_bb = self.ui.folder_path+"/"+str(self.data_building.iloc[self.old_local + 2, 0])
-        
-        self.frame_bb_disp = self.ui.right_gsv_img
-        # Getting the path for image prediction
-        if self.ui.insp_method == 2:
-            try:
-                # Cropped image path
-                aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                +str(self.data_building.iloc[self.old_local + 2, 0]))
-                self.cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
-            except:
-                QMessageBox.warning(self.ui, "File Error", "This option is only available if there is a previous building detection.")
-        else:
-            self.cropped_path = None
-        # Bounding box ID for prediction models
-        self.box_id = 2
+        try:
+            # Getting the image depending of the inspection mode selected.
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+                # From GSV (Polygon and Specific method)
+                self.image_bb = self.img_original_3
+            elif self.ui.insp_method == 2:
+                # From local device 
+                self.image_bb = self.ui.folder_path+"/"+str(self.data_building.iloc[self.old_local + 2, 0])
             
+            self.frame_bb_disp = self.ui.right_gsv_img
+            # Getting the path for image prediction
+            if self.ui.insp_method == 2:
+                try:
+                    # Cropped image path
+                    aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + 2, 0]))
+                    self.cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
+                except:
+                    QMessageBox.warning(self.ui, "File Error", "This option is only available if there is a previous building detection.")
+            else:
+                self.cropped_path = None
+            # Bounding box ID for prediction models
+            self.box_id = 2
+        except:
+            pass  
     ############ Folder Selection ################
     def bounding_box(self):
         """
@@ -968,10 +979,10 @@ class GUIMethods:
             QMessageBox.warning(self.ui, "File Error", "This option is only available once the building image is displayed.")
         # Conditional to avoid executing the method if there is no country name
         elif self.ui.country_value.text() == "-":
-            QMessageBox.warning(self.ui, "This option is only available once the building image is displayed.")
+            QMessageBox.warning(self.ui, "File Error", "This option is only available once the building image is displayed.")
         # Conditional to avoid executing the method if there is no city name 
         elif self.ui.city_value.text() == "-":
-            QMessageBox.warning(self.ui, "This option is only available once the building image is displayed.")
+            QMessageBox.warning(self.ui, "File Error", "This option is only available once the building image is displayed.")
         else:
             
             """Open the bounding box selection pop-up window."""
@@ -1099,77 +1110,81 @@ class GUIMethods:
             - Each entry in the database corresponds to a specific building image.
             - Requires properly configured UI components to retrieve and store data.
         """
-        
-        if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-            base_url = "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint="
-            coord = str(self.ui.lat_value.text()) + "," + str(self.ui.lon_value.text())
-            heading = get_road_orientation((float(self.ui.lat_value.text()), float(self.ui.lon_value.text())))
+        if self.ui.city_value.text() == "-":
+            QMessageBox.warning(self.ui,"File Error", "This option is only available once the building image is displayed.\n"
+                                                      "Please click the *Next Building* button.")
+        else:
+            # Save inspection function
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+                base_url = "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint="
+                coord = str(self.ui.lat_value.text()) + "," + str(self.ui.lon_value.text())
+                heading = get_road_orientation((float(self.ui.lat_value.text()), float(self.ui.lon_value.text())))
+                
+            # -------------------  Left building image ---------------------- 
             
-        # -------------------  Left building image ---------------------- 
-        
-        if self.ui.insp_method == 0 or self.ui.insp_method == 1:
-            self.data_ai.iloc[self.click_count * 3 , 0] = self.ui.img_id_value_1.text()[:-2]                 # ID
-            self.data_ai.iloc[self.click_count * 3 , 1] = self.data_building.loc[self.click_count, 'latitude']    # latitude
-            self.data_ai.iloc[self.click_count * 3 , 2] = self.data_building.loc[self.click_count, 'longitude']    # longitude
-            self.data_ai.iloc[self.click_count * 3 , 3] = self.ui.country_value.text()                   # Country
-            self.data_ai.iloc[self.click_count * 3 , 4] = self.ui.city_value.text()                      # City
-            self.data_ai.iloc[self.click_count * 3 , 5] = self.ui.material_cb_1.currentData()            # LLRS Material
-            self.data_ai.iloc[self.click_count * 3 , 6] = self.ui.llrs_cb_1.currentData()                # LLRS 
-            self.data_ai.iloc[self.click_count * 3 , 7] = self.ui.age_cb_1.currentData()                 # Code Level 
-            self.data_ai.iloc[self.click_count * 3 , 8] = self.ui.n_stories_value_1.currentData()        # Number of Stories 
-            self.data_ai.iloc[self.click_count * 3 , 9] = self.ui.occup_cb_1.currentData()               # Occupancy
-            self.data_ai.iloc[self.click_count * 3 , 10] = self.ui.bck_pos_cb_1.currentData()            # Block Position
-            self.data_ai.iloc[self.click_count * 3 , 11] = self.ui.epc_const_cb_1.currentText()          # Epoch of construction
-            self.data_ai.iloc[self.click_count * 3 , 12] = self.ui.roof_shape_cb_1.currentData()         # Roof shape
-            self.data_ai.iloc[self.click_count * 3 , 13] = self.ui.roof_material_cb_1.currentData()      # Roof material
-            self.data_ai.iloc[self.click_count * 3 , 14] = self.ui.img_q_cb_1.currentData()              # Image Quality
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1:
+                self.data_ai.iloc[self.click_count * 3 , 0] = self.ui.img_id_value_1.text()[:-2]                 # ID
+                self.data_ai.iloc[self.click_count * 3 , 1] = self.data_building.loc[self.click_count, 'latitude']    # latitude
+                self.data_ai.iloc[self.click_count * 3 , 2] = self.data_building.loc[self.click_count, 'longitude']    # longitude
+                self.data_ai.iloc[self.click_count * 3 , 3] = self.ui.country_value.text()                   # Country
+                self.data_ai.iloc[self.click_count * 3 , 4] = self.ui.city_value.text()                      # City
+                self.data_ai.iloc[self.click_count * 3 , 5] = self.ui.material_cb_1.currentData()            # LLRS Material
+                self.data_ai.iloc[self.click_count * 3 , 6] = self.ui.llrs_cb_1.currentData()                # LLRS 
+                self.data_ai.iloc[self.click_count * 3 , 7] = self.ui.age_cb_1.currentData()                 # Code Level 
+                self.data_ai.iloc[self.click_count * 3 , 8] = self.ui.n_stories_value_1.currentData()        # Number of Stories 
+                self.data_ai.iloc[self.click_count * 3 , 9] = self.ui.occup_cb_1.currentData()               # Occupancy
+                self.data_ai.iloc[self.click_count * 3 , 10] = self.ui.bck_pos_cb_1.currentData()            # Block Position
+                self.data_ai.iloc[self.click_count * 3 , 11] = self.ui.epc_const_cb_1.currentText()          # Epoch of construction
+                self.data_ai.iloc[self.click_count * 3 , 12] = self.ui.roof_shape_cb_1.currentData()         # Roof shape
+                self.data_ai.iloc[self.click_count * 3 , 13] = self.ui.roof_material_cb_1.currentData()      # Roof material
+                self.data_ai.iloc[self.click_count * 3 , 14] = self.ui.img_q_cb_1.currentData()              # Image Quality
+                
+                try:
+                    self.data_ai.iloc[self.click_count * 3 , 15] = (self.ui.material_cb_1.currentData()+"/"+
+                                                                    self.ui.llrs_cb_1.currentData()+"+"+
+                                                                    self.ui.age_cb_1.currentData()+"/H:"+
+                                                                    self.ui.n_stories_value_1.currentText()+"/"+
+                                                                    self.ui.occup_cb_1.currentData()+"/"+
+                                                                    self.ui.bck_pos_cb_1.currentData())            # Taxonomy
+                except:
+                    pass
+                
+                if self.img_url[0]  != "":
+                    self.data_ai.iloc[self.click_count * 3 , 16] = self.img_url[0]                           # Image URL
+                else:
+                    if isinstance(heading, int):
+                        self.data_ai.iloc[self.click_count * 3 , 16] = base_url + coord +"&heading="+str((heading+ 150) % 360)+"&pitch=5&fov=120"
             
-            try:
-                self.data_ai.iloc[self.click_count * 3 , 15] = (self.ui.material_cb_1.currentData()+"/"+
-                                                                self.ui.llrs_cb_1.currentData()+"+"+
-                                                                self.ui.age_cb_1.currentData()+"/H:"+
-                                                                self.ui.n_stories_value_1.currentText()+"/"+
-                                                                self.ui.occup_cb_1.currentData()+"/"+
-                                                                self.ui.bck_pos_cb_1.currentData())            # Taxonomy
-            except:
-                pass
-            
-            if self.img_url[0]  != "":
-                self.data_ai.iloc[self.click_count * 3 , 16] = self.img_url[0]                           # Image URL
-            else:
-                if isinstance(heading, int):
-                    self.data_ai.iloc[self.click_count * 3 , 16] = base_url + coord +"&heading="+str((heading+ 150) % 360)+"&pitch=5&fov=120"
-        
-        # ------------------- Local  -----------------------
-        elif self.ui.insp_method == 2:
-            # Left building image
-            self.data_ai.iloc[self.old_local , 0] = self.ui.img_id_value_1.text()[:-2]                  # ID
-            self.data_ai.iloc[self.old_local , 1] = self.data_building.loc[self.old_local,'latitude']      # latitude
-            self.data_ai.iloc[self.old_local , 2] = self.data_building.loc[self.old_local,'longitude']      # longitude
-            self.data_ai.iloc[self.old_local , 3] = self.ui.country_value.text()                   # Country
-            self.data_ai.iloc[self.old_local , 4] = self.ui.city_value.text()                      # City
-            self.data_ai.iloc[self.old_local , 5] = self.ui.material_cb_1.currentData()            # LLRS Material
-            self.data_ai.iloc[self.old_local , 6] = self.ui.llrs_cb_1.currentData()                # LLRS 
-            self.data_ai.iloc[self.old_local , 7] = self.ui.age_cb_1.currentData()                 # Code Level 
-            self.data_ai.iloc[self.old_local , 8] = self.ui.n_stories_value_1.currentData()        # Number of Stories 
-            self.data_ai.iloc[self.old_local , 9] = self.ui.occup_cb_1.currentData()               # Occupancy
-            self.data_ai.iloc[self.old_local , 10] = self.ui.bck_pos_cb_1.currentData()            # Block Position
-            self.data_ai.iloc[self.old_local , 11] = self.ui.epc_const_cb_1.currentText()          # Epoch of construction
-            self.data_ai.iloc[self.old_local , 12] = self.ui.roof_shape_cb_1.currentData()         # Roof shape
-            self.data_ai.iloc[self.old_local , 13] = self.ui.roof_material_cb_1.currentData()      # Roof material
-            self.data_ai.iloc[self.old_local , 14] = self.ui.img_q_cb_1.currentData()              # Image Quality
-            
-            try:
-                self.data_ai.iloc[self.old_local , 15] = (self.ui.material_cb_1.currentData()+"/"+
-                                                                self.ui.llrs_cb_1.currentData()+"+"+
-                                                                self.ui.age_cb_1.currentData()+"/H:"+
-                                                                self.ui.n_stories_value_1.currentText()+"/"+
-                                                                self.ui.occup_cb_1.currentData()+"/"+
-                                                                self.ui.bck_pos_cb_1.currentData())            # Taxonomy
-            except:
-                pass
-            
-            self.data_ai.iloc[self.old_local , 16] = self.data_building.iloc[self.old_local , 0] 
+            # ------------------- Local  -----------------------
+            elif self.ui.insp_method == 2:
+                # Left building image
+                self.data_ai.iloc[self.old_local , 0] = self.ui.img_id_value_1.text()[:-2]                  # ID
+                self.data_ai.iloc[self.old_local , 1] = self.data_building.loc[self.old_local,'latitude']      # latitude
+                self.data_ai.iloc[self.old_local , 2] = self.data_building.loc[self.old_local,'longitude']      # longitude
+                self.data_ai.iloc[self.old_local , 3] = self.ui.country_value.text()                   # Country
+                self.data_ai.iloc[self.old_local , 4] = self.ui.city_value.text()                      # City
+                self.data_ai.iloc[self.old_local , 5] = self.ui.material_cb_1.currentData()            # LLRS Material
+                self.data_ai.iloc[self.old_local , 6] = self.ui.llrs_cb_1.currentData()                # LLRS 
+                self.data_ai.iloc[self.old_local , 7] = self.ui.age_cb_1.currentData()                 # Code Level 
+                self.data_ai.iloc[self.old_local , 8] = self.ui.n_stories_value_1.currentData()        # Number of Stories 
+                self.data_ai.iloc[self.old_local , 9] = self.ui.occup_cb_1.currentData()               # Occupancy
+                self.data_ai.iloc[self.old_local , 10] = self.ui.bck_pos_cb_1.currentData()            # Block Position
+                self.data_ai.iloc[self.old_local , 11] = self.ui.epc_const_cb_1.currentText()          # Epoch of construction
+                self.data_ai.iloc[self.old_local , 12] = self.ui.roof_shape_cb_1.currentData()         # Roof shape
+                self.data_ai.iloc[self.old_local , 13] = self.ui.roof_material_cb_1.currentData()      # Roof material
+                self.data_ai.iloc[self.old_local , 14] = self.ui.img_q_cb_1.currentData()              # Image Quality
+                
+                try:
+                    self.data_ai.iloc[self.old_local , 15] = (self.ui.material_cb_1.currentData()+"/"+
+                                                                    self.ui.llrs_cb_1.currentData()+"+"+
+                                                                    self.ui.age_cb_1.currentData()+"/H:"+
+                                                                    self.ui.n_stories_value_1.currentText()+"/"+
+                                                                    self.ui.occup_cb_1.currentData()+"/"+
+                                                                    self.ui.bck_pos_cb_1.currentData())            # Taxonomy
+                except:
+                    pass
+                
+                self.data_ai.iloc[self.old_local , 16] = self.data_building.iloc[self.old_local , 0] 
             
         
             
@@ -1225,7 +1240,7 @@ class GUIMethods:
             except:
                 # Show a warning message box if there's a permission error
                 QMessageBox.warning(self.ui, "File Error", "The file is open or the folder is inaccessible."
-                                    +"Please close the file or check folder permissions.")
+                                    +" Please close the file or check folder permissions.")
         ############################## Specific #######################################
         elif self.ui.insp_method == 1:
             try:
@@ -2180,13 +2195,23 @@ class GUIMethods:
         except:
             QMessageBox.warning(self.ui, "Data Error", "Please click the Next Building button to upload the inspection database")
         
-        print(f"coordinates: {result.iloc[0,1]} , {result.iloc[0,2]}")
-        if self.ui.insp_method == 0:
-            self.click_count = int(n_building) - 1
-        if self.ui.insp_method == 1:
-            self.click_count = int(n_building) - 1
-        if self.ui.insp_method == 2:
-            self.click_count = int(n_building) - 1
+        try:
+            if self.ui.insp_method == 0:
+                self.click_count = int(n_building) - 1
+            if self.ui.insp_method == 1:
+                self.click_count = int(n_building) - 1
+            if self.ui.insp_method == 2:
+                self.click_count = int(n_building) - 1
+        except:
+            pass
+        
+        try:
+            self.get_city_name()
+            self.fetch_three_step_views()
+            self.object_detector_building()
+            self.clean_database()
+        except:
+            pass
 
     def neighbor_extrapolation(self):
         

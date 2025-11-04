@@ -6,9 +6,11 @@ import osmnx as ox
 import geopandas as gpd
 
 # Utilities libraries
-import os
+import pandas as pd
+from shapely.geometry import Polygon, MultiPolygon
 
 # For overture
+import os
 import subprocess
 
 class GUI_geofiles:
@@ -17,140 +19,345 @@ class GUI_geofiles:
           
     ############ City boundary shape file ################
     def download_building_footprints(self):
-        """
-        Download and save building footprints within a defined city boundary as a GeoPackage.
-    
-        This method checks for an existing project folder and boundary file before downloading
-        building footprints from OpenStreetMap (OSM). It ensures that the coordinate reference 
-        system (CRS) is in EPSG:4326 and filters out invalid geometries before saving the 
-        building footprints to a GeoPackage.
-    
-        Args:
-            None. The method relies on instance attributes such as `boundary_path`, `city_method`, 
-            and the output folder path provided in the UI.
-    
-        Returns:
-            None. The building footprints are saved to a GeoPackage file in the specified 
-            output folder.
-    
-        Effects:
-            - Displays a progress bar in the UI during the download process.
-            - Updates the UI with the progress and status of the operation.
-    
-        Raises:
-            - Skips execution if no project folder or boundary file is defined.
-            - Logs messages if no building footprints are found or valid geometries are unavailable.
-        """
-    
         # Create output file for building footprints
         self.city_method = self.city
         self.country_method = self.country
-        output_file = self.method.output_folder_value+"/"+self.output_polygon.text()+"_buildings_footprint.gpkg"
-
-        # Conditionional checks for an existing boundary file, and if it exists, avoids creating a duplicate
+        output_file = (
+            self.method.output_folder_value + "/" +
+            self.output_polygon.text() + "_buildings_footprint.gpkg"
+        )
+    
+        # Check for existing footprint file
         if os.path.exists(output_file):
             buildings = gpd.read_file(output_file)
         else:
-            # Check if a boundary file exists to download the building footprints within it
+            # Ensure boundary exists
             if os.path.exists(self.boundary_path):
+                # ==============================================================
+                # MODE 0: OpenStreetMap
+                # ==============================================================
                 if self.footprint_mode.currentData() == 0:
-                    # Create a progress bar for users so they know the GUI is processing tasks in the backend              
-                    # Define input and output file paths
-                    geopackage_path = self.boundary_path
-                    # Load the single layer from the GeoPackage
-                    gdf = gpd.read_file(geopackage_path)
-                    # Ensure the CRS is EPSG:4326
-                    if gdf.crs.to_string() != "EPSG:4326":
+                    # Load and ensure EPSG:4326
+                    gdf = gpd.read_file(self.boundary_path)
+                    if gdf.crs is None or gdf.crs.to_string() != "EPSG:4326":
                         print("Reprojecting to EPSG:4326...")
                         gdf = gdf.to_crs("EPSG:4326")
-                    # Download building footprints from OSM
-                    polygon = gdf.unary_union
-                    # For latest osmnx versions
-                    try:
-                        buildings = ox.geometries_from_polygon(polygon, tags={"building": True})
-                    except AttributeError:
-                        buildings = ox.features_from_polygon(polygon, tags={"building": True})
-                    # Save the downloaded footprints to a new GeoPackage
-                    if buildings.empty:
-                        return None
-                    # Filter only Polygon and MultiPolygon geometries
-                    buildings = buildings[buildings.geom_type.isin(["Polygon", "MultiPolygon"])]
-                    if buildings.empty:
-                        return None   
-                    # Drop the AREA column if it exists
-                    if "AREA" in buildings.columns:
-                        buildings = buildings.drop(columns=["AREA"])
-                    # Save to GeoPackage
-                    buildings.to_file(output_file, driver="GPKG")
 
- ############################################################################################### 
- ###############################################################################################    
- ###############################################################################################    
- ###############################################################################################    
- ###############################################################################################    
- ###############################################################################################    
-              
-                
-                elif self.footprint_mode.currentData() == 1:
-                    file_path = self.boundary_path
-                    footprint_output_name = output_file
-                    layer=None
-                
-                    """
-                    Get the bounding box of a polygon layer.
-                    
-                    Parameters:
-                        geo_path (str): Path to the file (.gpkg, .geojson, .shp, etc.)
-                        layer (str): Layer name if using a GeoPackage
-                        
-                    Returns:
-                        tuple: (minx, miny, maxx, maxy) — W, S, E, N
-                    """
-                    # Load the GeoDataFrame
-                    if layer:
-                        gdf = gpd.read_file(file_path, layer=layer)
+                    # Union all geometries
+                    polygon = gdf.union_all()
+                    if not polygon.is_valid:
+                        polygon = polygon.buffer(0)
+
+                    # Settings for reliability
+                    ox.settings.overpass_endpoint = "https://overpass-api.de/api/interpreter"
+                    ox.settings.timeout = 180
+
+                    # Function to safely query OSM
+                    def get_osm_buildings(poly):
+                        try:
+                            if hasattr(ox, "geometries_from_polygon"):
+                                return ox.geometries_from_polygon(poly, tags={"building": True})
+                            else:
+                                return ox.features_from_polygon(poly, tags={"building": True})
+                        except Exception as e:
+                            print(f"⚠️ Skipping polygon due to error: {e}")
+                            return gpd.GeoDataFrame()
+
+                    # Handle Polygon / MultiPolygon
+                    building_list = []
+                    if isinstance(polygon, MultiPolygon):
+                        print(f"Detected MultiPolygon with {len(polygon.geoms)} parts...")
+                        for i, poly in enumerate(polygon.geoms, 1):
+                            print(f"  → Querying sub-polygon {i}/{len(polygon.geoms)}...")
+                            gdf_part = get_osm_buildings(poly)
+                            if not gdf_part.empty:
+                                building_list.append(gdf_part)
+                    elif isinstance(polygon, Polygon):
+                        print("Detected single Polygon...")
+                        gdf_part = get_osm_buildings(polygon)
+                        if not gdf_part.empty:
+                            building_list.append(gdf_part)
                     else:
-                        gdf = gpd.read_file(file_path)
-                    
-                    # Ensure the CRS is geographic (WGS84)
-                    if gdf.crs != "EPSG:4326":
-                        gdf = gdf.to_crs("EPSG:4326")
-                    
-                    # Get total bounds: (minx, miny, maxx, maxy)
-                    bounds = gdf.total_bounds
-                    # gdf.to_file("proof.gpkg", driver="GPKG")
-                    minx, miny, maxx, maxy = bounds
+                        print("Error: Input geometry is neither Polygon nor MultiPolygon.")
+                        return None
 
-                    bbox_target = "--bbox="+str(minx)+","+str(miny)+","+str(maxx)+","+str(maxy)
-                    # Step 1: Download buildings within bounding box (expanded area)
+                    if not building_list:
+                        print("No buildings found. Check your area or OSM coverage.")
+                        return None
+
+                    ## Merge all parts
+                    buildings = gpd.GeoDataFrame(pd.concat(building_list, ignore_index=True))
+                    buildings = buildings[buildings.geom_type.isin(["Polygon", "MultiPolygon"])]
+
+                    # 🧹 Clean invalid or reserved column names
+                    reserved_names = {"Type", "FID", "Geometry", "geom", "geometry", "FIXME"}
+                    clean_columns = []
+                    for col in buildings.columns:
+                        if col in reserved_names or not col.isidentifier():
+                            new_col = f"{col}_field"
+                        else:
+                            new_col = col
+                        clean_columns.append(new_col)
+                    buildings.columns = clean_columns
+                    
+                    # ✅ Ensure the active geometry column is properly set
+                    geom_col = None
+                    for c in buildings.columns:
+                        if "geom" in c.lower():
+                            geom_col = c
+                            break
+                    
+                    if geom_col is not None:
+                        buildings = buildings.set_geometry(geom_col)
+                    else:
+                        raise ValueError("No geometry column found in the GeoDataFrame!")
+
+                    # ✅ AREA FILTER (greater than 16 m²)
+                    buildings = buildings.to_crs("EPSG:3857")  # project to meters
+                    buildings["area_m2"] = buildings.geometry.area
+                    before = len(buildings)
+                    buildings = buildings[buildings["area_m2"] > 20]
+                    after = len(buildings)
+                    print(f"Filtered buildings by area: {before} → {after} (>{20} m²)")
+                    buildings = buildings.to_crs("EPSG:4326")  # revert to geographic
+
+                    # Save output
+                    buildings.to_file(output_file, driver="GPKG")
+                    print("Done!")
+                    return len(buildings)
+                # ==============================================================
+                # MODE 1: Overture Maps
+                # ==============================================================
+                elif self.footprint_mode.currentData() == 1:
+                    gdf = gpd.read_file(self.boundary_path)
+                    if gdf.crs is None or gdf.crs.to_string() != "EPSG:4326":
+                        print("Reprojecting to EPSG:4326...")
+                        gdf = gdf.to_crs("EPSG:4326")
+
+                    polygon = gdf.union_all()
+                    if not polygon.is_valid:
+                        polygon = polygon.buffer(0)
+
+                    minx, miny, maxx, maxy = polygon.bounds
+                    bbox_target = f"--bbox={minx},{miny},{maxx},{maxy}"
+
+                    temp_geojson = "buildings_bbox.geojson"
+                    print("Downloading buildings from Overture Maps...")
                     command = [
-                        "overturemaps",
-                        "download",
-                        bbox_target,
-                        "-f", "geojson",
-                        "--type=building",
-                        "-o", "buildings_bboxs.geojson"
+                        "overturemaps", "download", bbox_target,
+                        "-f", "geojson", "--type=building", "-o", temp_geojson
                     ]
-                    
-                    subprocess.run(command, check=True)
-                    
-                    # Step 2: Load result and clip by your custom polygon
-                    buildings_ini = gpd.read_file("buildings_bboxs.geojson")
-                    
-                    # Load your polygon of interest (WKT, GeoJSON, or GPKG)
-                    polygon = gpd.read_file(file_path)  # or construct manually
-                    
-                    # Make sure both are in the same CRS
-                    polygon = polygon.to_crs(buildings_ini.crs)
-                    
-                    # Filter: keep only buildings that intersect with polygon
-                    buildings = gpd.overlay(buildings_ini, polygon, how="intersection")
-                    
-                    output_name = footprint_output_name
-                    # Save the filtered result
-                    buildings.to_file(output_name, driver="GPKG")
+
+                    try:
+                        subprocess.run(command, check=True)
+                    except subprocess.CalledProcessError as e:
+                        print(f"Overture Maps download failed: {e}")
+                        return None
+
+                    if not os.path.exists(temp_geojson):
+                        print("No building data file found after download.")
+                        return None
+
+                    buildings_ini = gpd.read_file(temp_geojson)
+                    if buildings_ini.empty:
+                        print("No buildings returned from Overture Maps.")
+                        return None
+
+                    print("✂️ Clipping buildings to custom polygon...")
+                    polygon_gdf = gpd.GeoDataFrame(geometry=[polygon], crs="EPSG:4326")
+                    buildings_ini = buildings_ini.to_crs(polygon_gdf.crs)
+
+                    try:
+                        buildings = gpd.overlay(buildings_ini, polygon_gdf, how="intersection")
+                    except Exception as e:
+                        print(f"⚠️ Error clipping buildings: {e}")
+                        return None
+
+                    if buildings.empty:
+                        print("No buildings found within the polygon area.")
+                        return None
+
+                    # ------------------------------------------------------------------
+                    # Clean and prepare geometries
+                    buildings = buildings[buildings.geom_type.isin(["Polygon", "MultiPolygon"])]
+                    buildings["geometry"] = buildings["geometry"].buffer(0)
+
+                    # ------------------------------------------------------------------
+                    # Clean invalid or reserved column names
+                    reserved_names = {"Type", "FID", "Geometry", "geom", "geometry", "FIXME"}
+                    clean_columns = []
+                    for col in buildings.columns:
+                        if col in reserved_names or not col.isidentifier():
+                            new_col = f"{col}_field"
+                        else:
+                            new_col = col
+                        clean_columns.append(new_col)
+                    buildings.columns = clean_columns
+
+                    # ✅ Ensure the active geometry column is correctly set
+                    geom_col = None
+                    for c in buildings.columns:
+                        if "geom" in c.lower():
+                            geom_col = c
+                            break
+                    if geom_col is not None:
+                        buildings = buildings.set_geometry(geom_col)
+                    else:
+                        raise ValueError("No geometry column found in the GeoDataFrame!")
+
+                    # ------------------------------------------------------------------
+                    # Drop unnecessary columns
+                    drop_cols = [c for c in buildings.columns if c.upper() in ["AREA", "FIXME", "NOTE"]]
+                    buildings = buildings.drop(columns=drop_cols, errors="ignore")
+
+                    # ------------------------------------------------------------------
+                    # ✅ AREA FILTER (greater than 16 m²)
+                    buildings = buildings.to_crs("EPSG:3857")  # project to meters
+                    buildings["area_m2"] = buildings.geometry.area
+                    before = len(buildings)
+                    buildings = buildings[buildings["area_m2"] > 20]
+                    after = len(buildings)
+                    print(f"Filtered buildings by area: {before} → {after} (>{20} m²)")
+                    buildings = buildings.to_crs("EPSG:4326")
+
+                    # ------------------------------------------------------------------
+                    # Save to file
+                    buildings.to_file(output_file, driver="GPKG")
+                    print("Done!")
+                    return len(buildings)
+        
+        
+        
+
+#     def download_building_footprints(self):
+#         """
+#         Download and save building footprints within a defined city boundary as a GeoPackage.
+    
+#         This method checks for an existing project folder and boundary file before downloading
+#         building footprints from OpenStreetMap (OSM). It ensures that the coordinate reference 
+#         system (CRS) is in EPSG:4326 and filters out invalid geometries before saving the 
+#         building footprints to a GeoPackage.
+    
+#         Args:
+#             None. The method relies on instance attributes such as `boundary_path`, `city_method`, 
+#             and the output folder path provided in the UI.
+    
+#         Returns:
+#             None. The building footprints are saved to a GeoPackage file in the specified 
+#             output folder.
+    
+#         Effects:
+#             - Displays a progress bar in the UI during the download process.
+#             - Updates the UI with the progress and status of the operation.
+    
+#         Raises:
+#             - Skips execution if no project folder or boundary file is defined.
+#             - Logs messages if no building footprints are found or valid geometries are unavailable.
+#         """
+    
+#         # Create output file for building footprints
+#         self.city_method = self.city
+#         self.country_method = self.country
+#         output_file = self.method.output_folder_value+"/"+self.output_polygon.text()+"_buildings_footprint.gpkg"
+
+#         # Conditionional checks for an existing boundary file, and if it exists, avoids creating a duplicate
+#         if os.path.exists(output_file):
+#             buildings = gpd.read_file(output_file)
+#         else:
+#             # Check if a boundary file exists to download the building footprints within it
+#             if os.path.exists(self.boundary_path):
+#                 if self.footprint_mode.currentData() == 0:
+#                     # Create a progress bar for users so they know the GUI is processing tasks in the backend              
+#                     # Define input and output file paths
+#                     geopackage_path = self.boundary_path
+#                     # Load the single layer from the GeoPackage
+#                     gdf = gpd.read_file(geopackage_path)
+#                     # Ensure the CRS is EPSG:4326
+#                     if gdf.crs.to_string() != "EPSG:4326":
+#                         print("Reprojecting to EPSG:4326...")
+#                         gdf = gdf.to_crs("EPSG:4326")
+#                     # Download building footprints from OSM
+#                     polygon = gdf.unary_union
+#                     # For latest osmnx versions
+#                     try:
+#                         buildings = ox.geometries_from_polygon(polygon, tags={"building": True})
+#                     except AttributeError:
+#                         buildings = ox.features_from_polygon(polygon, tags={"building": True})
+#                     # Save the downloaded footprints to a new GeoPackage
+#                     if buildings.empty:
+#                         return None
+#                     # Filter only Polygon and MultiPolygon geometries
+#                     buildings = buildings[buildings.geom_type.isin(["Polygon", "MultiPolygon"])]
+#                     if buildings.empty:
+#                         return None   
+#                     # Drop the AREA column if it exists
+#                     if "AREA" in buildings.columns:
+#                         buildings = buildings.drop(columns=["AREA"])
+#                     # Save to GeoPackage
+#                     buildings.to_file(output_file, driver="GPKG")
+
+#  ############################################################################################### 
+# ######################## Overture ##############################################################              
+#                 elif self.footprint_mode.currentData() == 1:
+#                     file_path = self.boundary_path
+#                     footprint_output_name = output_file
+#                     layer=None
                 
-        return len(buildings)
+#                     """
+#                     Get the bounding box of a polygon layer.
+                    
+#                     Parameters:
+#                         geo_path (str): Path to the file (.gpkg, .geojson, .shp, etc.)
+#                         layer (str): Layer name if using a GeoPackage
+                        
+#                     Returns:
+#                         tuple: (minx, miny, maxx, maxy) — W, S, E, N
+#                     """
+#                     # Load the GeoDataFrame
+#                     if layer:
+#                         gdf = gpd.read_file(file_path, layer=layer)
+#                     else:
+#                         gdf = gpd.read_file(file_path)
+                    
+#                     # Ensure the CRS is geographic (WGS84)
+#                     if gdf.crs != "EPSG:4326":
+#                         gdf = gdf.to_crs("EPSG:4326")
+                    
+#                     # Get total bounds: (minx, miny, maxx, maxy)
+#                     bounds = gdf.total_bounds
+#                     # gdf.to_file("proof.gpkg", driver="GPKG")
+#                     minx, miny, maxx, maxy = bounds
+
+#                     bbox_target = "--bbox="+str(minx)+","+str(miny)+","+str(maxx)+","+str(maxy)
+#                     # Step 1: Download buildings within bounding box (expanded area)
+#                     command = [
+#                         "overturemaps",
+#                         "download",
+#                         bbox_target,
+#                         "-f", "geojson",
+#                         "--type=building",
+#                         "-o", "buildings_bboxs.geojson"
+#                     ]
+                    
+#                     subprocess.run(command, check=True)
+                    
+#                     # Step 2: Load result and clip by your custom polygon
+#                     buildings_ini = gpd.read_file("buildings_bboxs.geojson")
+                    
+#                     # Load your polygon of interest (WKT, GeoJSON, or GPKG)
+#                     polygon = gpd.read_file(file_path)  # or construct manually
+                    
+#                     # Make sure both are in the same CRS
+#                     polygon = polygon.to_crs(buildings_ini.crs)
+                    
+#                     # Filter: keep only buildings that intersect with polygon
+#                     buildings = gpd.overlay(buildings_ini, polygon, how="intersection")
+                    
+#                     output_name = footprint_output_name
+#                     # Save the filtered result
+#                     buildings.to_file(output_name, driver="GPKG")
+                
+#         return len(buildings)
         
     ############ Random subset buildings ################  
     def extract_random_subset(self , sample_size):

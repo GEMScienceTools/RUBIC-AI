@@ -137,7 +137,10 @@ def get_street_view_image(location, api_key, angle):
     # Retrieve the road orientation at the given location
     road_orientation = get_road_orientation(location)
     # Compute the heading direction for the Street View API (ensuring it's within [0, 360] degrees)
-    heading = (road_orientation + angle + 180) % 360
+    try:
+        heading = (road_orientation + angle + 180) % 360
+    except:
+        heading = (0 + angle + 180) % 360
     # Google Maps API key (should be kept secure and not hardcoded in production)
     with open("methods/gsv_api_key.txt", "r") as f:
         api_key = f.read().strip()

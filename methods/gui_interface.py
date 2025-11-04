@@ -128,10 +128,6 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Search existing inspections
         self.search_img_button.clicked.connect(self.methods.search_inspection)
-        self.search_img_button.clicked.connect(self.methods.get_city_name)
-        self.search_img_button.clicked.connect(self.methods.fetch_three_step_views)
-        self.search_img_button.clicked.connect(self.methods.object_detector_building)
-        self.search_img_button.clicked.connect(self.methods.clean_database)
         
         # Extrapolation method
         self.next_button.clicked.connect(self.methods.neighbor_extrapolation)

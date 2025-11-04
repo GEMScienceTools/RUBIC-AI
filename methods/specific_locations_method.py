@@ -165,32 +165,35 @@ class SpecificLocationSetting(QtWidgets.QDialog):
             QMessageBox.warning(self, "Input Error", "No file selected.")
 
     def save_coordinates(self):
-        output_gpkg = self.method.output_folder_value+"/"+self.output_specific.text()+".gpkg"    
-        # Check if the GeoPackage file already exists
-        if os.path.exists(output_gpkg):
-            os.remove(output_gpkg)  # Delete the file to ensure only one layer is created
-        # Load the CSV file
         try:
-            df = self.df
-            required_columns = ['id', 'latitude', 'longitude']
-            missing = [col for col in required_columns if col not in df.columns]
-            if missing:
-                QMessageBox.warning(self, "Missing Columns", f"Required columns missing: {', '.join(missing)}")
-                return
-            
-            self.population = True
-            
-            QMessageBox.information(self, "Success", "Done! Please click save and continue.")
-        except Exception as e:
-            QMessageBox.warning(self, "Error", f"Could not load file:\n\n{str(e)}")
-        # Create geometries for the points using latitude and longitude
-        geometry = [Point(lon, lat) for lon, lat in zip(df['longitude'], df['latitude'])]
-        # Create a GeoDataFrame
-        gdf = gpd.GeoDataFrame(df, geometry=geometry)
-        # Set the coordinate reference system (CRS) to WGS84 (latitude/longitude)
-        gdf.set_crs('EPSG:4326', inplace=True)
-        # Save the GeoDataFrame to a file, if needed (e.g., to GeoPackage or Shapefile)
-        gdf.to_file(output_gpkg, driver='GPKG')  # This saves as GeoPackage
+            output_gpkg = self.method.output_folder_value+"/"+self.output_specific.text()+".gpkg"    
+            # Check if the GeoPackage file already exists
+            if os.path.exists(output_gpkg):
+                os.remove(output_gpkg)  # Delete the file to ensure only one layer is created
+            # Load the CSV file
+            try:
+                df = self.df
+                required_columns = ['id', 'latitude', 'longitude']
+                missing = [col for col in required_columns if col not in df.columns]
+                if missing:
+                    QMessageBox.warning(self, "Missing Columns", f"Required columns missing: {', '.join(missing)}")
+                    return
+                
+                self.population = True
+                
+                QMessageBox.information(self, "Success", "Done! Please click save and continue.")
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Could not load file:\n\n{str(e)}")
+            # Create geometries for the points using latitude and longitude
+            geometry = [Point(lon, lat) for lon, lat in zip(df['longitude'], df['latitude'])]
+            # Create a GeoDataFrame
+            gdf = gpd.GeoDataFrame(df, geometry=geometry)
+            # Set the coordinate reference system (CRS) to WGS84 (latitude/longitude)
+            gdf.set_crs('EPSG:4326', inplace=True)
+            # Save the GeoDataFrame to a file, if needed (e.g., to GeoPackage or Shapefile)
+            gdf.to_file(output_gpkg, driver='GPKG')  # This saves as GeoPackage
+        except:
+            QMessageBox.warning(self, "Error input", "Please complete the input information")
         
         
     def building_sample(self):

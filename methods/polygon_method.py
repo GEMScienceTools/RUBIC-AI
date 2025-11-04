@@ -112,7 +112,7 @@ class PolygonSetting(QtWidgets.QDialog):
         font.setPointSize(int(10 * sf_x))
         self.polygon_existing_path.setFont(font)
         self.polygon_existing_path.setObjectName("polygon_existing_path")
-        self.polygon_existing_path.setText("filename.csv")
+        self.polygon_existing_path.setText("existing_polygon_file.gpkg")
         
         # Footprint Mode Label
         self.footprint_label = QtWidgets.QLabel(self.coord_frame)
@@ -204,6 +204,22 @@ class PolygonSetting(QtWidgets.QDialog):
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
         
+        self.footprint_progress_label = QtWidgets.QLabel(self.coord_frame)
+        self.footprint_progress_label.setGeometry(QtCore.QRect(int(450 * sf_x), int(300 * sf_y), int(151 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        self.footprint_progress_label.setFont(font)
+        self.footprint_progress_label.setObjectName("footprint_progress_label")
+        self.footprint_progress_label.setText("status")
+
+        self.footprint_progress = QtWidgets.QProgressBar(self.coord_frame)
+        self.footprint_progress.setGeometry(QtCore.QRect(int(310 * sf_x), int(305 * sf_y), int(121 * sf_x), int(21 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_x))
+        self.footprint_progress.setFont(font)
+        self.footprint_progress.setProperty("value", 0)
+        self.footprint_progress.setObjectName("footprint_progress")
+
     def select_output_folder(self):
         folder_path = QFileDialog.getExistingDirectory(None, "Select Folder")
         if self.method:
@@ -333,9 +349,12 @@ class PolygonSetting(QtWidgets.QDialog):
                 QMessageBox.warning(self, "Error", f"Could not generate GPKG:\n{str(e)}")
 
     def building_polulation(self):
-        self.population = GUI_geofiles.download_building_footprints(self)
-        self.building_value_polygon.setText(str(self.population))
-        
+        # try:
+            self.population = GUI_geofiles.download_building_footprints(self)
+            self.building_value_polygon.setText(str(self.population))
+        # except:
+        #     QMessageBox.warning(self, "Error input", "Please complete the input information")
+            
     def mode_use(self):
         if self.collection_mode.currentText() == "Manual":
             self.ai_value = False 
@@ -343,19 +362,21 @@ class PolygonSetting(QtWidgets.QDialog):
             self.ai_value = True
 
     def building_sample(self):
-        GUI_geofiles.extract_random_subset(self, self.sample_size_polygon.text())
-        GUI_geofiles.create_centroid_layer(self)
-        self.method.output_polygon = self.output_polygon
-        self.mode_use()
-        
-        if self.building_value_polygon.text()=="0000":
-            QMessageBox.warning(self,
-                                "Error",
-                                "Building footprints have not been generated.\n"
-                                "Please click *Get footprints available* before saving and continuing.")
-        else:
-            self.accept()
-        
+        try:
+            GUI_geofiles.extract_random_subset(self, self.sample_size_polygon.text())
+            GUI_geofiles.create_centroid_layer(self)
+            self.method.output_polygon = self.output_polygon
+            self.mode_use()
+            
+            if self.building_value_polygon.text()=="0000":
+                QMessageBox.warning(self,
+                                    "Error",
+                                    "Building footprints have not been generated.\n"
+                                    "Please click *Get footprints available* before saving and continuing.")
+            else:
+                self.accept()
+        except:
+            QMessageBox.warning(self, "Error input", "Please complete the input information")
         
         
     def to_crs_safe(self, gdf, expected_crs):

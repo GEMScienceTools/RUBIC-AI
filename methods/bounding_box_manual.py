@@ -125,24 +125,84 @@ class BoundingBoxWindow(QDialog):
 
     # ================= CROP IMAGE =================
     def crop_image(self):
+        # Ensure exactly 4 points are provided for cropping
         if len(self.points) != 4:
             print("Error: Exactly 4 points are required to crop the image.")
             return None
-
-        sorted_pts = self.sort_points(self.points)
+        
+        # Sort the provided points to maintain the correct order for perspective transformation
+        sorted_pts = self.sort_points(self.points)        
+        # Compute the average width of the cropped region using the top and bottom edge distances
         crop_width = int(((sorted_pts[1][0] - sorted_pts[0][0]) + (sorted_pts[3][0] - sorted_pts[2][0])) / 2)
+        # Compute the average height of the cropped region using the left and right edge distances
         crop_height = int(((sorted_pts[2][1] - sorted_pts[0][1]) + (sorted_pts[3][1] - sorted_pts[1][1])) / 2)
-
+        
+        # Define destination points for the perspective transformation
         dst_pts = np.array([
-            [0, 0],
-            [crop_width - 1, 0],
-            [0, crop_height - 1],
-            [crop_width - 1, crop_height - 1]
+            [0, 0],                          # Top-left corner
+            [crop_width - 1, 0],             # Top-right corner
+            [0, crop_height - 1],            # Bottom-left corner
+            [crop_width - 1, crop_height - 1] # Bottom-right corner
         ], dtype=np.float32)
-
+        
+        # Compute the perspective transformation matrix from input points to destination points
         matrix = cv2.getPerspectiveTransform(np.array(sorted_pts, dtype=np.float32), dst_pts)
+        # Apply the perspective transformation to obtain the cropped image
         cropped_image = cv2.warpPerspective(self.image_backup, matrix, (crop_width, crop_height))
-        cv2.imwrite(self.cropped_img_path, cv2.cvtColor(cropped_image, cv2.COLOR_RGB2BGR))
+        
+        
+        # Expanded to the original size
+        # Scale points back to the original image resolution
+        scale_x = self.original_shape[1] / self.fixed_width  # Scale factor in x (width) direction
+        scale_y = self.original_shape[0] / self.fixed_height  # Scale factor in y (height) direction
+        
+        # Apply the scaling factors to the sorted points to map them back to original resolution
+        sorted_pts_original_size = np.array([
+            [pt[0] * scale_x, pt[1] * scale_y] for pt in sorted_pts  # Scale each point individually
+        ], dtype=np.float32)
+        
+        # Estimate the width of the cropped region in the original image
+        # Using average of top and bottom horizontal edges (between point 0-1 and point 2-3)
+        crop_width_original = int(((sorted_pts_original_size[1][0] - sorted_pts_original_size[0][0]) + 
+                                   (sorted_pts_original_size[3][0] - sorted_pts_original_size[2][0])) / 2)
+        
+        # Estimate the height of the cropped region in the original image
+        # Using average of left and right vertical edges (between point 0-2 and point 1-3)
+        crop_height_original = int(((sorted_pts_original_size[2][1] - sorted_pts_original_size[0][1]) + 
+                                    (sorted_pts_original_size[3][1] - sorted_pts_original_size[1][1])) / 2)
+        
+        # Define the destination points for the perspective transformation
+        # This is a rectangle of the estimated crop size, starting from top-left [0,0]
+        dst_pts_original = np.array([
+            [0, 0],  # top-left
+            [crop_width_original - 1, 0],  # top-right
+            [0, crop_height_original - 1],  # bottom-left
+            [crop_width_original - 1, crop_height_original - 1]  # bottom-right
+        ], dtype=np.float32)
+        
+        # Compute the perspective transformation matrix from the original points to the destination rectangle
+        matrix_org = cv2.getPerspectiveTransform(sorted_pts_original_size, dst_pts_original)
+        
+        # Apply the perspective warp to the original image to get the rectified and cropped region
+        cropped_image_original = cv2.warpPerspective(self.image_original, matrix_org, (crop_width_original, crop_height_original))
+        
+        # Save the cropped image as an RGB JPEG file (convert to BGR format first for OpenCV compatibility)
+        cv2.imwrite(self.cropped_img_path, cv2.cvtColor(cropped_image_original, cv2.COLOR_RGB2BGR))
+        
+        
+        # Check the inspection method condition to determine whether to save or assign the image
+        if self.insp_method != 2:
+            # Store the cropped image for further processing
+            self.prediction_img = cropped_image
+        else:
+            if self.gui_methods.box_id == None:
+                # Save the cropped image to the specified path
+                save_path = self.cropped_img_path
+                cv2.imwrite(save_path, cv2.cvtColor(cropped_image, cv2.COLOR_RGB2BGR))  # Convert RGB to BGR before saving
+            else:
+                self.prediction_img = cropped_image
+        
+        # Return the cropped image
         return cropped_image
 
     # ================= CONFIRM SELECTION =================
