@@ -239,6 +239,7 @@ class GUI_geofiles:
                     buildings.to_file(output_file, driver="GPKG")
                     self.footprint_progress.setValue(100)
                     self.footprint_progress_label.setText("Done!")
+                    os.remove(temp_geojson)
                     return len(buildings)
         
     ############ Random subset buildings ################  
