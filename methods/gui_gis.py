@@ -48,6 +48,8 @@ class GUI_geofiles:
                     if not polygon.is_valid:
                         polygon = polygon.buffer(0)
 
+                    self.footprint_progress.setValue(5)
+                    self.footprint_progress_label.setText("in progress ...")
                     # Settings for reliability
                     ox.settings.overpass_endpoint = "https://overpass-api.de/api/interpreter"
                     ox.settings.timeout = 180
@@ -63,6 +65,7 @@ class GUI_geofiles:
                             print(f"⚠️ Skipping polygon due to error: {e}")
                             return gpd.GeoDataFrame()
 
+                    self.footprint_progress.setValue(30)
                     # Handle Polygon / MultiPolygon
                     building_list = []
                     if isinstance(polygon, MultiPolygon):
@@ -85,6 +88,7 @@ class GUI_geofiles:
                         print("No buildings found. Check your area or OSM coverage.")
                         return None
 
+                    self.footprint_progress.setValue(60)
                     ## Merge all parts
                     buildings = gpd.GeoDataFrame(pd.concat(building_list, ignore_index=True))
                     buildings = buildings[buildings.geom_type.isin(["Polygon", "MultiPolygon"])]
@@ -99,6 +103,7 @@ class GUI_geofiles:
                             new_col = col
                         clean_columns.append(new_col)
                     buildings.columns = clean_columns
+                    self.footprint_progress.setValue(70)
                     
                     # ✅ Ensure the active geometry column is properly set
                     geom_col = None
@@ -111,7 +116,8 @@ class GUI_geofiles:
                         buildings = buildings.set_geometry(geom_col)
                     else:
                         raise ValueError("No geometry column found in the GeoDataFrame!")
-
+                    self.footprint_progress.setValue(80)
+                    
                     # ✅ AREA FILTER (greater than 16 m²)
                     buildings = buildings.to_crs("EPSG:3857")  # project to meters
                     buildings["area_m2"] = buildings.geometry.area
@@ -123,7 +129,8 @@ class GUI_geofiles:
 
                     # Save output
                     buildings.to_file(output_file, driver="GPKG")
-                    print("Done!")
+                    self.footprint_progress.setValue(100)
+                    self.footprint_progress_label.setText("Done!")
                     return len(buildings)
                 # ==============================================================
                 # MODE 1: Overture Maps
@@ -137,7 +144,9 @@ class GUI_geofiles:
                     polygon = gdf.union_all()
                     if not polygon.is_valid:
                         polygon = polygon.buffer(0)
-
+                    self.footprint_progress.setValue(10)
+                    self.footprint_progress_label.setText("in progress ...")
+                    
                     minx, miny, maxx, maxy = polygon.bounds
                     bbox_target = f"--bbox={minx},{miny},{maxx},{maxy}"
 
@@ -147,7 +156,8 @@ class GUI_geofiles:
                         "overturemaps", "download", bbox_target,
                         "-f", "geojson", "--type=building", "-o", temp_geojson
                     ]
-
+                    self.footprint_progress.setValue(20)
+                    
                     try:
                         subprocess.run(command, check=True)
                     except subprocess.CalledProcessError as e:
@@ -162,7 +172,8 @@ class GUI_geofiles:
                     if buildings_ini.empty:
                         print("No buildings returned from Overture Maps.")
                         return None
-
+                    self.footprint_progress.setValue(70)
+                    
                     print("✂️ Clipping buildings to custom polygon...")
                     polygon_gdf = gpd.GeoDataFrame(geometry=[polygon], crs="EPSG:4326")
                     buildings_ini = buildings_ini.to_crs(polygon_gdf.crs)
@@ -179,6 +190,7 @@ class GUI_geofiles:
 
                     # ------------------------------------------------------------------
                     # Clean and prepare geometries
+                    self.footprint_progress.setValue(80)
                     buildings = buildings[buildings.geom_type.isin(["Polygon", "MultiPolygon"])]
                     buildings["geometry"] = buildings["geometry"].buffer(0)
 
@@ -193,7 +205,8 @@ class GUI_geofiles:
                             new_col = col
                         clean_columns.append(new_col)
                     buildings.columns = clean_columns
-
+                    self.footprint_progress.setValue(85)
+                    
                     # ✅ Ensure the active geometry column is correctly set
                     geom_col = None
                     for c in buildings.columns:
@@ -209,7 +222,8 @@ class GUI_geofiles:
                     # Drop unnecessary columns
                     drop_cols = [c for c in buildings.columns if c.upper() in ["AREA", "FIXME", "NOTE"]]
                     buildings = buildings.drop(columns=drop_cols, errors="ignore")
-
+                    self.footprint_progress.setValue(90)
+                    
                     # ------------------------------------------------------------------
                     # ✅ AREA FILTER (greater than 16 m²)
                     buildings = buildings.to_crs("EPSG:3857")  # project to meters
@@ -223,7 +237,8 @@ class GUI_geofiles:
                     # ------------------------------------------------------------------
                     # Save to file
                     buildings.to_file(output_file, driver="GPKG")
-                    print("Done!")
+                    self.footprint_progress.setValue(100)
+                    self.footprint_progress_label.setText("Done!")
                     return len(buildings)
         
     ############ Random subset buildings ################  
