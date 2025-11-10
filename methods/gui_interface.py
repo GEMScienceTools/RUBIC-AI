@@ -119,12 +119,12 @@ class GUIInterface(QtWidgets.QMainWindow):
         # Loads and excute a deep learning model for LLRS feature prediction
         self.next_button.clicked.connect(self.methods.material_prediction)
         self.next_button.clicked.connect(self.methods.llrs_prediction)
-        self.next_button.clicked.connect(self.methods.code_level_prediction)
-        self.next_button.clicked.connect(self.methods.n_stories_prediction)
-        self.next_button.clicked.connect(self.methods.occupancy_prediction)
-        self.next_button.clicked.connect(self.methods.block_position_prediction)
+        self.next_button.clicked.connect(self.methods.n_stories_prediction)       
+        self.next_button.clicked.connect(self.methods.occupancy_prediction)       
         self.next_button.clicked.connect(self.methods.roof_shape_prediction)
         self.next_button.clicked.connect(self.methods.roof_material_prediction)
+        self.next_button.clicked.connect(self.methods.code_level_prediction)
+        self.next_button.clicked.connect(self.methods.block_position_prediction)
         
         # Search existing inspections
         self.search_img_button.clicked.connect(self.methods.search_inspection)

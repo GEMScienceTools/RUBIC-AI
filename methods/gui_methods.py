@@ -231,11 +231,13 @@ class GUIMethods:
                 self.cont_local = self.cont_local + self.n_images_local
                     
                 geolocator = Nominatim(user_agent="city_name_locator")
-                location = geolocator.reverse((lat, lon), exactly_one=True, language="en")
+                location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
                 
                 if location and 'address' in location.raw:
                     address = location.raw['address']
-                    self.city = address.get('city', address.get('town', address.get('village', 'Unknown')))
+                    self.city = (address.get("city") or address.get("town") or address.get("village")
+                        or address.get("municipality") or address.get("county") or address.get("state_district")
+                        or "Unknown")
                     self.country = address.get('country', 'Unknown')
                     self.city_name_manual = self.city+"_"+self.country
                     self.ui.city_value.setText(self.city) 
@@ -253,11 +255,13 @@ class GUIMethods:
                 lon = float(self.ui.lon_value.text())
                     
                 geolocator = Nominatim(user_agent="city_name_locator")
-                location = geolocator.reverse((lat, lon), exactly_one=True, language="en")
+                location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
                 
                 if location and 'address' in location.raw:
                     address = location.raw['address']
-                    self.city = address.get('city', address.get('town', address.get('village', 'Unknown')))
+                    self.city = (address.get("city") or address.get("town") or address.get("village")
+                        or address.get("municipality") or address.get("county") or address.get("state_district")
+                        or "Unknown")
                     self.country = address.get('country', 'Unknown')
                     self.city_name_manual = self.city+"_"+self.country
                     self.ui.city_value.setText(self.city) 
@@ -319,16 +323,15 @@ class GUIMethods:
             centroid_file = self.ui.output_folder_value+"/"+self.ui.file_name+".gpkg"
             database_file = self.ui.output_folder_value+"/"+self.ui.file_name+"_building_info.csv"
             # Check if a database file exists
-            if os.path.exists(database_file):
-                pass
-            else:
-                # Load the GeoPackage
-                gdf = gpd.read_file(centroid_file)
-                # Filter columns
-                filtered_gdf = gdf[['id', 'latitude', 'longitude']]
-                # Export to CSV
-                filtered_gdf.to_csv(database_file, index=False)             
-                print("Filtered CSV exported successfully!")
+            # if os.path.exists(database_file):
+            #     pass
+            # else:
+            # Load the GeoPackage
+            gdf = gpd.read_file(centroid_file)
+            # Filter columns
+            filtered_gdf = gdf[['id', 'latitude', 'longitude']]
+            # Export to CSV
+            filtered_gdf.to_csv(database_file, index=False)             
         
         elif self.ui.insp_method == 2:  
             pass # There is already the information in the csv with building information
@@ -1544,9 +1547,19 @@ class GUIMethods:
                     self.ui.progress_bar_method.setValue(j)
                 # for i in range (3):
                 # Image path
-                i = 1
-                if self.predicted_img[i] == 1:
-                    image_file = self.cropped_image[1]
+                pred_img = False
+                for aux_img in range (3):
+                    if self.predicted_img[1] == 1:
+                        pred_img = True
+                        j = 1
+                    elif self.predicted_img[0] == 1:
+                        pred_img = True
+                        j = 0
+                    elif self.predicted_img[2] == 1:
+                        pred_img = True
+                        j = 2
+                if pred_img == True:
+                    image_file = self.cropped_image[j]
                     # LLRS building image prediction
                     box_aux = None
                     material_index = predict_material_img(image_file, self.ui.insp_method, box_aux, self.ui)
@@ -1556,8 +1569,10 @@ class GUIMethods:
                     if material_index is None:
                         pass
                     else:
-                        
+                        i=1
                         material_id[i].setCurrentIndex(material_index+1)
+                        self.pred_mat_value = self.ui.material_cb_1.currentData()
+
                         # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
@@ -1594,6 +1609,7 @@ class GUIMethods:
                     pass
                 else:
                     material_id[aux].setCurrentIndex(material_index+1)
+                    self.pred_mat_value = self.ui.material_cb_1.currentData()
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
                     self.ui.method_progress.setText("Prediction complete!")
@@ -1626,10 +1642,20 @@ class GUIMethods:
         if self.ui.ai_check.isChecked():
             if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
                 # for i in range (3):
-                i = 1
-                if self.predicted_img[i] == 1:
+                pred_img = False
+                for aux_img in range (3):
+                    if self.predicted_img[1] == 1:
+                        pred_img = True
+                        j = 1
+                    elif self.predicted_img[0] == 1:
+                        pred_img = True
+                        j = 0
+                    elif self.predicted_img[2] == 1:
+                        pred_img = True
+                        j = 2
+                if pred_img == True:
                     # Image path
-                    image_file = self.cropped_image[i]       
+                    image_file = self.cropped_image[j]       
                     # LLRS building image prediction
                     box_aux = None
                     llrs_index = predict_llrs_img(image_file, self.ui.insp_method, box_aux, self.ui)
@@ -1637,9 +1663,24 @@ class GUIMethods:
                     if llrs_index is None:
                         pass
                     else:
-                        llrs_id[i].setCurrentIndex(llrs_index+1) 
-                    
-                        # Peogress bar update
+                        i=1
+                        llrs_id[i].setCurrentIndex(llrs_index+1)
+                        llrs_pred = self.ui.material_cb_1.currentData()
+                        
+                        if self.pred_mat_value == "MCF":
+                            llrs_id[i].setCurrentIndex(5) 
+                        elif self.pred_mat_value == "MUR":
+                            llrs_id[i].setCurrentIndex(5) 
+                        elif self.pred_mat_value == "MR":
+                            llrs_id[i].setCurrentIndex(5)
+                        elif self.pred_mat_value == "INF":
+                            llrs_id[i].setCurrentIndex(4)
+                        elif self.pred_mat_value == "CR":
+                            if llrs_pred in ("LDUAL", "LFM", "LFINF"):
+                                pass
+                            else:
+                                llrs_id[i].setCurrentIndex(3)
+                        # Progress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
             
@@ -1673,7 +1714,26 @@ class GUIMethods:
                     pass
                 else:
                     llrs_id[aux].setCurrentIndex(llrs_index+1)
-  
+                    llrs_pred = self.ui.material_cb_1.currentData()
+                    
+                    if self.pred_mat_value == "MCF":
+                        llrs_id[aux].setCurrentIndex(5) 
+                    elif self.pred_mat_value == "MUR":
+                        llrs_id[aux].setCurrentIndex(5) 
+                    elif self.pred_mat_value == "MR":
+                        llrs_id[aux].setCurrentIndex(5)
+                    elif self.pred_mat_value == "INF":
+                        llrs_id[aux].setCurrentIndex(4)
+                    elif self.pred_mat_value == "CR":
+                        if llrs_pred in ("LDUAL", "LFM", "LFINF"):
+                            pass
+                        else:
+                            llrs_id[aux].setCurrentIndex(3)
+                    elif self.pred_mat_value == "S":
+                        if llrs_pred in ("LFM", "LFBR"):
+                            pass
+                        else:
+                            llrs_id[aux].setCurrentIndex(3)       
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
                     self.ui.method_progress.setText("Prediction complete!")
@@ -1709,10 +1769,20 @@ class GUIMethods:
         if self.ui.ai_check.isChecked():
             if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
                 # for i in range (3):
-                i=1
-                if self.predicted_img[i] == 1:
+                pred_img = False
+                for aux_img in range (3):
+                    if self.predicted_img[1] == 1:
+                        pred_img = True
+                        j = 1
+                    elif self.predicted_img[0] == 1:
+                        pred_img = True
+                        j = 0
+                    elif self.predicted_img[2] == 1:
+                        pred_img = True
+                        j = 2
+                if pred_img == True:
                     # Image path
-                    image_file = self.cropped_image[i]
+                    image_file = self.cropped_image[j]
 
                     # LLRS building image prediction
                     box_aux = None
@@ -1722,7 +1792,13 @@ class GUIMethods:
                     if code_level_index is None:
                         pass
                     else:
-                        code_level_id[i].setCurrentIndex(code_level_index+1)   
+                        i=1
+                        code_level_id[i].setCurrentIndex(code_level_index+1) 
+                        
+                        if self.pred_mat_value == "MUR":
+                            code_level_id[i].setCurrentIndex(2) 
+                        elif self.pred_mat_value == "INF":
+                            code_level_id[i].setCurrentIndex(4)
                         
                         # Progress bar update
                         self.ui.progress_bar_method.setValue(100)
@@ -1759,7 +1835,12 @@ class GUIMethods:
                     pass
                 else:
                     code_level_id[aux].setCurrentIndex(code_level_index+1)
-      
+                    
+                    if self.pred_mat_value == "MUR":
+                        code_level_id[aux].setCurrentIndex(2) 
+                    elif self.pred_mat_value == "INF":
+                        code_level_id[aux].setCurrentIndex(4)
+                        
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
                     self.ui.method_progress.setText("Prediction complete!")
@@ -1795,10 +1876,20 @@ class GUIMethods:
         if self.ui.ai_check.isChecked():
             if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
                 # for i in range (3):
-                i = 1
-                if self.predicted_img[i] == 1:
+                pred_img = False
+                for aux_img in range (3):
+                    if self.predicted_img[1] == 1:
+                        pred_img = True
+                        j = 1
+                    elif self.predicted_img[0] == 1:
+                        pred_img = True
+                        j = 0
+                    elif self.predicted_img[2] == 1:
+                        pred_img = True
+                        j = 2
+                if pred_img == True:
                     # Image path
-                    image_file = self.cropped_image[i]
+                    image_file = self.cropped_image[j]
 
                     # LLRS building image prediction
                     box_aux = None
@@ -1809,6 +1900,7 @@ class GUIMethods:
                     if n_stories_index is None:
                         pass
                     else:
+                        i=1
                         n_stories_id[i].setCurrentText(class_names[n_stories_index])    
                     
                         # Peogress bar update
@@ -1884,10 +1976,20 @@ class GUIMethods:
         if self.ui.ai_check.isChecked():
             if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
                 # for i in range (3):
-                i = 1
-                if self.predicted_img[i] == 1:
+                pred_img = False
+                for aux_img in range (3):
+                    if self.predicted_img[1] == 1:
+                        pred_img = True
+                        j = 1
+                    elif self.predicted_img[0] == 1:
+                        pred_img = True
+                        j = 0
+                    elif self.predicted_img[2] == 1:
+                        pred_img = True
+                        j = 2
+                if pred_img == True:
                     # Image path
-                    image_file = self.cropped_image[i]
+                    image_file = self.cropped_image[j]
                     # LLRS building image prediction
                     box_aux = None
                     occupancy_index = predict_occupancy_img(image_file, self.ui.insp_method, box_aux, self.ui)
@@ -1897,6 +1999,7 @@ class GUIMethods:
                     if occupancy_index is None:
                         pass
                     else:
+                        i=1
                         occupancy_id[i].setCurrentText(occupancy_class[occupancy_index])                      
                         # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
@@ -1974,8 +2077,18 @@ class GUIMethods:
             if self.ui.ai_check.isChecked():
                 if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
                     # for i in range (3):
-                    i = 1
-                    if self.predicted_img[i] == 1:
+                    pred_img = False
+                    for aux_img in range (3):
+                        if self.predicted_img[1] == 1:
+                            pred_img = True
+                            j = 1
+                        elif self.predicted_img[0] == 1:
+                            pred_img = True
+                            j = 0
+                        elif self.predicted_img[2] == 1:
+                            pred_img = True
+                            j = 2
+                    if pred_img == True:
                         # Image path
                         # image_file = self.cropped_image[i]  
                         image_file = self.org_img_bp
@@ -1986,6 +2099,7 @@ class GUIMethods:
                         if block_position_index is None:
                             pass
                         else:
+                            i=1
                             block_position_id[i].setCurrentIndex(block_position_index+1)                       
                             # Peogress bar update
                             self.ui.progress_bar_method.setValue(100)
@@ -2040,10 +2154,20 @@ class GUIMethods:
             if self.ui.ai_check.isChecked():
                 if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
                     # for i in range (3):
-                    i = 1
-                    if self.predicted_img[i] == 1:
+                    pred_img = False
+                    for aux_img in range (3):
+                        if self.predicted_img[1] == 1:
+                            pred_img = True
+                            j = 1
+                        elif self.predicted_img[0] == 1:
+                            pred_img = True
+                            j = 0
+                        elif self.predicted_img[2] == 1:
+                            pred_img = True
+                            j = 2
+                    if pred_img == True:
                         # Image path
-                        image_file = self.cropped_image[i]      
+                        image_file = self.cropped_image[j]      
                         # roof_shape building image prediction
                         box_aux = None
                         roof_shape_index = predict_roof_shape_img(image_file, self.ui.insp_method, box_aux, self.ui)
@@ -2051,7 +2175,9 @@ class GUIMethods:
                         if roof_shape_index is None:
                             pass
                         else:
-                            roof_shape_id[i].setCurrentIndex(roof_shape_index+1)                       
+                            i=1
+                            roof_shape_id[i].setCurrentIndex(roof_shape_index+1) 
+                            self.pred_roof_shape = self.ui.roof_shape_cb_1.currentData()
                             # Peogress bar update
                             self.ui.progress_bar_method.setValue(100)
                             self.ui.method_progress.setText("Prediction complete!")
@@ -2087,7 +2213,7 @@ class GUIMethods:
                         pass
                     else:
                         roof_shape_id[aux].setCurrentIndex(roof_shape_index+1)
-          
+                        self.pred_roof_shape = self.ui.roof_shape_cb_1.currentData()
                         # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")      
@@ -2103,10 +2229,20 @@ class GUIMethods:
             if self.ui.ai_check.isChecked():
                 if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
                     # for i in range (3):
-                    i = 1
-                    if self.predicted_img[i] == 1:
+                    pred_img = False
+                    for aux_img in range (3):
+                        if self.predicted_img[1] == 1:
+                            pred_img = True
+                            j = 1
+                        elif self.predicted_img[0] == 1:
+                            pred_img = True
+                            j = 0
+                        elif self.predicted_img[2] == 1:
+                            pred_img = True
+                            j = 2
+                    if pred_img == True:
                         # Image path
-                        image_file = self.cropped_image[i]      
+                        image_file = self.cropped_image[j]      
                         # roof_material building image prediction
                         box_aux = None
                         roof_material_index = predict_roof_material_img(image_file, self.ui.insp_method, box_aux, self.ui)
@@ -2114,7 +2250,30 @@ class GUIMethods:
                         if roof_material_index is None:
                             pass
                         else:
-                            roof_material_id[i].setCurrentIndex(roof_material_index+1)                       
+                            i=1
+                            roof_material_id[i].setCurrentIndex(roof_material_index+1)
+                            roof_mat_pred = self.ui.roof_material_cb_1.currentData()
+                            
+                            if self.pred_roof_shape == "RSH1":
+                                roof_material_id[i].setCurrentIndex(1) 
+                            elif self.pred_roof_shape == "RSH7":
+                                roof_material_id[i].setCurrentIndex(3)
+                            elif self.pred_roof_shape == "RSH2":
+                                if roof_mat_pred in ("RMT1", "RMT6"):
+                                    pass
+                                else:
+                                    roof_material_id[i].setCurrentIndex(3)
+                            elif self.pred_roof_shape == "RSH3":
+                                if roof_mat_pred in ("RMT1", "RMT6"):
+                                    pass
+                                else:
+                                    roof_material_id[i].setCurrentIndex(3)
+                            elif self.pred_roof_shape == "RSH5":
+                                if roof_mat_pred in ("RMT1", "RMT6"):
+                                    pass
+                                else:
+                                    roof_material_id[i].setCurrentIndex(3)
+                                              
                             # Peogress bar update
                             self.ui.progress_bar_method.setValue(100)
                             self.ui.method_progress.setText("Prediction complete!")
@@ -2149,7 +2308,27 @@ class GUIMethods:
                         pass
                     else:
                         roof_material_id[aux].setCurrentIndex(roof_material_index+1)
-          
+                        roof_mat_pred = self.ui.roof_material_cb_1.currentData()
+                        
+                        if self.pred_roof_shape == "RSH1":
+                            roof_material_id[aux].setCurrentIndex(1) 
+                        elif self.pred_roof_shape == "RSH7":
+                            roof_material_id[aux].setCurrentIndex(3)
+                        elif self.pred_roof_shape == "RSH2":
+                            if roof_mat_pred in ("RMT1", "RMT6"):
+                                pass
+                            else:
+                                roof_material_id[aux].setCurrentIndex(3)
+                        elif self.pred_roof_shape == "RSH3":
+                            if roof_mat_pred in ("RMT1", "RMT6"):
+                                pass
+                            else:
+                                roof_material_id[aux].setCurrentIndex(3)
+                        elif self.pred_roof_shape == "RSH5":
+                            if roof_mat_pred in ("RMT1", "RMT6"):
+                                pass
+                            else:
+                                roof_material_id[aux].setCurrentIndex(3)
                         # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")      

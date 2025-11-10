@@ -158,7 +158,7 @@ def predict_llrs_img (image_path, insp_method, box_id, self):
     model.classifier = torch.nn.Linear(num_features, 6)
     
     # Load the trained weights
-    model.load_state_dict(torch.load("dl_weights/densenet201_llrs_v1.pt", map_location=device))
+    model.load_state_dict(torch.load("dl_weights/densenet201_llrs.pt", map_location=device))
     model.to(device)
     model.eval()
     
@@ -261,7 +261,7 @@ def predict_code_img (image_path, insp_method, box_id, self):
         torch.nn.Linear(512, 4)
     )
     # Load the trained weights
-    model.load_state_dict(torch.load("dl_weights/densenet201_code_level_v1.pt", map_location=device))
+    model.load_state_dict(torch.load("dl_weights/densenet201_code_level.pt", map_location=device))
     model.to(device)
     model.eval()
     
@@ -467,7 +467,7 @@ def predict_occupancy_img (image_path, insp_method, box_id, self):
 
     
     # Load the trained weights
-    model.load_state_dict(torch.load("dl_weights/densenet201_occupancy_v1_test.pt", map_location=device))
+    model.load_state_dict(torch.load("dl_weights/densenet201_occupancy.pt", map_location=device))
     model.to(device)
     model.eval()
     
@@ -570,7 +570,7 @@ def predict_block_position_img (image_path, insp_method, box_id, self):
     )
     
     # Load the trained weights
-    model.load_state_dict(torch.load("dl_weights/densenet201_Block_position_v1.pt", map_location=device))
+    model.load_state_dict(torch.load("dl_weights/densenet201_block_position.pt", map_location=device))
     model.to(device)
     model.eval()
     
@@ -673,7 +673,7 @@ def predict_roof_shape_img (image_path, insp_method, box_id, self):
 
     
     # Load the trained weights
-    model.load_state_dict(torch.load("dl_weights/densenet201_roof_shp_v1.pt", map_location=device))
+    model.load_state_dict(torch.load("dl_weights/densenet201_roof_shape.pt", map_location=device))
     model.to(device)
     model.eval()
     
@@ -775,7 +775,7 @@ def predict_roof_material_img (image_path, insp_method, box_id, self):
     )
     
     # Load the trained weights
-    model.load_state_dict(torch.load("dl_weights/densenet201_roof_mat_v1.pt", map_location=device))
+    model.load_state_dict(torch.load("dl_weights/densenet201_roof_material.pt", map_location=device))
     model.to(device)
     model.eval()
     
