@@ -15,6 +15,10 @@ from ultralytics import YOLO
 from geopy.geocoders import Nominatim
 import torch
 
+# Taxonomy check
+from methods.taxonomy import check_taxonomy
+import re  
+
 # Google Street Maps libry
 import requests
 
@@ -1004,27 +1008,53 @@ class GUIMethods:
                 image_file = dialog.prediction_img
                 
                 if self.ui.ai_check.isChecked():
+                    
+                    PENDING = 0
+                    
                     # Comboboxes for each image label
                     material_id = [self.ui.material_cb_1,self.ui.material_cb_1,self.ui.material_cb_1]
                     material_index = predict_material_img(image_file, self.ui.insp_method, self.box_id, self)
                     # LLRS building image sets prediction
-                    material_id[self.box_id].setCurrentIndex(material_index+1)
+                    class_names_mat = ['Concrete', 'Hybrid - Confined and Unreinforced masonry', 'Informal materials', 
+                                   'Masonry - Confined', 'Masonry - Reinforced', 'Masonry - Unreinforced', 
+                                   'Steel','Wood']                       
+                    material_id[self.box_id].setCurrentText(class_names_mat[material_index])
                     
                     # Comboboxes for each image label
                     llrs_id = [self.ui.llrs_cb_1,self.ui.llrs_cb_1,self.ui.llrs_cb_1]
                     # LLRS building image prediction
                     llrs_index = predict_llrs_img(image_file, self.ui.insp_method, self.box_id, self)
-                    if llrs_index == 5:
-                        llrs_index = 4
-                    # LLRS building image sets prediction
-                    llrs_id[self.box_id].setCurrentIndex(llrs_index+1)
-                                
+                    class_names_llrs = ['Dual System', 'Braced Frames', 'Infilled Frames', 'Moment Frames', 
+                                   'No lateral load-resisting system', 'Walls', 'Walls']             
+                    llrs_id[self.box_id].setCurrentText(class_names_llrs[llrs_index])
+                         
+                    llrs_pred = self.ui.llrs_cb_1.currentData()
+                    if self.pred_mat_value == "MCF":
+                        llrs_id[self.box_id].setCurrentIndex(4) 
+                    elif self.pred_mat_value == "MUR":
+                        llrs_id[self.box_id].setCurrentIndex(4) 
+                    elif self.pred_mat_value == "MR":
+                        llrs_id[self.box_id].setCurrentIndex(4)
+                    elif self.pred_mat_value == "INF":
+                        llrs_id[self.box_id].setCurrentIndex(6)
+                    elif self.pred_mat_value == "CR":
+                        if llrs_pred in ("LDUAL", "LFM", "LFINF"):
+                            pass
+                        else:
+                            llrs_id[self.box_id].setCurrentIndex(3)
+                    elif self.pred_mat_value == "S":
+                        if llrs_pred in ("LFM", "LFBR"):
+                            pass
+                        else:
+                            llrs_id[self.box_id].setCurrentIndex(3)
+                    
                     # Comboboxes for each image label
                     code_level_id = [self.ui.age_cb_1,self.ui.age_cb_1,self.ui.age_cb_1]
                     # LLRS building image prediction
                     code_level_index = predict_code_img(image_file, self.ui.insp_method, self.box_id, self)
                     # LLRS building image sets prediction
-                    code_level_id[self.box_id].setCurrentIndex(code_level_index+1)
+                    class_names_code = ['High-Code','Low-Code', 'Moderate-code', 'No-Code']
+                    code_level_id[self.box_id].setCurrentText(class_names_code[code_level_index])
                     
                     # Comboboxes for each image label
                     n_stories_id = [self.ui.n_stories_value_1,self.ui.n_stories_value_1,self.ui.n_stories_value_1]
@@ -1039,7 +1069,7 @@ class GUIMethods:
                     # LLRS building image prediction
                     occupancy_index = predict_occupancy_img(image_file, self.ui.insp_method, self.box_id, self)
                     # LLRS building image sets prediction
-                    occupancy_class = [ 'Commercial' , 'Industrial' ,'Mixed', 'Residential']
+                    occupancy_class = [ 'Commercial' , 'Industrial' ,'Mixed (Residential + Commercial)', 'Residential']
                     occupancy_id[self.box_id].setCurrentText(occupancy_class[occupancy_index])  
                     
                     # Comboboxes for each image label
@@ -1082,6 +1112,26 @@ class GUIMethods:
             
             except:
                 pass
+            
+    def tax_check(self, tax_value):
+        # 1) Create a small DataFrame with taxonomy strings
+        df = pd.DataFrame({"TAXONOMY": [tax_value]})
+        
+        try:
+            tax = check_taxonomy(df, taxo_col="TAXONOMY")
+        except ValueError as e:
+            print("There are invalid taxonomies ❌")
+            # Convert the error to string
+            err_str = str(e)
+            
+            # Extract the canonical value from the string using regex
+            match = re.search(r"'canonical': '([^']+)'", err_str)
+            if match:
+                tax_canonical = match.group(1)
+                print("Canonical taxonomy:", tax_canonical)
+            else:
+                tax_canonical = None
+                print("No canonical value found.")
             
 
     ############ Obtain value of the form of each building image ################       
@@ -1144,11 +1194,17 @@ class GUIMethods:
                 
                 try:
                     self.data_ai.iloc[self.click_count * 3 , 15] = (self.ui.material_cb_1.currentData()+"/"+
-                                                                    self.ui.llrs_cb_1.currentData()+"+"+
+                                                                    self.ui.llrs_cb_1.currentData()+"/"+
                                                                     self.ui.age_cb_1.currentData()+"/H:"+
                                                                     self.ui.n_stories_value_1.currentText()+"/"+
-                                                                    self.ui.occup_cb_1.currentData()+"/"+
-                                                                    self.ui.bck_pos_cb_1.currentData())            # Taxonomy
+                                                                    self.ui.bck_pos_cb_1.currentData()+"/"+
+                                                                    self.ui.roof_shape_cb_1.currentData()+"+"+
+                                                                    self.ui.roof_material_cb_1.currentData()+"/"+
+                                                                    self.ui.occup_cb_1.currentData())
+                                                                    
+                    # Taxonomy
+                    self.tax_check(self.data_ai.iloc[self.click_count * 3 , 15])
+
                 except:
                     pass
                 
@@ -1156,7 +1212,7 @@ class GUIMethods:
                     self.data_ai.iloc[self.click_count * 3 , 16] = self.img_url[0]                           # Image URL
                 else:
                     if isinstance(heading, int):
-                        self.data_ai.iloc[self.click_count * 3 , 16] = base_url + coord +"&heading="+str((heading+ 150) % 360)+"&pitch=5&fov=120"
+                        self.data_ai.iloc[self.click_count * 3 , 16] = base_url + coord +"&heading="+str((heading+ 180) % 360)+"&pitch=5&fov=120"
             
             # ------------------- Local  -----------------------
             elif self.ui.insp_method == 2:
@@ -1570,7 +1626,10 @@ class GUIMethods:
                         pass
                     else:
                         i=1
-                        material_id[i].setCurrentIndex(material_index+1)
+                        class_names_mat = ['Concrete', 'Hybrid - Confined and Unreinforced masonry', 'Informal materials', 
+                                       'Masonry - Confined', 'Masonry - Reinforced', 'Masonry - Unreinforced', 
+                                       'Steel','Wood']                         
+                        material_id[i].setCurrentText(class_names_mat[material_index])
                         self.pred_mat_value = self.ui.material_cb_1.currentData()
 
                         # Peogress bar update
@@ -1608,7 +1667,10 @@ class GUIMethods:
                 if material_index is None:
                     pass
                 else:
-                    material_id[aux].setCurrentIndex(material_index+1)
+                    class_names_mat = ['Concrete', 'Hybrid - Confined and Unreinforced masonry', 'Informal materials', 
+                                   'Masonry - Confined', 'Masonry - Reinforced', 'Masonry - Unreinforced', 
+                                   'Steel','Wood']                       
+                    material_id[aux].setCurrentText(class_names_mat[material_index])
                     self.pred_mat_value = self.ui.material_cb_1.currentData()
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
@@ -1664,22 +1726,30 @@ class GUIMethods:
                         pass
                     else:
                         i=1
-                        llrs_id[i].setCurrentIndex(llrs_index+1)
-                        llrs_pred = self.ui.material_cb_1.currentData()
+                        class_names_llrs = ['Dual System', 'Braced Frames', 'Infilled Frames', 'Moment Frames', 
+                                       'No lateral load-resisting system', 'Walls', 'Walls']
+                        
+                        llrs_id[i].setCurrentText(class_names_llrs[llrs_index])
+                        llrs_pred = self.ui.llrs_cb_1.currentData()
                         
                         if self.pred_mat_value == "MCF":
-                            llrs_id[i].setCurrentIndex(5) 
+                            llrs_id[i].setCurrentText(class_names_llrs[5]) 
                         elif self.pred_mat_value == "MUR":
-                            llrs_id[i].setCurrentIndex(5) 
+                            llrs_id[i].setCurrentText(class_names_llrs[5]) 
                         elif self.pred_mat_value == "MR":
-                            llrs_id[i].setCurrentIndex(5)
+                            llrs_id[i].setCurrentText(class_names_llrs[5])
                         elif self.pred_mat_value == "INF":
-                            llrs_id[i].setCurrentIndex(4)
+                            llrs_id[i].setCurrentText(class_names_llrs[4])
                         elif self.pred_mat_value == "CR":
                             if llrs_pred in ("LDUAL", "LFM", "LFINF"):
                                 pass
                             else:
-                                llrs_id[i].setCurrentIndex(3)
+                                llrs_id[i].setCurrentText(class_names_llrs[3])
+                        elif self.pred_mat_value == "S":
+                            if llrs_pred in ("LFM", "LFBR"):
+                                pass
+                            else:
+                                llrs_id[i].setCurrentText(class_names_llrs[3]) 
                         # Progress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
@@ -1713,27 +1783,30 @@ class GUIMethods:
                 if llrs_index is None:
                     pass
                 else:
-                    llrs_id[aux].setCurrentIndex(llrs_index+1)
-                    llrs_pred = self.ui.material_cb_1.currentData()
+                    class_names_llrs = ['Dual System', 'Braced Frames', 'Infilled Frames', 'Moment Frames', 
+                                   'No lateral load-resisting system', 'Walls', 'Walls']
+                    
+                    llrs_id[aux].setCurrentText(class_names_llrs[llrs_index])
+                    llrs_pred = self.ui.llrs_cb_1.currentData()
                     
                     if self.pred_mat_value == "MCF":
-                        llrs_id[aux].setCurrentIndex(5) 
+                        llrs_id[aux].setCurrentText(class_names_llrs[5]) 
                     elif self.pred_mat_value == "MUR":
-                        llrs_id[aux].setCurrentIndex(5) 
+                        llrs_id[aux].setCurrentText(class_names_llrs[5]) 
                     elif self.pred_mat_value == "MR":
-                        llrs_id[aux].setCurrentIndex(5)
+                        llrs_id[aux].setCurrentText(class_names_llrs[5])
                     elif self.pred_mat_value == "INF":
-                        llrs_id[aux].setCurrentIndex(4)
+                        llrs_id[aux].setCurrentText(class_names_llrs[4])
                     elif self.pred_mat_value == "CR":
                         if llrs_pred in ("LDUAL", "LFM", "LFINF"):
                             pass
                         else:
-                            llrs_id[aux].setCurrentIndex(3)
+                            llrs_id[aux].setCurrentText(class_names_llrs[3])
                     elif self.pred_mat_value == "S":
                         if llrs_pred in ("LFM", "LFBR"):
                             pass
                         else:
-                            llrs_id[aux].setCurrentIndex(3)       
+                            llrs_id[aux].setCurrentText(class_names_llrs[3])       
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
                     self.ui.method_progress.setText("Prediction complete!")
@@ -1793,12 +1866,13 @@ class GUIMethods:
                         pass
                     else:
                         i=1
-                        code_level_id[i].setCurrentIndex(code_level_index+1) 
-                        
+                        class_names_code = ['High-Code','Low-Code', 'Moderate-code', 'No-Code']
+                        code_level_id[i].setCurrentText(class_names_code[code_level_index])
+                 
                         if self.pred_mat_value == "MUR":
-                            code_level_id[i].setCurrentIndex(2) 
+                            code_level_id[i].setCurrentText(class_names_code[1]) 
                         elif self.pred_mat_value == "INF":
-                            code_level_id[i].setCurrentIndex(4)
+                            code_level_id[i].setCurrentText(class_names_code[3]) 
                         
                         # Progress bar update
                         self.ui.progress_bar_method.setValue(100)
@@ -1834,12 +1908,13 @@ class GUIMethods:
                 if code_level_index is None:
                     pass
                 else:
-                    code_level_id[aux].setCurrentIndex(code_level_index+1)
-                    
+                    class_names_code = ['High-Code','Low-Code', 'Moderate-code', 'No-Code']
+                    code_level_id[aux].setCurrentText(class_names_code[code_level_index])
+             
                     if self.pred_mat_value == "MUR":
-                        code_level_id[aux].setCurrentIndex(2) 
+                        code_level_id[aux].setCurrentText(class_names_code[1]) 
                     elif self.pred_mat_value == "INF":
-                        code_level_id[aux].setCurrentIndex(4)
+                        code_level_id[aux].setCurrentText(class_names_code[3])
                         
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
@@ -1995,7 +2070,7 @@ class GUIMethods:
                     occupancy_index = predict_occupancy_img(image_file, self.ui.insp_method, box_aux, self.ui)
 
                     # LLRS building image sets prediction
-                    occupancy_class = [ 'Commercial' , 'Industrial' ,'Mixed', 'Residential']
+                    occupancy_class = [ 'Commercial' , 'Industrial' ,'Mixed (Residential + Commercial)', 'Residential']
                     if occupancy_index is None:
                         pass
                     else:
@@ -2031,7 +2106,7 @@ class GUIMethods:
                 # LLRS building image prediction
                 occupancy_index = predict_occupancy_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
                 # LLRS building image sets prediction
-                occupancy_class = [ 'Commercial' , 'Industrial' ,'Mixed', 'Residential']
+                occupancy_class = [ 'Commercial' , 'Industrial' ,'Mixed (Residential + Commercial)', 'Residential']
                 if occupancy_index is None:
                     pass
                 else:

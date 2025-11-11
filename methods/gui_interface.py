@@ -436,12 +436,13 @@ class GUIInterface(QtWidgets.QMainWindow):
         # Adding material options
         self.material_cb_1.addItem("Select Material")  
         self.material_cb_1.addItem("Concrete", "CR")
-        self.material_cb_1.addItem("Hybrid or composite (mixed) materials", "HYB")
-        self.material_cb_1.addItem("Informal materials", "INF")
         self.material_cb_1.addItem("Masonry - Confined", "MCF")
         self.material_cb_1.addItem("Masonry - Reinforced", "MR")
         self.material_cb_1.addItem("Masonry - Unreinforced", "MUR")
         self.material_cb_1.addItem("Steel", "S")
+        self.material_cb_1.addItem("Hybrid - Confined and Unreinforced masonry", "HYB(MCF;MUR)")
+        self.material_cb_1.addItem("Hybrid - Concrete and Steel", "HYB(CR;S)")
+        self.material_cb_1.addItem("Informal materials", "INF")
         self.material_cb_1.addItem("Wood", "W")
         self.material_cb_1.addItem("Adobe", "ADO")
         self.material_cb_1.addItem("Different materials in the two directions", "MDD")
@@ -450,7 +451,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         # Set default index
         self.material_cb_1.setCurrentIndex(0)
         # Scale dropdown width
-        self.material_cb_1.view().setFixedWidth(int(350 * sf_x))
+        self.material_cb_1.view().setFixedWidth(int(380 * sf_x))
 
         
         # LLRS for left image label
@@ -475,14 +476,13 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.llrs_cb_1.addItem("Dual System", "LDUAL")
         self.llrs_cb_1.addItem("Infilled Frames", "LFINF")
         self.llrs_cb_1.addItem("Moment Frames", "LFM")
-        self.llrs_cb_1.addItem("No lateral load-resisting system", "LN")
         self.llrs_cb_1.addItem("Walls", "LWAL")
-        self.llrs_cb_1.addItem("Braced frame", "LFBR")
+        self.llrs_cb_1.addItem("Braced Frames", "LFBR")
+        self.llrs_cb_1.addItem("No lateral load-resisting system", "LN")
         self.llrs_cb_1.addItem("Post and beam", "LPB") 
         self.llrs_cb_1.addItem("Flat slab/plate or waffle slab", "LFLS") 
         self.llrs_cb_1.addItem("Different LLRS in the two directions", "LDD")
         self.llrs_cb_1.addItem("Different LLRS in height ", "LHV") 
-        
         self.llrs_cb_1.addItem("Other", "LO") 
         # Set default index
         self.llrs_cb_1.setCurrentIndex(0)       
@@ -544,7 +544,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.occup_cb_1.addItem("Select Occupancy")
         self.occup_cb_1.addItem("Commercial", "COM")
         self.occup_cb_1.addItem("Industrial", "IND")
-        self.occup_cb_1.addItem("Mixed", "MIX")
+        self.occup_cb_1.addItem("Mixed (Residential + Commercial)", "MIX(RES;COM)")
         self.occup_cb_1.addItem("Residential", "RES")    
         self.occup_cb_1.addItem("Educational", "EDU")
         self.occup_cb_1.addItem("Government", "GOV")
@@ -553,7 +553,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         # Set default index
         self.occup_cb_1.setCurrentIndex(0)
         # Scale dropdown width
-        self.occup_cb_1.view().setFixedWidth(int(250 * sf_x))
+        self.occup_cb_1.view().setFixedWidth(int(300 * sf_x))
         
         
         # Roof Shape for left image label
@@ -638,8 +638,8 @@ class GUIInterface(QtWidgets.QMainWindow):
         # Adding Code Level options
         self.age_cb_1.addItem("Select Code Level")
         self.age_cb_1.addItem("High-Code", "CDH")
-        self.age_cb_1.addItem("Low-Code", "CDL")
         self.age_cb_1.addItem("Moderate-code", "CDM")
+        self.age_cb_1.addItem("Low-Code", "CDL")
         self.age_cb_1.addItem("No-Code", "CDN")
         # Set default index
         self.age_cb_1.setCurrentIndex(0)
@@ -669,7 +669,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.bck_pos_cb_1.addItem("Adjoining building(s) one side", "BP1")
         self.bck_pos_cb_1.addItem("Adjoining building(s) two side", "BP2")
         self.bck_pos_cb_1.addItem("Adjoining building(s) three side", "BP3")
-        self.bck_pos_cb_1.addItem("Detached building", "BDP")
+        self.bck_pos_cb_1.addItem("Detached building", "BPD")
         # Set default index
         self.bck_pos_cb_1.setCurrentIndex(0)
         # Scale dropdown width
