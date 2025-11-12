@@ -36,7 +36,7 @@ Before you begin, make sure the following are installed on your system:
   git --version
   ```
 - **Python 3.11.13**
-- **Anaconda** (*only required for Windows users*)  
+- **Anaconda**   
   📥 Download: [Anaconda.com](https://www.anaconda.com/download/success)  
   📖 Installation guide: [Anaconda Installation Instructions](https://www.anaconda.com/docs/getting-started/anaconda/install#macos-linux-installation)
 
@@ -52,7 +52,7 @@ Before you begin, make sure the following are installed on your system:
 
    **macOS/Linux:**
    ```bash
-   python3 -m venv RUBIC-AI
+   python3.11 -m venv RUBIC-AI
    source RUBIC-AI/bin/activate  # macOS/Linux
    ```
 2. **Clone the repository**
