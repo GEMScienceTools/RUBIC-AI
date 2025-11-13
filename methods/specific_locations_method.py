@@ -2,6 +2,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 import pandas as pd
 import os
+import sys
+import numpy as np
 from shapely.geometry import Point
 import geopandas as gpd
 
@@ -10,11 +12,47 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         super().__init__(parent)
         self.method = method
 
-        # Screen scaling
+        ## Get screen resolution
         screen = QtWidgets.QApplication.primaryScreen()
         screen_geometry = screen.geometry()
-        sf_x = screen_geometry.width() / 1920
-        sf_y = screen_geometry.height() / 1080
+        screen_width = screen_geometry.width()
+        screen_height = screen_geometry.height()
+
+        #
+        DESIGN_WIDTH = 1920
+        DESIGN_HEIGHT = 1080
+        DESIGN_DPI = 96 * 1.25  # 125% Windows baseline -> 120 DPI
+        
+        # Scale the GUI based on resolution
+        sf_x = screen_width / DESIGN_WIDTH
+        sf_y = screen_height / DESIGN_HEIGHT
+        sf_factor = np.sqrt(sf_x * sf_y)
+
+        # DPI-based scale
+        # Get a reliable DPI value
+        if sys.platform.startswith("win"):
+            # Windows: use ctypes to get real DPI
+            import ctypes
+            LOGPIXELSX = 88
+            hdc = ctypes.windll.user32.GetDC(0)
+            dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
+            ctypes.windll.user32.ReleaseDC(0, hdc)
+        else:
+            # macOS / Linux: start with logical DPI
+            dpi = screen.logicalDotsPerInch()
+            # If logical DPI looks weird, fallback to physical
+            if dpi < 60 or dpi > 200:
+                dpi = screen.physicalDotsPerInch()
+
+        # Normalize to your design environment (Windows @ 125% = 120 DPI)
+        # If dpi == 120 => scale_dpi = 1 (your original machine)
+        scale_dpi = DESIGN_DPI / dpi
+        
+        # For geometry: mainly resolution-based
+        sf_x = sf_factor
+        sf_y = sf_factor
+        # Scale the GUI based on resolution
+        sf_font = sf_factor * scale_dpi
 
         self.setWindowTitle("Specific Coordinates Method Input")
         self.setWindowIcon(QtGui.QIcon("help_img/RUBIC_logo.png"))
@@ -28,13 +66,13 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         self.backg_4.setStyleSheet("background-color: rgb(212, 206, 255);")
 
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
 
         # Title
         self.specific_label = QtWidgets.QLabel(self.coord_frame)
         self.specific_label.setGeometry(QtCore.QRect(int(190 * sf_x), int(9 * sf_y), int(301 * sf_x), int(21 * sf_y)))
         title_font = QtGui.QFont()
-        title_font.setPointSize(int(10 * sf_x))
+        title_font.setPointSize(int(10 * sf_font))
         title_font.setBold(True)
         title_font.setItalic(True)
         title_font.setUnderline(True)
@@ -45,7 +83,7 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         self.output_label_specific = QtWidgets.QLabel(self.coord_frame)
         self.output_label_specific.setGeometry(QtCore.QRect(int(20 * sf_x), int(39 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         output_font = QtGui.QFont()
-        output_font.setPointSize(int(10 * sf_x))
+        output_font.setPointSize(int(10 * sf_font))
         output_font.setBold(True)
         self.output_label_specific.setFont(output_font)
         self.output_label_specific.setText("Output name:")
@@ -81,7 +119,7 @@ class SpecificLocationSetting(QtWidgets.QDialog):
 
         # Buttons
         bold_font = QtGui.QFont()
-        bold_font.setPointSize(int(10 * sf_x))
+        bold_font.setPointSize(int(10 * sf_font))
         bold_font.setBold(True)
 
         self.load_data_button = QtWidgets.QPushButton(self.coord_frame)
@@ -100,7 +138,7 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         self.feature_collection_label = QtWidgets.QLabel(self.coord_frame)
         self.feature_collection_label.setGeometry(QtCore.QRect(int(20 * sf_x), int(170 * sf_y), int(221 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.feature_collection_label.setFont(font)
@@ -111,7 +149,7 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         self.collection_mode = QtWidgets.QComboBox(self.coord_frame)
         self.collection_mode.setGeometry(QtCore.QRect(int(250 * sf_x), int(170 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         self.collection_mode.setFont(font)
         self.collection_mode.setObjectName("collection_mode")
         self.collection_mode.addItem("Manual")

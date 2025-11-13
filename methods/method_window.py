@@ -1,5 +1,5 @@
 import numpy as np
-
+import sys 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QDialog, QMessageBox
 from PyQt5.QtGui import QGuiApplication
@@ -20,28 +20,41 @@ class InspectionSetting(QDialog):
         screen_width = screen_geometry.width()
         screen_height = screen_geometry.height()
 
+        #
+        DESIGN_WIDTH = 1920
+        DESIGN_HEIGHT = 1080
+        DESIGN_DPI = 96 * 1.25  # 125% Windows baseline -> 120 DPI
+        
         # Scale the GUI based on resolution
-        sf_x = screen_width / 1920
-        sf_y = screen_height / 1080
-        sf_factor = np.sqrt(sf_x**2 * sf_y**2)
+        sf_x = screen_width / DESIGN_WIDTH
+        sf_y = screen_height / DESIGN_HEIGHT
+        sf_factor = np.sqrt(sf_x * sf_y)
 
-        try:
-            # Smart scaling for Windows
+        # DPI-based scale
+        # Get a reliable DPI value
+        if sys.platform.startswith("win"):
+            # Windows: use ctypes to get real DPI
             import ctypes
-            # Reference DPI for 100% scaling
             LOGPIXELSX = 88
             hdc = ctypes.windll.user32.GetDC(0)
             dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
             ctypes.windll.user32.ReleaseDC(0, hdc)
-            scale = 1.25/(dpi / 96)  # 96 DPI is 100%
-        except:
-            # Smart scaling for MacOS
-            scale = QGuiApplication.primaryScreen().devicePixelRatio()
-            scale = scale * 0.75
-            print(f"MacOS scale factor: {scale}")
+        else:
+            # macOS / Linux: start with logical DPI
+            dpi = screen.logicalDotsPerInch()
+            # If logical DPI looks weird, fallback to physical
+            if dpi < 60 or dpi > 200:
+                dpi = screen.physicalDotsPerInch()
 
+        # Normalize to your design environment (Windows @ 125% = 120 DPI)
+        # If dpi == 120 => scale_dpi = 1 (your original machine)
+        scale_dpi = DESIGN_DPI / dpi
+        
+        # For geometry: mainly resolution-based
+        sf_x = sf_factor
+        sf_y = sf_factor
         # Scale the GUI based on resolution
-        sf_x_font = sf_factor * scale
+        sf_font = sf_factor * scale_dpi
 
         # Window Title
         self.setWindowTitle("Select Inspection Method")
@@ -53,7 +66,7 @@ class InspectionSetting(QDialog):
         self.w_tittle = QtWidgets.QLabel(self.method_frame)
         self.w_tittle.setGeometry(QtCore.QRect(int(270 * sf_x), int(0 * sf_y), int(301 * sf_x), int(41 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(12 * sf_x_font))
+        font.setPointSize(int(12 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.w_tittle.setFont(font)
@@ -64,7 +77,7 @@ class InspectionSetting(QDialog):
         self.save_button = QtWidgets.QPushButton(self.method_frame)
         self.save_button.setGeometry(QtCore.QRect(int(310 * sf_x), int(760 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x_font))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.save_button.setFont(font)
@@ -94,7 +107,7 @@ class InspectionSetting(QDialog):
         # Reusable CSS style block for HTML descriptions
         css_style = "<style type=\"text/css\">p, li { white-space: pre-wrap; }</style>"
 
-        font_size = 10 * sf_x_font  # or any base value that looks right
+        font_size = 10 * sf_font  # or any base value that looks right
         default_html = (
             f"<html><head><meta name=\"qrichtext\" content=\"1\" />"
             f"{css_style}</head>"
@@ -121,7 +134,7 @@ class InspectionSetting(QDialog):
         self.specific_descrip.setObjectName("specific_descrip")
 
         # Compute adaptive font size
-        font_size = 10 * sf_x_font  # You can adjust 7.8 as your base size
+        font_size = 10 * sf_font  # You can adjust 7.8 as your base size
 
         # Construct the HTML with dynamic font size
         specific_html = (
@@ -158,7 +171,7 @@ class InspectionSetting(QDialog):
         self.local_descrip.setObjectName("local_descrip")
 
         # Compute adaptive font size
-        font_size = 10 * sf_x_font  # Base font size scaled
+        font_size = 10 * sf_font  # Base font size scaled
 
         # Construct the HTML with dynamic font size
         local_html = (
@@ -185,7 +198,7 @@ class InspectionSetting(QDialog):
         self.default_check = QtWidgets.QCheckBox(self.method_frame)
         self.default_check.setGeometry(QtCore.QRect(int(20 * sf_x), int(120 * sf_y), int(171 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x_font))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.default_check.setFont(font)
@@ -196,7 +209,7 @@ class InspectionSetting(QDialog):
         self.specific_check = QtWidgets.QCheckBox(self.method_frame)
         self.specific_check.setGeometry(QtCore.QRect(int(20 * sf_x), int(300 * sf_y), int(201 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x_font))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.specific_check.setFont(font)
@@ -207,7 +220,7 @@ class InspectionSetting(QDialog):
         self.local_check = QtWidgets.QCheckBox(self.method_frame)
         self.local_check.setGeometry(QtCore.QRect(int(30 * sf_x), int(480 * sf_y), int(171 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x_font))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.local_check.setFont(font)
@@ -224,7 +237,7 @@ class InspectionSetting(QDialog):
         self.extrapolation_check = QtWidgets.QCheckBox(self.method_frame)
         self.extrapolation_check.setGeometry(QtCore.QRect(int(30 * sf_x), int(650 * sf_y), int(221 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x_font))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.extrapolation_check.setFont(font)
@@ -234,7 +247,7 @@ class InspectionSetting(QDialog):
         self.extra_label = QtWidgets.QLabel(self.method_frame)
         self.extra_label.setGeometry(QtCore.QRect(int(50 * sf_x), int(670 * sf_y), int(121 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x_font))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.extra_label.setFont(font)
@@ -246,7 +259,7 @@ class InspectionSetting(QDialog):
         self.extrapolation_descrip.setObjectName("extrapolation_descrip")
 
         # Compute adaptive font size
-        font_size = 10 * sf_x_font  # Adjust base size if needed
+        font_size = 10 * sf_font  # Adjust base size if needed
 
         # Construct the HTML with dynamic font size
         extrapolation_html = (

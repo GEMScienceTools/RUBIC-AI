@@ -4,6 +4,8 @@ import pandas as pd
 import geopandas as gpd
 from shapely.geometry import Polygon, MultiPolygon
 import os
+import sys
+import numpy as np
 from geopy.geocoders import Nominatim
 from typing import Optional, Union
     
@@ -20,23 +22,41 @@ class PolygonSetting(QtWidgets.QDialog):
         screen_width = screen_geometry.width()
         screen_height = screen_geometry.height()
 
-        # Scale the GUI based on resolution
-        sf_x = screen_width / 1920 
-        sf_y = screen_height / 1080 
+        #
+        DESIGN_WIDTH = 1920
+        DESIGN_HEIGHT = 1080
+        DESIGN_DPI = 96 * 1.25  # 125% Windows baseline -> 120 DPI
         
-        try:
+        # Scale the GUI based on resolution
+        sf_x = screen_width / DESIGN_WIDTH
+        sf_y = screen_height / DESIGN_HEIGHT
+        sf_factor = np.sqrt(sf_x * sf_y)
+
+        # DPI-based scale
+        # Get a reliable DPI value
+        if sys.platform.startswith("win"):
+            # Windows: use ctypes to get real DPI
             import ctypes
-            # Reference DPI for 100% scaling
             LOGPIXELSX = 88
             hdc = ctypes.windll.user32.GetDC(0)
             dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
             ctypes.windll.user32.ReleaseDC(0, hdc)
-            scale =  int(1.25/(dpi / 96))  # 96 DPI is 100%
-        except:
-            scale = 1.25
+        else:
+            # macOS / Linux: start with logical DPI
+            dpi = screen.logicalDotsPerInch()
+            # If logical DPI looks weird, fallback to physical
+            if dpi < 60 or dpi > 200:
+                dpi = screen.physicalDotsPerInch()
 
+        # Normalize to your design environment (Windows @ 125% = 120 DPI)
+        # If dpi == 120 => scale_dpi = 1 (your original machine)
+        scale_dpi = DESIGN_DPI / dpi
+        
+        # For geometry: mainly resolution-based
+        sf_x = sf_factor
+        sf_y = sf_factor
         # Scale the GUI based on resolution
-        sf_x_font = sf_x * scale
+        sf_font = sf_factor * scale_dpi
 
         self.setWindowTitle("Polygon Method Input")
         self.setWindowIcon(QtGui.QIcon("help_img/RUBIC_logo.png"))
@@ -45,7 +65,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.coord_frame = QtWidgets.QWidget(self)
 
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x_font))
+        font.setPointSize(int(10 * sf_font))
         self.backg_1 = QtWidgets.QLabel(self.coord_frame)
         self.backg_1.setGeometry(QtCore.QRect(int(10 * sf_x), int(10 * sf_y), int(601 * sf_x), int(651 * sf_y)))
         self.backg_1.setStyleSheet("background-color: rgb(255, 224, 185);")
@@ -53,7 +73,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.polygon_label = QtWidgets.QLabel(self.coord_frame)
         self.polygon_label.setGeometry(QtCore.QRect(int(210 * sf_x), int(20 * sf_y), int(221 * sf_x), int(21 * sf_y)))
         title_font = QtGui.QFont()
-        title_font.setPointSize(int(10 * sf_x_font))
+        title_font.setPointSize(int(10 * sf_font))
         title_font.setBold(True)
         title_font.setItalic(True)
         title_font.setUnderline(True)
@@ -63,7 +83,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.output_label_polygon = QtWidgets.QLabel(self.coord_frame)
         self.output_label_polygon.setGeometry(QtCore.QRect(int(20 * sf_x), int(50 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         label_font = QtGui.QFont()
-        label_font.setPointSize(int(10 * sf_x_font))
+        label_font.setPointSize(int(10 * sf_font))
         label_font.setBold(True)
         self.output_label_polygon.setFont(label_font)
         self.output_label_polygon.setText("Output name:")
@@ -88,7 +108,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.existing_polygon_check = QtWidgets.QCheckBox(self.coord_frame)
         self.existing_polygon_check.setGeometry(QtCore.QRect(int(20 * sf_x), int(180 * sf_y), int(341 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         self.existing_polygon_check.setFont(font)
         self.existing_polygon_check.setObjectName("existing_polygon_check")
         self.existing_polygon_check.setText("Perform analysis using an existing polygon")
@@ -97,7 +117,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.existing_polygon_button = QtWidgets.QPushButton(self.coord_frame)
         self.existing_polygon_button.setGeometry(QtCore.QRect(int(20 * sf_x), int(220 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(False)
         font.setWeight(50)
         self.existing_polygon_button.setFont(font)
@@ -109,7 +129,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.polygon_existing_path = QtWidgets.QLabel(self.coord_frame)
         self.polygon_existing_path.setGeometry(QtCore.QRect(int(270 * sf_x), int(220 * sf_y), int(291 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         self.polygon_existing_path.setFont(font)
         self.polygon_existing_path.setObjectName("polygon_existing_path")
         self.polygon_existing_path.setText("existing_polygon_file.gpkg")
@@ -118,7 +138,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.footprint_label = QtWidgets.QLabel(self.coord_frame)
         self.footprint_label.setGeometry(QtCore.QRect(int(20 * sf_x), int(260 * sf_y), int(151 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.footprint_label.setFont(font)
@@ -129,7 +149,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.footprint_mode = QtWidgets.QComboBox(self.coord_frame)
         self.footprint_mode.setGeometry(QtCore.QRect(int(180 * sf_x), int(260 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         self.footprint_mode.setFont(font)
         self.footprint_mode.setObjectName("footprint_mode")
         self.footprint_mode.addItem("OpenStreetMap",0)
@@ -182,7 +202,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.collection_mode = QtWidgets.QComboBox(self.coord_frame)
         self.collection_mode.setGeometry(QtCore.QRect(int(250 * sf_x), int(420 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x_font))
+        font.setPointSize(int(10 * sf_font))
         self.collection_mode.setFont(font)
         self.collection_mode.setObjectName("collection_mode")
         self.collection_mode.addItem("Manual")
@@ -191,7 +211,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.feature_collection_label = QtWidgets.QLabel(self.coord_frame)
         self.feature_collection_label.setGeometry(QtCore.QRect(int(20 * sf_x), int(420 * sf_y), int(221 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x_font))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.feature_collection_label.setFont(font)
@@ -207,7 +227,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.footprint_progress_label = QtWidgets.QLabel(self.coord_frame)
         self.footprint_progress_label.setGeometry(QtCore.QRect(int(450 * sf_x), int(300 * sf_y), int(151 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         self.footprint_progress_label.setFont(font)
         self.footprint_progress_label.setObjectName("footprint_progress_label")
         self.footprint_progress_label.setText("status")
@@ -215,7 +235,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.footprint_progress = QtWidgets.QProgressBar(self.coord_frame)
         self.footprint_progress.setGeometry(QtCore.QRect(int(310 * sf_x), int(305 * sf_y), int(121 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         self.footprint_progress.setFont(font)
         self.footprint_progress.setProperty("value", 0)
         self.footprint_progress.setObjectName("footprint_progress")

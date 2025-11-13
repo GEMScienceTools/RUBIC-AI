@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import sys
 from PyQt5.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QApplication, QMessageBox
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import Qt
@@ -16,9 +17,41 @@ class BoundingBoxWindow(QDialog):
         screen_width = screen_geometry.width()
         screen_height = screen_geometry.height()
 
+        #
+        DESIGN_WIDTH = 1920
+        DESIGN_HEIGHT = 1080
+        DESIGN_DPI = 96 * 1.25  # 125% Windows baseline -> 120 DPI
+        
         # Scale the GUI based on resolution
-        sf_x = screen_width / 1920
-        sf_y = screen_height / 1080
+        sf_x = screen_width / DESIGN_WIDTH
+        sf_y = screen_height / DESIGN_HEIGHT
+        sf_factor = np.sqrt(sf_x * sf_y)
+
+        # DPI-based scale
+        # Get a reliable DPI value
+        if sys.platform.startswith("win"):
+            # Windows: use ctypes to get real DPI
+            import ctypes
+            LOGPIXELSX = 88
+            hdc = ctypes.windll.user32.GetDC(0)
+            dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
+            ctypes.windll.user32.ReleaseDC(0, hdc)
+        else:
+            # macOS / Linux: start with logical DPI
+            dpi = screen.logicalDotsPerInch()
+            # If logical DPI looks weird, fallback to physical
+            if dpi < 60 or dpi > 200:
+                dpi = screen.physicalDotsPerInch()
+
+        # Normalize to your design environment (Windows @ 125% = 120 DPI)
+        # If dpi == 120 => scale_dpi = 1 (your original machine)
+        scale_dpi = DESIGN_DPI / dpi
+        
+        # For geometry: mainly resolution-based
+        sf_x = sf_factor
+        sf_y = sf_factor
+        # Scale the GUI based on resolution
+        sf_font = sf_factor * scale_dpi
 
         self.setWindowTitle("Manual Bounding Box Selection")
         self.setGeometry(int(100*sf_x), int(100*sf_y), int(700*sf_x), int(600*sf_y))

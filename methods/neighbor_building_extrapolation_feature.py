@@ -1,6 +1,8 @@
 from geopy.distance import geodesic
 from collections import defaultdict
 import os
+import sys
+import numpy as np 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import pandas as pd
 from methods.dl_extrapolation import create_database, dl_models, inspection_database, extrapolation_existing_reference
@@ -15,8 +17,42 @@ class data_options_window(QtWidgets.QDialog):
         screen_geometry = screen.geometry()
         screen_width = screen_geometry.width()
         screen_height = screen_geometry.height()
-        sf_x = screen_width / 1920
-        sf_y = screen_height / 1080
+
+        #
+        DESIGN_WIDTH = 1920
+        DESIGN_HEIGHT = 1080
+        DESIGN_DPI = 96 * 1.25  # 125% Windows baseline -> 120 DPI
+        
+        # Scale the GUI based on resolution
+        sf_x = screen_width / DESIGN_WIDTH
+        sf_y = screen_height / DESIGN_HEIGHT
+        sf_factor = np.sqrt(sf_x * sf_y)
+
+        # DPI-based scale
+        # Get a reliable DPI value
+        if sys.platform.startswith("win"):
+            # Windows: use ctypes to get real DPI
+            import ctypes
+            LOGPIXELSX = 88
+            hdc = ctypes.windll.user32.GetDC(0)
+            dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
+            ctypes.windll.user32.ReleaseDC(0, hdc)
+        else:
+            # macOS / Linux: start with logical DPI
+            dpi = screen.logicalDotsPerInch()
+            # If logical DPI looks weird, fallback to physical
+            if dpi < 60 or dpi > 200:
+                dpi = screen.physicalDotsPerInch()
+
+        # Normalize to your design environment (Windows @ 125% = 120 DPI)
+        # If dpi == 120 => scale_dpi = 1 (your original machine)
+        scale_dpi = DESIGN_DPI / dpi
+        
+        # For geometry: mainly resolution-based
+        sf_x = sf_factor
+        sf_y = sf_factor
+        # Scale the GUI based on resolution
+        sf_font = sf_factor * scale_dpi
 
         self.setObjectName("DataSetting")
         self.resize(int(1210 * sf_x), int(600 * sf_y))
@@ -31,7 +67,7 @@ class data_options_window(QtWidgets.QDialog):
         self.w_title = QtWidgets.QLabel("Setting input files", self.data_frame)
         self.w_title.setGeometry(QtCore.QRect(int(510 * sf_x), int(0), int(191 * sf_x), int(41 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(12 * sf_x))
+        font.setPointSize(int(12 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.w_title.setFont(font)
@@ -39,7 +75,7 @@ class data_options_window(QtWidgets.QDialog):
         self.save_button = QtWidgets.QPushButton(self.data_frame)
         self.save_button.setGeometry(QtCore.QRect(int(510 * sf_x), int(530 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.save_button.setFont(font)
@@ -55,14 +91,14 @@ class data_options_window(QtWidgets.QDialog):
         self.unclassfied_path = QtWidgets.QLabel(self.data_frame)
         self.unclassfied_path.setGeometry(QtCore.QRect(int(280 * sf_x), int(220 * sf_y), int(291 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         self.unclassfied_path.setFont(font)
         self.unclassfied_path.setObjectName("unclassfied_path")
         
         self.unclassified_button = QtWidgets.QPushButton(self.data_frame)
         self.unclassified_button.setGeometry(QtCore.QRect(int(30 * sf_x), int(215 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(False)
         font.setWeight(50)
         self.unclassified_button.setFont(font)
@@ -72,7 +108,7 @@ class data_options_window(QtWidgets.QDialog):
         self.output_label_manual = QtWidgets.QLabel(self.data_frame)
         self.output_label_manual.setGeometry(QtCore.QRect(int(30 * sf_x), int(90 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.output_label_manual.setFont(font)
@@ -81,21 +117,21 @@ class data_options_window(QtWidgets.QDialog):
         self.output_manual_value = QtWidgets.QLineEdit(self.data_frame)
         self.output_manual_value.setGeometry(QtCore.QRect(int(170 * sf_x), int(90 * sf_y), int(111 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         self.output_manual_value.setFont(font)
         self.output_manual_value.setObjectName("output_manual_value")
         
         self.manual_info_path = QtWidgets.QLabel(self.data_frame)
         self.manual_info_path.setGeometry(QtCore.QRect(int(280 * sf_x), int(180 * sf_y), int(291 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         self.manual_info_path.setFont(font)
         self.manual_info_path.setObjectName("manual_info_path")
         
         self.b_info_button = QtWidgets.QPushButton(self.data_frame)
         self.b_info_button.setGeometry(QtCore.QRect(int(30 * sf_x), int(175 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(False)
         font.setWeight(50)
         self.b_info_button.setFont(font)
@@ -105,7 +141,7 @@ class data_options_window(QtWidgets.QDialog):
         self.manual_op = QtWidgets.QCheckBox(self.data_frame)
         self.manual_op.setGeometry(QtCore.QRect(int(30 * sf_x), int(50 * sf_y), int(221 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.manual_op.setFont(font)
@@ -120,7 +156,7 @@ class data_options_window(QtWidgets.QDialog):
         self.dl_op = QtWidgets.QCheckBox(self.data_frame)
         self.dl_op.setGeometry(QtCore.QRect(int(640 * sf_x), int(45 * sf_y), int(221 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.dl_op.setFont(font)
@@ -129,7 +165,7 @@ class data_options_window(QtWidgets.QDialog):
         self.output_label_dl = QtWidgets.QLabel(self.data_frame)
         self.output_label_dl.setGeometry(QtCore.QRect(int(640 * sf_x), int(85 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.output_label_dl.setFont(font)
@@ -138,21 +174,21 @@ class data_options_window(QtWidgets.QDialog):
         self.output_dl_value = QtWidgets.QLineEdit(self.data_frame)
         self.output_dl_value.setGeometry(QtCore.QRect(int(780 * sf_x), int(85 * sf_y), int(111 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         self.output_dl_value.setFont(font)
         self.output_dl_value.setObjectName("output_dl_value")
         
         self.unclassfied_dl_path = QtWidgets.QLabel(self.data_frame)
         self.unclassfied_dl_path.setGeometry(QtCore.QRect(int(890 * sf_x), int(210 * sf_y), int(291 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         self.unclassfied_dl_path.setFont(font)
         self.unclassfied_dl_path.setObjectName("unclassfied_dl_path")
         
         self.unclassified_dl_button = QtWidgets.QPushButton(self.data_frame)
         self.unclassified_dl_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(210 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(False)
         font.setWeight(50)
         self.unclassified_dl_button.setFont(font)
@@ -163,7 +199,7 @@ class data_options_window(QtWidgets.QDialog):
         self.coord_knn_button = QtWidgets.QPushButton(self.data_frame)
         self.coord_knn_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(170 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(False)
         font.setWeight(50)
         self.coord_knn_button.setFont(font)
@@ -174,7 +210,7 @@ class data_options_window(QtWidgets.QDialog):
         self.coord_value_knn = QtWidgets.QLabel(self.data_frame)
         self.coord_value_knn.setGeometry(QtCore.QRect(int(890 * sf_x), int(170 * sf_y), int(291 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         self.coord_value_knn.setFont(font)
         self.coord_value_knn.setObjectName("coord_value_knn")
         
@@ -188,7 +224,7 @@ class data_options_window(QtWidgets.QDialog):
         self.k_value_label = QtWidgets.QLabel(self.data_frame)
         self.k_value_label.setGeometry(QtCore.QRect(int(30 * sf_x), int(259 * sf_y), int(81 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.k_value_label.setFont(font)
@@ -198,7 +234,7 @@ class data_options_window(QtWidgets.QDialog):
         self.k_value_manual = QtWidgets.QSpinBox(self.data_frame)
         self.k_value_manual.setGeometry(QtCore.QRect(int(110 * sf_x), int(260 * sf_y), int(51 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         self.k_value_manual.setFont(font)
         self.k_value_manual.setProperty("value", 10)
         self.k_value_manual.setObjectName("k_value_manual")
@@ -207,7 +243,7 @@ class data_options_window(QtWidgets.QDialog):
         self.k_value_label_dl = QtWidgets.QLabel(self.data_frame)
         self.k_value_label_dl.setGeometry(QtCore.QRect(int(640 * sf_x), int(260 * sf_y), int(81 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.k_value_label_dl.setFont(font)
@@ -217,7 +253,7 @@ class data_options_window(QtWidgets.QDialog):
         self.k_value_dl = QtWidgets.QSpinBox(self.data_frame)
         self.k_value_dl.setGeometry(QtCore.QRect(int(720 * sf_x), int(260 * sf_y), int(51 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         self.k_value_dl.setFont(font)
         self.k_value_dl.setProperty("value", 10)
         self.k_value_dl.setObjectName("k_value_dl")
@@ -226,7 +262,7 @@ class data_options_window(QtWidgets.QDialog):
         self.saved_path_manual = QtWidgets.QLabel(self.data_frame)
         self.saved_path_manual.setGeometry(QtCore.QRect(int(280 * sf_x), int(140 * sf_y), int(291 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         self.saved_path_manual.setFont(font)
         self.saved_path_manual.setObjectName("saved_path_manual")
         
@@ -234,7 +270,7 @@ class data_options_window(QtWidgets.QDialog):
         self.output_path_button = QtWidgets.QPushButton(self.data_frame)
         self.output_path_button.setGeometry(QtCore.QRect(int(30 * sf_x), int(135 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(False)
         font.setWeight(50)
         self.output_path_button.setFont(font)
@@ -245,7 +281,7 @@ class data_options_window(QtWidgets.QDialog):
         self.saved_path_dl = QtWidgets.QLabel(self.data_frame)
         self.saved_path_dl.setGeometry(QtCore.QRect(int(890 * sf_x), int(130 * sf_y), int(291 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         self.saved_path_dl.setFont(font)
         self.saved_path_dl.setObjectName("saved_path_dl")
         
@@ -253,7 +289,7 @@ class data_options_window(QtWidgets.QDialog):
         self.output_path_dl_button = QtWidgets.QPushButton(self.data_frame)
         self.output_path_dl_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(130 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_x))
+        font.setPointSize(int(10 * sf_font))
         font.setBold(False)
         font.setWeight(50)
         self.output_path_dl_button.setFont(font)

@@ -8,6 +8,7 @@ import geopandas as gpd
 # Utilities libraries
 import time
 import os
+import sys
 import pandas as pd
 import numpy as np
 import cv2
@@ -60,9 +61,43 @@ class GUIMethods:
         screen = QApplication.primaryScreen()
         screen_geometry = screen.geometry()
         screen_width = screen_geometry.width()
+        screen_height = screen_geometry.height()
 
+        #
+        DESIGN_WIDTH = 1920
+        DESIGN_HEIGHT = 1080
+        DESIGN_DPI = 96 * 1.25  # 125% Windows baseline -> 120 DPI
+        
         # Scale the GUI based on resolution
-        self.sf_x = screen_width / 1920
+        sf_x = screen_width / DESIGN_WIDTH
+        sf_y = screen_height / DESIGN_HEIGHT
+        sf_factor = np.sqrt(sf_x * sf_y)
+
+        # DPI-based scale
+        # Get a reliable DPI value
+        if sys.platform.startswith("win"):
+            # Windows: use ctypes to get real DPI
+            import ctypes
+            LOGPIXELSX = 88
+            hdc = ctypes.windll.user32.GetDC(0)
+            dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
+            ctypes.windll.user32.ReleaseDC(0, hdc)
+        else:
+            # macOS / Linux: start with logical DPI
+            dpi = screen.logicalDotsPerInch()
+            # If logical DPI looks weird, fallback to physical
+            if dpi < 60 or dpi > 200:
+                dpi = screen.physicalDotsPerInch()
+
+        # Normalize to your design environment (Windows @ 125% = 120 DPI)
+        # If dpi == 120 => scale_dpi = 1 (your original machine)
+        scale_dpi = DESIGN_DPI / dpi
+        
+        # For geometry: mainly resolution-based
+        sf_x = sf_factor
+        sf_y = sf_factor
+        # Scale the GUI based on resolution
+        sf_font = sf_factor * scale_dpi
         
 
     ############ Counts the number of clicks made on the next button ################ 
@@ -669,7 +704,7 @@ class GUIMethods:
                         # Skipping prection for this image
                         self.predicted_img[aux] = 0
                         font = QtGui.QFont()
-                        font.setPointSize(int(16 * self.sf_x ))
+                        font.setPointSize(int(16 * self.sf_font))
                         font.setBold(True)
                         font.setWeight(75)
                         img_frames[aux].setFont(font)
@@ -681,7 +716,7 @@ class GUIMethods:
                 self.no_image = "Street View not available" 
                 for aux in range (3):
                     font = QtGui.QFont()
-                    font.setPointSize(int(16 * self.sf_x))
+                    font.setPointSize(int(16 * self.sf_font))
                     font.setBold(True)
                     font.setWeight(75)
                     img_frames[aux].setFont(font)
@@ -810,7 +845,7 @@ class GUIMethods:
                                         <code>{img_path}</code>
                                         """
                         font = QtGui.QFont()
-                        font.setPointSize(int(12 * self.sf_x))
+                        font.setPointSize(int(12 * self.sf_font))
                         font.setBold(True)
                         font.setWeight(75)
                     
@@ -842,7 +877,7 @@ class GUIMethods:
                             """
                             
                             font = QtGui.QFont()
-                            font.setPointSize(int(12 * self.sf_x))    
+                            font.setPointSize(int(12 * self.sf_font))    
                             font.setBold(True)
                             font.setWeight(75)
                             
@@ -1649,11 +1684,13 @@ class GUIMethods:
                 aux = 1
                 aux_path = (self.ui.folder_path+"/Cropped_images/"
                                 +str(self.data_building.iloc[self.old_local + aux, 0]))
-                
+
                 cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
                 
                 try:
-                    image = cv2.imread(cropped_path)
+                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    if image is None:
+                        raise FileNotFoundError("Unable to read iamge")
                 except:
                     aux = 0
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
@@ -1770,7 +1807,9 @@ class GUIMethods:
                 cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"                  
               
                 try:
-                    image = cv2.imread(cropped_path)
+                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    if image is None:
+                        raise FileNotFoundError("Unable to read iamge")
                 except:
                     aux = 0
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
@@ -1894,7 +1933,9 @@ class GUIMethods:
                 cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                              
                 try:
-                    image = cv2.imread(cropped_path)
+                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    if image is None:
+                        raise FileNotFoundError("Unable to read iamge")
                 except:
                     aux = 0
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
@@ -1998,7 +2039,9 @@ class GUIMethods:
                 cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                 
                 try:
-                    image = cv2.imread(cropped_path)
+                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    if image is None:
+                        raise FileNotFoundError("Unable to read iamge")
                 except:
                     aux = 0
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
@@ -2095,7 +2138,9 @@ class GUIMethods:
                 cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"      
                 
                 try:
-                    image = cv2.imread(cropped_path)
+                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    if image is None:
+                        raise FileNotFoundError("Unable to read iamge")
                 except:
                     aux = 0
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
@@ -2196,7 +2241,9 @@ class GUIMethods:
                     cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                     
                     try:
-                        image = cv2.imread(cropped_path)
+                        image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                        if image is None:
+                            raise FileNotFoundError("Unable to read iamge")
                     except:
                         aux = 0
                         aux_path = (self.ui.folder_path+"/Cropped_images/"
@@ -2273,7 +2320,9 @@ class GUIMethods:
                     cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                     
                     try:
-                        image = cv2.imread(cropped_path)
+                        image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                        if image is None:
+                            raise FileNotFoundError("Unable to read iamge")
                     except:
                         aux = 0
                         aux_path = (self.ui.folder_path+"/Cropped_images/"
@@ -2368,7 +2417,9 @@ class GUIMethods:
                     cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                          
                     try:
-                        image = cv2.imread(cropped_path)
+                        image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                        if image is None:
+                            raise FileNotFoundError("Unable to read iamge")
                     except:
                         aux = 0
                         aux_path = (self.ui.folder_path+"/Cropped_images/"
