@@ -269,22 +269,19 @@ class GUIMethods:
                 self.old_local = self.cont_local
                 self.cont_local = self.cont_local + self.n_images_local
                     
-                try:
-                    geolocator = Nominatim(user_agent="city_name_locator")
-                    location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
-                    
-                    if location and 'address' in location.raw:
-                        address = location.raw['address']
-                        self.city = (address.get("city") or address.get("town") or address.get("village")
-                            or address.get("municipality") or address.get("county") or address.get("state_district")
-                            or "Unknown")
-                        self.country = address.get('country', 'Unknown')
-                        self.city_name_manual = self.city+"_"+self.country
-                        self.ui.city_value.setText(self.city) 
-                        self.ui.country_value.setText(self.country) 
-                        return (self.city , self.country)
-                except:
-                    pass
+                geolocator = Nominatim(user_agent="city_name_locator")
+                location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
+                
+                if location and 'address' in location.raw:
+                    address = location.raw['address']
+                    self.city = (address.get("city") or address.get("town") or address.get("village")
+                        or address.get("municipality") or address.get("county") or address.get("state_district")
+                        or "Unknown")
+                    self.country = address.get('country', 'Unknown')
+                    self.city_name_manual = self.city+"_"+self.country
+                    self.ui.city_value.setText(self.city) 
+                    self.ui.country_value.setText(self.country) 
+                    return (self.city , self.country)
                 
                 return "City not found"
                  
@@ -296,22 +293,19 @@ class GUIMethods:
                 lat = float(self.ui.lat_value.text())
                 lon = float(self.ui.lon_value.text())
                     
-                try:
-                    geolocator = Nominatim(user_agent="city_name_locator")
-                    location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
-                    
-                    if location and 'address' in location.raw:
-                        address = location.raw['address']
-                        self.city = (address.get("city") or address.get("town") or address.get("village")
-                            or address.get("municipality") or address.get("county") or address.get("state_district")
-                            or "Unknown")
-                        self.country = address.get('country', 'Unknown')
-                        self.city_name_manual = self.city+"_"+self.country
-                        self.ui.city_value.setText(self.city) 
-                        self.ui.country_value.setText(self.country) 
-                        return (self.city , self.country)
-                except:
-                    pass
+                geolocator = Nominatim(user_agent="city_name_locator")
+                location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
+                
+                if location and 'address' in location.raw:
+                    address = location.raw['address']
+                    self.city = (address.get("city") or address.get("town") or address.get("village")
+                        or address.get("municipality") or address.get("county") or address.get("state_district")
+                        or "Unknown")
+                    self.country = address.get('country', 'Unknown')
+                    self.city_name_manual = self.city+"_"+self.country
+                    self.ui.city_value.setText(self.city) 
+                    self.ui.country_value.setText(self.country) 
+                    return (self.city , self.country)
                 
                 return "City not found"
         else:

@@ -30,6 +30,7 @@ class GUI_geofiles:
         # Check for existing footprint file
         if os.path.exists(output_file):
             buildings = gpd.read_file(output_file)
+            return len(buildings)
         else:
             # Ensure boundary exists
             if os.path.exists(self.boundary_path):
@@ -358,6 +359,9 @@ class GUI_geofiles:
             centroids["longitude"] = centroids.geometry.x
             # Save the centroids to a GeoPackage
             print(f"Saving centroids to: {output_file}")
+            print("")
+            print("DF: ")
+            print(centroids)
             centroids.to_file(output_file, driver="GPKG", layer="centroids")
                     
                     
