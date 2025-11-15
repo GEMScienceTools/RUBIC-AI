@@ -30,6 +30,8 @@ class GUI_geofiles:
         # Check for existing footprint file
         if os.path.exists(output_file):
             buildings = gpd.read_file(output_file)
+            self.footprint_progress.setValue(100)
+            self.footprint_progress_label.setText("Done!")
             return len(buildings)
         else:
             # Ensure boundary exists
@@ -37,7 +39,7 @@ class GUI_geofiles:
                 # ==============================================================
                 # MODE 0: OpenStreetMap
                 # ==============================================================
-               if self.footprint_mode.currentData() == 0:
+                if self.footprint_mode.currentData() == 0:
                     # Load and ensure EPSG:4326
                     gdf = gpd.read_file(self.boundary_path)
                     if gdf.crs is None or gdf.crs.to_string() != "EPSG:4326":
@@ -155,136 +157,136 @@ class GUI_geofiles:
                     self.footprint_progress_label.setText("Done!")
                     return len(buildings)
 
-            # ==============================================================
-            # MODE 1: Overture Maps
-            # ==============================================================
-            elif self.footprint_mode.currentData() == 1:
-                gdf = gpd.read_file(self.boundary_path)
-                if gdf.crs is None or gdf.crs.to_string() != "EPSG:4326":
-                    print("Reprojecting to EPSG:4326...")
-                    gdf = gdf.to_crs("EPSG:4326")
-                
-                polygon = gdf.union_all()
-                if not polygon.is_valid:
-                    polygon = polygon.buffer(0)
-                
-                self.footprint_progress.setValue(10)
-                self.footprint_progress_label.setText("in progress ...")
-                
-                minx, miny, maxx, maxy = polygon.bounds
-                bbox_target = f"--bbox={minx},{miny},{maxx},{maxy}"
-                
-                temp_geojson = "buildings_bbox.geojson"
-                print("Downloading buildings from Overture Maps...")
-                command = [
-                    "overturemaps", "download", bbox_target,
-                    "-f", "geojson", "--type=building", "-o", temp_geojson
-                ]
-                self.footprint_progress.setValue(20)
-                
-                try:
-                    subprocess.run(command, check=True)
-                except subprocess.CalledProcessError as e:
-                    print(f"Overture Maps download failed: {e}")
-                    return None
-                
-                if not os.path.exists(temp_geojson):
-                    print("No building data file found after download.")
-                    return None
-                
-                buildings_ini = gpd.read_file(temp_geojson)
-                if buildings_ini.empty:
-                    print("No buildings returned from Overture Maps.")
-                    return None
-                
-                self.footprint_progress.setValue(70)
-                
-                print("✂️ Clipping buildings to custom polygon...")
-                polygon_gdf = gpd.GeoDataFrame(geometry=[polygon], crs="EPSG:4326")
-                buildings_ini = buildings_ini.to_crs(polygon_gdf.crs)
-                
-                try:
-                    buildings = gpd.overlay(buildings_ini, polygon_gdf, how="intersection")
-                except Exception as e:
-                    print(f"⚠️ Error clipping buildings: {e}")
-                    return None
-                
-                if buildings.empty:
-                    print("No buildings found within the polygon area.")
-                    return None
-                
-                # ------------------------------------------------------------------
-                # Clean and prepare geometries
-                self.footprint_progress.setValue(80)
-                buildings = buildings[buildings.geom_type.isin(["Polygon", "MultiPolygon"])]
-                buildings["geometry"] = buildings["geometry"].buffer(0)
-                
-                # ------------------------------------------------------------------
-                # Clean invalid or reserved column names
-                reserved_names = {"Type", "FID", "Geometry", "geom", "geometry", "FIXME"}
-                clean_columns = []
-                for col in buildings.columns:
-                    if col in reserved_names or not col.isidentifier():
-                        new_col = f"{col}_field"
+                # ==============================================================
+                # MODE 1: Overture Maps
+                # ==============================================================
+                elif self.footprint_mode.currentData() == 1:
+                    gdf = gpd.read_file(self.boundary_path)
+                    if gdf.crs is None or gdf.crs.to_string() != "EPSG:4326":
+                        print("Reprojecting to EPSG:4326...")
+                        gdf = gdf.to_crs("EPSG:4326")
+                    
+                    polygon = gdf.union_all()
+                    if not polygon.is_valid:
+                        polygon = polygon.buffer(0)
+                    
+                    self.footprint_progress.setValue(10)
+                    self.footprint_progress_label.setText("in progress ...")
+                    
+                    minx, miny, maxx, maxy = polygon.bounds
+                    bbox_target = f"--bbox={minx},{miny},{maxx},{maxy}"
+                    
+                    temp_geojson = "buildings_bbox.geojson"
+                    print("Downloading buildings from Overture Maps...")
+                    command = [
+                        "overturemaps", "download", bbox_target,
+                        "-f", "geojson", "--type=building", "-o", temp_geojson
+                    ]
+                    self.footprint_progress.setValue(20)
+                    
+                    try:
+                        subprocess.run(command, check=True)
+                    except subprocess.CalledProcessError as e:
+                        print(f"Overture Maps download failed: {e}")
+                        return None
+                    
+                    if not os.path.exists(temp_geojson):
+                        print("No building data file found after download.")
+                        return None
+                    
+                    buildings_ini = gpd.read_file(temp_geojson)
+                    if buildings_ini.empty:
+                        print("No buildings returned from Overture Maps.")
+                        return None
+                    
+                    self.footprint_progress.setValue(70)
+                    
+                    print("✂️ Clipping buildings to custom polygon...")
+                    polygon_gdf = gpd.GeoDataFrame(geometry=[polygon], crs="EPSG:4326")
+                    buildings_ini = buildings_ini.to_crs(polygon_gdf.crs)
+                    
+                    try:
+                        buildings = gpd.overlay(buildings_ini, polygon_gdf, how="intersection")
+                    except Exception as e:
+                        print(f"⚠️ Error clipping buildings: {e}")
+                        return None
+                    
+                    if buildings.empty:
+                        print("No buildings found within the polygon area.")
+                        return None
+                    
+                    # ------------------------------------------------------------------
+                    # Clean and prepare geometries
+                    self.footprint_progress.setValue(80)
+                    buildings = buildings[buildings.geom_type.isin(["Polygon", "MultiPolygon"])]
+                    buildings["geometry"] = buildings["geometry"].buffer(0)
+                    
+                    # ------------------------------------------------------------------
+                    # Clean invalid or reserved column names
+                    reserved_names = {"Type", "FID", "Geometry", "geom", "geometry", "FIXME"}
+                    clean_columns = []
+                    for col in buildings.columns:
+                        if col in reserved_names or not col.isidentifier():
+                            new_col = f"{col}_field"
+                        else:
+                            new_col = col
+                        clean_columns.append(new_col)
+                    buildings.columns = clean_columns
+                    
+                    self.footprint_progress.setValue(85)
+                    
+                    # ✅ Ensure the active geometry column is correctly set
+                    geom_col = None
+                    for c in buildings.columns:
+                        if "geom" in c.lower():
+                            geom_col = c
+                            break
+                    
+                    if geom_col is not None:
+                        buildings = buildings.set_geometry(geom_col)
                     else:
-                        new_col = col
-                    clean_columns.append(new_col)
-                buildings.columns = clean_columns
-                
-                self.footprint_progress.setValue(85)
-                
-                # ✅ Ensure the active geometry column is correctly set
-                geom_col = None
-                for c in buildings.columns:
-                    if "geom" in c.lower():
-                        geom_col = c
-                        break
-                
-                if geom_col is not None:
-                    buildings = buildings.set_geometry(geom_col)
-                else:
-                    raise ValueError("No geometry column found in the GeoDataFrame!")
-                
-                # ------------------------------------------------------------------
-                # Drop unnecessary columns
-                drop_cols = [c for c in buildings.columns if c.upper() in ["AREA", "FIXME", "NOTE"]]
-                buildings = buildings.drop(columns=drop_cols, errors="ignore")
-                
-                self.footprint_progress.setValue(90)
-                
-                # ------------------------------------------------------------------
-                # ✅ AREA FILTER (greater than 20 m²)
-                buildings = buildings.to_crs("EPSG:3857")  # project to meters
-                buildings["area_m2"] = buildings.geometry.area
-                before = len(buildings)
-                buildings = buildings[buildings["area_m2"] > 20]
-                after = len(buildings)
-                print(f"Filtered buildings by area: {before} → {after} (>{20} m²)")
-                buildings = buildings.to_crs("EPSG:4326")
-                
-                # ------------------------------------------------------------------
-                # ✅ ADD 'id' column (fid → osmid → id → auto)
-                fid_cols = [c for c in buildings.columns if c.lower().startswith("fid")]
-                
-                if fid_cols:
-                    buildings["id"] = buildings[fid_cols[0]]
-                elif "osmid" in buildings.columns:
-                    buildings["id"] = buildings["osmid"]
-                elif "id" in buildings.columns:
-                    buildings["id"] = buildings["id"]
-                else:
-                    buildings["id"] = range(1, len(buildings) + 1)
-                
-                buildings["id"] = buildings["id"].astype(str)
-                
-                # ------------------------------------------------------------------
-                # Save to file
-                buildings.to_file(output_file, driver="GPKG")
-                self.footprint_progress.setValue(100)
-                self.footprint_progress_label.setText("Done!")
-                os.remove(temp_geojson)
-                
-                return len(buildings)
+                        raise ValueError("No geometry column found in the GeoDataFrame!")
+                    
+                    # ------------------------------------------------------------------
+                    # Drop unnecessary columns
+                    drop_cols = [c for c in buildings.columns if c.upper() in ["AREA", "FIXME", "NOTE"]]
+                    buildings = buildings.drop(columns=drop_cols, errors="ignore")
+                    
+                    self.footprint_progress.setValue(90)
+                    
+                    # ------------------------------------------------------------------
+                    # ✅ AREA FILTER (greater than 20 m²)
+                    buildings = buildings.to_crs("EPSG:3857")  # project to meters
+                    buildings["area_m2"] = buildings.geometry.area
+                    before = len(buildings)
+                    buildings = buildings[buildings["area_m2"] > 20]
+                    after = len(buildings)
+                    print(f"Filtered buildings by area: {before} → {after} (>{20} m²)")
+                    buildings = buildings.to_crs("EPSG:4326")
+                    
+                    # ------------------------------------------------------------------
+                    # ✅ ADD 'id' column (fid → osmid → id → auto)
+                    fid_cols = [c for c in buildings.columns if c.lower().startswith("fid")]
+                    
+                    if fid_cols:
+                        buildings["id"] = buildings[fid_cols[0]]
+                    elif "osmid" in buildings.columns:
+                        buildings["id"] = buildings["osmid"]
+                    elif "id" in buildings.columns:
+                        buildings["id"] = buildings["id"]
+                    else:
+                        buildings["id"] = range(1, len(buildings) + 1)
+                    
+                    buildings["id"] = buildings["id"].astype(str)
+                    
+                    # ------------------------------------------------------------------
+                    # Save to file
+                    buildings.to_file(output_file, driver="GPKG")
+                    self.footprint_progress.setValue(100)
+                    self.footprint_progress_label.setText("Done!")
+                    os.remove(temp_geojson)
+                    
+                    return len(buildings)
 
         
     ############ Random subset buildings ################  
@@ -403,9 +405,6 @@ class GUI_geofiles:
             centroids["longitude"] = centroids.geometry.x
             # Save the centroids to a GeoPackage
             print(f"Saving centroids to: {output_file}")
-            print("")
-            print("DF: ")
-            print(centroids)
             centroids.to_file(output_file, driver="GPKG", layer="centroids")
                     
                     

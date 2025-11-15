@@ -97,7 +97,7 @@ class GUIMethods:
         sf_x = sf_factor
         sf_y = sf_factor
         # Scale the GUI based on resolution
-        sf_font = sf_factor * scale_dpi
+        self.sf_font = sf_factor * scale_dpi
         
 
     ############ Counts the number of clicks made on the next button ################ 
@@ -1466,8 +1466,19 @@ class GUIMethods:
             elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 8]) == True:
                 self.ui.n_stories_value_1.setCurrentText("Select Number of Stories")
             else:
-                self.setComboBoxByData(self.ui.n_stories_value_1, self.data_ai.iloc[self.click_count * 3 , 8])
-                
+                n_value = self.data_ai.iloc[self.click_count * 3 , 8]
+                if n_value == "1.0":
+                    n_value= "1"
+                elif n_value == "2.0":
+                    n_value= "2"
+                elif n_value == "3.0":
+                    n_value= "3"
+                elif n_value == "4.0":
+                    n_value= "4"
+                elif n_value == "5.0":
+                    n_value= "5"
+                self.setComboBoxByData(self.ui.n_stories_value_1, n_value)
+            
             # Occupancy
             if self.data_ai.iloc[self.click_count * 3 , 9] is None :
                 self.ui.occup_cb_1.setCurrentText("Select Occupancy Type")
@@ -1499,7 +1510,7 @@ class GUIMethods:
                 self.ui.roof_shape_cb_1.setCurrentText("Select Roof Shape")
             else:
                 self.setComboBoxByData(self.ui.roof_shape_cb_1 , self.data_ai.iloc[self.click_count * 3 , 12])
-                
+            
             # Roof Material
             if self.data_ai.iloc[self.click_count * 3 , 13] is None :
                 self.ui.roof_material_cb_1.setCurrentText("Select Roof Material")
@@ -1551,7 +1562,18 @@ class GUIMethods:
                 elif pd.isna(self.data_ai.iloc[self.old_local , 8]) == True:
                     self.ui.n_stories_value_1.setCurrentText("Select Number of Stories")
                 else:
-                    self.setComboBoxByData(self.ui.n_stories_value_1, str(self.data_ai.iloc[self.old_local , 8]))
+                    n_value = str(self.data_ai.iloc[self.old_local , 8])
+                    if n_value == "1.0":
+                        n_value= "1"
+                    elif n_value == "2.0":
+                        n_value= "2"
+                    elif n_value == "3.0":
+                        n_value= "3"
+                    elif n_value == "4.0":
+                        n_value= "4"
+                    elif n_value == "5.0":
+                        n_value= "5"
+                    self.setComboBoxByData(self.ui.n_stories_value_1, n_value)
                     
                 # Occupancy
                 if self.data_ai.iloc[self.old_local , 9] is None :
