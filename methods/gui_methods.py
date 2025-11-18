@@ -759,123 +759,137 @@ class GUIMethods:
                         os.makedirs(self.ui.folder_path+"/Cropped_images")
                     
                     self.gap = None
-                    # try:
-                    #     # Image results
-                    #     results = model(img_path)
-                    #     image_rgb = cv2.imread(img_path)
-                    #     # Adapting line weight depending of image size, in order to have an appropiate thickness
-                    #     height, width, channels = image_rgb.shape
-                    #     area = height*width
-                    #     ratio = int(area*3/307200)
-                    #     # Lines ratio
-                    #     if area <= 600000:
-                    #         # Small images
-                    #         self.gap = int(area*14/307200)
-                    #     elif area < 1000000:
-                    #         # Medium images
-                    #         self.gap = int(area*14/307200 * 3/4)
-                    #     else:
-                    #         # Large images
-                    #         self.gap = int(area*14/307200 * 3/8)
-                    #         ratio = int(area*3/307200 * 5/8)
-                    #     highest_conf = 0
-                    #     highest_conf_box = None
+                    try:
+                        # Image results
+                        # results = model(img_path)
+                        results = model.predict(img_path, device=device)
+                        image_rgb = cv2.imread(img_path)
+                        # Adapting line weight depending of image size, in order to have an appropiate thickness
+                        height, width, channels = image_rgb.shape
+                        area = height*width
+                        ratio = int(area*3/307200)
+                        # Lines ratio
+                        if area <= 600000:
+                            # Small images
+                            self.gap = int(area*14/307200)
+                        elif area < 1000000:
+                            # Medium images
+                            self.gap = int(area*14/307200 * 3/4)
+                        else:
+                            # Large images
+                            self.gap = int(area*14/307200 * 3/8)
+                            ratio = int(area*3/307200 * 5/8)
+                       
+                        best_box = None
+                        best_score = 0.0
+                
+                        # for box in results.boxes:
+                        for box in results[0].boxes:
+                            cls_id = int(box.cls)
+                            cls_name = class_names[cls_id]
+                            score = float(box.conf)  # confidence score
                         
-                    #     for result in results:
-                    #         boxes = result.boxes.xyxy  # Bounding box coordinates
-                    #         confs = result.boxes.conf  # Confidence scores
-                    #         classes = result.boxes.cls  # Class IDs
-                        
-                    #         for box, conf, cls in zip(boxes, confs, classes):
-                    #             cls = int(cls)  # Ensure the class ID is an integer
-                    #             # Getting the building image with higher confidence as selected bounding box
-                    #             if class_map[cls] == "building-xzyh" and conf > highest_conf:
-                    #                 highest_conf = conf
-                    #                 highest_conf_box = box
-                        
-                    #     if highest_conf_box is not None:
-                    #         x1, y1, x2, y2 = map(int, highest_conf_box)
-                            
-                    #         # Crop the area within the bounding box
-                    #         cropped_image = image_rgb[y1:y2, x1:x2]
-                    #         # Save image in local device
-                    #         cv2.imwrite(cropped_path, cropped_image)
-                        
-                    #         # Draw a dashed red rectangle for the highest confidence box
-                    #         if self.gap == 0:
-                    #             self.gap = 1
-                    #         for i in range(x1, x2, self.gap):
-                    #             cv2.line(image_rgb, (i, y1), (min(i + 5, x2), y1), (0, 0, 255), max(1, int(ratio)))  # Top edge
-                    #             cv2.line(image_rgb, (i, y2), (min(i + 5, x2), y2), (0, 0, 255), max(1, int(ratio)))  # Bottom edge
-                    #         for i in range(y1, y2, self.gap):
-                    #             cv2.line(image_rgb, (x1, i), (x1, min(i + 5, y2)), (0, 0, 255), max(1, int(ratio)))  # Left edge
-                    #             cv2.line(image_rgb, (x2, i), (x2, min(i + 5, y2)), (0, 0, 255), max(1, int(ratio)))  # Right edge
+                            if cls_name == TARGET_CLASS and score > best_score and score > 0.2:
+                                best_score = score
+                                best_box = box
                                 
-                    #         # Check and/or create diplayed folder              
-                    #         if not os.path.exists(self.ui.folder_path+"/displayed_images"):
-                    #             os.makedirs(self.ui.folder_path+"/displayed_images")
-                    #         cv2.imwrite(displayed_path, image_rgb)
-                            
-                    #         if image_rgb is not None:
-                    #             # Convert BGR image (OpenCV) to RGB format
-                    #             display_image_rgb = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2RGB)
-                    #             # display_image_rgb = image_rgb.copy()
-                    #             # Convert the RGB image to QImage
-                    #             height, width, channel = display_image_rgb.shape
-                    #             bytes_per_line = 3 * width
-                    #             qimage = QtGui.QImage(display_image_rgb.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
-                                
-                    #             # Convert QImage to QPixmap
-                    #             building_pixmap = QtGui.QPixmap.fromImage(qimage)
-
-                    # except FileNotFoundError:
-                    #     self.no_image = f"""
-                    #                     <b><u>No image found</u></b><br><br>
-                    #                     Please check that the image file exists at the specified path:<br>
-                    #                     <code>{img_path}</code>
-                    #                     """
-                    #     font = QtGui.QFont()
-                    #     font.setPointSize(int(12 * self.sf_font))
-                    #     font.setBold(True)
-                    #     font.setWeight(75)
+                        if best_box is None:
+                            # No building dectection 
+                            self.no_image = "No Building detected"
+                            # Skipping prection for this image
+                            self.predicted_img[aux] = 0
+                            font = QtGui.QFont()
+                            font.setPointSize(int(16 * self.sf_font))
+                            font.setBold(True)
+                            font.setWeight(75)
+                            img_frames[aux].setFont(font)
+                            img_frames[aux].setText(self.no_image)
+                            img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)  # Center-align text
+                            continue
                     
-                    #     img_frames[aux].setFont(font)
-                    #     img_frames[aux].setTextFormat(QtCore.Qt.RichText)  # Enable rich text (HTML)
-                    #     img_frames[aux].setText(self.no_image)
-                    #     img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)
-                    #     img_frames[aux].setWordWrap(True)
+                        # Bounding box coordinates
+                        x1, y1, x2, y2 = map(int, best_box.xyxy[0])
+                            
+                        # Crop the area within the bounding box
+                        cropped_image = image_rgb[y1:y2, x1:x2]
+                        # Save image in local device
+                        cv2.imwrite(cropped_path, cropped_image)
+                    
+                        # Draw a dashed red rectangle for the highest confidence box
+                        if self.gap == 0:
+                            self.gap = 1
+                        for i in range(x1, x2, self.gap):
+                            cv2.line(image_rgb, (i, y1), (min(i + 5, x2), y1), (0, 0, 255), max(1, int(ratio)))  # Top edge
+                            cv2.line(image_rgb, (i, y2), (min(i + 5, x2), y2), (0, 0, 255), max(1, int(ratio)))  # Bottom edge
+                        for i in range(y1, y2, self.gap):
+                            cv2.line(image_rgb, (x1, i), (x1, min(i + 5, y2)), (0, 0, 255), max(1, int(ratio)))  # Left edge
+                            cv2.line(image_rgb, (x2, i), (x2, min(i + 5, y2)), (0, 0, 255), max(1, int(ratio)))  # Right edge
+                         
+                        # Check and/or create diplayed folder              
+                        if not os.path.exists(self.ui.folder_path+"/displayed_images"):
+                            os.makedirs(self.ui.folder_path+"/displayed_images")
+                        cv2.imwrite(displayed_path, image_rgb)
                         
-                    # try:
-                    #     # Displayed image in corresponding frames
-                    #     img_frames[aux].setPixmap(
-                    #         building_pixmap.scaled(
-                    #             img_frames[aux].width(),
-                    #             img_frames[aux].height(),
-                    #             QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
-                    #             QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
-                    # except:
-                    #     if self.gap == None:
-                    #         pass
-                    #     else:
-                    #         # Displayed image in corresponding frames
-                    #         self.no_image = """
-                    #         <b><u>NO BUILDING DETECTED</u></b><br><br>
-                    #         There is no building detected by the tool. However, if you believe there is a building in the image,<br>
-                    #         <b><u>PLEASE CLICK THE "MANUAL BOX" BUTTON</u></b> and manually select the building.<br>
-                    #         <b><u>The building detector has a precision of 93%</u></b>; therefore, you may ignore this message <br>
-                    #         and simply click <b><u>Next Building</u></b> to continue classifying.
-                    #         """
+                        if image_rgb is not None:
+                            # Convert BGR image (OpenCV) to RGB format
+                            display_image_rgb = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2RGB)
+                            # display_image_rgb = image_rgb.copy()
+                            # Convert the RGB image to QImage
+                            height, width, channel = display_image_rgb.shape
+                            bytes_per_line = 3 * width
+                            qimage = QtGui.QImage(display_image_rgb.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
                             
-                    #         font = QtGui.QFont()
-                    #         font.setPointSize(int(12 * self.sf_font))    
-                    #         font.setBold(True)
-                    #         font.setWeight(75)
+                            # Convert QImage to QPixmap
+                            building_pixmap = QtGui.QPixmap.fromImage(qimage)
+
+                    except FileNotFoundError:
+                        self.no_image = f"""
+                                        <b><u>No image found</u></b><br><br>
+                                        Please check that the image file exists at the specified path:<br>
+                                        <code>{img_path}</code>
+                                        """
+                        font = QtGui.QFont()
+                        font.setPointSize(int(12 * self.sf_font))
+                        font.setBold(True)
+                        font.setWeight(75)
+                    
+                        img_frames[aux].setFont(font)
+                        img_frames[aux].setTextFormat(QtCore.Qt.RichText)  # Enable rich text (HTML)
+                        img_frames[aux].setText(self.no_image)
+                        img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)
+                        img_frames[aux].setWordWrap(True)
+                        
+                    try:
+                        # Displayed image in corresponding frames
+                        img_frames[aux].setPixmap(
+                            building_pixmap.scaled(
+                                img_frames[aux].width(),
+                                img_frames[aux].height(),
+                                QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
+                                QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
+                    except:
+                        if self.gap == None:
+                            pass
+                        else:
+                            # Displayed image in corresponding frames
+                            self.no_image = """
+                            <b><u>NO BUILDING DETECTED</u></b><br><br>
+                            There is no building detected by the tool. However, if you believe there is a building in the image,<br>
+                            <b><u>PLEASE CLICK THE "MANUAL BOX" BUTTON</u></b> and manually select the building.<br>
+                            <b><u>The building detector has a precision of 93%</u></b>; therefore, you may ignore this message <br>
+                            and simply click <b><u>Next Building</u></b> to continue classifying.
+                            """
                             
-                    #         img_frames[aux].setFont(font)
-                    #         img_frames[aux].setTextFormat(QtCore.Qt.RichText)  # Enable rich text (HTML)
-                    #         img_frames[aux].setText(self.no_image)
-                    #         img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)
-                    #         img_frames[aux].setWordWrap(True)  # Wrap long text
+                            font = QtGui.QFont()
+                            font.setPointSize(int(12 * self.sf_font))    
+                            font.setBold(True)
+                            font.setWeight(75)
+                            
+                            img_frames[aux].setFont(font)
+                            img_frames[aux].setTextFormat(QtCore.Qt.RichText)  # Enable rich text (HTML)
+                            img_frames[aux].setText(self.no_image)
+                            img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)
+                            img_frames[aux].setWordWrap(True)  # Wrap long text
                         
                         
                         
@@ -1038,6 +1052,7 @@ class GUIMethods:
                     
                     # Comboboxes for each image label
                     material_id = [self.ui.material_cb_1,self.ui.material_cb_1,self.ui.material_cb_1]
+
                     material_index = predict_material_img(image_file, self.ui.insp_method, self.box_id, self)
                     # LLRS building image sets prediction
                     class_names_mat = ['Concrete', 'Hybrid - Confined and Unreinforced masonry', 'Informal materials', 
