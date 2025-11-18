@@ -6,7 +6,7 @@ from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import Qt
 
 class BoundingBoxWindow(QDialog):
-    def __init__(self, image_path, frame, insp_method, cropped_path, parent=None, main_window=None, gui_methods=None):
+    def __init__(self, image_path, frame, insp_method, path_cropped, parent=None, main_window=None, gui_methods=None):
         super().__init__(parent)
         self.main_window = main_window
         self.gui_methods = gui_methods
@@ -58,7 +58,7 @@ class BoundingBoxWindow(QDialog):
         
         self.image_path = image_path
         self.insp_method = insp_method
-        self.cropped_img_path = cropped_path
+        self.cropped_img_path = path_cropped
         self.image = None
         self.points = []
         self.fixed_width = int(640*sf_x)
@@ -220,8 +220,12 @@ class BoundingBoxWindow(QDialog):
         cropped_image_original = cv2.warpPerspective(self.image_original, matrix_org, (crop_width_original, crop_height_original))
         
         # Save the cropped image as an RGB JPEG file (convert to BGR format first for OpenCV compatibility)
-        cv2.imwrite(self.cropped_img_path, cv2.cvtColor(cropped_image_original, cv2.COLOR_RGB2BGR))
-        
+        try:
+            # Local images method
+            cv2.imwrite(self.cropped_img_path, cv2.cvtColor(cropped_image_original, cv2.COLOR_RGB2BGR))
+        except:
+            # Polygon and specific coordinates methods
+            pass
         
         # Check the inspection method condition to determine whether to save or assign the image
         if self.insp_method != 2:
