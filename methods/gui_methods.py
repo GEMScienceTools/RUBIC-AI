@@ -607,13 +607,14 @@ class GUIMethods:
         """
 
         # Class mapping (update this with your actual mappings)
-        class_map = {0: "building-xzyh"}  # Replace with the correct mapping
         weight_path = "methods/building_detector.pt" # Replace with your YOLO .pt file
         # Load the YOLO model
         model = YOLO(weight_path)
+        # Classes
+        class_names = model.names
+        TARGET_CLASS = 'building-xzyh'
         # Set device GPU or CPU
         device= "cuda" if torch.cuda.is_available() else "cpu"
-        model.to(device)
         # List of the frame
         self.ui.left_gsv_img.clear()
         self.ui.central_gsv_img.clear()
@@ -631,9 +632,9 @@ class GUIMethods:
                 
                 for aux in range (3):
                     if sw == True:
-                        for i in range (100):
-                            time.sleep(0.0001)
+                        for i in range(100):
                             self.ui.progress_bar_method.setValue(i)
+                            QApplication.processEvents()
                             self.ui.method_progress.setText("Isolating building ....")
                         sw = False
             
@@ -641,64 +642,22 @@ class GUIMethods:
                     image_rgb = org_img[aux]
             
                     # Run inference
-                    results = model.predict(image_rgb)
-            
-                    highest_conf = 0
-                    highest_conf_box = None
-            
-                    # Process the results
-                    for result in results:
-                        boxes = result.boxes.xyxy.cpu().numpy()  # Bounding box coordinates
-                        confs = result.boxes.conf.cpu().numpy()  # Confidence scores
-                        classes = result.boxes.cls.cpu().numpy()  # Class IDs
-            
-                        for box, conf, cls in zip(boxes, confs, classes):
-                            cls = int(cls)
-                            # Getting the building image with higher confidence as selected bounding box
-                            if class_map.get(cls) == "building-xzyh" and conf > highest_conf:
-                                highest_conf = conf
-                                highest_conf_box = box
+                    results = model.predict(image_rgb, device=device)
                     
-                    # Create image for cropped and displayed
-                    display_image = org_img[aux].copy()
+                    best_box = None
+                    best_score = 0.0
+            
+                    # for box in results.boxes:
+                    for box in results[0].boxes:
+                        cls_id = int(box.cls)
+                        cls_name = class_names[cls_id]
+                        score = float(box.conf)  # confidence score
                     
-                    # Extracting selecting bounding box coordinates witin the image
-                    if highest_conf_box is not None:
-                        x1, y1, x2, y2 = map(int, highest_conf_box)
-                        
-                        # Crop the area within the selected bounding box
-                        # self.cropped_image[aux] = org_img[aux][y1:y2, x1:x2]
-                        # self.org_img_bp = org_img[aux]
-                        self.cropped_image[aux] = org_img[1][y1:y2, x1:x2]
-                        self.org_img_bp = org_img[1]
-                        # Draw a dashed rectangle for the highest confidence box
-                        for i in range(x1, x2, 14):
-                            cv2.line(display_image, (i, y1), (min(i + 5, x2), y1), (0, 0, 255), 3)
-                            cv2.line(display_image, (i, y2), (min(i + 5, x2), y2), (0, 0, 255), 3)
-                        for i in range(y1, y2, 14):
-                            cv2.line(display_image, (x1, i), (x1, min(i + 5, y2)), (0, 0, 255), 3)
-                            cv2.line(display_image, (x2, i), (x2, min(i + 5, y2)), (0, 0, 255), 3)
+                        if cls_name == TARGET_CLASS and score > best_score and score > 0.2:
+                            best_score = score
+                            best_box = box
                             
-                        if display_image is not None:
-                            # Convert BGR image (OpenCV) to RGB format
-                            display_image_rgb = cv2.cvtColor(display_image, cv2.COLOR_BGR2RGB)
-                            
-                            # Convert the RGB image to QImage
-                            height, width, channel = display_image_rgb.shape
-                            bytes_per_line = 3 * width
-                            qimage = QtGui.QImage(display_image_rgb.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
-                            
-                            # Convert QImage to QPixmap
-                            building_pixmap = QtGui.QPixmap.fromImage(qimage)
-                            self.predicted_img[aux] = 1
-                            # Set the pixmap to QLabel
-                            img_frames[aux].setPixmap(
-                                building_pixmap.scaled(
-                                    img_frames[aux].width(),
-                                    img_frames[aux].height(),
-                                    QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
-                                    QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
-                    else: 
+                    if best_box is None:
                         # No building dectection 
                         self.no_image = "No Building detected"
                         # Skipping prection for this image
@@ -710,7 +669,38 @@ class GUIMethods:
                         img_frames[aux].setFont(font)
                         img_frames[aux].setText(self.no_image)
                         img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)  # Center-align text
-            
+                        continue
+                
+                    # Bounding box coordinates
+                    x1, y1, x2, y2 = map(int, best_box.xyxy[0])
+                        
+                    # Crop the area within the selected bounding box
+                    self.cropped_image[aux] = org_img[1][y1:y2, x1:x2]
+                    self.org_img_bp = org_img[1]
+                    
+                    # Create image for cropped and displayed
+                    display_image = org_img[aux].copy()
+                            
+                    for i in range(x1, x2, 14):
+                        cv2.line(display_image, (i, y1), (min(i + 5, x2), y1), (0, 0, 255), 3)
+                        cv2.line(display_image, (i, y2), (min(i + 5, x2), y2), (0, 0, 255), 3)
+                
+                    for i in range(y1, y2, 14):
+                        cv2.line(display_image, (x1, i), (x1, min(i + 5, y2)), (0, 0, 255), 3)
+                        cv2.line(display_image, (x2, i), (x2, min(i + 5, y2)), (0, 0, 255), 3)
+                
+                    display_image_rgb = cv2.cvtColor(display_image, cv2.COLOR_BGR2RGB)
+                    h, w, ch = display_image_rgb.shape
+                    bytes_per_line = w * 3
+                    qimg = QtGui.QImage(display_image_rgb.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+                
+                    pixmap = QtGui.QPixmap.fromImage(qimg)
+                    self.predicted_img[aux] = 1
+                
+                    img_frames[aux].setPixmap(
+                        pixmap.scaled(img_frames[aux].width(), img_frames[aux].height(),
+                                      QtCore.Qt.IgnoreAspectRatio,
+                                      QtCore.Qt.SmoothTransformation))
             # There is not GSV image coverage
             except:
                 self.no_image = "Street View not available" 
@@ -769,123 +759,123 @@ class GUIMethods:
                         os.makedirs(self.ui.folder_path+"/Cropped_images")
                     
                     self.gap = None
-                    try:
-                        # Image results
-                        results = model(img_path)
-                        image_rgb = cv2.imread(img_path)
-                        # Adapting line weight depending of image size, in order to have an appropiate thickness
-                        height, width, channels = image_rgb.shape
-                        area = height*width
-                        ratio = int(area*3/307200)
-                        # Lines ratio
-                        if area <= 600000:
-                            # Small images
-                            self.gap = int(area*14/307200)
-                        elif area < 1000000:
-                            # Medium images
-                            self.gap = int(area*14/307200 * 3/4)
-                        else:
-                            # Large images
-                            self.gap = int(area*14/307200 * 3/8)
-                            ratio = int(area*3/307200 * 5/8)
-                        highest_conf = 0
-                        highest_conf_box = None
+                    # try:
+                    #     # Image results
+                    #     results = model(img_path)
+                    #     image_rgb = cv2.imread(img_path)
+                    #     # Adapting line weight depending of image size, in order to have an appropiate thickness
+                    #     height, width, channels = image_rgb.shape
+                    #     area = height*width
+                    #     ratio = int(area*3/307200)
+                    #     # Lines ratio
+                    #     if area <= 600000:
+                    #         # Small images
+                    #         self.gap = int(area*14/307200)
+                    #     elif area < 1000000:
+                    #         # Medium images
+                    #         self.gap = int(area*14/307200 * 3/4)
+                    #     else:
+                    #         # Large images
+                    #         self.gap = int(area*14/307200 * 3/8)
+                    #         ratio = int(area*3/307200 * 5/8)
+                    #     highest_conf = 0
+                    #     highest_conf_box = None
                         
-                        for result in results:
-                            boxes = result.boxes.xyxy  # Bounding box coordinates
-                            confs = result.boxes.conf  # Confidence scores
-                            classes = result.boxes.cls  # Class IDs
+                    #     for result in results:
+                    #         boxes = result.boxes.xyxy  # Bounding box coordinates
+                    #         confs = result.boxes.conf  # Confidence scores
+                    #         classes = result.boxes.cls  # Class IDs
                         
-                            for box, conf, cls in zip(boxes, confs, classes):
-                                cls = int(cls)  # Ensure the class ID is an integer
-                                # Getting the building image with higher confidence as selected bounding box
-                                if class_map[cls] == "building-xzyh" and conf > highest_conf:
-                                    highest_conf = conf
-                                    highest_conf_box = box
+                    #         for box, conf, cls in zip(boxes, confs, classes):
+                    #             cls = int(cls)  # Ensure the class ID is an integer
+                    #             # Getting the building image with higher confidence as selected bounding box
+                    #             if class_map[cls] == "building-xzyh" and conf > highest_conf:
+                    #                 highest_conf = conf
+                    #                 highest_conf_box = box
                         
-                        if highest_conf_box is not None:
-                            x1, y1, x2, y2 = map(int, highest_conf_box)
+                    #     if highest_conf_box is not None:
+                    #         x1, y1, x2, y2 = map(int, highest_conf_box)
                             
-                            # Crop the area within the bounding box
-                            cropped_image = image_rgb[y1:y2, x1:x2]
-                            # Save image in local device
-                            cv2.imwrite(cropped_path, cropped_image)
+                    #         # Crop the area within the bounding box
+                    #         cropped_image = image_rgb[y1:y2, x1:x2]
+                    #         # Save image in local device
+                    #         cv2.imwrite(cropped_path, cropped_image)
                         
-                            # Draw a dashed red rectangle for the highest confidence box
-                            if self.gap == 0:
-                                self.gap = 1
-                            for i in range(x1, x2, self.gap):
-                                cv2.line(image_rgb, (i, y1), (min(i + 5, x2), y1), (0, 0, 255), max(1, int(ratio)))  # Top edge
-                                cv2.line(image_rgb, (i, y2), (min(i + 5, x2), y2), (0, 0, 255), max(1, int(ratio)))  # Bottom edge
-                            for i in range(y1, y2, self.gap):
-                                cv2.line(image_rgb, (x1, i), (x1, min(i + 5, y2)), (0, 0, 255), max(1, int(ratio)))  # Left edge
-                                cv2.line(image_rgb, (x2, i), (x2, min(i + 5, y2)), (0, 0, 255), max(1, int(ratio)))  # Right edge
+                    #         # Draw a dashed red rectangle for the highest confidence box
+                    #         if self.gap == 0:
+                    #             self.gap = 1
+                    #         for i in range(x1, x2, self.gap):
+                    #             cv2.line(image_rgb, (i, y1), (min(i + 5, x2), y1), (0, 0, 255), max(1, int(ratio)))  # Top edge
+                    #             cv2.line(image_rgb, (i, y2), (min(i + 5, x2), y2), (0, 0, 255), max(1, int(ratio)))  # Bottom edge
+                    #         for i in range(y1, y2, self.gap):
+                    #             cv2.line(image_rgb, (x1, i), (x1, min(i + 5, y2)), (0, 0, 255), max(1, int(ratio)))  # Left edge
+                    #             cv2.line(image_rgb, (x2, i), (x2, min(i + 5, y2)), (0, 0, 255), max(1, int(ratio)))  # Right edge
                                 
-                            # Check and/or create diplayed folder              
-                            if not os.path.exists(self.ui.folder_path+"/displayed_images"):
-                                os.makedirs(self.ui.folder_path+"/displayed_images")
-                            cv2.imwrite(displayed_path, image_rgb)
+                    #         # Check and/or create diplayed folder              
+                    #         if not os.path.exists(self.ui.folder_path+"/displayed_images"):
+                    #             os.makedirs(self.ui.folder_path+"/displayed_images")
+                    #         cv2.imwrite(displayed_path, image_rgb)
                             
-                            if image_rgb is not None:
-                                # Convert BGR image (OpenCV) to RGB format
-                                display_image_rgb = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2RGB)
-                                # display_image_rgb = image_rgb.copy()
-                                # Convert the RGB image to QImage
-                                height, width, channel = display_image_rgb.shape
-                                bytes_per_line = 3 * width
-                                qimage = QtGui.QImage(display_image_rgb.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
+                    #         if image_rgb is not None:
+                    #             # Convert BGR image (OpenCV) to RGB format
+                    #             display_image_rgb = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2RGB)
+                    #             # display_image_rgb = image_rgb.copy()
+                    #             # Convert the RGB image to QImage
+                    #             height, width, channel = display_image_rgb.shape
+                    #             bytes_per_line = 3 * width
+                    #             qimage = QtGui.QImage(display_image_rgb.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
                                 
-                                # Convert QImage to QPixmap
-                                building_pixmap = QtGui.QPixmap.fromImage(qimage)
+                    #             # Convert QImage to QPixmap
+                    #             building_pixmap = QtGui.QPixmap.fromImage(qimage)
 
-                    except FileNotFoundError:
-                        self.no_image = f"""
-                                        <b><u>No image found</u></b><br><br>
-                                        Please check that the image file exists at the specified path:<br>
-                                        <code>{img_path}</code>
-                                        """
-                        font = QtGui.QFont()
-                        font.setPointSize(int(12 * self.sf_font))
-                        font.setBold(True)
-                        font.setWeight(75)
+                    # except FileNotFoundError:
+                    #     self.no_image = f"""
+                    #                     <b><u>No image found</u></b><br><br>
+                    #                     Please check that the image file exists at the specified path:<br>
+                    #                     <code>{img_path}</code>
+                    #                     """
+                    #     font = QtGui.QFont()
+                    #     font.setPointSize(int(12 * self.sf_font))
+                    #     font.setBold(True)
+                    #     font.setWeight(75)
                     
-                        img_frames[aux].setFont(font)
-                        img_frames[aux].setTextFormat(QtCore.Qt.RichText)  # Enable rich text (HTML)
-                        img_frames[aux].setText(self.no_image)
-                        img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)
-                        img_frames[aux].setWordWrap(True)
+                    #     img_frames[aux].setFont(font)
+                    #     img_frames[aux].setTextFormat(QtCore.Qt.RichText)  # Enable rich text (HTML)
+                    #     img_frames[aux].setText(self.no_image)
+                    #     img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)
+                    #     img_frames[aux].setWordWrap(True)
                         
-                    try:
-                        # Displayed image in corresponding frames
-                        img_frames[aux].setPixmap(
-                            building_pixmap.scaled(
-                                img_frames[aux].width(),
-                                img_frames[aux].height(),
-                                QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
-                                QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
-                    except:
-                        if self.gap == None:
-                            pass
-                        else:
-                            # Displayed image in corresponding frames
-                            self.no_image = """
-                            <b><u>NO BUILDING DETECTED</u></b><br><br>
-                            There is no building detected by the tool. However, if you believe there is a building in the image,<br>
-                            <b><u>PLEASE CLICK THE "MANUAL BOX" BUTTON</u></b> and manually select the building.<br>
-                            <b><u>The building detector has a precision of 93%</u></b>; therefore, you may ignore this message <br>
-                            and simply click <b><u>Next Building</u></b> to continue classifying.
-                            """
+                    # try:
+                    #     # Displayed image in corresponding frames
+                    #     img_frames[aux].setPixmap(
+                    #         building_pixmap.scaled(
+                    #             img_frames[aux].width(),
+                    #             img_frames[aux].height(),
+                    #             QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
+                    #             QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
+                    # except:
+                    #     if self.gap == None:
+                    #         pass
+                    #     else:
+                    #         # Displayed image in corresponding frames
+                    #         self.no_image = """
+                    #         <b><u>NO BUILDING DETECTED</u></b><br><br>
+                    #         There is no building detected by the tool. However, if you believe there is a building in the image,<br>
+                    #         <b><u>PLEASE CLICK THE "MANUAL BOX" BUTTON</u></b> and manually select the building.<br>
+                    #         <b><u>The building detector has a precision of 93%</u></b>; therefore, you may ignore this message <br>
+                    #         and simply click <b><u>Next Building</u></b> to continue classifying.
+                    #         """
                             
-                            font = QtGui.QFont()
-                            font.setPointSize(int(12 * self.sf_font))    
-                            font.setBold(True)
-                            font.setWeight(75)
+                    #         font = QtGui.QFont()
+                    #         font.setPointSize(int(12 * self.sf_font))    
+                    #         font.setBold(True)
+                    #         font.setWeight(75)
                             
-                            img_frames[aux].setFont(font)
-                            img_frames[aux].setTextFormat(QtCore.Qt.RichText)  # Enable rich text (HTML)
-                            img_frames[aux].setText(self.no_image)
-                            img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)
-                            img_frames[aux].setWordWrap(True)  # Wrap long text
+                    #         img_frames[aux].setFont(font)
+                    #         img_frames[aux].setTextFormat(QtCore.Qt.RichText)  # Enable rich text (HTML)
+                    #         img_frames[aux].setText(self.no_image)
+                    #         img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)
+                    #         img_frames[aux].setWordWrap(True)  # Wrap long text
                         
                         
                         
@@ -1672,6 +1662,7 @@ class GUIMethods:
                         pred_img = True
                         j = 2
                 if pred_img == True:
+                    
                     image_file = self.cropped_image[j]
                     # LLRS building image prediction
                     box_aux = None

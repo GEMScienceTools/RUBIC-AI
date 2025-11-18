@@ -369,11 +369,11 @@ class PolygonSetting(QtWidgets.QDialog):
                 QMessageBox.warning(self, "Error", f"Could not generate GPKG:\n{str(e)}")
 
     def building_polulation(self):
-        # try:
+        try:
             self.population = GUI_geofiles.download_building_footprints(self)
             self.building_value_polygon.setText(str(self.population))
-        # except:
-        #     QMessageBox.warning(self, "Error input", "Please complete the input information")
+        except:
+            QMessageBox.warning(self, "Error input", "Please complete the input information")
             
     def mode_use(self):
         if self.collection_mode.currentText() == "Manual":
