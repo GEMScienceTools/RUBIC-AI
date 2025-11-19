@@ -268,22 +268,25 @@ class GUIMethods:
                 self.n_images_local = len(matching_rows)
                 self.old_local = self.cont_local
                 self.cont_local = self.cont_local + self.n_images_local
-                    
-                geolocator = Nominatim(user_agent="city_name_locator")
-                location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
-                
-                if location and 'address' in location.raw:
-                    address = location.raw['address']
-                    self.city = (address.get("city") or address.get("town") or address.get("village")
-                        or address.get("municipality") or address.get("county") or address.get("state_district")
-                        or "Unknown")
-                    self.country = address.get('country', 'Unknown')
-                    self.city_name_manual = self.city+"_"+self.country
-                    self.ui.city_value.setText(self.city) 
-                    self.ui.country_value.setText(self.country) 
-                    return (self.city , self.country)
-                
-                return "City not found"
+
+                try:    
+                    geolocator = Nominatim(user_agent="city_name_locator")
+                    location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
+                    if location and 'address' in location.raw:
+                        address = location.raw['address']
+                        self.city = (address.get("city") or address.get("town") or address.get("village")
+                            or address.get("municipality") or address.get("county") or address.get("state_district")
+                            or "Unknown")
+                        self.country = address.get('country', 'Unknown')
+                        self.city_name_manual = self.city+"_"+self.country
+                        self.ui.city_value.setText(self.city) 
+                        self.ui.country_value.setText(self.country) 
+                        return (self.city , self.country)
+                except:
+                    QMessageBox.warning(self.ui, "OSM Error", "The city and country could not be retrieved. Please try again.")
+                    self.city = "Unknown"
+                    self.country = "Unknown"
+                    return self.city , self.country
                  
             elif self.ui.insp_method == 0 or self.ui.insp_method == 1:                
                 self.ui.lat_value.setText(str(round(self.data_building.loc[self.click_count, 'latitude'], 8)))
@@ -293,21 +296,24 @@ class GUIMethods:
                 lat = float(self.ui.lat_value.text())
                 lon = float(self.ui.lon_value.text())
                     
-                geolocator = Nominatim(user_agent="city_name_locator")
-                location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
-                
-                if location and 'address' in location.raw:
-                    address = location.raw['address']
-                    self.city = (address.get("city") or address.get("town") or address.get("village")
-                        or address.get("municipality") or address.get("county") or address.get("state_district")
-                        or "Unknown")
-                    self.country = address.get('country', 'Unknown')
-                    self.city_name_manual = self.city+"_"+self.country
-                    self.ui.city_value.setText(self.city) 
-                    self.ui.country_value.setText(self.country) 
-                    return (self.city , self.country)
-                
-                return "City not found"
+                try:
+                    geolocator = Nominatim(user_agent="city_name_locator")
+                    location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
+                    if location and 'address' in location.raw:
+                        address = location.raw['address']
+                        self.city = (address.get("city") or address.get("town") or address.get("village")
+                            or address.get("municipality") or address.get("county") or address.get("state_district")
+                            or "Unknown")
+                        self.country = address.get('country', 'Unknown')
+                        self.city_name_manual = self.city+"_"+self.country
+                        self.ui.city_value.setText(self.city) 
+                        self.ui.country_value.setText(self.country) 
+                        return (self.city , self.country)
+                except:
+                    QMessageBox.warning(self.ui, "OSM Error", "The city and country could not be retrieved. Please try again.")
+                    self.city = "Unknown"
+                    self.country = "Unknown"
+                    return self.city , self.country
         else:
             pass
      

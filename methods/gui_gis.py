@@ -22,6 +22,9 @@ class GUI_geofiles:
         # Create output file for building footprints
         self.city_method = self.city
         self.country_method = self.country
+        if self.city_method == "Unknown" or self.country_method == "Unknown":
+            QMessageBox.warning(self.ui, "OSM Error", "The city and country could not be retrieved.")
+
         output_file = (
             self.method.output_folder_value + "/" +
             self.output_polygon.text() + "_buildings_footprint.gpkg"
@@ -32,6 +35,7 @@ class GUI_geofiles:
             buildings = gpd.read_file(output_file)
             self.footprint_progress.setValue(100)
             self.footprint_progress_label.setText("Done!")
+            QMessageBox.information(self,"Success","Footprints successfully generated")
             return len(buildings)
         else:
             # Ensure boundary exists
@@ -155,8 +159,9 @@ class GUI_geofiles:
                     buildings.to_file(output_file, driver="GPKG")
                     self.footprint_progress.setValue(100)
                     self.footprint_progress_label.setText("Done!")
+                    QMessageBox.information(self,"Success","Footprints successfully generated")
                     return len(buildings)
-
+                    
                 # ==============================================================
                 # MODE 1: Overture Maps
                 # ==============================================================
@@ -286,6 +291,7 @@ class GUI_geofiles:
                     self.footprint_progress_label.setText("Done!")
                     os.remove(temp_geojson)
                     
+                    QMessageBox.information(self,"Success","Footprints successfully generated")
                     return len(buildings)
 
         

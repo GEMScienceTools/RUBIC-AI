@@ -232,14 +232,19 @@ def object_detector_building(lat, lon):
         pass
     
 ############ Get city name using coordinates ################
-def get_city_name(lat, lon):           
-        geolocator = Nominatim(user_agent="city_name_locator")
-        location = geolocator.reverse((lat, lon), exactly_one=True, language="en")
-        
-        if location and 'address' in location.raw:
-            address = location.raw['address']
-            city = address.get('city', address.get('town', address.get('village', 'Unknown')))
-            country = address.get('country', 'Unknown')
+def get_city_name(lat, lon):  
+        try:         
+            geolocator = Nominatim(user_agent="city_name_locator")
+            location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
+            
+            if location and 'address' in location.raw:
+                address = location.raw['address']
+                city = address.get('city', address.get('town', address.get('village', 'Unknown')))
+                country = address.get('country', 'Unknown')
+                return city , country
+        except:
+            city = "Unknown"
+            country = "Unknown"
             return city , country
 
 

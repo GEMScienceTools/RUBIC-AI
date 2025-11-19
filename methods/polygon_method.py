@@ -57,7 +57,7 @@ class PolygonSetting(QtWidgets.QDialog):
         sf_y = sf_factor
         # Scale the GUI based on resolution
         sf_font = sf_factor * scale_dpi
-
+        self.sf_font = sf_font
         self.setWindowTitle("Polygon Method Input")
         self.setWindowIcon(QtGui.QIcon("help_img/RUBIC_logo.png"))
         self.resize(int(618 * sf_x), int(708 * sf_y))
@@ -280,13 +280,18 @@ class PolygonSetting(QtWidgets.QDialog):
                 center = layer_union.centroid              
                 lon = center.x
                 lat = center.y
-                geolocator = Nominatim(user_agent="city_name_locator")
-                location = geolocator.reverse((lat, lon), exactly_one=True, language="en")
-                if location and 'address' in location.raw:
-                    address = location.raw['address']
-                    self.city = address.get('city', address.get('town', address.get('village', 'Unknown')))
-                    self.country = address.get('country', 'Unknown')
-        
+                try:
+                    geolocator = Nominatim(user_agent="city_name_locator")
+                    location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
+                    if location and 'address' in location.raw:
+                        address = location.raw['address']
+                        self.city = address.get('city', address.get('town', address.get('village', 'Unknown')))
+                        self.country = address.get('country', 'Unknown')
+                except:
+                    QMessageBox.warning(self.ui, "OSM Error", "The city and country could not be retrieved. Please try again.")
+                    self.city = "Unknown"
+                    self.country = "Unknown"
+                    return self.city , self.country
     def upload_csv(self):
         options = QFileDialog.Options()
         file_path, _ = QFileDialog.getOpenFileName(self, "Open CSV File", "", "CSV Files (*.csv);;All Files (*)", options=options)
@@ -325,8 +330,21 @@ class PolygonSetting(QtWidgets.QDialog):
                 for column in range(len(preview_df.columns)):
                     value = str(preview_df.iloc[row, column])
                     item = QtWidgets.QTableWidgetItem(value)
+                    # ---- Set font size ----
+                    font = item.font()
+                    font.setPointSize(int(10 * self.sf_font))  # change to any size
+                    item.setFont(font)
                     self.tableWidget.setItem(row, column, item)
-    
+                    header = self.tableWidget.horizontalHeader()
+                    font = header.font()
+                    font.setPointSize(int(10 * self.sf_font))
+                    font.setBold(True)  # optional
+                    header.setFont(font)
+                    vheader = self.tableWidget.verticalHeader()
+                    vfont = vheader.font()
+                    vfont.setPointSize(int(10 * self.sf_font))
+                    vheader.setFont(vfont)
+
             self.tableWidget.resizeColumnsToContents()
         else:
             QMessageBox.warning(self, "No Data", "No data available to preview. Please upload a valid CSV first.")
@@ -338,16 +356,22 @@ class PolygonSetting(QtWidgets.QDialog):
             try:
                 lat = self.df.loc[0, 'latitude']
                 lon = self.df.loc[0,'longitude']
-                geolocator = Nominatim(user_agent="city_name_locator")
-                location = geolocator.reverse((lat, lon), exactly_one=True, language="en")
-                if location and 'address' in location.raw:
-                    address = location.raw['address']
-                    self.city = address.get('city', address.get('town', address.get('village', 'Unknown')))
-                    self.country = address.get('country', 'Unknown')
-                    self.method.city = self.city
-                    self.method.country = self.country
-                    self.city_name_manual = self.city + "_" + self.country
-    
+                try:
+                    geolocator = Nominatim(user_agent="city_name_locator")
+                    location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
+                    if location and 'address' in location.raw:
+                        address = location.raw['address']
+                        self.city = address.get('city', address.get('town', address.get('village', 'Unknown')))
+                        self.country = address.get('country', 'Unknown')
+                        self.method.city = self.city
+                        self.method.country = self.country
+                        self.city_name_manual = self.city + "_" + self.country
+                except:
+                    QMessageBox.warning(self.ui, "OSM Error", "The city and country could not be retrieved. Please try again.")
+                    self.city = "Unknown"
+                    self.country = "Unknown"
+                    return self.city , self.country
+                
                 output_gpkg = os.path.join(self.method.output_folder_value, f"{self.output_polygon.text()}_boundary.gpkg")
                 self.boundary_path = output_gpkg
                 if os.path.exists(output_gpkg):
@@ -362,9 +386,7 @@ class PolygonSetting(QtWidgets.QDialog):
                 polygon = Polygon(coordinates)
                 gdf = gpd.GeoDataFrame({'geometry': [polygon]}, crs="EPSG:4326")
                 gdf.to_file(output_gpkg, driver="GPKG", layer="polygon_layer")
-    
-                QMessageBox.information(self,"Success","GeoPackage successfully generated")
-    
+      
             except Exception as e:
                 QMessageBox.warning(self, "Error", f"Could not generate GPKG:\n{str(e)}")
 
