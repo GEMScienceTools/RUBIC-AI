@@ -56,6 +56,8 @@ class GUIMethods:
         self.aux_previous =  True 
         self.aux_ai_check = True
         self.limit_local = True
+        self.search_count = False
+        
         """Get screen resolution to adapt to different screen sizes"""
         # Get screen resolution
         screen = QApplication.primaryScreen()
@@ -169,24 +171,28 @@ class GUIMethods:
                     self.data_old = None  # Only give the number of inspection one time per saved button clicked
             
             # Calculates the number of inspections saved
-            try:
-                # Conditional for only update the number of click and the ID cont one time
-                if self.n_insp > 0 and self.sw_insp == True:
-                    if self.ui.insp_method != 2:
-                        # self.click_count = int(self.n_insp/3 - 1)
-                        self.click_count = self.n_insp - 1
-                        self.sw_insp = False
-                    elif self.ui.insp_method == 2:
-                        # Drop rows with missing coordinates
-                        valid_coords = self.data_ai_existing[['latitude', 'longitude']].dropna()
-                        # Drop duplicates to get unique coordinate pairs
-                        unique_coords = valid_coords.drop_duplicates()
-                        # Count unique coordinate pairs
-                        num_unique_coords = len(unique_coords)
-                        self.click_count = num_unique_coords - 1
-                        self.sw_insp = False
-            except:
+            if self.search_count == False:
+                try:
+                    # Conditional for only update the number of click and the ID cont one time
+                    if self.n_insp > 0 and self.sw_insp == True:
+                        if self.ui.insp_method != 2:
+                            # self.click_count = int(self.n_insp/3 - 1)
+                            self.click_count = self.n_insp - 1
+                            self.sw_insp = False
+                        elif self.ui.insp_method == 2:
+                            # Drop rows with missing coordinates
+                            valid_coords = self.data_ai_existing[['latitude', 'longitude']].dropna()
+                            # Drop duplicates to get unique coordinate pairs
+                            unique_coords = valid_coords.drop_duplicates()
+                            # Count unique coordinate pairs
+                            num_unique_coords = len(unique_coords)
+                            self.click_count = num_unique_coords - 1
+                            self.sw_insp = False
+                except:
+                    pass
+            else:
                 pass
+            
             # ID increaser
             self.click_count += 1
             
@@ -417,7 +423,7 @@ class GUIMethods:
             # Create an empty DataFrame for number of footprint available
             try:
                 if  self.data_ai == None:
-                    self.data_ai = pd.DataFrame(np.full((footprint_data.shape[0]*3, len(column_names)), None), columns=column_names)
+                    self.data_ai = pd.DataFrame(np.full((footprint_data.shape[0], len(column_names)), None), columns=column_names)
             except:
                 pass
         
@@ -1071,29 +1077,9 @@ class GUIMethods:
                     # LLRS building image prediction
                     llrs_index = predict_llrs_img(image_file, self.ui.insp_method, self.box_id, self)
                     class_names_llrs = ['Dual System', 'Braced Frames', 'Infilled Frames', 'Moment Frames', 
-                                   'No lateral load-resisting system', 'Walls', 'Walls']             
+                                   'No lateral load-resisting system', 'Walls', 'Walls']  
                     llrs_id[self.box_id].setCurrentText(class_names_llrs[llrs_index])
-                         
-                    llrs_pred = self.ui.llrs_cb_1.currentData()
-                    if self.pred_mat_value == "MCF":
-                        llrs_id[self.box_id].setCurrentIndex(4) 
-                    elif self.pred_mat_value == "MUR":
-                        llrs_id[self.box_id].setCurrentIndex(4) 
-                    elif self.pred_mat_value == "MR":
-                        llrs_id[self.box_id].setCurrentIndex(4)
-                    elif self.pred_mat_value == "INF":
-                        llrs_id[self.box_id].setCurrentIndex(6)
-                    elif self.pred_mat_value == "CR":
-                        if llrs_pred in ("LDUAL", "LFM", "LFINF"):
-                            pass
-                        else:
-                            llrs_id[self.box_id].setCurrentIndex(3)
-                    elif self.pred_mat_value == "S":
-                        if llrs_pred in ("LFM", "LFBR"):
-                            pass
-                        else:
-                            llrs_id[self.box_id].setCurrentIndex(3)
-                    
+                                    
                     # Comboboxes for each image label
                     code_level_id = [self.ui.age_cb_1,self.ui.age_cb_1,self.ui.age_cb_1]
                     # LLRS building image prediction
@@ -1139,6 +1125,59 @@ class GUIMethods:
                     # roof_material building image sets prediction
                     roof_material_id[self.box_id].setCurrentIndex(roof_material_index+1)
                     
+                    # Taxonomy adjustments
+                    pred_mat_value = self.ui.material_cb_1.currentData()
+                    llrs_pred = self.ui.llrs_cb_1.currentData()
+                    pred_roof_shape = self.ui.roof_shape_cb_1.currentData()
+                    roof_mat_pred = self.ui.roof_material_cb_1.currentData()
+                    # LLRS
+                    if pred_mat_value == "MCF":
+                        llrs_id[self.box_id].setCurrentIndex(4) 
+                    elif pred_mat_value == "MUR":
+                        llrs_id[self.box_id].setCurrentIndex(4) 
+                    elif pred_mat_value == "MR":
+                        llrs_id[self.box_id].setCurrentIndex(4)
+                    elif pred_mat_value == "INF":
+                        llrs_id[self.box_id].setCurrentIndex(6)
+                    elif pred_mat_value == "CR":
+                        if llrs_pred in ("LDUAL", "LFM", "LFINF"):
+                            pass
+                        else:
+                            llrs_id[self.box_id].setCurrentIndex(3)
+                    elif pred_mat_value == "S":
+                        if llrs_pred in ("LFM", "LFBR"):
+                            pass
+                        else:
+                            llrs_id[self.box_id].setCurrentIndex(3)
+                     
+                    # Roof shape    
+                    if  pred_roof_shape == "RSH1":
+                        roof_material_id[self.box_id].setCurrentIndex(1) 
+                    elif  pred_roof_shape == "RSH7":
+                        roof_material_id[self.box_id].setCurrentIndex(3)
+                    elif  pred_roof_shape == "RSH2":
+                        if roof_mat_pred in ("RMT1", "RMT6"):
+                            pass
+                        else:
+                            roof_material_id[self.box_id].setCurrentIndex(3)
+                    elif  pred_roof_shape == "RSH3":
+                        if roof_mat_pred in ("RMT1", "RMT6"):
+                            pass
+                        else:
+                            roof_material_id[self.box_id].setCurrentIndex(3)
+                    elif  pred_roof_shape == "RSH5":
+                        if roof_mat_pred in ("RMT1", "RMT6"):
+                            pass
+                        else:
+                            roof_material_id[self.box_id].setCurrentIndex(3)        
+                            
+                    # Code level
+                    if pred_mat_value == "MUR":
+                        code_level_id[self.box_id].setCurrentText(class_names_code[1]) 
+                    elif pred_mat_value == "INF":
+                        code_level_id[self.box_id].setCurrentText(class_names_code[3]) 
+                        
+                        
                     self.box_id = None
                 # Message with special format
                 message = """
@@ -1222,24 +1261,24 @@ class GUIMethods:
             # -------------------  Left building image ---------------------- 
             
             if self.ui.insp_method == 0 or self.ui.insp_method == 1:
-                self.data_ai.iloc[self.click_count * 3 , 0] = self.ui.img_id_value_1.text()[:-2]                 # ID
-                self.data_ai.iloc[self.click_count * 3 , 1] = self.data_building.loc[self.click_count, 'latitude']    # latitude
-                self.data_ai.iloc[self.click_count * 3 , 2] = self.data_building.loc[self.click_count, 'longitude']    # longitude
-                self.data_ai.iloc[self.click_count * 3 , 3] = self.ui.country_value.text()                   # Country
-                self.data_ai.iloc[self.click_count * 3 , 4] = self.ui.city_value.text()                      # City
-                self.data_ai.iloc[self.click_count * 3 , 5] = self.ui.material_cb_1.currentData()            # LLRS Material
-                self.data_ai.iloc[self.click_count * 3 , 6] = self.ui.llrs_cb_1.currentData()                # LLRS 
-                self.data_ai.iloc[self.click_count * 3 , 7] = self.ui.age_cb_1.currentData()                 # Code Level 
-                self.data_ai.iloc[self.click_count * 3 , 8] = self.ui.n_stories_value_1.currentData()        # Number of Stories 
-                self.data_ai.iloc[self.click_count * 3 , 9] = self.ui.occup_cb_1.currentData()               # Occupancy
-                self.data_ai.iloc[self.click_count * 3 , 10] = self.ui.bck_pos_cb_1.currentData()            # Block Position
-                self.data_ai.iloc[self.click_count * 3 , 11] = self.ui.epc_const_cb_1.currentText()          # Epoch of construction
-                self.data_ai.iloc[self.click_count * 3 , 12] = self.ui.roof_shape_cb_1.currentData()         # Roof shape
-                self.data_ai.iloc[self.click_count * 3 , 13] = self.ui.roof_material_cb_1.currentData()      # Roof material
-                self.data_ai.iloc[self.click_count * 3 , 14] = self.ui.img_q_cb_1.currentData()              # Image Quality
+                self.data_ai.iloc[self.click_count , 0] = self.ui.img_id_value_1.text()[:-2]                 # ID
+                self.data_ai.iloc[self.click_count , 1] = self.data_building.loc[self.click_count, 'latitude']    # latitude
+                self.data_ai.iloc[self.click_count , 2] = self.data_building.loc[self.click_count, 'longitude']    # longitude
+                self.data_ai.iloc[self.click_count , 3] = self.ui.country_value.text()                   # Country
+                self.data_ai.iloc[self.click_count , 4] = self.ui.city_value.text()                      # City
+                self.data_ai.iloc[self.click_count , 5] = self.ui.material_cb_1.currentData()            # LLRS Material
+                self.data_ai.iloc[self.click_count , 6] = self.ui.llrs_cb_1.currentData()                # LLRS 
+                self.data_ai.iloc[self.click_count , 7] = self.ui.age_cb_1.currentData()                 # Code Level 
+                self.data_ai.iloc[self.click_count , 8] = self.ui.n_stories_value_1.currentData()        # Number of Stories 
+                self.data_ai.iloc[self.click_count , 9] = self.ui.occup_cb_1.currentData()               # Occupancy
+                self.data_ai.iloc[self.click_count , 10] = self.ui.bck_pos_cb_1.currentData()            # Block Position
+                self.data_ai.iloc[self.click_count , 11] = self.ui.epc_const_cb_1.currentText()          # Epoch of construction
+                self.data_ai.iloc[self.click_count , 12] = self.ui.roof_shape_cb_1.currentData()         # Roof shape
+                self.data_ai.iloc[self.click_count , 13] = self.ui.roof_material_cb_1.currentData()      # Roof material
+                self.data_ai.iloc[self.click_count , 14] = self.ui.img_q_cb_1.currentData()              # Image Quality
                 
                 try:
-                    self.data_ai.iloc[self.click_count * 3 , 15] = (self.ui.material_cb_1.currentData()+"/"+
+                    self.data_ai.iloc[self.click_count , 15] = (self.ui.material_cb_1.currentData()+"/"+
                                                                     self.ui.llrs_cb_1.currentData()+"/"+
                                                                     self.ui.age_cb_1.currentData()+"/H:"+
                                                                     self.ui.n_stories_value_1.currentText()+"/"+
@@ -1249,16 +1288,16 @@ class GUIMethods:
                                                                     self.ui.occup_cb_1.currentData())
                                                                     
                     # Taxonomy
-                    self.tax_check(self.data_ai.iloc[self.click_count * 3 , 15])
+                    self.tax_check(self.data_ai.iloc[self.click_count , 15])
 
                 except:
                     pass
                 
                 if self.img_url[0]  != "":
-                    self.data_ai.iloc[self.click_count * 3 , 16] = self.img_url[0]                           # Image URL
+                    self.data_ai.iloc[self.click_count , 16] = self.img_url[0]                           # Image URL
                 else:
                     if isinstance(heading, int):
-                        self.data_ai.iloc[self.click_count * 3 , 16] = base_url + coord +"&heading="+str((heading+ 180) % 360)+"&pitch=5&fov=120"
+                        self.data_ai.iloc[self.click_count , 16] = base_url + coord +"&heading="+str((heading+ 180) % 360)+"&pitch=5&fov=120"
             
             # ------------------- Local  -----------------------
             elif self.ui.insp_method == 2:
@@ -1448,95 +1487,95 @@ class GUIMethods:
         if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
             # ----------------------- LEFT -----------------------------
             # Material
-            if self.data_ai.iloc[self.click_count * 3 , 5] is None:
+            if self.data_ai.iloc[self.click_count , 5] is None:
                 self.ui.material_cb_1.setCurrentText("Select Material")
-            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 5]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 5]) == True:
                 self.ui.material_cb_1.setCurrentText("Select Material")
             else:
-                self.setComboBoxByData(self.ui.material_cb_1 , self.data_ai.iloc[self.click_count * 3 , 5])
+                self.setComboBoxByData(self.ui.material_cb_1 , self.data_ai.iloc[self.click_count , 5])
     
             # LLRS
-            if self.data_ai.iloc[self.click_count * 3 , 6] is None :
+            if self.data_ai.iloc[self.click_count , 6] is None :
                 self.ui.llrs_cb_1.setCurrentText("Select LLRS")
-            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 6]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 6]) == True:
                 self.ui.llrs_cb_1.setCurrentText("Select LLRS")
             else:
-                self.setComboBoxByData(self.ui.llrs_cb_1 , self.data_ai.iloc[self.click_count * 3 , 6])
+                self.setComboBoxByData(self.ui.llrs_cb_1 , self.data_ai.iloc[self.click_count , 6])
                 
             # Code level
-            if self.data_ai.iloc[self.click_count * 3 , 7] is None :
+            if self.data_ai.iloc[self.click_count , 7] is None :
                 self.ui.age_cb_1.setCurrentText("Select Code Level")
-            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 7]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 7]) == True:
                 self.ui.age_cb_1.setCurrentText("Select Code Level")
             else:
-                self.setComboBoxByData(self.ui.age_cb_1 , self.data_ai.iloc[self.click_count * 3 , 7])
+                self.setComboBoxByData(self.ui.age_cb_1 , self.data_ai.iloc[self.click_count , 7])
             
             # Number of stories
-            if self.data_ai.iloc[self.click_count * 3 , 8] is None :
+            if self.data_ai.iloc[self.click_count , 8] is None :
                 self.ui.n_stories_value_1.setCurrentText("Select Number of Stories")
-            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 8]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 8]) == True:
                 self.ui.n_stories_value_1.setCurrentText("Select Number of Stories")
             else:
-                n_value = self.data_ai.iloc[self.click_count * 3 , 8]
-                if n_value == "1.0":
+                n_value = self.data_ai.iloc[self.click_count , 8]
+                if n_value == "1.0" or n_value == 1.0:
                     n_value= "1"
-                elif n_value == "2.0":
+                elif n_value == "2.0" or n_value == 2.0:
                     n_value= "2"
-                elif n_value == "3.0":
+                elif n_value == "3.0" or n_value == 3.0:
                     n_value= "3"
-                elif n_value == "4.0":
+                elif n_value == "4.0" or n_value == 4.0:
                     n_value= "4"
-                elif n_value == "5.0":
+                elif n_value == "5.0" or n_value == 5.0:
                     n_value= "5"
                 self.setComboBoxByData(self.ui.n_stories_value_1, n_value)
             
             # Occupancy
-            if self.data_ai.iloc[self.click_count * 3 , 9] is None :
+            if self.data_ai.iloc[self.click_count , 9] is None :
                 self.ui.occup_cb_1.setCurrentText("Select Occupancy Type")
-            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 9]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 9]) == True:
                 self.ui.occup_cb_1.setCurrentText("Select Occupancy Type")
             else:
-                self.setComboBoxByData(self.ui.occup_cb_1 , self.data_ai.iloc[self.click_count * 3 , 9])
+                self.setComboBoxByData(self.ui.occup_cb_1 , self.data_ai.iloc[self.click_count , 9])
             
             # Block Position
-            if self.data_ai.iloc[self.click_count * 3 , 10] is None :
+            if self.data_ai.iloc[self.click_count , 10] is None :
                 self.ui.bck_pos_cb_1.setCurrentText("Select Block Position")
-            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 10]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 10]) == True:
                 self.ui.bck_pos_cb_1.setCurrentText("Select Block Position")
             else:
-                self.setComboBoxByData(self.ui.bck_pos_cb_1 , self.data_ai.iloc[self.click_count * 3 , 10])
+                self.setComboBoxByData(self.ui.bck_pos_cb_1 , self.data_ai.iloc[self.click_count , 10])
                 
             # Epoch of construction
-            if self.data_ai.iloc[self.click_count * 3 , 11] is None :
+            if self.data_ai.iloc[self.click_count , 11] is None :
                 self.ui.epc_const_cb_1.setCurrentIndex(0)
-            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 11]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 11]) == True:
                 self.ui.epc_const_cb_1.setCurrentIndex(0)
             else:
-                self.setComboBoxByData(self.ui.epc_const_cb_1 , self.data_ai.iloc[self.click_count * 3 , 11])
+                self.setComboBoxByData(self.ui.epc_const_cb_1 , self.data_ai.iloc[self.click_count , 11])
                 
             # Roof Shape
-            if self.data_ai.iloc[self.click_count * 3 , 12] is None :
+            if self.data_ai.iloc[self.click_count , 12] is None :
                 self.ui.roof_shape_cb_1.setCurrentText("Select Roof Shape")
-            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 12]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 12]) == True:
                 self.ui.roof_shape_cb_1.setCurrentText("Select Roof Shape")
             else:
-                self.setComboBoxByData(self.ui.roof_shape_cb_1 , self.data_ai.iloc[self.click_count * 3 , 12])
+                self.setComboBoxByData(self.ui.roof_shape_cb_1 , self.data_ai.iloc[self.click_count , 12])
             
             # Roof Material
-            if self.data_ai.iloc[self.click_count * 3 , 13] is None :
+            if self.data_ai.iloc[self.click_count , 13] is None :
                 self.ui.roof_material_cb_1.setCurrentText("Select Roof Material")
-            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 13]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 13]) == True:
                 self.ui.roof_material_cb_1.setCurrentText("Select Roof Material")
             else:
-                self.setComboBoxByData(self.ui.roof_material_cb_1 , self.data_ai.iloc[self.click_count * 3 , 13])
+                self.setComboBoxByData(self.ui.roof_material_cb_1 , self.data_ai.iloc[self.click_count , 13])
     
             # Image quality
-            if self.data_ai.iloc[self.click_count * 3 , 14] is None :
+            if self.data_ai.iloc[self.click_count , 14] is None :
                 self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
-            elif pd.isna(self.data_ai.iloc[self.click_count * 3 , 14]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 14]) == True:
                 self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
             else:
-                self.setComboBoxByData(self.ui.img_q_cb_1 , self.data_ai.iloc[self.click_count * 3 , 14])
+                self.setComboBoxByData(self.ui.img_q_cb_1 , self.data_ai.iloc[self.click_count , 14])
                 
         
         elif self.ui.insp_method == 2: 
@@ -1574,15 +1613,15 @@ class GUIMethods:
                     self.ui.n_stories_value_1.setCurrentText("Select Number of Stories")
                 else:
                     n_value = str(self.data_ai.iloc[self.old_local , 8])
-                    if n_value == "1.0":
+                    if n_value == "1.0" or n_value == 1.0:
                         n_value= "1"
-                    elif n_value == "2.0":
+                    elif n_value == "2.0" or n_value == 2.0:
                         n_value= "2"
-                    elif n_value == "3.0":
+                    elif n_value == "3.0" or n_value == 3.0:
                         n_value= "3"
-                    elif n_value == "4.0":
+                    elif n_value == "4.0" or n_value == 4.0:
                         n_value= "4"
-                    elif n_value == "5.0":
+                    elif n_value == "5.0" or n_value == 5.0:
                         n_value= "5"
                     self.setComboBoxByData(self.ui.n_stories_value_1, n_value)
                     
@@ -2226,274 +2265,268 @@ class GUIMethods:
 
         # Comboboxes for each image label
         block_position_id = [self.ui.bck_pos_cb_1,self.ui.bck_pos_cb_1,self.ui.bck_pos_cb_1]
-        if self.box_id == None:
-            # Checkbox for the AI powered activation
-            if self.ui.ai_check.isChecked():
-                if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                    # for i in range (3):
-                    pred_img = False
-                    for aux_img in range (3):
-                        if self.predicted_img[1] == 1:
-                            pred_img = True
-                            j = 1
-                        elif self.predicted_img[0] == 1:
-                            pred_img = True
-                            j = 0
-                        elif self.predicted_img[2] == 1:
-                            pred_img = True
-                            j = 2
-                    if pred_img == True:
-                        # Image path
-                        # image_file = self.cropped_image[i]  
-                        image_file = self.org_img_bp
-                        # block_position building image prediction
-                        box_aux = None
-                        block_position_index = predict_block_position_img(image_file, self.ui.insp_method, box_aux, self.ui)
-                        # block_position building image sets prediction
-                        if block_position_index is None:
-                            pass
-                        else:
-                            i=1
-                            block_position_id[i].setCurrentIndex(block_position_index+1)                       
-                            # Peogress bar update
-                            self.ui.progress_bar_method.setValue(100)
-                            self.ui.method_progress.setText("Prediction complete!")
-                
-                elif self.ui.insp_method == 2:
-                    
-                    self.ui.method_progress.setText("Loading AI model ...")
-                    for j in range (100):
-                        time.sleep(0.0001)
-                        self.ui.progress_bar_method.setValue(j)
-                        
-                    # for aux in range (self.n_images_local):
-                    aux = 1
-                    # Local cropped image path
-                    
-                    aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
-                    cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
-                    
-                    try:
-                        image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
-                        if image is None:
-                            raise FileNotFoundError("Unable to read iamge")
-                    except:
-                        aux = 0
-                        aux_path = (self.ui.folder_path+"/Cropped_images/"
-                                        +str(self.data_building.iloc[self.old_local + aux, 0]))
-                        
-                        cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
-                    
-                    org_path = (self.ui.folder_path+"/" +str(self.data_building.iloc[self.old_local + aux, 0]))
+        # Checkbox for the AI powered activation
+        if self.ui.ai_check.isChecked():
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+                # for i in range (3):
+                pred_img = False
+                for aux_img in range (3):
+                    if self.predicted_img[1] == 1:
+                        pred_img = True
+                        j = 1
+                    elif self.predicted_img[0] == 1:
+                        pred_img = True
+                        j = 0
+                    elif self.predicted_img[2] == 1:
+                        pred_img = True
+                        j = 2
+                if pred_img == True:
+                    # Image path
+                    # image_file = self.cropped_image[i]  
+                    image_file = self.org_img_bp
                     # block_position building image prediction
-                    block_position_index = predict_block_position_img(org_path, self.ui.insp_method, self.box_id, self.ui)
+                    box_aux = None
+                    block_position_index = predict_block_position_img(image_file, self.ui.insp_method, box_aux, self.ui)
                     # block_position building image sets prediction
                     if block_position_index is None:
                         pass
                     else:
-                        block_position_id[aux].setCurrentIndex(block_position_index+1)
-          
+                        i=1
+                        block_position_id[i].setCurrentIndex(block_position_index+1)                       
                         # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")      
-        else:
-            self.box_id = None
+                        self.ui.method_progress.setText("Prediction complete!")
+            
+            elif self.ui.insp_method == 2:
+                
+                self.ui.method_progress.setText("Loading AI model ...")
+                for j in range (100):
+                    time.sleep(0.0001)
+                    self.ui.progress_bar_method.setValue(j)
+                    
+                # for aux in range (self.n_images_local):
+                aux = 1
+                # Local cropped image path
+                
+                aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                +str(self.data_building.iloc[self.old_local + aux, 0]))
+                cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
+                
+                try:
+                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    if image is None:
+                        raise FileNotFoundError("Unable to read iamge")
+                except:
+                    aux = 0
+                    aux_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    
+                    cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
+                
+                org_path = (self.ui.folder_path+"/" +str(self.data_building.iloc[self.old_local + aux, 0]))
+                # block_position building image prediction
+                block_position_index = predict_block_position_img(org_path, self.ui.insp_method, self.box_id, self.ui)
+                # block_position building image sets prediction
+                if block_position_index is None:
+                    pass
+                else:
+                    block_position_id[aux].setCurrentIndex(block_position_index+1)
+      
+                    # Peogress bar update
+                    self.ui.progress_bar_method.setValue(100)
+                    self.ui.method_progress.setText("Prediction complete!")      
                 
             
     ############ Deep learning model for predict the Roof shape ################
     def roof_shape_prediction (self):
         # Comboboxes for each image label
         roof_shape_id = [self.ui.roof_shape_cb_1,self.ui.roof_shape_cb_1,self.ui.roof_shape_cb_1]
-        if self.box_id == None:
-            # Checkbox for the AI powered activation
-            if self.ui.ai_check.isChecked():
-                if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                    # for i in range (3):
-                    pred_img = False
-                    for aux_img in range (3):
-                        if self.predicted_img[1] == 1:
-                            pred_img = True
-                            j = 1
-                        elif self.predicted_img[0] == 1:
-                            pred_img = True
-                            j = 0
-                        elif self.predicted_img[2] == 1:
-                            pred_img = True
-                            j = 2
-                    if pred_img == True:
-                        # Image path
-                        image_file = self.cropped_image[j]      
-                        # roof_shape building image prediction
-                        box_aux = None
-                        roof_shape_index = predict_roof_shape_img(image_file, self.ui.insp_method, box_aux, self.ui)
-                        # roof_shape building image sets prediction
-                        if roof_shape_index is None:
-                            pass
-                        else:
-                            i=1
-                            roof_shape_id[i].setCurrentIndex(roof_shape_index+1) 
-                            self.pred_roof_shape = self.ui.roof_shape_cb_1.currentData()
-                            # Peogress bar update
-                            self.ui.progress_bar_method.setValue(100)
-                            self.ui.method_progress.setText("Prediction complete!")
+        # Checkbox for the AI powered activation
+        if self.ui.ai_check.isChecked():
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
                 
-                elif self.ui.insp_method == 2:
-                    
-                    self.ui.method_progress.setText("Loading AI model ...")
-                    for j in range (100):
-                        time.sleep(0.0001)
-                        self.ui.progress_bar_method.setValue(j)
+                pred_img = False
+                for aux_img in range (3):
+                    if self.predicted_img[1] == 1:
+                        pred_img = True
+                        j = 1
+                    elif self.predicted_img[0] == 1:
+                        pred_img = True
+                        j = 0
+                    elif self.predicted_img[2] == 1:
+                        pred_img = True
+                        j = 2
                         
-                    # for aux in range (self.n_images_local):
-                    aux = 1
-                    # Local cropped image path
-                    
-                    aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
-                    cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
-                    
-                    try:
-                        image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
-                        if image is None:
-                            raise FileNotFoundError("Unable to read iamge")
-                    except:
-                        aux = 0
-                        aux_path = (self.ui.folder_path+"/Cropped_images/"
-                                        +str(self.data_building.iloc[self.old_local + aux, 0]))
-                        
-                        cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
-                    
+                if pred_img == True:
+                    # Image path
+                    image_file = self.cropped_image[j]      
                     # roof_shape building image prediction
-                    roof_shape_index = predict_roof_shape_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
+                    box_aux = None
+                    roof_shape_index = predict_roof_shape_img(image_file, self.ui.insp_method, box_aux, self.ui)
                     # roof_shape building image sets prediction
                     if roof_shape_index is None:
                         pass
                     else:
-                        roof_shape_id[aux].setCurrentIndex(roof_shape_index+1)
+                        i=1
+                        roof_shape_id[i].setCurrentIndex(roof_shape_index+1) 
                         self.pred_roof_shape = self.ui.roof_shape_cb_1.currentData()
                         # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")      
-        else:
-            self.box_id = None
+                        self.ui.method_progress.setText("Prediction complete!")
+            
+            elif self.ui.insp_method == 2:
+                
+                self.ui.method_progress.setText("Loading AI model ...")
+                for j in range (100):
+                    time.sleep(0.0001)
+                    self.ui.progress_bar_method.setValue(j)
+                    
+                # for aux in range (self.n_images_local):
+                aux = 1
+                # Local cropped image path
+                
+                aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                +str(self.data_building.iloc[self.old_local + aux, 0]))
+                cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
+                
+                try:
+                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    if image is None:
+                        raise FileNotFoundError("Unable to read iamge")
+                except:
+                    aux = 0
+                    aux_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    
+                    cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
+                
+                # roof_shape building image prediction
+                roof_shape_index = predict_roof_shape_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
+                
+                # roof_shape building image sets prediction
+                if roof_shape_index is None:
+                    pass
+                else:
+                    roof_shape_id[aux].setCurrentIndex(roof_shape_index+1)
+                    self.pred_roof_shape = self.ui.roof_shape_cb_1.currentData()
+                    # Peogress bar update
+                    self.ui.progress_bar_method.setValue(100)
+                    self.ui.method_progress.setText("Prediction complete!")      
+            
             
     ############ Deep learning model for predict the Roof shape ################
     def roof_material_prediction (self):
         # Comboboxes for each image label
         roof_material_id = [self.ui.roof_material_cb_1,self.ui.roof_material_cb_1,self.ui.roof_material_cb_1]
-        if self.box_id == None:
-            # Checkbox for the AI powered activation
-            if self.ui.ai_check.isChecked():
-                if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                    # for i in range (3):
-                    pred_img = False
-                    for aux_img in range (3):
-                        if self.predicted_img[1] == 1:
-                            pred_img = True
-                            j = 1
-                        elif self.predicted_img[0] == 1:
-                            pred_img = True
-                            j = 0
-                        elif self.predicted_img[2] == 1:
-                            pred_img = True
-                            j = 2
-                    if pred_img == True:
-                        # Image path
-                        image_file = self.cropped_image[j]      
-                        # roof_material building image prediction
-                        box_aux = None
-                        roof_material_index = predict_roof_material_img(image_file, self.ui.insp_method, box_aux, self.ui)
-                        # roof_material building image sets prediction
-                        if roof_material_index is None:
-                            pass
-                        else:
-                            i=1
-                            roof_material_id[i].setCurrentIndex(roof_material_index+1)
-                            roof_mat_pred = self.ui.roof_material_cb_1.currentData()
-                            
-                            if self.pred_roof_shape == "RSH1":
-                                roof_material_id[i].setCurrentIndex(1) 
-                            elif self.pred_roof_shape == "RSH7":
-                                roof_material_id[i].setCurrentIndex(3)
-                            elif self.pred_roof_shape == "RSH2":
-                                if roof_mat_pred in ("RMT1", "RMT6"):
-                                    pass
-                                else:
-                                    roof_material_id[i].setCurrentIndex(3)
-                            elif self.pred_roof_shape == "RSH3":
-                                if roof_mat_pred in ("RMT1", "RMT6"):
-                                    pass
-                                else:
-                                    roof_material_id[i].setCurrentIndex(3)
-                            elif self.pred_roof_shape == "RSH5":
-                                if roof_mat_pred in ("RMT1", "RMT6"):
-                                    pass
-                                else:
-                                    roof_material_id[i].setCurrentIndex(3)
-                                              
-                            # Peogress bar update
-                            self.ui.progress_bar_method.setValue(100)
-                            self.ui.method_progress.setText("Prediction complete!")
-                
-                elif self.ui.insp_method == 2:
-                    
-                    self.ui.method_progress.setText("Loading AI model ...")
-                    for j in range (100):
-                        time.sleep(0.0001)
-                        self.ui.progress_bar_method.setValue(j)
-                        
-                    # for aux in range (self.n_images_local):
-                    aux = 1
-                    # Local cropped image path
-                    aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
-                    cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
-                         
-                    try:
-                        image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
-                        if image is None:
-                            raise FileNotFoundError("Unable to read iamge")
-                    except:
-                        aux = 0
-                        aux_path = (self.ui.folder_path+"/Cropped_images/"
-                                        +str(self.data_building.iloc[self.old_local + aux, 0]))
-                        
-                        cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
-                           
+        # Checkbox for the AI powered activation
+        if self.ui.ai_check.isChecked():
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+                # for i in range (3):
+                pred_img = False
+                for aux_img in range (3):
+                    if self.predicted_img[1] == 1:
+                        pred_img = True
+                        j = 1
+                    elif self.predicted_img[0] == 1:
+                        pred_img = True
+                        j = 0
+                    elif self.predicted_img[2] == 1:
+                        pred_img = True
+                        j = 2
+                if pred_img == True:
+                    # Image path
+                    image_file = self.cropped_image[j]      
                     # roof_material building image prediction
-                    roof_material_index = predict_roof_material_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
+                    box_aux = None
+                    roof_material_index = predict_roof_material_img(image_file, self.ui.insp_method, box_aux, self.ui)
                     # roof_material building image sets prediction
                     if roof_material_index is None:
                         pass
                     else:
-                        roof_material_id[aux].setCurrentIndex(roof_material_index+1)
+                        i=1
+                        roof_material_id[i].setCurrentIndex(roof_material_index+1)
                         roof_mat_pred = self.ui.roof_material_cb_1.currentData()
                         
                         if self.pred_roof_shape == "RSH1":
-                            roof_material_id[aux].setCurrentIndex(1) 
+                            roof_material_id[i].setCurrentIndex(1) 
                         elif self.pred_roof_shape == "RSH7":
-                            roof_material_id[aux].setCurrentIndex(3)
+                            roof_material_id[i].setCurrentIndex(3)
                         elif self.pred_roof_shape == "RSH2":
                             if roof_mat_pred in ("RMT1", "RMT6"):
                                 pass
                             else:
-                                roof_material_id[aux].setCurrentIndex(3)
+                                roof_material_id[i].setCurrentIndex(3)
                         elif self.pred_roof_shape == "RSH3":
                             if roof_mat_pred in ("RMT1", "RMT6"):
                                 pass
                             else:
-                                roof_material_id[aux].setCurrentIndex(3)
+                                roof_material_id[i].setCurrentIndex(3)
                         elif self.pred_roof_shape == "RSH5":
                             if roof_mat_pred in ("RMT1", "RMT6"):
                                 pass
                             else:
-                                roof_material_id[aux].setCurrentIndex(3)
+                                roof_material_id[i].setCurrentIndex(3)
+                                          
                         # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")      
-        else:
-            self.box_id = None                      
+                        self.ui.method_progress.setText("Prediction complete!")
+            
+            elif self.ui.insp_method == 2:
+                
+                self.ui.method_progress.setText("Loading AI model ...")
+                for j in range (100):
+                    time.sleep(0.0001)
+                    self.ui.progress_bar_method.setValue(j)
+                    
+                # for aux in range (self.n_images_local):
+                aux = 1
+                # Local cropped image path
+                aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                +str(self.data_building.iloc[self.old_local + aux, 0]))
+                cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
+                     
+                try:
+                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    if image is None:
+                        raise FileNotFoundError("Unable to read iamge")
+                except:
+                    aux = 0
+                    aux_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    
+                    cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
+                       
+                # roof_material building image prediction
+                roof_material_index = predict_roof_material_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
+                # roof_material building image sets prediction
+                if roof_material_index is None:
+                    pass
+                else:
+                    roof_material_id[aux].setCurrentIndex(roof_material_index+1)
+                    roof_mat_pred = self.ui.roof_material_cb_1.currentData()
+                    
+                    if self.pred_roof_shape == "RSH1":
+                        roof_material_id[aux].setCurrentIndex(1) 
+                    elif self.pred_roof_shape == "RSH7":
+                        roof_material_id[aux].setCurrentIndex(3)
+                    elif self.pred_roof_shape == "RSH2":
+                        if roof_mat_pred in ("RMT1", "RMT6"):
+                            pass
+                        else:
+                            roof_material_id[aux].setCurrentIndex(3)
+                    elif self.pred_roof_shape == "RSH3":
+                        if roof_mat_pred in ("RMT1", "RMT6"):
+                            pass
+                        else:
+                            roof_material_id[aux].setCurrentIndex(3)
+                    elif self.pred_roof_shape == "RSH5":
+                        if roof_mat_pred in ("RMT1", "RMT6"):
+                            pass
+                        else:
+                            roof_material_id[aux].setCurrentIndex(3)
+                    # Peogress bar update
+                    self.ui.progress_bar_method.setValue(100)
+                    self.ui.method_progress.setText("Prediction complete!")                         
                 
                 
     ############ Search and load existing inspections ################                  
@@ -2529,28 +2562,33 @@ class GUIMethods:
                 result = self.data_ai[self.data_ai['id'] == search_value]
                 if result.shape[0]<0:
                     result = self.data_ai[self.data_ai['id'] == int(search_value)]
-            
+    
             n_building = result.iloc[0,0]
+                    
+            try:
+                if self.ui.insp_method == 0:
+                    self.click_count = int(n_building) - 1
+                if self.ui.insp_method == 1:
+                    self.click_count = int(n_building) - 1
+                if self.ui.insp_method == 2:
+                    self.click_count = int(n_building) - 1
+            except:
+                pass
+            
+            try:
+                self.get_city_name()
+                self.fetch_three_step_views()
+                self.object_detector_building()
+                self.clean_database()
+            except:
+                pass
+            
+            self.search_count = True
+            
         except:
-            QMessageBox.warning(self.ui, "Data Error", "Please click the Next Building button to upload the inspection database")
-        
-        try:
-            if self.ui.insp_method == 0:
-                self.click_count = int(n_building) - 1
-            if self.ui.insp_method == 1:
-                self.click_count = int(n_building) - 1
-            if self.ui.insp_method == 2:
-                self.click_count = int(n_building) - 1
-        except:
-            pass
-        
-        try:
-            self.get_city_name()
-            self.fetch_three_step_views()
-            self.object_detector_building()
-            self.clean_database()
-        except:
-            pass
+            QMessageBox.warning(self.ui,"Data Error", "Please click the *Next Building* button to load the inspection database.\n"
+                                        "If this message continues to appear, there is no saved inspection for this Image ID.")
+
 
     def neighbor_extrapolation(self):
         

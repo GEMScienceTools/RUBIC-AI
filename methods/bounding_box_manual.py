@@ -240,7 +240,6 @@ class BoundingBoxWindow(QDialog):
                 self.prediction_img = cropped_image
         
         # Return the cropped image
-        cv2.imwrite("img_manual.png", cropped_image)
         return cropped_image
 
     # ================= CONFIRM SELECTION =================
