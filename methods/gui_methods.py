@@ -653,7 +653,7 @@ class GUIMethods:
                         cls_name = class_names[cls_id]
                         score = float(box.conf)  # confidence score
                     
-                        if cls_name == TARGET_CLASS and score > best_score and score > 0.2:
+                        if cls_name == TARGET_CLASS and score > best_score and score > 0.5:
                             best_score = score
                             best_box = box
                             
@@ -789,7 +789,7 @@ class GUIMethods:
                             cls_name = class_names[cls_id]
                             score = float(box.conf)  # confidence score
                         
-                            if cls_name == TARGET_CLASS and score > best_score and score > 0.2:
+                            if cls_name == TARGET_CLASS and score > best_score and score > 0.5:
                                 best_score = score
                                 best_box = box
                                 
