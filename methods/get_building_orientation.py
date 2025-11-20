@@ -42,7 +42,7 @@ def compute_azimuth(point1, point2):
     return (azimuth + 360) % 360
 
 
-def get_street_view_image(location, api_key, angle):
+def get_street_view_image(location, api_key, angle, pitch):
     """
     Fetch a Google Street View image (outdoor-only) and generate its corresponding Maps URL.
     """
@@ -131,7 +131,7 @@ def get_street_view_image(location, api_key, angle):
                 "size": "640x480",
                 "pano": pano_id,
                 "heading": heading,
-                "pitch": 5,
+                "pitch": pitch,
                 "fov": 120,
                 "source": "outdoor",
                 "key": api_key,
@@ -175,7 +175,6 @@ def get_street_view_image(location, api_key, angle):
     
         # --- Image capture parameters ---
         fov = 120
-        pitch = 5
         scale = 2
     
         # --- Base URLs ---

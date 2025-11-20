@@ -53,7 +53,7 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         sf_y = sf_factor
         # Scale the GUI based on resolution
         sf_font = sf_factor * scale_dpi
-
+        self.sf_font = sf_font
         self.setWindowTitle("Specific Coordinates Method Input")
         self.setWindowIcon(QtGui.QIcon("help_img/RUBIC_logo.png"))
         self.resize(int(643 * sf_x), int(483 * sf_y))
@@ -257,7 +257,20 @@ class SpecificLocationSetting(QtWidgets.QDialog):
                 for column in range(len(preview_df.columns)):
                     value = str(preview_df.iloc[row, column])
                     item = QtWidgets.QTableWidgetItem(value)
+                    # ---- Set font size ----
+                    font = item.font()
+                    font.setPointSize(int(10 * self.sf_font))  # change to any size
+                    item.setFont(font)
                     self.tableWidget.setItem(row, column, item)
+                    header = self.tableWidget.horizontalHeader()
+                    font = header.font()
+                    font.setPointSize(int(10 * self.sf_font))
+                    font.setBold(True)  # optional
+                    header.setFont(font)
+                    vheader = self.tableWidget.verticalHeader()
+                    vfont = vheader.font()
+                    vfont.setPointSize(int(10 * self.sf_font))
+                    vheader.setFont(vfont)
     
             self.tableWidget.resizeColumnsToContents()
         else:

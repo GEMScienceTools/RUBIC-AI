@@ -57,6 +57,7 @@ class GUIMethods:
         self.aux_ai_check = True
         self.limit_local = True
         self.search_count = False
+        self.pitch = [5,5,5]
         
         """Get screen resolution to adapt to different screen sizes"""
         # Get screen resolution
@@ -100,6 +101,10 @@ class GUIMethods:
         sf_y = sf_factor
         # Scale the GUI based on resolution
         self.sf_font = sf_factor * scale_dpi
+        
+        
+        # GSV image angle
+        self.ui.angle_value_2.textChanged.connect(self.img_angle_central)
         
 
     ############ Counts the number of clicks made on the next button ################ 
@@ -525,6 +530,24 @@ class GUIMethods:
             return False  # No Street View coverage
         
             
+    def img_angle_central(self):
+        if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+            aux = 1
+            self.pitch[aux] = self.ui.angle_value_2.text()
+            self.ui.angle_value_2.setText(str(self.pitch[aux]))
+            location = (float(self.ui.lat_value.text()), float(self.ui.lon_value.text()))
+            # API key is required; without it, access to GSV is not possible
+            with open("methods/gsv_api_key.txt", "r") as f:
+                api_key = f.read().strip() 
+            # angles for taking the images
+            angle = (-30,0,30)
+            # try:
+            self.img_url[aux] , self.img_original_1, self.year_left = get_street_view_image(location, api_key, angle[aux], self.pitch[0])
+            img_frames = [self.ui.left_gsv_img,self.ui.central_gsv_img,self.ui.right_gsv_img]
+            img_frames[aux].setPixmap(pixmap.scaled(img_frames[aux].width(), img_frames[aux].height(),
+                              QtCore.Qt.IgnoreAspectRatio,
+                              QtCore.Qt.SmoothTransformation))
+        
     ############# Downnload GSV building images ################   
     def fetch_three_step_views(self):
         """
@@ -557,6 +580,7 @@ class GUIMethods:
         # right image
         self.ui.img_id_value_3.setText(str(self.click_count+1)+"_3")
         
+        
         if self.ui.insp_method == 0 or self.ui.insp_method == 1:  
 
             # Building coordinates
@@ -572,11 +596,11 @@ class GUIMethods:
                 if self.check_street_view() == True:
                     # Get image from GSV
                     if aux == 0:
-                        self.img_url[aux] , self.img_original_1, self.year_left = get_street_view_image(location, api_key, angle[aux])
+                        self.img_url[aux] , self.img_original_1, self.year_left = get_street_view_image(location, api_key, angle[aux], self.pitch[0])
                     elif aux == 1:
-                        self.img_url[aux] , self.img_original_2, self.year_center = get_street_view_image(location, api_key, angle[aux])
+                        self.img_url[aux] , self.img_original_2, self.year_center = get_street_view_image(location, api_key, angle[aux], self.pitch[1])
                     else:
-                        self.img_url[aux] , self.img_original_3, self.year_right = get_street_view_image(location, api_key, angle[aux])
+                        self.img_url[aux] , self.img_original_3, self.year_right = get_street_view_image(location, api_key, angle[aux], self.pitch[2])
                 else:
                     print("Street View not available")
                     self.img_original_1, self.year_left = ["",""]
@@ -728,6 +752,11 @@ class GUIMethods:
         # Checking Inspection method (manual option)
         elif self.ui.insp_method == 2:
             
+            # Angle value
+            self.ui.angle_value_1.setText("-")
+            self.ui.angle_value_2.setText("-")
+            self.ui.angle_value_3.setText("-")
+            
             # Image frames
             img_frames = [self.ui.left_gsv_img, self.ui.central_gsv_img, self.ui.right_gsv_img]
             # Loop for the number of image displayed selected with the option in the coordinates pop-up
@@ -804,20 +833,6 @@ class GUIMethods:
                             if cls_name == TARGET_CLASS and score > best_score and score > 0.5:
                                 best_score = score
                                 best_box = box
-                                
-                        if best_box is None:
-                            # No building dectection 
-                            self.no_image = "No Building detected"
-                            # Skipping prection for this image
-                            self.predicted_img[aux] = 0
-                            font = QtGui.QFont()
-                            font.setPointSize(int(16 * self.sf_font))
-                            font.setBold(True)
-                            font.setWeight(75)
-                            img_frames[aux].setFont(font)
-                            img_frames[aux].setText(self.no_image)
-                            img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)  # Center-align text
-                            continue
                     
                         # Bounding box coordinates
                         x1, y1, x2, y2 = map(int, best_box.xyxy[0])
@@ -854,7 +869,7 @@ class GUIMethods:
                             # Convert QImage to QPixmap
                             building_pixmap = QtGui.QPixmap.fromImage(qimage)
 
-                    except FileNotFoundError:
+                    except:
                         self.no_image = f"""
                                         <b><u>No image found</u></b><br><br>
                                         Please check that the image file exists at the specified path:<br>
