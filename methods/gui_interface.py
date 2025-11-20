@@ -380,7 +380,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Left image widget for best performance
         self.verticalLayoutWidget_5 = QtWidgets.QWidget(self.frame_left_img)
-        self.verticalLayoutWidget_5.setGeometry(QtCore.QRect(int(380 * sf_x), int(40 * sf_y), int(491 * sf_x), int(311 * sf_y)))
+        self.verticalLayoutWidget_5.setGeometry(QtCore.QRect(int(10 * sf_x), int(40 * sf_y), int(491 * sf_x), int(311 * sf_y)))
         self.verticalLayoutWidget_5.setObjectName("verticalLayoutWidget_5")
         
         # Left image bounding box
@@ -806,8 +806,10 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.img_id_value_2.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.img_id_value_2.setObjectName("img_id_value_2")
         # Bounding box for image central frame
-        self.bounding_box_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.bounding_box_2.setGeometry(QtCore.QRect(int(910 * sf_x), int(110 * sf_y), int(121 * sf_x), int(21 * sf_y)))
+        self.bounding_box_2 = QtWidgets.QPushButton(self.frame_central_img)
+        self.bounding_box_2.setGeometry(QtCore.QRect(int(380 * sf_x), int(10 * sf_y), int(121 * sf_x), int(21 * sf_y)))
+        self.bounding_box_2.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.bounding_box_2.setObjectName("bounding_box_2")
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -902,8 +904,10 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.img_id_value_3.setStyleSheet("background-color: rgb(255, 255, 255);")
         self.img_id_value_3.setObjectName("img_id_value_3")
         # Bounding box for image right frame
-        self.bounding_box_3 = QtWidgets.QPushButton(self.centralwidget)
-        self.bounding_box_3.setGeometry(QtCore.QRect(int(1430 * sf_x), int(110 * sf_y), int(121 * sf_x), int(21 * sf_y)))
+        self.bounding_box_3 = QtWidgets.QPushButton(self.frame_right_img)
+        self.bounding_box_3.setGeometry(QtCore.QRect(int(380 * sf_x), int(10 * sf_y), int(121 * sf_x), int(21 * sf_y)))
+        self.bounding_box_3.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.bounding_box_3.setObjectName("bounding_box_3")
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
