@@ -380,7 +380,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Left image widget for best performance
         self.verticalLayoutWidget_5 = QtWidgets.QWidget(self.frame_left_img)
-        self.verticalLayoutWidget_5.setGeometry(QtCore.QRect(int(10 * sf_x), int(40 * sf_y), int(491 * sf_x), int(311 * sf_y)))
+        self.verticalLayoutWidget_5.setGeometry(QtCore.QRect(int(380 * sf_x), int(40 * sf_y), int(491 * sf_x), int(311 * sf_y)))
         self.verticalLayoutWidget_5.setObjectName("verticalLayoutWidget_5")
         
         # Left image bounding box
@@ -401,8 +401,10 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.img_id_value_1.setObjectName("img_id_value_1")
         
         # Bounding box for image left frame
-        self.bounding_box_1 = QtWidgets.QPushButton(self.centralwidget)
-        self.bounding_box_1.setGeometry(QtCore.QRect(int(390 * sf_x), int(110 * sf_y), int(121 * sf_x), int(21 * sf_y)))
+        self.bounding_box_1 = QtWidgets.QPushButton(self.frame_left_img)
+        self.bounding_box_1.setGeometry(QtCore.QRect(int(380 * sf_x), int(10 * sf_y), int(121 * sf_x), int(21 * sf_y)))
+        self.bounding_box_1.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.bounding_box_1.setObjectName("bounding_box_1")
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
