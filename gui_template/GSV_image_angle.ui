@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GSV_angle_setting</class>
+ <widget class="QMainWindow" name="GSV_angle_setting">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>651</width>
+    <height>866</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="gsv_angle_frame">
+   <widget class="QPushButton" name="save_button_gsv">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>830</y>
+      <width>191</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Save and continue</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="backg_1">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>631</width>
+      <height>811</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 215, 255);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gsv_label">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>10</y>
+      <width>201</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <italic>true</italic>
+      <bold>true</bold>
+      <underline>true</underline>
+      <strikeout>false</strikeout>
+     </font>
+    </property>
+    <property name="text">
+     <string>GSV image parameters</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="pitch_label">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>39</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+      <underline>true</underline>
+     </font>
+    </property>
+    <property name="text">
+     <string>Pitch:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="pitch_img">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>170</y>
+      <width>611</width>
+      <height>361</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QTextBrowser" name="pitch_descrip">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>80</y>
+      <width>611</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="html">
+     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Vertical camera angle that controls the inclination of the camera, allowing a full view of tall buildings. This angle is limited between &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;0° and 60°&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;, with &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;5° as the default value&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="pitch_value">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>40</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="maximum">
+     <number>60</number>
+    </property>
+    <property name="value">
+     <number>5</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="heading_label">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>539</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+      <underline>true</underline>
+     </font>
+    </property>
+    <property name="text">
+     <string>Heading:</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="heading_value">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>540</y>
+      <width>61</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="minimum">
+     <number>0</number>
+    </property>
+    <property name="maximum">
+     <number>360</number>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+   </widget>
+   <widget class="QTextBrowser" name="heading_descrip">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>580</y>
+      <width>611</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="html">
+     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;It is &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;horizontal camera angle&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; controls the direction of the camera, even allowing the view of a building on the opposite side of the street (180°). This angle is limited between &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;0° and 360°&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;, with &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;0° as the default value&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="fov_label">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>670</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+      <underline>true</underline>
+     </font>
+    </property>
+    <property name="text">
+     <string>FOV:</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="fov_value">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>670</y>
+      <width>61</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="maximum">
+     <number>120</number>
+    </property>
+    <property name="value">
+     <number>120</number>
+    </property>
+   </widget>
+   <widget class="QTextBrowser" name="fov_descrip">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>710</y>
+      <width>611</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="html">
+     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;The &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;field of view&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; controls the zoom of the camera. Smaller values &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;zoom in&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;, while larger values &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;zoom out&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;. By default, this value is set to &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;120&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;, which is the maximum allowed. This is useful for creating a natural zoom effect without losing too much resolution for distant building images&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

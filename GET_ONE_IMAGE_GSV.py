@@ -129,7 +129,7 @@ def get_street_view_image(
             "size": "640x480",
             "pano": pano_id,
             "heading": heading,
-            "pitch": 45,
+            "pitch": 5,
             "fov": 120,
             "source": "outdoor",
             "key": api_key,
@@ -158,7 +158,7 @@ def get_street_view_image(
 # ============================================================
 
 if __name__ == "__main__":
-    coord = (11.00879398 , -74.81448504)  # Lisbon example
+    coord = (11.0166687,-74.8235597,)  # Lisbon example
 
     maps_url, img, year, pano_coords, found_close, radius, side, angle = get_street_view_image(
         location=coord,
@@ -182,3 +182,4 @@ if __name__ == "__main__":
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
+    cv2.imwrite("img_angle.jpg", img)

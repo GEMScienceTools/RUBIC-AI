@@ -110,6 +110,9 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.bounding_box_2.clicked.connect(self.methods.bounding_box)
         self.bounding_box_3.clicked.connect(self.methods.bounding_box)
         
+        # GSV image angle setting
+        self.set_angle_1.clicked.connect(self.methods.img_angle_left)
+        
         # Save the values of the inspections
         self.save_data_button.clicked.connect(self.methods.save_database)
         
@@ -414,7 +417,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Year label for left image
         self.year_label_1 = QtWidgets.QLabel(self.frame_left_img)
-        self.year_label_1.setGeometry(QtCore.QRect(int(280 * sf_x), int(10 * sf_y), int(21 * sf_x), int(21 * sf_y)))
+        self.year_label_1.setGeometry(QtCore.QRect(int(190 * sf_x), int(10 * sf_y), int(21 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -426,7 +429,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Year value for left image
         self.year_value_1 = QtWidgets.QLabel(self.frame_left_img)
-        self.year_value_1.setGeometry(QtCore.QRect(int(310 * sf_x), int(10 * sf_y), int(51 * sf_x), int(21 * sf_y)))
+        self.year_value_1.setGeometry(QtCore.QRect(int(220 * sf_x), int(10 * sf_y), int(51 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(False)
@@ -439,27 +442,16 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.year_value_1.setText("----")
         
         # Angle label for left image
-        self.angle_img_1 = QtWidgets.QLabel(self.frame_left_img)
-        self.angle_img_1.setGeometry(QtCore.QRect(int(180 * sf_x), int(10 * sf_y), int(41 * sf_x), int(21 * sf_y)))
+        self.set_angle_1 = QtWidgets.QPushButton(self.frame_left_img)
+        self.set_angle_1.setGeometry(QtCore.QRect(280, 10, 81, 21))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
+        font.setPointSize(10)
         font.setBold(True)
         font.setWeight(75)
-        self.angle_img_1.setFont(font)
-        self.angle_img_1.setAlignment(QtCore.Qt.AlignCenter)
-        self.angle_img_1.setObjectName("angle_img_1")
-        self.angle_img_1.setText("∠:")
-        
-        # Angle value for left image
-        self.angle_value_1 = QtWidgets.QLineEdit(self.frame_left_img)
-        self.angle_value_1.setGeometry(QtCore.QRect(int(220 * sf_x), int(10 * sf_y), int(41 * sf_x), int(21 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        font.setBold(False)
-        self.angle_value_1.setFont(font)
-        self.angle_value_1.setStyleSheet("background-color: rgb(255, 255, 255);")
-        self.angle_value_1.setObjectName("angle_value_1")
-        self.angle_value_1.setText("5")
+        self.set_angle_1.setFont(font)
+        self.set_angle_1.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.set_angle_1.setObjectName("set_angle_1")
+        self.set_angle_1.setText("Set ∠")
         
         ################## Form for building feature ##########################
         
@@ -819,7 +811,7 @@ class GUIInterface(QtWidgets.QMainWindow):
 
         # Year label for central image
         self.year_label_2 = QtWidgets.QLabel(self.frame_central_img)
-        self.year_label_2.setGeometry(QtCore.QRect(int(280 * sf_x), int(10 * sf_y), int(21 * sf_x), int(21 * sf_y)))
+        self.year_label_2.setGeometry(QtCore.QRect(int(190 * sf_x), int(10 * sf_y), int(21 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -831,7 +823,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Year value for central image
         self.year_value_2 = QtWidgets.QLabel(self.frame_central_img)
-        self.year_value_2.setGeometry(QtCore.QRect(int(310 * sf_x), int(10 * sf_y), int(51 * sf_x), int(21 * sf_y)))
+        self.year_value_2.setGeometry(QtCore.QRect(int(220 * sf_x), int(10 * sf_y), int(51 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(False)
@@ -844,27 +836,16 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.year_value_2.setText("----")
         
         # Angle label central image
-        self.angle_img_2 = QtWidgets.QLabel(self.frame_central_img)
-        self.angle_img_2.setGeometry(QtCore.QRect(int(180 * sf_x), int(10 * sf_y), int(41 * sf_x), int(21 * sf_y)))
+        self.set_angle_2 = QtWidgets.QPushButton(self.frame_central_img)
+        self.set_angle_2.setGeometry(QtCore.QRect(280, 10, 81, 21))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
+        font.setPointSize(10)
         font.setBold(True)
         font.setWeight(75)
-        self.angle_img_2.setFont(font)
-        self.angle_img_2.setAlignment(QtCore.Qt.AlignCenter)
-        self.angle_img_2.setObjectName("angle_img_2")
-        self.angle_img_2.setText("∠:")
-        
-        # Angle value central image
-        self.angle_value_2 = QtWidgets.QLineEdit(self.frame_central_img)
-        self.angle_value_2.setGeometry(QtCore.QRect(int(220 * sf_x), int(10 * sf_y), int(41 * sf_x), int(21 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        font.setBold(False)
-        self.angle_value_2.setFont(font)
-        self.angle_value_2.setStyleSheet("background-color: rgb(255, 255, 255);")
-        self.angle_value_2.setObjectName("angle_value_2")
-        self.angle_value_2.setText("5")
+        self.set_angle_2.setFont(font)
+        self.set_angle_2.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.set_angle_2.setObjectName("set_angle_2")
+        self.set_angle_2.setText("Set ∠")
     
         
         """ Right Building images elements """
@@ -917,7 +898,7 @@ class GUIInterface(QtWidgets.QMainWindow):
 
         # Year label for right image
         self.year_label_3 = QtWidgets.QLabel(self.frame_right_img)
-        self.year_label_3.setGeometry(QtCore.QRect(int(280 * sf_x), int(10 * sf_y), int(21 * sf_x), int(21 * sf_y)))
+        self.year_label_3.setGeometry(QtCore.QRect(int(190 * sf_x), int(10 * sf_y), int(21 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -929,7 +910,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Year value for right image
         self.year_value_3 = QtWidgets.QLabel(self.frame_right_img)
-        self.year_value_3.setGeometry(QtCore.QRect(int(310 * sf_x), int(10 * sf_y), int(51 * sf_x), int(21 * sf_y)))
+        self.year_value_3.setGeometry(QtCore.QRect(int(220 * sf_x), int(10 * sf_y), int(51 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(False)
@@ -942,29 +923,16 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.year_value_3.setText("----")
         
        # Angle label for right image
-        self.angle_img_3 = QtWidgets.QLabel(self.frame_right_img)
-        self.angle_img_3.setGeometry(QtCore.QRect(int(180 * sf_x), int(10 * sf_y), int(41 * sf_x), int(21 * sf_y)))
+        self.set_angle_3 = QtWidgets.QPushButton(self.frame_right_img)
+        self.set_angle_3.setGeometry(QtCore.QRect(280, 10, 81, 21))
         font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
+        font.setPointSize(10)
         font.setBold(True)
         font.setWeight(75)
-        self.angle_img_3.setFont(font)
-        self.angle_img_3.setAlignment(QtCore.Qt.AlignCenter)
-        self.angle_img_3.setObjectName("angle_img_3")
-        self.angle_img_3.setText("∠:")
-        
-        # Angle value for right image
-        self.angle_value_3 = QtWidgets.QLineEdit(self.frame_right_img)
-        self.angle_value_3.setGeometry(QtCore.QRect(int(220 * sf_x), int(10 * sf_y), int(41 * sf_x), int(21 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        font.setBold(False)
-        self.angle_value_3.setFont(font)
-        self.angle_value_3.setStyleSheet("background-color: rgb(255, 255, 255);")
-        self.angle_value_3.setObjectName("angle_value_3")
-        self.angle_value_3.setText("5")
-
-        
+        self.set_angle_3.setFont(font)
+        self.set_angle_3.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.set_angle_3.setObjectName("set_angle_3")
+        self.set_angle_3.setText("Set ∠")
         
 ###########################################################################################        
 ###########################################################################################   

@@ -200,7 +200,7 @@
     <widget class="QLineEdit" name="img_id_value_4">
      <property name="geometry">
       <rect>
-       <x>310</x>
+       <x>220</x>
        <y>10</y>
        <width>41</width>
        <height>21</height>
@@ -216,7 +216,7 @@
     <widget class="QLabel" name="img_id_label_4">
      <property name="geometry">
       <rect>
-       <x>280</x>
+       <x>190</x>
        <y>10</y>
        <width>31</width>
        <height>21</height>
@@ -236,28 +236,12 @@
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
-    <widget class="QLineEdit" name="angle_value_2">
+    <widget class="QPushButton" name="set_angle_2">
      <property name="geometry">
       <rect>
-       <x>220</x>
+       <x>280</x>
        <y>10</y>
-       <width>41</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(255, 255, 255);</string>
-     </property>
-     <property name="text">
-      <string>2000</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="angle_img_2">
-     <property name="geometry">
-      <rect>
-       <x>180</x>
-       <y>10</y>
-       <width>41</width>
+       <width>81</width>
        <height>21</height>
       </rect>
      </property>
@@ -268,11 +252,11 @@
        <bold>true</bold>
       </font>
      </property>
-     <property name="text">
-      <string>∠</string>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255);</string>
      </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
+     <property name="text">
+      <string>Set ∠</string>
      </property>
     </widget>
    </widget>
@@ -355,7 +339,7 @@
     <widget class="QLineEdit" name="img_id_value_8">
      <property name="geometry">
       <rect>
-       <x>320</x>
+       <x>220</x>
        <y>10</y>
        <width>41</width>
        <height>21</height>
@@ -371,7 +355,7 @@
     <widget class="QLabel" name="img_id_label_8">
      <property name="geometry">
       <rect>
-       <x>290</x>
+       <x>190</x>
        <y>10</y>
        <width>31</width>
        <height>21</height>
@@ -391,12 +375,12 @@
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
-    <widget class="QLabel" name="angle_img_3">
+    <widget class="QPushButton" name="set_angle_3">
      <property name="geometry">
       <rect>
-       <x>190</x>
+       <x>280</x>
        <y>10</y>
-       <width>41</width>
+       <width>81</width>
        <height>21</height>
       </rect>
      </property>
@@ -407,27 +391,11 @@
        <bold>true</bold>
       </font>
      </property>
-     <property name="text">
-      <string>∠</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="img_id_value_9">
-     <property name="geometry">
-      <rect>
-       <x>230</x>
-       <y>10</y>
-       <width>41</width>
-       <height>21</height>
-      </rect>
-     </property>
      <property name="styleSheet">
       <string notr="true">background-color: rgb(255, 255, 255);</string>
      </property>
      <property name="text">
-      <string>2000</string>
+      <string>Set ∠</string>
      </property>
     </widget>
    </widget>
@@ -537,7 +505,7 @@ background-color: rgb(102, 220, 255);</string>
     <widget class="QLineEdit" name="img_id_value_6">
      <property name="geometry">
       <rect>
-       <x>320</x>
+       <x>220</x>
        <y>10</y>
        <width>41</width>
        <height>21</height>
@@ -553,7 +521,7 @@ background-color: rgb(102, 220, 255);</string>
     <widget class="QLabel" name="img_id_label_6">
      <property name="geometry">
       <rect>
-       <x>290</x>
+       <x>190</x>
        <y>10</y>
        <width>31</width>
        <height>21</height>
@@ -573,12 +541,12 @@ background-color: rgb(102, 220, 255);</string>
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
-    <widget class="QLabel" name="angle_img_1">
+    <widget class="QPushButton" name="set_angle_1">
      <property name="geometry">
       <rect>
-       <x>190</x>
+       <x>280</x>
        <y>10</y>
-       <width>41</width>
+       <width>81</width>
        <height>21</height>
       </rect>
      </property>
@@ -589,27 +557,11 @@ background-color: rgb(102, 220, 255);</string>
        <bold>true</bold>
       </font>
      </property>
-     <property name="text">
-      <string>∠</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="angle_value_1">
-     <property name="geometry">
-      <rect>
-       <x>230</x>
-       <y>10</y>
-       <width>41</width>
-       <height>21</height>
-      </rect>
-     </property>
      <property name="styleSheet">
       <string notr="true">background-color: rgb(255, 255, 255);</string>
      </property>
      <property name="text">
-      <string>2000</string>
+      <string>Set ∠</string>
      </property>
     </widget>
    </widget>

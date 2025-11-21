@@ -32,7 +32,7 @@ from methods.epoch_construction import EpochSelectionDialog
 from methods.help_window import HelpDialog
 from methods.neighbor_building_extrapolation_feature import find_nearest_neighbors_geodesic, compute_taxonomy_distribution_full_structure
 from methods.dl_extrapolation import create_database, dl_models, inspection_database, extrapolation_existing_reference
-
+from methods.gsv_image_angle import gsv_angle_setting
 from methods.dl_stratified import iterative_distribution_stability_manual , iterative_label_discovery_cached_fractional, labeling_function
 
 
@@ -57,7 +57,6 @@ class GUIMethods:
         self.aux_ai_check = True
         self.limit_local = True
         self.search_count = False
-        self.pitch = [5,5,5]
         
         """Get screen resolution to adapt to different screen sizes"""
         # Get screen resolution
@@ -100,11 +99,7 @@ class GUIMethods:
         sf_x = sf_factor
         sf_y = sf_factor
         # Scale the GUI based on resolution
-        self.sf_font = sf_factor * scale_dpi
-        
-        
-        # GSV image angle
-        self.ui.angle_value_2.textChanged.connect(self.img_angle_central)
+        self.sf_font = sf_factor * scale_dpi    
         
 
     ############ Counts the number of clicks made on the next button ################ 
@@ -529,24 +524,6 @@ class GUIMethods:
         else:
             return False  # No Street View coverage
         
-            
-    def img_angle_central(self):
-        if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-            aux = 1
-            self.pitch[aux] = self.ui.angle_value_2.text()
-            self.ui.angle_value_2.setText(str(self.pitch[aux]))
-            location = (float(self.ui.lat_value.text()), float(self.ui.lon_value.text()))
-            # API key is required; without it, access to GSV is not possible
-            with open("methods/gsv_api_key.txt", "r") as f:
-                api_key = f.read().strip() 
-            # angles for taking the images
-            angle = (-30,0,30)
-            # try:
-            self.img_url[aux] , self.img_original_1, self.year_left = get_street_view_image(location, api_key, angle[aux], self.pitch[0])
-            img_frames = [self.ui.left_gsv_img,self.ui.central_gsv_img,self.ui.right_gsv_img]
-            img_frames[aux].setPixmap(pixmap.scaled(img_frames[aux].width(), img_frames[aux].height(),
-                              QtCore.Qt.IgnoreAspectRatio,
-                              QtCore.Qt.SmoothTransformation))
         
     ############# Downnload GSV building images ################   
     def fetch_three_step_views(self):
@@ -596,11 +573,11 @@ class GUIMethods:
                 if self.check_street_view() == True:
                     # Get image from GSV
                     if aux == 0:
-                        self.img_url[aux] , self.img_original_1, self.year_left = get_street_view_image(location, api_key, angle[aux], self.pitch[0])
+                        self.img_url[aux] , self.img_original_1, self.year_left = get_street_view_image(location, api_key, angle[aux], 5, 120)
                     elif aux == 1:
-                        self.img_url[aux] , self.img_original_2, self.year_center = get_street_view_image(location, api_key, angle[aux], self.pitch[1])
+                        self.img_url[aux] , self.img_original_2, self.year_center = get_street_view_image(location, api_key, angle[aux], 5, 120)
                     else:
-                        self.img_url[aux] , self.img_original_3, self.year_right = get_street_view_image(location, api_key, angle[aux], self.pitch[2])
+                        self.img_url[aux] , self.img_original_3, self.year_right = get_street_view_image(location, api_key, angle[aux], 5, 120)
                 else:
                     print("Street View not available")
                     self.img_original_1, self.year_left = ["",""]
@@ -613,7 +590,39 @@ class GUIMethods:
         else:
             pass
 
+    def img_angle_left (self):
+        """Open the bounding box selection pop-up window."""
+        app = QApplication.instance()  # Ensure PyQt instance exists
+        if app is None:
+            app = QApplication([])
+            
+        # Called function where the user creates a manual bounding box by clicking four points, which is then displayed in the UI frame.
+        gsv_dialog = gsv_angle_setting(parent=self.ui, main_window=self.ui, gui_methods=self)
+        gsv_dialog.exec_()  # Open the pop-up
         
+        self.pitch_lef = gsv_dialog.pitch_value.value()
+        self.heading_lef = gsv_dialog.heading_value.value()
+        self.fov_lef = gsv_dialog.fov_value.value()
+        
+        # Building coordinates
+        location = (float(self.ui.lat_value.text()), float(self.ui.lon_value.text()))
+        # API key is required; without it, access to GSV is not possible
+        with open("methods/gsv_api_key.txt", "r") as f:
+            api_key = f.read().strip() 
+            
+        self.img_original_1 = get_street_view_image(location, api_key, self.heading_lef, self.pitch_lef, self.fov_lef)[1]
+        
+        display_image_rgb = cv2.cvtColor(self.img_original_1, cv2.COLOR_BGR2RGB)
+        h, w, ch = display_image_rgb.shape
+        bytes_per_line = w * 3
+        qimg = QtGui.QImage(display_image_rgb.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+    
+        pixmap = QtGui.QPixmap.fromImage(qimg)
+        img_frames = [self.ui.left_gsv_img,self.ui.central_gsv_img,self.ui.right_gsv_img]
+        img_frames[0].setPixmap(
+            pixmap.scaled(img_frames[0].width(), img_frames[0].height(),
+                          QtCore.Qt.IgnoreAspectRatio,
+                          QtCore.Qt.SmoothTransformation))
         
     ############ Building detector model ################
     def object_detector_building(self):
@@ -751,12 +760,7 @@ class GUIMethods:
         
         # Checking Inspection method (manual option)
         elif self.ui.insp_method == 2:
-            
-            # Angle value
-            self.ui.angle_value_1.setText("-")
-            self.ui.angle_value_2.setText("-")
-            self.ui.angle_value_3.setText("-")
-            
+                      
             # Image frames
             img_frames = [self.ui.left_gsv_img, self.ui.central_gsv_img, self.ui.right_gsv_img]
             # Loop for the number of image displayed selected with the option in the coordinates pop-up
@@ -1074,8 +1078,6 @@ class GUIMethods:
                 image_file = dialog.prediction_img
                 
                 if self.ui.ai_check.isChecked():
-                    
-                    PENDING = 0
                     
                     # Comboboxes for each image label
                     material_id = [self.ui.material_cb_1,self.ui.material_cb_1,self.ui.material_cb_1]
