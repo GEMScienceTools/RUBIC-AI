@@ -445,9 +445,9 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Angle label for left image
         self.set_angle_1 = QtWidgets.QPushButton(self.frame_left_img)
-        self.set_angle_1.setGeometry(QtCore.QRect(280, 10, 81, 21))
+        self.set_angle_1.setGeometry(QtCore.QRect(int(280 * sf_x), int(10 * sf_y), int(81 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.set_angle_1.setFont(font)
@@ -839,9 +839,9 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Angle label central image
         self.set_angle_2 = QtWidgets.QPushButton(self.frame_central_img)
-        self.set_angle_2.setGeometry(QtCore.QRect(280, 10, 81, 21))
+        self.set_angle_2.setGeometry(QtCore.QRect(int(280 * sf_x), int(10 * sf_y), int(81 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.set_angle_2.setFont(font)
@@ -926,9 +926,9 @@ class GUIInterface(QtWidgets.QMainWindow):
         
        # Angle label for right image
         self.set_angle_3 = QtWidgets.QPushButton(self.frame_right_img)
-        self.set_angle_3.setGeometry(QtCore.QRect(280, 10, 81, 21))
+        self.set_angle_3.setGeometry(QtCore.QRect(int(280 * sf_x), int(10 * sf_y), int(81 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.set_angle_3.setFont(font)

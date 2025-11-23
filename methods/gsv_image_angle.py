@@ -109,7 +109,35 @@ class gsv_angle_setting(QtWidgets.QDialog):
         self.pitch_descrip = QtWidgets.QTextBrowser(self.gsv_angle_frame)
         self.pitch_descrip.setGeometry(QtCore.QRect(int(20 * sf_x), int(80 * sf_y), int(611 * sf_x), int(81 * sf_y)))
         self.pitch_descrip.setObjectName("pitch_descrip")
-        
+
+        # Scalable font size
+        fs = int(10 * sf_font)
+
+        self.pitch_descrip.setHtml(f"""<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+        <html>
+        <head>
+        <meta name="qrichtext" content="1" />
+        <style>
+        p, li {{ 
+            white-space: pre-wrap;
+            margin: 0;
+        }}
+        </style>
+        </head>
+
+        <body style="font-family:'MS Shell Dlg 2'; font-size:{fs}pt; font-weight:400; font-style:normal; margin:0;">
+
+        <p align="justify" style="-qt-block-indent:0; text-indent:0px; margin:0px 0px 12px 0px;">
+        <span style="font-size:{fs}pt;">The </span>
+        <span style="font-size:{fs}pt; font-weight:600;">pitch angle</span>
+        <span style="font-size:{fs}pt;"> defines the </span>
+        <span style="font-size:{fs}pt; font-weight:600;">vertical inclination of the camera</span>
+        <span style="font-size:{fs}pt;">, allowing the system to capture different vertical perspectives of a building façade.</span>
+        </p>
+
+        </body>
+        </html>""")
+
         self.pitch_value = QtWidgets.QSpinBox(self.gsv_angle_frame)
         self.pitch_value.setGeometry(QtCore.QRect(int(80 * sf_x), int(40 * sf_y), int(51 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
@@ -171,11 +199,7 @@ class gsv_angle_setting(QtWidgets.QDialog):
         self.save_button_gsv.setText("Save and continue")
         self.gsv_label.setText("GSV image parameters")
         self.pitch_label.setText("Pitch:")
-        self.pitch_descrip.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"justify\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">Vertical camera angle that controls the inclination of the camera, allowing a full view of tall buildings. This angle is limited between </span><span style=\" font-size:10pt; font-weight:600;\">0° and 60°</span><span style=\" font-size:10pt;\">, with </span><span style=\" font-size:10pt; font-weight:600;\">5° as the default value</span><span style=\" font-size:10pt;\">.</span></p></body></html>")
+
         self.heading_label.setText("Heading:")
         self.heading_descrip.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
