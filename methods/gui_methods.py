@@ -57,7 +57,7 @@ class GUIMethods:
         self.aux_ai_check = True
         self.limit_local = True
         self.search_count = False
-        
+        self.sw_angle = None
         """Get screen resolution to adapt to different screen sizes"""
         # Get screen resolution
         screen = QApplication.primaryScreen()
@@ -591,39 +591,144 @@ class GUIMethods:
             pass
 
     def img_angle_left (self):
-        """Open the bounding box selection pop-up window."""
-        app = QApplication.instance()  # Ensure PyQt instance exists
-        if app is None:
-            app = QApplication([])
+        """Open the image angle setting pop-up window."""
+        if self.ui.insp_method == 0 or self.ui.insp_method == 1:
+            try:
+                # Building coordinates
+                location = (float(self.ui.lat_value.text()), float(self.ui.lon_value.text()))
+                # API key is required; without it, access to GSV is not possible
+                with open("methods/gsv_api_key.txt", "r") as f:
+                    api_key = f.read().strip() 
+           
+                app = QApplication.instance()  # Ensure PyQt instance exists
+                if app is None:
+                    app = QApplication([])
+                    
+                # Called function where the user creates a manual bounding box by clicking four points, which is then displayed in the UI frame.
+                gsv_dialog = gsv_angle_setting(parent=self.ui, main_window=self.ui, gui_methods=self)
+                gsv_dialog.exec_()  # Open the pop-up
+                
+                self.pitch_left = gsv_dialog.pitch_value.value()
+                self.heading_left = gsv_dialog.heading_value.value()
+                self.fov_left = gsv_dialog.fov_value.value()
+                        
+                self.img_original_1 = get_street_view_image(location, api_key, self.heading_left, self.pitch_left, self.fov_left)[1]
+                self.sw_angle = 0
+                display_image_rgb = cv2.cvtColor(self.img_original_1, cv2.COLOR_BGR2RGB)
+                h, w, ch = display_image_rgb.shape
+                bytes_per_line = w * 3
+                qimg = QtGui.QImage(display_image_rgb.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
             
-        # Called function where the user creates a manual bounding box by clicking four points, which is then displayed in the UI frame.
-        gsv_dialog = gsv_angle_setting(parent=self.ui, main_window=self.ui, gui_methods=self)
-        gsv_dialog.exec_()  # Open the pop-up
-        
-        self.pitch_lef = gsv_dialog.pitch_value.value()
-        self.heading_lef = gsv_dialog.heading_value.value()
-        self.fov_lef = gsv_dialog.fov_value.value()
-        
-        # Building coordinates
-        location = (float(self.ui.lat_value.text()), float(self.ui.lon_value.text()))
-        # API key is required; without it, access to GSV is not possible
-        with open("methods/gsv_api_key.txt", "r") as f:
-            api_key = f.read().strip() 
+                pixmap = QtGui.QPixmap.fromImage(qimg)
+                img_frames = [self.ui.left_gsv_img,self.ui.central_gsv_img,self.ui.right_gsv_img]
+                img_frames[0].setPixmap(
+                    pixmap.scaled(img_frames[0].width(), img_frames[0].height(),
+                                  QtCore.Qt.IgnoreAspectRatio,
+                                  QtCore.Qt.SmoothTransformation))
+                
+                # Building detector function
+                self.object_detector_building()
+                
+            except:
+                QMessageBox.warning(self.ui, "Image Error",
+                                "No image is currently displayed. Please click *Next Building* to load an image first.")
+        else:
+            QMessageBox.warning(self.ui, "Method Error",
+                                "This option is not available for local images.")
             
-        self.img_original_1 = get_street_view_image(location, api_key, self.heading_lef, self.pitch_lef, self.fov_lef)[1]
-        
-        display_image_rgb = cv2.cvtColor(self.img_original_1, cv2.COLOR_BGR2RGB)
-        h, w, ch = display_image_rgb.shape
-        bytes_per_line = w * 3
-        qimg = QtGui.QImage(display_image_rgb.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
-    
-        pixmap = QtGui.QPixmap.fromImage(qimg)
-        img_frames = [self.ui.left_gsv_img,self.ui.central_gsv_img,self.ui.right_gsv_img]
-        img_frames[0].setPixmap(
-            pixmap.scaled(img_frames[0].width(), img_frames[0].height(),
-                          QtCore.Qt.IgnoreAspectRatio,
-                          QtCore.Qt.SmoothTransformation))
-        
+    def img_angle_central (self):
+        """Open the image angle setting pop-up window."""
+        if self.ui.insp_method == 0 or self.ui.insp_method == 1:
+            try:
+                # Building coordinates
+                location = (float(self.ui.lat_value.text()), float(self.ui.lon_value.text()))
+                # API key is required; without it, access to GSV is not possible
+                with open("methods/gsv_api_key.txt", "r") as f:
+                    api_key = f.read().strip() 
+           
+                app = QApplication.instance()  # Ensure PyQt instance exists
+                if app is None:
+                    app = QApplication([])
+                    
+                # Called function where the user creates a manual bounding box by clicking four points, which is then displayed in the UI frame.
+                gsv_dialog = gsv_angle_setting(parent=self.ui, main_window=self.ui, gui_methods=self)
+                gsv_dialog.exec_()  # Open the pop-up
+                
+                self.pitch_central = gsv_dialog.pitch_value.value()
+                self.heading_central = gsv_dialog.heading_value.value()
+                self.fov_central = gsv_dialog.fov_value.value()
+                        
+                self.img_original_2 = get_street_view_image(location, api_key, self.heading_central, self.pitch_central, self.fov_central)[1]
+                self.sw_angle = 1
+                display_image_rgb = cv2.cvtColor(self.img_original_2, cv2.COLOR_BGR2RGB)
+                h, w, ch = display_image_rgb.shape
+                bytes_per_line = w * 3
+                qimg = QtGui.QImage(display_image_rgb.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+            
+                pixmap = QtGui.QPixmap.fromImage(qimg)
+                img_frames = [self.ui.left_gsv_img,self.ui.central_gsv_img,self.ui.right_gsv_img]
+                img_frames[1].setPixmap(
+                    pixmap.scaled(img_frames[1].width(), img_frames[1].height(),
+                                  QtCore.Qt.IgnoreAspectRatio,
+                                  QtCore.Qt.SmoothTransformation))
+                
+                # Building detector function
+                self.object_detector_building()
+                
+            except:
+                QMessageBox.warning(self.ui, "Image Error",
+                                "No image is currently displayed. Please click *Next Building* to load an image first.")
+        else:
+            QMessageBox.warning(self.ui, "Method Error",
+                                "This option is not available for local images.")
+
+    def img_angle_right (self):
+        """Open the image angle setting pop-up window."""
+        if self.ui.insp_method == 0 or self.ui.insp_method == 1:
+            try:
+                # Building coordinates
+                location = (float(self.ui.lat_value.text()), float(self.ui.lon_value.text()))
+                # API key is required; without it, access to GSV is not possible
+                with open("methods/gsv_api_key.txt", "r") as f:
+                    api_key = f.read().strip() 
+           
+                app = QApplication.instance()  # Ensure PyQt instance exists
+                if app is None:
+                    app = QApplication([])
+                    
+                # Called function where the user creates a manual bounding box by clicking four points, which is then displayed in the UI frame.
+                gsv_dialog = gsv_angle_setting(parent=self.ui, main_window=self.ui, gui_methods=self)
+                gsv_dialog.exec_()  # Open the pop-up
+                
+                self.pitch_right = gsv_dialog.pitch_value.value()
+                self.heading_right = gsv_dialog.heading_value.value()
+                self.fov_right = gsv_dialog.fov_value.value()
+                        
+                self.img_original_3 = get_street_view_image(location, api_key, self.heading_right, self.pitch_right, self.fov_right)[1]
+                self.sw_angle = 2
+                display_image_rgb = cv2.cvtColor(self.img_original_3, cv2.COLOR_BGR2RGB)
+                h, w, ch = display_image_rgb.shape
+                bytes_per_line = w * 3
+                qimg = QtGui.QImage(display_image_rgb.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+            
+                pixmap = QtGui.QPixmap.fromImage(qimg)
+                img_frames = [self.ui.left_gsv_img,self.ui.right_gsv_img,self.ui.right_gsv_img]
+                img_frames[2].setPixmap(
+                    pixmap.scaled(img_frames[2].width(), img_frames[2].height(),
+                                  QtCore.Qt.IgnoreAspectRatio,
+                                  QtCore.Qt.SmoothTransformation))
+                
+                # Building detector function
+                self.object_detector_building()
+                
+            except:
+                QMessageBox.warning(self.ui, "Image Error",
+                                "No image is currently displayed. Please click *Next Building* to load an image first.")
+        else:
+            QMessageBox.warning(self.ui, "Method Error",
+                                "This option is not available for local images.")
+            
+            
     ############ Building detector model ################
     def object_detector_building(self):
         """
@@ -660,10 +765,23 @@ class GUIMethods:
         TARGET_CLASS = 'building-xzyh'
         # Set device GPU or CPU
         device= "cuda" if torch.cuda.is_available() else "cpu"
+        # Clear old image
+        if self.sw_angle == 0:
+            self.ui.left_gsv_img.clear()
+            n_img = 1
+        elif self.sw_angle == 1:
+            self.ui.central_gsv_img.clear()
+            n_img = 1
+        elif self.sw_angle == 2:
+            self.ui.right_gsv_img.clear()
+            n_img = 1
+        else:
+            self.ui.left_gsv_img.clear()
+            self.ui.central_gsv_img.clear()
+            self.ui.right_gsv_img.clear()
+            n_img = 3
+            
         # List of the frame
-        self.ui.left_gsv_img.clear()
-        self.ui.central_gsv_img.clear()
-        self.ui.right_gsv_img.clear()
         img_frames = [self.ui.left_gsv_img,self.ui.central_gsv_img,self.ui.right_gsv_img]
         sw = True
         #Check inspection mode
@@ -675,7 +793,7 @@ class GUIMethods:
                 self.predicted_img = [0,0,0]
                 # Check GSV availability
                 
-                for aux in range (3):
+                for aux in range (n_img):
                     if sw == True:
                         for i in range(100):
                             self.ui.progress_bar_method.setValue(i)
@@ -684,7 +802,20 @@ class GUIMethods:
                         sw = False
             
                     # Ensure the image is in RGB format
-                    image_rgb = org_img[aux]
+                    if self.sw_angle == 0:
+                        image_rgb = self.img_original_1
+                        self.sw_angle = None
+                        aux = 0
+                    elif self.sw_angle == 1:
+                        image_rgb = self.img_original_2
+                        self.sw_angle = None
+                        aux = 1
+                    elif self.sw_angle == 2:
+                        image_rgb = self.img_original_3
+                        self.sw_angle = None
+                        aux = 2
+                    else:
+                        image_rgb = org_img[aux]
             
                     # Run inference
                     results = model.predict(image_rgb, device=device)
@@ -746,6 +877,7 @@ class GUIMethods:
                         pixmap.scaled(img_frames[aux].width(), img_frames[aux].height(),
                                       QtCore.Qt.IgnoreAspectRatio,
                                       QtCore.Qt.SmoothTransformation))
+                    
             # There is not GSV image coverage
             except:
                 self.no_image = "Street View not available" 

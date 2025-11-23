@@ -112,6 +112,8 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # GSV image angle setting
         self.set_angle_1.clicked.connect(self.methods.img_angle_left)
+        self.set_angle_2.clicked.connect(self.methods.img_angle_central)
+        self.set_angle_3.clicked.connect(self.methods.img_angle_right)
         
         # Save the values of the inspections
         self.save_data_button.clicked.connect(self.methods.save_database)
