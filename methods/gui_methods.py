@@ -1039,7 +1039,7 @@ class GUIMethods:
                             <b><u>NO BUILDING DETECTED</u></b><br><br>
                             There is no building detected by the tool. However, if you believe there is a building in the image,<br>
                             <b><u>PLEASE CLICK THE "MANUAL BOX" BUTTON</u></b> and manually select the building.<br>
-                            <b><u>The building detector has a precision of 93%</u></b>; therefore, you may ignore this message <br>
+                            <b><u>The building detector has high precision</u></b>; therefore, you may ignore this message <br>
                             and simply click <b><u>Next Building</u></b> to continue classifying.
                             """
                             
