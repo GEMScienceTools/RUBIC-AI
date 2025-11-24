@@ -192,27 +192,27 @@ def object_detector_building(lat, lon):
     model = YOLO(weight_path)
     # Classes
     class_names = model.names
+    print("Classes: ", class_names)
     TARGET_CLASS = 'building-xzyh'
     # Set device GPU or CPU
     device= "cuda" if torch.cuda.is_available() else "cpu"
     
     
     img_gsv, url_gsv  = fetch_three_step_views(lat, lon)
-    print("enta ------------------+++++++++++++++++++++++++++++")
     # try:
     # Run inference
     results = model.predict(img_gsv, device=device)
-    
     best_box = None
     best_score = 0.0
 
     # for box in results.boxes:
     for box in results[0].boxes:
         cls_id = int(box.cls)
+        print("Class ID: ", cls_id)
         cls_name = class_names[cls_id]
         score = float(box.conf)  # confidence score
     
-        if cls_name == TARGET_CLASS and score > best_score and score > 0.5:
+        if cls_name == TARGET_CLASS and score > best_score and score > 0.1:
             best_score = score
             best_box = box
             
@@ -221,7 +221,6 @@ def object_detector_building(lat, lon):
     # Crop the area within the selected bounding box
     cropped_image = img_gsv[1][y1:y2, x1:x2]
     
-    print("WORKS+++++++++++++++++++++++++++++")
     cv2.imwrite("img_knn.jpg", cropped_image)
     
     return cropped_image
