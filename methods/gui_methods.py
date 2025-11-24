@@ -373,10 +373,6 @@ class GUIMethods:
             
             centroid_file = self.ui.output_folder_value+"/"+self.ui.file_name+".gpkg"
             database_file = self.ui.output_folder_value+"/"+self.ui.file_name+"_building_info.csv"
-            # Check if a database file exists
-            # if os.path.exists(database_file):
-            #     pass
-            # else:
             # Load the GeoPackage
             gdf = gpd.read_file(centroid_file)
             # Filter columns

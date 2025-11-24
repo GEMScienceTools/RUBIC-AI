@@ -44,13 +44,8 @@ def predict_material_img (image_path, insp_method, box_id, self):
     model = models.densenet201(weights=None)  # Initialize model without pre-trained weights
     num_features = model.classifier.in_features
     
-    # # Use the correct number of output classes (9 as indicated in the error)
-    # model.classifier = torch.nn.Sequential(
-    #     torch.nn.Flatten(),
-    #     torch.nn.Linear(num_features, 8),  # Match the number of classes
-    #     torch.nn.LogSoftmax(dim=1)
-    # )
-    
+    # Use the correct number of output classes (9 as indicated in the error)
+
     model = models.densenet201(weights=None)
     num_features = model.classifier.in_features
     model.classifier = torch.nn.Linear(num_features, 8)
@@ -146,13 +141,7 @@ def predict_llrs_img (image_path, insp_method, box_id, self):
     model = models.densenet201(weights=None)  # Initialize model without pre-trained weights
     num_features = model.classifier.in_features
     
-    # # Use the correct number of output classes (9 as indicated in the error)
-    # model.classifier = torch.nn.Sequential(
-    #     torch.nn.Flatten(),
-    #     torch.nn.Linear(num_features, 6),  # Match the number of classes
-    #     torch.nn.LogSoftmax(dim=1)
-    # )
-    
+    # Use the correct number of output classes (9 as indicated in the error)
     model = models.densenet201(weights=None)
     num_features = model.classifier.in_features
     model.classifier = torch.nn.Linear(num_features, 6)
@@ -246,13 +235,7 @@ def predict_code_img (image_path, insp_method, box_id, self):
     model = models.densenet201(weights=None)  # Initialize model without pre-trained weights
     num_features = model.classifier.in_features
     
-    # # Use the correct number of output classes (9 as indicated in the error)
-    # model.classifier = torch.nn.Sequential(
-    #     torch.nn.Flatten(),
-    #     torch.nn.Linear(num_features, 4),  # Match the number of classes
-    #     torch.nn.LogSoftmax(dim=1)
-    # )
-    
+    # Use the correct number of output classes (9 as indicated in the error)
     num_features = model.classifier.in_features  # or model.classifier.in_features if replaced earlier
     model.classifier = torch.nn.Sequential(
         torch.nn.Linear(num_features, 512),
@@ -349,12 +332,6 @@ def predict_n_stories_img (image_path, insp_method, box_id, self):
     num_features = model.classifier.in_features
     
     # Use the correct number of output classes (9 as indicated in the error)
-    # model.classifier = torch.nn.Sequential(
-    #     torch.nn.Flatten(),
-    #     torch.nn.Linear(num_features, 9),  # Match the number of classes
-    #     torch.nn.LogSoftmax(dim=1)
-    # )
-    
     model = models.densenet201(weights=None)
     num_features = model.classifier.in_features
     model.classifier = torch.nn.Linear(num_features, 9)
@@ -447,25 +424,13 @@ def predict_occupancy_img (image_path, insp_method, box_id, self):
     num_features = model.classifier.in_features
     
     # Use the correct number of output classes (9 as indicated in the error)
-    # model.classifier = torch.nn.Sequential(
-    #     torch.nn.Flatten(),
-    #     torch.nn.Linear(num_features, 7),  # Match the number of classes
-    #     torch.nn.LogSoftmax(dim=1)
-    # )
-    
-    # model = models.densenet201(weights=None)
-    # num_features = model.classifier.in_features
-    # model.classifier = torch.nn.Linear(num_features, 4)
-    
     num_features = model.classifier.in_features  # or model.classifier.in_features if replaced earlier
     model.classifier = torch.nn.Sequential(
         torch.nn.Linear(num_features, 512),
         torch.nn.ReLU(),
         torch.nn.Dropout(0.4),
-        torch.nn.Linear(512, 4)
-    )
+        torch.nn.Linear(512, 4))
 
-    
     # Load the trained weights
     model.load_state_dict(torch.load("dl_weights/densenet201_occupancy.pt", map_location=device))
     model.to(device)
@@ -554,13 +519,7 @@ def predict_block_position_img (image_path, insp_method, box_id, self):
     model = models.densenet201(weights=None)  # Initialize model without pre-trained weights
     num_features = model.classifier.in_features
     
-    # # Use the correct number of output classes (9 as indicated in the error)
-    # model.classifier = torch.nn.Sequential(
-    #     torch.nn.Flatten(),
-    #     torch.nn.Linear(num_features, 3),  # Match the number of classes
-    #     torch.nn.LogSoftmax(dim=1)
-    # )
-    
+    # Use the correct number of output classes (9 as indicated in the error)
     num_features = model.classifier.in_features  # or model.classifier.in_features if replaced earlier
     model.classifier = torch.nn.Sequential(
         torch.nn.Linear(num_features, 512),
@@ -656,13 +615,7 @@ def predict_roof_shape_img (image_path, insp_method, box_id, self):
     model = models.densenet201(weights=None)  # Initialize model without pre-trained weights
     num_features = model.classifier.in_features
     
-    # # Use the correct number of output classes (9 as indicated in the error)
-    # model.classifier = torch.nn.Sequential(
-    #     torch.nn.Flatten(),
-    #     torch.nn.Linear(num_features, 3),  # Match the number of classes
-    #     torch.nn.LogSoftmax(dim=1)
-    # )
-    
+    # Use the correct number of output classes (9 as indicated in the error)
     num_features = model.classifier.in_features  # or model.classifier.in_features if replaced earlier
     model.classifier = torch.nn.Sequential(
         torch.nn.Linear(num_features, 512),
@@ -759,13 +712,7 @@ def predict_roof_material_img (image_path, insp_method, box_id, self):
     model = models.densenet201(weights=None)  # Initialize model without pre-trained weights
     num_features = model.classifier.in_features
     
-    # # Use the correct number of output classes (9 as indicated in the error)
-    # model.classifier = torch.nn.Sequential(
-    #     torch.nn.Flatten(),
-    #     torch.nn.Linear(num_features, 3),  # Match the number of classes
-    #     torch.nn.LogSoftmax(dim=1)
-    # )
-    
+    # Use the correct number of output classes (9 as indicated in the error) 
     num_features = model.classifier.in_features  # or model.classifier.in_features if replaced earlier
     model.classifier = torch.nn.Sequential(
         torch.nn.Linear(num_features, 512),
