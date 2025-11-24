@@ -536,15 +536,14 @@ class stratified_extrapolation(QtWidgets.QDialog):
                 if self.extrap_mode_new.currentData() == 0:
                     self.stratified_mode = 0
                     # self.stratified_dl()
-                    self.accept()
+                    # self.accept()
+                    QtWidgets.QMessageBox.warning(self, "Input Error", "Please select manual mode method")
                 else:
                     self.stratified_mode = 1
                     # self.stratified_manually()
                     self.accept()
             elif self.existing_check.isChecked():
                 QtWidgets.QMessageBox.warning(self, "Feature Unavailable", "This mode is not available at the moment. Please select a different option.")
-
-
                 
     def preview_data(self, database):
         if hasattr(self, 'df') and not self.df.empty:

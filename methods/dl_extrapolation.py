@@ -190,44 +190,54 @@ def object_detector_building(lat, lon):
     # Class mapping (update this with your actual mappings)
     weight_path = dl_dir / "building_detector.pt" # Replace with your YOLO .pt file
     model = YOLO(weight_path)
-    # Classes
-    class_names = model.names
-    print("Classes: ", class_names)
     TARGET_CLASS = 'building-xzyh'
+    CONF_THRESHOLD = 0.5
     # Set device GPU or CPU
     device= "cuda" if torch.cuda.is_available() else "cpu"
-    
-    
+
+
     img_gsv, url_gsv  = fetch_three_step_views(lat, lon)
+    cv2.imwrite("img_knn.jpg", img_gsv)
     # try:
     # Run inference
-    results = model.predict(img_gsv, device=device)
-    best_box = None
-    best_score = 0.0
+    results = model.predict(img_gsv, device=device)[0]
 
-    # for box in results.boxes:
-    for box in results[0].boxes:
-        cls_id = int(box.cls)
-        print("Class ID: ", cls_id)
-        cls_name = class_names[cls_id]
-        score = float(box.conf)  # confidence score
-    
-        if cls_name == TARGET_CLASS and score > best_score and score > 0.1:
-            best_score = score
-            best_box = box
-            
-    # Bounding box coordinates
-    x1, y1, x2, y2 = map(int, best_box.xyxy[0])
-    # Crop the area within the selected bounding box
-    cropped_image = img_gsv[1][y1:y2, x1:x2]
-    
-    cv2.imwrite("img_knn.jpg", cropped_image)
-    
+    h, w, _ = img_gsv.shape
+
+    # Get class names
+    class_names = model.names
+
+    best_box = None
+    best_conf = 0
+
+    # Loop through detected boxes
+    if results.boxes is not None:
+        for box in results.boxes:
+
+            cls_id = int(box.cls[0])
+            label = class_names[cls_id]
+            conf = float(box.conf[0])
+
+            if label == TARGET_CLASS and conf > CONF_THRESHOLD:
+                if conf > best_conf:
+                    best_conf = conf
+                    best_box = box.xyxy[0].cpu().numpy().astype(int)
+
+    if best_box is None:
+        print(f"❌ No '{TARGET_CLASS}' detected in image.")
+        return
+
+    x1, y1, x2, y2 = best_box
+
+    # ✅ Ensure values inside image
+    x1 = max(0, x1)
+    y1 = max(0, y1)
+    x2 = min(w, x2)
+    y2 = min(h, y2)
+
+    # ✅ Crop image
+    cropped_image = img_gsv[y1:y2, x1:x2]
     return cropped_image
-    # There is not GSV image coverage
-    # except:
-    #     pass
-    
 
     
 ############ Get city name using coordinates ################
@@ -568,7 +578,6 @@ def inspection_database (data_ai):
         data_ai.iloc[i, 2] = footprint_data.loc[i , "longitude"] 
         
         image_file = object_detector_building(float(footprint_data.loc[i,"latitude"]) , float(footprint_data.loc[i,"longitude"]))
-        print("IMG FILE: ", image_file)
         if image_file is None:
             pass
         else:

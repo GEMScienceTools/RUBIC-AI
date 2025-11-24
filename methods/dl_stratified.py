@@ -120,20 +120,21 @@ def iterative_label_discovery_cached_fractional(
     # Shuffle the dataset for randomized sampling
     np.random.seed(random_state)
     shuffled_data = data.sample(frac=1, random_state=random_state).reset_index(drop=True)
-
+    
     # === Iterative sampling loop ===
     while iteration < max_iterations:
+        print("LIST: ", max_iterations)
         # Calculate current target sample size
         current_fraction = min(initial_fraction + step_fraction * iteration, max_fraction)
         target_size = min(int(population_size * current_fraction), population_size)
-
+        print("entra++++++++")
         # Filter out already labeled IDs and select next batch
         already_labeled_ids = set(all_labeled[id_column])
         next_sample = shuffled_data[~shuffled_data[id_column].isin(already_labeled_ids)].head(target_size - len(all_labeled))
-
+        print("SAMPLE: ", next_sample)
         if next_sample.empty:
             break  # Stop if no more samples to process
-
+        print("entra**************")
         # Apply labeling function to new samples
         next_sample[id_feature] = next_sample[id_column].apply(labeling_function)
         all_labeled = pd.concat([all_labeled, next_sample], ignore_index=True)
@@ -222,7 +223,7 @@ def safe_get_gsv_image(location, api_key, heading=0):
     or None if GSV is unavailable / request fails.
     """
     try:
-        result = get_street_view_image(location, api_key, heading)
+        url , result, year = get_street_view_image(location, api_key, heading, 5, 120)
         # result can be (url, ndarray) or just ndarray depending on your impl
         if isinstance(result, tuple):
             img = result[1]

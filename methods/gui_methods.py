@@ -753,7 +753,7 @@ class GUIMethods:
         """
 
         # Class mapping (update this with your actual mappings)
-        weight_path = "methods/building_detector.pt" # Replace with your YOLO .pt file
+        weight_path = "dl_weights/building_detector.pt" # Replace with your YOLO .pt file
         # Load the YOLO model
         model = YOLO(weight_path)
         # Classes
