@@ -81,14 +81,65 @@ class ExtrapolationOptions(QtWidgets.QDialog):
         self.knn_descrip = QtWidgets.QTextBrowser(self.method_frame)
         self.knn_descrip.setGeometry(QtCore.QRect(int(30 * sf_x), int(80 * sf_y), int(981 * sf_x), int(301 * sf_y)))
         self.knn_descrip.setObjectName("knn_descrip")
-        self.knn_descrip.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">This method considers the distance to the </span><span style=\" font-size:10pt; font-weight:600;\">K nearest neighbors</span><span style=\" font-size:10pt;\"> and uses </span><span style=\" font-size:10pt; font-weight:600;\">soft voting</span><span style=\" font-size:10pt;\">, meaning that closer neighbors carry more weight in determining the final class. It is based on the assumption that nearby buildings are more likely to share similar characteristics and applies </span><span style=\" font-size:10pt; font-weight:600;\">inverse kernel weighting</span><span style=\" font-size:10pt;\"> to reflect this relationship.</span></p>\n"
-"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">The process begins with an </span><span style=\" font-size:10pt; font-weight:600;\">initial sample representing 10% of the population</span><span style=\" font-size:10pt;\">. Building information can be provided either by uploading a CSV file or by using the built-in </span><span style=\" font-size:10pt; font-weight:600;\">deep learning model</span><span style=\" font-size:10pt;\"> integrated into the tool.</span></p>\n"
-"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt; font-weight:600;\">Convergence</span><span style=\" font-size:10pt;\"> is evaluated based on the stability of the variable of interest—in this case, </span><span style=\" font-size:10pt; font-weight:600;\">building taxonomies</span><span style=\" font-size:10pt;\">. If the distribution of taxonomies changes by no more than </span><span style=\" font-size:10pt; font-weight:600;\">5%</span><span style=\" font-size:10pt;\"> in the subsequent iteration, convergence is assumed. Otherwise, the sample size is incrementally increased by </span><span style=\" font-size:10pt; font-weight:600;\">5%</span><span style=\" font-size:10pt;\"> in each iteration (e.g., 1st iteration = 10%, 2nd iteration = 15%, and so on) until convergence is reached.</span></p>\n"
-"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">Once convergence is achieved, the </span><span style=\" font-size:10pt; font-weight:600;\">sampling stage is complete</span><span style=\" font-size:10pt;\">, and the </span><span style=\" font-size:10pt; font-weight:600;\">extrapolation process</span><span style=\" font-size:10pt;\"> begins. At this stage, the tool analyzes the buildings of interest, calculates the </span><span style=\" font-size:10pt; font-weight:600;\">geodesic distance</span><span style=\" font-size:10pt;\"> to all available sampled buildings, and selects the 10 closest ones to estimate a </span><span style=\" font-size:10pt; font-weight:600;\">probabilistic distribution of likely taxonomies</span><span style=\" font-size:10pt;\">.</span></p></body></html>")
+        
+        fs = int(10 * sf_font)
+        
+        self.knn_descrip.setHtml(f"""
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="qrichtext" content="1" />
+<style>
+p, li {{ white-space: pre-wrap; }}
+</style>
+</head>
+<body style="font-family:'MS Shell Dlg 2'; font-size:{fs}pt; font-weight:400; font-style:normal;">
+
+<p align="justify" style="margin-top:6px; margin-bottom:6px; text-indent:0px;">
+<span style="font-size:{fs}pt;">This method considers the distance to the </span>
+<span style="font-size:{fs}pt; font-weight:600;">K nearest neighbors</span>
+<span style="font-size:{fs}pt;"> and uses </span>
+<span style="font-size:{fs}pt; font-weight:600;">soft voting</span>
+<span style="font-size:{fs}pt;">, meaning that closer neighbors carry more weight in determining the final class. It is based on the assumption that nearby buildings are more likely to share similar characteristics and applies </span>
+<span style="font-size:{fs}pt; font-weight:600;">inverse kernel weighting</span>
+<span style="font-size:{fs}pt;"> to reflect this relationship.</span>
+</p>
+
+<p align="justify" style="margin-top:6px; margin-bottom:6px; text-indent:0px;">
+<span style="font-size:{fs}pt;">The process begins with an </span>
+<span style="font-size:{fs}pt; font-weight:600;">initial sample representing 10% of the population</span>
+<span style="font-size:{fs}pt;">. Building information can be provided either by uploading a CSV file or by using the built-in </span>
+<span style="font-size:{fs}pt; font-weight:600;">deep learning model</span>
+<span style="font-size:{fs}pt;"> integrated into the tool.</span>
+</p>
+
+<p align="justify" style="margin-top:6px; margin-bottom:6px; text-indent:0px;">
+<span style="font-size:{fs}pt; font-weight:600;">Convergence</span>
+<span style="font-size:{fs}pt;"> is evaluated based on the stability of the variable of interest—in this case, </span>
+<span style="font-size:{fs}pt; font-weight:600;">building taxonomies</span>
+<span style="font-size:{fs}pt;">. If the distribution of taxonomies changes by no more than </span>
+<span style="font-size:{fs}pt; font-weight:600;">5%</span>
+<span style="font-size:{fs}pt;"> in the subsequent iteration, convergence is assumed. Otherwise, the sample size is incrementally increased by </span>
+<span style="font-size:{fs}pt; font-weight:600;">5%</span>
+<span style="font-size:{fs}pt;"> in each iteration (e.g., 1st iteration = 10%, 2nd iteration = 15%, and so on) until convergence is reached.</span>
+</p>
+
+<p align="justify" style="margin-top:6px; margin-bottom:0px; text-indent:0px;">
+<span style="font-size:{fs}pt;">Once convergence is achieved, the </span>
+<span style="font-size:{fs}pt; font-weight:600;">sampling stage is complete</span>
+<span style="font-size:{fs}pt;">, and the </span>
+<span style="font-size:{fs}pt; font-weight:600;">extrapolation process</span>
+<span style="font-size:{fs}pt;"> begins. At this stage, the tool analyzes the buildings of interest, calculates the </span>
+<span style="font-size:{fs}pt; font-weight:600;">geodesic distance</span>
+<span style="font-size:{fs}pt;"> to all available sampled buildings, and selects the 10 closest ones to estimate a </span>
+<span style="font-size:{fs}pt; font-weight:600;">probabilistic distribution of likely taxonomies</span>
+<span style="font-size:{fs}pt;">.</span>
+</p>
+
+</body>
+</html>
+""")
+
         self.backg_2 = QtWidgets.QLabel(self.method_frame)
         self.backg_2.setGeometry(QtCore.QRect(int(10 * sf_x), int(420 * sf_y), int(1011 * sf_x), int(371 * sf_y)))
         self.backg_2.setStyleSheet("background-color: rgb(215, 213, 255);")
@@ -99,17 +150,67 @@ class ExtrapolationOptions(QtWidgets.QDialog):
         self.stratified_check.setText("Stratified Sampling")
 
         self.stratified_descrip = QtWidgets.QTextBrowser(self.method_frame)
-        self.stratified_descrip.setGeometry(QtCore.QRect(int(30 * sf_x), int(460 * sf_y), int(981 * sf_x), int(321 * sf_y)))
+        self.stratified_descrip.setGeometry(QtCore.QRect(int(30 * sf_x), int(455 * sf_y), int(981 * sf_x), int(325 * sf_y)))
         self.stratified_descrip.setObjectName("stratified_descrip")
-        self.stratified_descrip.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">This method uses a </span><span style=\" font-size:10pt; font-weight:600;\">stratified sampling process based on Scheaffer et al. (1986)</span><span style=\" font-size:10pt;\">, aimed at estimating the distribution of building taxonomy classes. It begins by calculating a </span><span style=\" font-size:10pt; font-weight:600;\">pilot sample size</span><span style=\" font-size:10pt;\"> using a conservative formula that assumes maximum uncertainty in class proportions. Based on this pilot sample, the method estimates class proportions.</span></p>\n"
-"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">The process adheres to the principles of stratified sampling, ensuring that each class (or stratum) is proportionally represented according to its estimated frequency and variance. Users can iteratively upload </span><span style=\" font-size:10pt; font-weight:600;\">new</span><span style=\" font-size:10pt;\"> </span><span style=\" font-size:10pt; font-weight:600;\">CSV files (manually)</span><span style=\" font-size:10pt;\"> or use the built-in </span><span style=\" font-size:10pt; font-weight:600;\">deep learning model</span><span style=\" font-size:10pt;\"> to classify images and expand the sample—</span><span style=\" font-size:10pt; font-weight:600;\">increasing by a step value provided by the user (5% by default) of the population per iteration</span><span style=\" font-size:10pt;\">.</span></p>\n"
-"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">After each iteration, the method checks whether the estimated class proportions have </span><span style=\" font-size:10pt; font-weight:600;\">converged</span><span style=\" font-size:10pt;\">, meaning they remain stable across samples. If convergence is achieved, the process stops; otherwise, sampling continues, ensuring both </span><span style=\" font-size:10pt; font-weight:600;\">statistical robustness</span><span style=\" font-size:10pt;\"> and </span><span style=\" font-size:10pt; font-weight:600;\">data efficiency</span><span style=\" font-size:10pt;\">.</span></p>\n"
-"<p align=\"justify\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">Once convergence is reached, the </span><span style=\" font-size:10pt; font-weight:600;\">assignment process</span><span style=\" font-size:10pt;\"> begins. This step uses a </span><span style=\" font-size:10pt; font-weight:600;\">hierarchical fallback strategy</span><span style=\" font-size:10pt;\"> that depends on the availability of information. The method prioritizes the use of </span><span style=\" font-size:10pt; font-weight:600;\">specific local data</span><span style=\" font-size:10pt;\"> where available, and progressively falls back to </span><span style=\" font-size:10pt; font-weight:600;\">more general or global information</span><span style=\" font-size:10pt;\"> when needed, ensuring the most accurate classification possible based on the data at hand.</span></p></body></html>")
         
+        fs = int(10 * sf_font)
+        
+        self.stratified_descrip.setHtml(f"""
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<meta name="qrichtext" content="1" />
+<style>
+p, li {{ white-space: pre-wrap; }}
+</style>
+</head>
+
+<body style="font-family:'MS Shell Dlg 2'; font-size:{fs}pt; font-weight:400; font-style:normal;">
+
+<p align="justify" style="margin-top:6px; margin-bottom:6px; text-indent:0px;">
+<span style="font-size:{fs}pt;">This method uses a </span>
+<span style="font-size:{fs}pt; font-weight:600;">stratified sampling process based on Scheaffer et al. (1986)</span>
+<span style="font-size:{fs}pt;">, aimed at estimating the distribution of building taxonomy classes. It begins by calculating a </span>
+<span style="font-size:{fs}pt; font-weight:600;">pilot sample size</span>
+<span style="font-size:{fs}pt;"> using a conservative formula that assumes maximum uncertainty in class proportions. Based on this pilot sample, the method estimates class proportions.</span>
+</p>
+
+<p align="justify" style="margin-top:6px; margin-bottom:6px; text-indent:0px;">
+<span style="font-size:{fs}pt;">The process adheres to the principles of stratified sampling, ensuring that each class (or stratum) is proportionally represented according to its estimated frequency and variance. Users can iteratively upload </span>
+<span style="font-size:{fs}pt; font-weight:600;">new CSV files (manually)</span>
+<span style="font-size:{fs}pt;"> or use the built-in </span>
+<span style="font-size:{fs}pt; font-weight:600;">deep learning model</span>
+<span style="font-size:{fs}pt;"> to classify images and expand the sample—</span>
+<span style="font-size:{fs}pt; font-weight:600;">increasing by a step value provided by the user (5% by default) of the population per iteration</span>
+<span style="font-size:{fs}pt;">.</span>
+</p>
+
+<p align="justify" style="margin-top:6px; margin-bottom:6px; text-indent:0px;">
+<span style="font-size:{fs}pt;">After each iteration, the method checks whether the estimated class proportions have </span>
+<span style="font-size:{fs}pt; font-weight:600;">converged</span>
+<span style="font-size:{fs}pt;">, meaning they remain stable across samples. If convergence is achieved, the process stops; otherwise, sampling continues, ensuring both </span>
+<span style="font-size:{fs}pt; font-weight:600;">statistical robustness</span>
+<span style="font-size:{fs}pt;"> and </span>
+<span style="font-size:{fs}pt; font-weight:600;">data efficiency</span>
+<span style="font-size:{fs}pt;">.</span>
+</p>
+
+<p align="justify" style="margin-top:6px; margin-bottom:0px; text-indent:0px;">
+<span style="font-size:{fs}pt;">Once convergence is reached, the </span>
+<span style="font-size:{fs}pt; font-weight:600;">assignment process</span>
+<span style="font-size:{fs}pt;"> begins. This step uses a </span>
+<span style="font-size:{fs}pt; font-weight:600;">hierarchical fallback strategy</span>
+<span style="font-size:{fs}pt;"> that depends on the availability of information. The method prioritizes the use of </span>
+<span style="font-size:{fs}pt; font-weight:600;">specific local data</span>
+<span style="font-size:{fs}pt;"> where available, and progressively falls back to </span>
+<span style="font-size:{fs}pt; font-weight:600;">more general or global information</span>
+<span style="font-size:{fs}pt;"> when needed, ensuring the most accurate classification possible based on the data at hand.</span>
+</p>
+
+</body>
+</html>
+""")
+
         self.load_button = QtWidgets.QPushButton(self.method_frame)
         self.load_button.setGeometry(QtCore.QRect(int(300 * sf_x), int(800 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         self.load_button.setFont(label_font)
