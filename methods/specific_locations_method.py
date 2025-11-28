@@ -231,8 +231,9 @@ class SpecificLocationSetting(QtWidgets.QDialog):
             # Save the GeoDataFrame to a file, if needed (e.g., to GeoPackage or Shapefile)
             gdf.to_file(output_gpkg, driver='GPKG')  # This saves as GeoPackage
         except:
-            QMessageBox.warning(self, "Error input", "Please complete the input information")
-        
+            QMessageBox.warning(self, "Input Error",
+                    "Some required inputs are missing or invalid. Please review all fields and check the coordinates file for inconsistencies.")
+
         
     def building_sample(self):
         try:

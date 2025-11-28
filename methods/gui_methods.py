@@ -249,51 +249,54 @@ class GUIMethods:
         
         if self.click_count >= 0:
             if self.ui.insp_method == 2:
-
-                if self.data_old_local == True:
-                    self.cont_local = self.n_insp
-                    self.data_old_local = False
-                
-                self.cont_local = int(self.index_id[self.click_count])
-                if 'latitude' in self.ui.data_method.columns:
-                    lat = float(self.ui.data_method.loc[self.cont_local, 'latitude'])
-                else:
-                    raise ValueError("The 'latitude' column is missing from the data.")
+                try:
+                    if self.data_old_local == True:
+                        self.cont_local = self.n_insp
+                        self.data_old_local = False
                     
-                if 'longitude' in self.ui.data_method.columns:
-                    lon = float(self.ui.data_method.loc[self.cont_local, 'longitude'])
-                else:
-                    raise ValueError("The 'latitude' column is missing from the data.")
+                    self.cont_local = int(self.index_id[self.click_count])
+                    if 'latitude' in self.ui.data_method.columns:
+                        lat = float(self.ui.data_method.loc[self.cont_local, 'latitude'])
+                    else:
+                        raise ValueError("The 'latitude' column is missing from the data.")
+                        
+                    if 'longitude' in self.ui.data_method.columns:
+                        lon = float(self.ui.data_method.loc[self.cont_local, 'longitude'])
+                    else:
+                        raise ValueError("The 'latitude' column is missing from the data.")
+                    
+                    self.ui.lat_value.setText(str(round(lat,8)))
+                    self.ui.lon_value.setText(str(round(lon,8)))
+                    
+                    df = self.ui.data_method
+                    matching_rows = df[(df['latitude'] == lat) & (df['longitude'] == lon)]
                 
-                self.ui.lat_value.setText(str(round(lat,8)))
-                self.ui.lon_value.setText(str(round(lon,8)))
-                
-                df = self.ui.data_method
-                matching_rows = df[(df['latitude'] == lat) & (df['longitude'] == lon)]
-            
-                self.n_images_local = len(matching_rows)
-                self.old_local = self.cont_local
-                self.cont_local = self.cont_local + self.n_images_local
-
-                try:    
-                    geolocator = Nominatim(user_agent="city_name_locator")
-                    location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
-                    if location and 'address' in location.raw:
-                        address = location.raw['address']
-                        self.city = (address.get("city") or address.get("town") or address.get("village")
-                            or address.get("municipality") or address.get("county") or address.get("state_district")
-                            or "Unknown")
-                        self.country = address.get('country', 'Unknown')
-                        self.city_name_manual = self.city+"_"+self.country
-                        self.ui.city_value.setText(self.city) 
-                        self.ui.country_value.setText(self.country) 
-                        return (self.city , self.country)
+                    self.n_images_local = len(matching_rows)
+                    self.old_local = self.cont_local
+                    self.cont_local = self.cont_local + self.n_images_local
+    
+                    try:    
+                        geolocator = Nominatim(user_agent="city_name_locator")
+                        location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
+                        if location and 'address' in location.raw:
+                            address = location.raw['address']
+                            self.city = (address.get("city") or address.get("town") or address.get("village")
+                                or address.get("municipality") or address.get("county") or address.get("state_district")
+                                or "Unknown")
+                            self.country = address.get('country', 'Unknown')
+                            self.city_name_manual = self.city+"_"+self.country
+                            self.ui.city_value.setText(self.city) 
+                            self.ui.country_value.setText(self.country) 
+                            return (self.city , self.country)
+                    except:
+                        QMessageBox.warning(self.ui, "OSM Error", "The city and country could not be retrieved. Please try again.")
+                        self.city = "Unknown"
+                        self.country = "Unknown"
+                        return self.city , self.country
                 except:
-                    QMessageBox.warning(self.ui, "OSM Error", "The city and country could not be retrieved. Please try again.")
-                    self.city = "Unknown"
-                    self.country = "Unknown"
-                    return self.city , self.country
-                 
+                     QMessageBox.warning(self.ui, "Input Error",
+                             "Some required inputs are missing or invalid. Please review all fields and check the coordinates file for inconsistencies.")
+          
             elif self.ui.insp_method == 0 or self.ui.insp_method == 1:                
                 self.ui.lat_value.setText(str(round(self.data_building.loc[self.click_count, 'latitude'], 8)))
                 self.ui.lon_value.setText(str(round(self.data_building.loc[self.click_count, 'longitude'], 8)))
@@ -824,7 +827,6 @@ class GUIMethods:
                         cls_id = int(box.cls)
                         cls_name = class_names[cls_id]
                         score = float(box.conf)  # confidence score
-                    
                         if cls_name == TARGET_CLASS and score > best_score and score > 0.5:
                             best_score = score
                             best_box = box
@@ -888,7 +890,6 @@ class GUIMethods:
         
         # Checking Inspection method (manual option)
         elif self.ui.insp_method == 2:
-                      
             # Image frames
             img_frames = [self.ui.left_gsv_img, self.ui.central_gsv_img, self.ui.right_gsv_img]
             # Loop for the number of image displayed selected with the option in the coordinates pop-up
@@ -1049,9 +1050,7 @@ class GUIMethods:
                             img_frames[aux].setText(self.no_image)
                             img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)
                             img_frames[aux].setWordWrap(True)  # Wrap long text
-                        
-                        
-                        
+                                        
         # Chance progress bar to complete
         self.ui.progress_bar_method.setValue(100)
         self.ui.method_progress.setText("Done!")
@@ -1434,7 +1433,6 @@ class GUIMethods:
                                                                     
                     # Taxonomy
                     self.tax_check(self.data_ai.iloc[self.click_count , 15])
-
                 except:
                     pass
                 
@@ -1817,7 +1815,7 @@ class GUIMethods:
                     self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
                 else:
                     self.setComboBoxByData(self.ui.img_q_cb_1 , self.data_ai.iloc[self.old_local , 14])
-                    
+
         
     ############ Deep learning model for predict the LLRS Material ################
     def material_prediction (self):
@@ -2802,6 +2800,8 @@ class GUIMethods:
                         )
                         sample_size_def.append(len(final_sample))
                         final_sample.to_csv(f"{self.ui.folder_path_new}/stratified_dl_{aux}.csv", index=False)
+                        dist_por = pd.DataFrame(list(class_dist.items()), columns=['Class', 'Proportion'])
+                        dist_por.to_csv(f"{self.ui.folder_path_new}/stratified_dl_dist_{aux}.csv", index=False)
                         print("")
                         
                     print("Sample size definitive: ", np.max(sample_size_def))
@@ -2824,7 +2824,8 @@ class GUIMethods:
                             max_iterations = self.ui.max_iterations,
                             stability_threshold = self.ui.stability_threshold
                         )
-                        
+                        dist_por = pd.DataFrame(list(class_dist.items()), columns=['Class', 'Proportion'])
+                        dist_por.to_csv(f"{self.ui.folder_path_new}/stratified_dist_{feature}.csv", index=False)
                         final_sample.to_csv(f"{self.ui.folder_path_new}/stratified_{feature}.csv", index=False)
                         print("")
         

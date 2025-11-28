@@ -51,9 +51,9 @@ class stratified_extrapolation(QtWidgets.QDialog):
         sf_y = sf_factor
         # Scale the GUI based on resolution
         sf_font = sf_factor * scale_dpi
-
+        self.sf_font = sf_font
         self.setObjectName("DataSetting")
-        self.resize(int(1210 * sf_x), int(750 * sf_y))
+        self.resize(int(640 * sf_x), int(680 * sf_y))
         self.setWindowTitle("Setting input files")
         
         # === UI Elements Start ===
@@ -64,7 +64,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         
         # Title Label
         self.w_title = QtWidgets.QLabel(self.data_frame)
-        self.w_title.setGeometry(QtCore.QRect(int(510 * sf_x), int(0 * sf_y), int(191 * sf_x), int(41 * sf_y)))
+        self.w_title.setGeometry(QtCore.QRect(int(220 * sf_x), int(0 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(12 * sf_font))
         font.setBold(True)
@@ -74,7 +74,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         
         # Save Button
         self.save_button = QtWidgets.QPushButton(self.data_frame)
-        self.save_button.setGeometry(QtCore.QRect(int(510 * sf_x), int(690 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.save_button.setGeometry(QtCore.QRect(int(210 * sf_x), int(620 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -83,116 +83,16 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.save_button.setObjectName("save_button")
         self.save_button.clicked.connect(self.select_method)
         
-        # Background Label
-        self.backg_1 = QtWidgets.QLabel(self.data_frame)
-        self.backg_1.setGeometry(QtCore.QRect(int(10 * sf_x), int(39 * sf_y), int(591 * sf_x), int(421 * sf_y)))
-        self.backg_1.setStyleSheet("background-color: rgb(209, 255, 165);")
-        self.backg_1.setText("")
-        self.backg_1.setObjectName("backg_1")
-        
-        # Population Button
-        self.population_button = QtWidgets.QPushButton(self.data_frame)
-        self.population_button.setGeometry(QtCore.QRect(int(30 * sf_x), int(415 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        font.setBold(False)
-        font.setWeight(50)
-        self.population_button.setFont(font)
-        self.population_button.setObjectName("population_button")
-        
-        # Population Data Path Label
-        self.population_data_path = QtWidgets.QLabel(self.data_frame)
-        self.population_data_path.setGeometry(QtCore.QRect(int(280 * sf_x), int(420 * sf_y), int(291 * sf_x), int(21 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        self.population_data_path.setFont(font)
-        self.population_data_path.setObjectName("population_data_path")
-        
-        # Output Label for Existing
-        self.output_label_existing = QtWidgets.QLabel(self.data_frame)
-        self.output_label_existing.setGeometry(QtCore.QRect(int(30 * sf_x), int(90 * sf_y), int(121 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        font.setBold(True)
-        font.setWeight(75)
-        self.output_label_existing.setFont(font)
-        self.output_label_existing.setObjectName("output_label_existing")
-        
-        # Output Value LineEdit for Existing
-        self.output_existing_value = QtWidgets.QLineEdit(self.data_frame)
-        self.output_existing_value.setGeometry(QtCore.QRect(int(170 * sf_x), int(90 * sf_y), int(331 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        self.output_existing_value.setFont(font)
-        self.output_existing_value.setObjectName("output_existing_value")
-        
-        # Distribution Button
-        self.distribution_button = QtWidgets.QPushButton(self.data_frame)
-        self.distribution_button.setGeometry(QtCore.QRect(int(30 * sf_x), int(260 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        font.setBold(False)
-        font.setWeight(50)
-        self.distribution_button.setFont(font)
-        self.distribution_button.setObjectName("distribution_button")
-        
-        # Checkbox for Existing
-        self.existing_check = QtWidgets.QCheckBox(self.data_frame)
-        self.existing_check.setGeometry(QtCore.QRect(int(30 * sf_x), int(50 * sf_y), int(261 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        font.setBold(True)
-        font.setWeight(75)
-        self.existing_check.setFont(font)
-        self.existing_check.setObjectName("existing_check")
-
-        
-        # Distribution Path Label
-        self.distrib_path = QtWidgets.QLabel(self.data_frame)
-        self.distrib_path.setGeometry(QtCore.QRect(int(280 * sf_x), int(265 * sf_y), int(151 * sf_x), int(21 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        self.distrib_path.setFont(font)
-        self.distrib_path.setObjectName("distrib_path")
-        
-        # Output Path Button (existing)
-        self.output_path_button = QtWidgets.QPushButton(self.data_frame)
-        self.output_path_button.setGeometry(QtCore.QRect(int(30 * sf_x), int(135 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        font.setBold(False)
-        font.setWeight(50)
-        self.output_path_button.setFont(font)
-        self.output_path_button.setObjectName("output_path_button")
-        
-        # Saved Path (existing)
-        self.saved_path_existing = QtWidgets.QLabel(self.data_frame)
-        self.saved_path_existing.setGeometry(QtCore.QRect(int(280 * sf_x), int(140 * sf_y), int(291 * sf_x), int(21 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        self.saved_path_existing.setFont(font)
-        self.saved_path_existing.setObjectName("saved_path_existing")
-        
         # Table Widget
         self.tableWidget = QtWidgets.QTableWidget(self.data_frame)
-        self.tableWidget.setGeometry(QtCore.QRect(int(10 * sf_x), int(470 * sf_y), int(1170 * sf_x), int(211 * sf_y)))
+        self.tableWidget.setGeometry(QtCore.QRect(int(10 * sf_x), int(400 * sf_y), int(590 * sf_x), int(211 * sf_y)))
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
-        
-        # Checkbox - New
-        self.new_check = QtWidgets.QCheckBox(self.data_frame)
-        self.new_check.setGeometry(QtCore.QRect(int(640 * sf_x), int(45 * sf_y), int(301 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        font.setBold(True)
-        font.setWeight(75)
-        self.new_check.setFont(font)
-        self.new_check.setObjectName("new_check")
 
         # Output Label - New
         self.output_label_new = QtWidgets.QLabel(self.data_frame)
-        self.output_label_new.setGeometry(QtCore.QRect(int(640 * sf_x), int(85 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.output_label_new.setGeometry(QtCore.QRect(int(40 * sf_x), int(55 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -202,7 +102,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         
         # Output Value - New
         self.output_new_value = QtWidgets.QLineEdit(self.data_frame)
-        self.output_new_value.setGeometry(QtCore.QRect(int(780 * sf_x), int(85 * sf_y), int(331 * sf_x), int(31 * sf_y)))
+        self.output_new_value.setGeometry(QtCore.QRect(int(180 * sf_x), int(55 * sf_y), int(331 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.output_new_value.setFont(font)
@@ -210,7 +110,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         
         # Background 2
         self.backg_2 = QtWidgets.QLabel(self.data_frame)
-        self.backg_2.setGeometry(QtCore.QRect(int(610 * sf_x), int(40 * sf_y), int(591 * sf_x), int(421 * sf_y)))
+        self.backg_2.setGeometry(QtCore.QRect(int(10 * sf_x), int(40 * sf_y), int(591 * sf_x), int(351 * sf_y)))
         self.backg_2.setStyleSheet("background-color: rgb(255, 255, 127);")
         self.backg_2.setText("")
         self.backg_2.setObjectName("backg_2")
@@ -218,7 +118,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         
         # Population Button - New
         self.population_new_button = QtWidgets.QPushButton(self.data_frame)
-        self.population_new_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(215 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.population_new_button.setGeometry(QtCore.QRect(int(40 * sf_x), int(185 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(False)
@@ -229,7 +129,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         
         # Population Path - New
         self.population_new_path = QtWidgets.QLabel(self.data_frame)
-        self.population_new_path.setGeometry(QtCore.QRect(int(890 * sf_x), int(220 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        self.population_new_path.setGeometry(QtCore.QRect(int(290 * sf_x), int(190 * sf_y), int(291 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.population_new_path.setFont(font)
@@ -237,7 +137,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         
         # Saved Path - New
         self.saved_path_new = QtWidgets.QLabel(self.data_frame)
-        self.saved_path_new.setGeometry(QtCore.QRect(int(890 * sf_x), int(130 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        self.saved_path_new.setGeometry(QtCore.QRect(int(290 * sf_x), int(100 * sf_y), int(291 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.saved_path_new.setFont(font)
@@ -245,7 +145,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         
         # Output Path Button - New
         self.output_path_new_button = QtWidgets.QPushButton(self.data_frame)
-        self.output_path_new_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(125 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.output_path_new_button.setGeometry(QtCore.QRect(int(40 * sf_x), int(95 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(False)
@@ -254,48 +154,8 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.output_path_new_button.setObjectName("output_path_new_button")
         self.output_path_new_button.clicked.connect(self.select_output_folder_new)
         
-        # Validation Label
-        self.valid_label = QtWidgets.QLabel(self.data_frame)
-        self.valid_label.setGeometry(QtCore.QRect(int(40 * sf_x), int(220 * sf_y), int(431 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        font.setBold(True)
-        font.setWeight(75)
-        self.valid_label.setFont(font)
-        self.valid_label.setObjectName("valid_label")
-        
-        # Validation ComboBox
-        self.valid_value = QtWidgets.QComboBox(self.data_frame)
-        self.valid_value.setGeometry(QtCore.QRect(int(480 * sf_x), int(220 * sf_y), int(91 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        self.valid_value.setFont(font)
-        self.valid_value.setObjectName("valid_value")
-        self.valid_value.addItem("")
-        self.valid_value.addItem("")
-        
-        # Extrapolation Mode Label
-        self.extra_label = QtWidgets.QLabel(self.data_frame)
-        self.extra_label.setGeometry(QtCore.QRect(int(40 * sf_x), int(180 * sf_y), int(181 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        font.setBold(True)
-        font.setWeight(75)
-        self.extra_label.setFont(font)
-        self.extra_label.setObjectName("extra_label")
-        
-        # Extrapolation Mode ComboBox
-        self.extrap_mode = QtWidgets.QComboBox(self.data_frame)
-        self.extrap_mode.setGeometry(QtCore.QRect(int(230 * sf_x), int(180 * sf_y), int(201 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        self.extrap_mode.setFont(font)
-        self.extrap_mode.setObjectName("extrap_mode")
-        self.extrap_mode.addItem("")
-        self.extrap_mode.addItem("")
-        
         self.extra_label_new = QtWidgets.QLabel(self.data_frame)
-        self.extra_label_new.setGeometry(QtCore.QRect(int(640 * sf_x), int(170 * sf_y), int(181 * sf_x), int(31 * sf_y)))
+        self.extra_label_new.setGeometry(QtCore.QRect(int(40 * sf_x), int(140 * sf_y), int(181 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -304,7 +164,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.extra_label_new.setObjectName("extra_label_new")
         
         self.extrap_mode_new = QtWidgets.QComboBox(self.data_frame)
-        self.extrap_mode_new.setGeometry(QtCore.QRect(int(830 * sf_x), int(170 * sf_y), int(201 * sf_x), int(31 * sf_y)))
+        self.extrap_mode_new.setGeometry(QtCore.QRect(int(230 * sf_x), int(140 * sf_y), int(201 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.extrap_mode_new.setFont(font)
@@ -313,7 +173,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.extrap_mode_new.addItem("Manually", 1)
         
         self.ini_fract_new_label = QtWidgets.QLabel(self.data_frame)
-        self.ini_fract_new_label.setGeometry(QtCore.QRect(int(640 * sf_x), int(330 * sf_y), int(141 * sf_x), int(31 * sf_y)))
+        self.ini_fract_new_label.setGeometry(QtCore.QRect(int(40 * sf_x), int(300 * sf_y), int(141 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -322,7 +182,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.ini_fract_new_label.setObjectName("ini_fract_new_label")
         
         self.ini_fract_new_value = QtWidgets.QDoubleSpinBox(self.data_frame)
-        self.ini_fract_new_value.setGeometry(QtCore.QRect(int(780 * sf_x), int(330 * sf_y), int(71 * sf_x), int(31 * sf_y)))
+        self.ini_fract_new_value.setGeometry(QtCore.QRect(int(180 * sf_x), int(300 * sf_y), int(71 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.ini_fract_new_value.setFont(font)
@@ -332,7 +192,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.ini_fract_new_value.setObjectName("ini_fract_new_value")
         
         self.step_new_label = QtWidgets.QLabel(self.data_frame)
-        self.step_new_label.setGeometry(QtCore.QRect(int(870 * sf_x), int(330 * sf_y), int(71 * sf_x), int(31 * sf_y)))
+        self.step_new_label.setGeometry(QtCore.QRect(int(270 * sf_x), int(300 * sf_y), int(71 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -341,7 +201,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.step_new_label.setObjectName("step_new_label")
         
         self.step_new_value = QtWidgets.QDoubleSpinBox(self.data_frame)
-        self.step_new_value.setGeometry(QtCore.QRect(int(930 * sf_x), int(330 * sf_y), int(71 * sf_x), int(31 * sf_y)))
+        self.step_new_value.setGeometry(QtCore.QRect(int(330 * sf_x), int(300 * sf_y), int(71 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.step_new_value.setFont(font)
@@ -351,7 +211,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.step_new_value.setObjectName("step_new_value")
         
         self.max_frac_new_label = QtWidgets.QLabel(self.data_frame)
-        self.max_frac_new_label.setGeometry(QtCore.QRect(int(640 * sf_x), int(370 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.max_frac_new_label.setGeometry(QtCore.QRect(int(40 * sf_x), int(340 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -360,7 +220,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.max_frac_new_label.setObjectName("max_frac_new_label")
         
         self.max_frac_new_value = QtWidgets.QDoubleSpinBox(self.data_frame)
-        self.max_frac_new_value.setGeometry(QtCore.QRect(int(760 * sf_x), int(370 * sf_y), int(71 * sf_x), int(31 * sf_y)))
+        self.max_frac_new_value.setGeometry(QtCore.QRect(int(160 * sf_x), int(340 * sf_y), int(71 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.max_frac_new_value.setFont(font)
@@ -370,7 +230,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.max_frac_new_value.setObjectName("max_frac_new_value")
         
         self.n_iter_new_label = QtWidgets.QLabel(self.data_frame)
-        self.n_iter_new_label.setGeometry(QtCore.QRect(int(1020 * sf_x), int(330 * sf_y), int(71 * sf_x), int(31 * sf_y)))
+        self.n_iter_new_label.setGeometry(QtCore.QRect(int(420 * sf_x), int(300 * sf_y), int(71 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -379,7 +239,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.n_iter_new_label.setObjectName("n_iter_new_label")
         
         self.n_iter_new_value = QtWidgets.QSpinBox(self.data_frame)
-        self.n_iter_new_value.setGeometry(QtCore.QRect(int(1090 * sf_x), int(330 * sf_y), int(51 * sf_x), int(31 * sf_y)))
+        self.n_iter_new_value.setGeometry(QtCore.QRect(int(690 * sf_x), int(300 * sf_y), int(51 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.n_iter_new_value.setFont(font)
@@ -388,7 +248,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.n_iter_new_value.setObjectName("n_iter_new_value")
         
         self.threshold_new = QtWidgets.QLabel(self.data_frame)
-        self.threshold_new.setGeometry(QtCore.QRect(int(850 * sf_x), int(370 * sf_y), int(181 * sf_x), int(31 * sf_y)))
+        self.threshold_new.setGeometry(QtCore.QRect(int(250 * sf_x), int(340 * sf_y), int(181 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -397,7 +257,7 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.threshold_new.setObjectName("threshold_new")
         
         self.threshold_new_value = QtWidgets.QDoubleSpinBox(self.data_frame)
-        self.threshold_new_value.setGeometry(QtCore.QRect(int(1030 * sf_x), int(370 * sf_y), int(71 * sf_x), int(31 * sf_y)))
+        self.threshold_new_value.setGeometry(QtCore.QRect(int(430 * sf_x), int(340 * sf_y), int(71 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.threshold_new_value.setFont(font)
@@ -405,69 +265,10 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.threshold_new_value.setSingleStep(0.005)
         self.threshold_new_value.setProperty("value", 0.05)
         self.threshold_new_value.setObjectName("threshold_new_value")
-
-        
-        self.ask_1 = QtWidgets.QLabel(self.data_frame)
-        self.ask_1.setGeometry(QtCore.QRect(int(40 * sf_x), int(300 * sf_y), int(231 * sf_x), int(21 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        self.ask_1.setFont(font)
-        self.ask_1.setObjectName("ask_1")
-        
-        self.ask_2 = QtWidgets.QLabel(self.data_frame)
-        self.ask_2.setGeometry(QtCore.QRect(int(270 * sf_x), int(300 * sf_y), int(41 * sf_x), int(21 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        font.setBold(True)
-        font.setWeight(75)
-        self.ask_2.setFont(font)
-        self.ask_2.setObjectName("ask_2")
-        
-        self.ask_3 = QtWidgets.QLabel(self.data_frame)
-        self.ask_3.setGeometry(QtCore.QRect(int(300 * sf_x), int(300 * sf_y), int(41 * sf_x), int(21 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        self.ask_3.setFont(font)
-        self.ask_3.setObjectName("ask_3")
-        
-        self.manage_dist = QtWidgets.QLabel(self.data_frame)
-        self.manage_dist.setGeometry(QtCore.QRect(int(40 * sf_x), int(330 * sf_y), int(321 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        font.setBold(True)
-        font.setWeight(75)
-        self.manage_dist.setFont(font)
-        self.manage_dist.setObjectName("manage_dist")
-        
-        self.manage_value = QtWidgets.QComboBox(self.data_frame)
-        self.manage_value.setGeometry(QtCore.QRect(int(350 * sf_x), int(331 * sf_y), int(241 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        self.manage_value.setFont(font)
-        self.manage_value.setObjectName("manage_value")
-        self.manage_value.addItem("")
-        self.manage_value.addItem("")
-        
-        self.distance_label = QtWidgets.QLabel(self.data_frame)
-        self.distance_label.setGeometry(QtCore.QRect(int(40 * sf_x), int(370 * sf_y), int(161 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        font.setBold(True)
-        font.setWeight(75)
-        self.distance_label.setFont(font)
-        self.distance_label.setObjectName("distance_label")
-        
-        self.distance_value = QtWidgets.QSpinBox(self.data_frame)
-        self.distance_value.setGeometry(QtCore.QRect(int(200 * sf_x), int(370 * sf_y), int(91 * sf_x), int(31 * sf_y)))
-        font = QtGui.QFont()
-        font.setPointSize(int(10 * sf_font))
-        self.distance_value.setFont(font)
-        self.distance_value.setObjectName("distance_value")
-        self.distance_value.setMaximum(9999)
         
         # --- Features of Interest filter (Excel-like) ---
         self.features_label = QtWidgets.QLabel(self.data_frame)
-        self.features_label.setGeometry(QtCore.QRect(int(640 * sf_x), int(260 * sf_y), int(181 * sf_x), int(31 * sf_y)))
+        self.features_label.setGeometry(QtCore.QRect(int(40 * sf_x), int(220 * sf_y), int(181 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -475,10 +276,10 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.features_label.setText("Features of interest:")
         
         self.features_btn = CheckFilterButton(values=[""], parent=self.data_frame, text="Feature strata")
-        self.features_btn.setGeometry(QtCore.QRect(int(830 * sf_x), int(260 * sf_y), int(161 * sf_x), int(31 * sf_y)))
+        self.features_btn.setGeometry(QtCore.QRect(int(230 * sf_x), int(220 * sf_y), int(161 * sf_x), int(31 * sf_y)))
         
         self.features_selected = QtWidgets.QLabel(self.data_frame)
-        self.features_selected.setGeometry(QtCore.QRect(int(640 * sf_x), int(295 * sf_y), int(540 * sf_x), int(31 * sf_y)))
+        self.features_selected.setGeometry(QtCore.QRect(int(40 * sf_x), int(255 * sf_y), int(540 * sf_x), int(31 * sf_y)))
         self.features_selected.setText("Selected: ----")
         
         self.features_btn.selectionChanged.connect(self.on_features_changed)
@@ -486,35 +287,12 @@ class stratified_extrapolation(QtWidgets.QDialog):
 
         self.w_title.setText("Setting input files")
         self.save_button.setText("Save and continue")
-        self.population_button.setText("Upload population data")
-        self.population_data_path.setText("filename.csv")
-        self.output_label_existing.setText("Output name:")
-        self.output_existing_value.setText("existing_strat")
-        self.distribution_button.setText("Upload feature distribution")
-        self.existing_check.setText("Existing distribution")
-        self.distrib_path.setText("filename.csv")
-        self.output_path_button.setText("Select output folder")
-        self.saved_path_existing.setText("path/where/save/the/results")
-        self.new_check.setText("New distribution")
         self.output_label_new.setText("Output name:")
         self.output_new_value.setText("new_strat")
         self.population_new_button.setText("Upload population data")
         self.population_new_path.setText("filename.csv")
         self.saved_path_new.setText("path/where/save/the/results")
-        self.output_path_new_button.setText("Select output folder")
-        self.valid_label.setText("Is the distribution valid for the entire population?")
-        self.valid_value.setItemText(0, "YES")
-        self.valid_value.setItemText(1, "NO")
-        self.extra_label.setText("Extrapolation mode:")
-        self.extrap_mode.setItemText(0, "Deep learning models")
-        self.extrap_mode.setItemText(1, "Manually")
-        self.ask_1.setText("(Only if the previous answer is")
-        self.ask_2.setText("NO")
-        self.ask_3.setText(")")
-        self.manage_dist.setText("How to manage partial distribution:")
-        self.manage_value.setItemText(0, "Keep the partial distribution")
-        self.manage_value.setItemText(1, "Keep and mix until \"x\" distance")
-        self.distance_label.setText("Mix distance [m]:")   
+        self.output_path_new_button.setText("Select output folder") 
         self.extra_label_new.setText("Extrapolation mode:")
         self.ini_fract_new_label.setText("Initial fraction:")
         self.step_new_label.setText("Step:")
@@ -523,27 +301,14 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.threshold_new.setText("Maximum threshold:")
         
     def select_method(self):
-        # Check how many checkboxes are checked
-        checked_count = sum([self.existing_check.isChecked(), 
-                              self.new_check.isChecked()])
-        
-        if checked_count > 1:
-            QtWidgets.QMessageBox.warning(self, "Selection Warning", "Only one method can be selected at a time.")
-        elif checked_count == 0:
-            QtWidgets.QMessageBox.warning(self, "Input Error", "Please select one method")
+        if self.extrap_mode_new.currentData() == 0:
+            # stratified deep learning
+            self.stratified_mode = 0
+            self.accept()
         else:
-            if self.new_check.isChecked():
-                if self.extrap_mode_new.currentData() == 0:
-                    self.stratified_mode = 0
-                    # self.stratified_dl()
-                    # self.accept()
-                    QtWidgets.QMessageBox.warning(self, "Input Error", "Please select manual mode method")
-                else:
-                    self.stratified_mode = 1
-                    # self.stratified_manually()
-                    self.accept()
-            elif self.existing_check.isChecked():
-                QtWidgets.QMessageBox.warning(self, "Feature Unavailable", "This mode is not available at the moment. Please select a different option.")
+            self.stratified_mode = 1
+            # stratified manually
+            self.accept()
                 
     def preview_data(self, database):
         if hasattr(self, 'df') and not self.df.empty:
@@ -558,7 +323,20 @@ class stratified_extrapolation(QtWidgets.QDialog):
                 for column in range(len(preview_df.columns)):
                     value = str(preview_df.iloc[row, column])
                     item = QtWidgets.QTableWidgetItem(value)
+                    # ---- Set font size ----
+                    font = item.font()
+                    font.setPointSize(int(10 * self.sf_font))  # change to any size
+                    item.setFont(font)
                     self.tableWidget.setItem(row, column, item)
+                    header = self.tableWidget.horizontalHeader()
+                    font = header.font()
+                    font.setPointSize(int(10 * self.sf_font))
+                    font.setBold(True)  # optional
+                    header.setFont(font)
+                    vheader = self.tableWidget.verticalHeader()
+                    vfont = vheader.font()
+                    vfont.setPointSize(int(10 * self.sf_font))
+                    vheader.setFont(vfont)
 
             self.tableWidget.resizeColumnsToContents()
         else:
@@ -590,14 +368,6 @@ class stratified_extrapolation(QtWidgets.QDialog):
 
         return self.df
     
-    ############ Folder Selection ################
-    def select_output_folder_existing(self):
-        """Open a folder selection dialog and display the selected folder in a text output."""
-        self.folder_path = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Folder")
-        if self.folder_path:  # If a folder is selected
-            folder_display = os.path.basename(self.folder_path)    
-            self.saved_path_manual.setText(folder_display)
-    
     def select_output_folder_new(self):
         """Open a folder selection dialog and display the selected folder in a text output."""
         self.folder_path_new = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Folder")
@@ -608,7 +378,6 @@ class stratified_extrapolation(QtWidgets.QDialog):
     def data_population(self):
         self.data_population = self.upload_csv(self.population_new_path)
         self.preview_data(self.data_population)
-        # unique_vals = self.data_population.columns.tolist()
         unique_vals = ["material", "llrs", "code_level","n_stories","occupancy","block_position",
                        "roof_shape", "roof_material"]
         self.features_btn.set_values(unique_vals)

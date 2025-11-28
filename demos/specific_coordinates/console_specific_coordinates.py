@@ -10,6 +10,10 @@ import requests
 from get_building_orientation import get_street_view_image
 from pathlib import Path
 
+# Taxonomy check
+from taxonomy import check_taxonomy
+import re 
+
 #########################################################
 #######===========  General functions ==========#########
 #########################################################
@@ -73,75 +77,87 @@ def fetch_three_step_views(lat, lon):
     if check_street_view(lat, lon) == True:
         # Get image from GSV
         angle = 0
-        url_gsv = get_street_view_image(location, api_key, angle)[0]
-        img_gsv = get_street_view_image(location, api_key, angle)[1]
+        url_gsv, img_gsv, year = get_street_view_image(location, api_key, angle, 5, 120)
     else:
         print("Street View not available")
         url_gsv = "Street View not available"
         img_gsv = []
         
-    print
     return img_gsv, url_gsv  
     
 ############ Building detector model ################
 def object_detector_building(lat, lon):
     global url_gsv
     # Class mapping (update this with your actual mappings)
-    class_map = {0: "building-xzyh"}  # Replace with the correct mapping
     weight_path = dl_dir / "building_detector.pt" # Replace with your YOLO .pt file
-    # Load the YOLO model
     model = YOLO(weight_path)
+    TARGET_CLASS = 'building-xzyh'
+    CONF_THRESHOLD = 0.5
     # Set device GPU or CPU
     device= "cuda" if torch.cuda.is_available() else "cpu"
-    model.to(device)
-       
+
     img_gsv, url_gsv  = fetch_three_step_views(lat, lon)
-    
-    # Run inference
     try:
-        results = model.predict(img_gsv)
+        # Run inference
+        results = model.predict(img_gsv, device=device)[0]
     
-        highest_conf = 0
-        highest_conf_box = None
+        h, w, _ = img_gsv.shape
     
-        # Process the results
-        for result in results:
-            boxes = result.boxes.xyxy.cpu().numpy()  # Bounding box coordinates
-            confs = result.boxes.conf.cpu().numpy()  # Confidence scores
-            classes = result.boxes.cls.cpu().numpy()  # Class IDs
+        # Get class names
+        class_names = model.names
     
-            for box, conf, cls in zip(boxes, confs, classes):
-                cls = int(cls)
-                # Getting the building image with higher confidence as selected bounding box
-                if class_map.get(cls) == "building-xzyh" and conf > highest_conf:
-                    highest_conf = conf
-                    highest_conf_box = box
-                
-        # Extracting selecting bounding box coordinates witin the image
-        if highest_conf_box is not None:
-            x1, y1, x2, y2 = map(int, highest_conf_box)
-            # Crop the area within the selected bounding box
-            cropped_image = img_gsv[y1:y2, x1:x2] 
-        else: 
-            pass
-        
+        best_box = None
+        best_conf = 0
+    
+        # Loop through detected boxes
+        if results.boxes is not None:
+            for box in results.boxes:
+    
+                cls_id = int(box.cls[0])
+                label = class_names[cls_id]
+                conf = float(box.conf[0])
+                if label == TARGET_CLASS and conf > CONF_THRESHOLD:
+                    if conf > best_conf:
+                        best_conf = conf
+                        best_box = box.xyxy[0].cpu().numpy().astype(int)
+    
+        if best_box is None:
+            print("❌ No Building detected in image.")
+            print()
+            return
+    
+        x1, y1, x2, y2 = best_box
+    
+        # ✅ Ensure values inside image
+        x1 = max(0, x1)
+        y1 = max(0, y1)
+        x2 = min(w, x2)
+        y2 = min(h, y2)
+    
+        # ✅ Crop image
+        cropped_image = img_gsv[y1:y2, x1:x2]
         return cropped_image
     except:
-        pass
+        cropped_image = []
     
 ############ Get city name using coordinates ################
 def get_city_name(lat, lon):           
+    try:    
         geolocator = Nominatim(user_agent="city_name_locator")
-        location = geolocator.reverse((lat, lon), exactly_one=True, language="en")
-        
+        location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
         if location and 'address' in location.raw:
             address = location.raw['address']
-            city = address.get('city', address.get('town', address.get('village', 'Unknown')))
+            city = (address.get("city") or address.get("town") or address.get("village")
+                or address.get("municipality") or address.get("county") or address.get("state_district")
+                or "Unknown")
             country = address.get('country', 'Unknown')
             return city , country
-
-
-
+    except:
+        city = "Unknown"
+        country = "Unknown"
+        return city , country
+    
+    
 #########################################################
 #######==========  DL models definition ========#########
 #########################################################
@@ -153,7 +169,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Define the image transformation (must match training)
 transform = transforms.Compose([
-    transforms.Resize((256, 320)),
+    transforms.Resize((256, 256)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
@@ -161,167 +177,174 @@ transform = transforms.Compose([
 root_dir = Path(__file__).parent.resolve()
 dl_dir = (root_dir / '..' / '..' / 'dl_weights').resolve()
 
-# Load the model_material architecture
-model_material = models.densenet201(weights=None)  # Initialize model_material without pre-trained weights
-num_features = model_material.classifier.in_features
-
-# Use the correct number of output classes (9 as indicated in the error)
-model_material.classifier = torch.nn.Sequential(
-    torch.nn.Flatten(),
-    torch.nn.Linear(num_features, 8),  # Match the number of classes
-    torch.nn.LogSoftmax(dim=1)
-)
-
-# Load the trained weights
-model_material.load_state_dict(torch.load(str(dl_dir / "densenet201_material.pt"), map_location=device))
-model_material.to(device)
-model_material.eval()
-
-
-################### LLRS model #########################
-# Define the device (CPU-only if no GPU is available)
-
-# Load the model architecture
-model_llrs = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-num_features = model_llrs.classifier.in_features
-
-# Use the correct number of output classes (9 as indicated in the error)
-model_llrs.classifier = torch.nn.Sequential(
-    torch.nn.Flatten(),
-    torch.nn.Linear(num_features, 6),  # Match the number of classes
-    torch.nn.LogSoftmax(dim=1)
-)
-
-# Load the trained weights
-model_llrs.load_state_dict(torch.load(str(dl_dir / "densenet201_llrs.pt"), map_location=device))
-model_llrs.to(device)
-model_llrs.eval()
-
-
-################### CODE model #########################
-# Define the device (CPU-only if no GPU is available)
-
-# Load the model architecture
-model_code = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-num_features = model_code.classifier.in_features
-
-# Use the correct number of output classes (9 as indicated in the error)
-model_code.classifier = torch.nn.Sequential(
-    torch.nn.Flatten(),
-    torch.nn.Linear(num_features, 4),  # Match the number of classes
-    torch.nn.LogSoftmax(dim=1)
-)
-
-# Load the trained weights
-model_code.load_state_dict(torch.load(str(dl_dir / "densenet201_code.pt"), map_location=device))
-model_code.to(device)
-model_code.eval()
-
-
-################### N STORIES model #########################
-# Define the device (CPU-only if no GPU is available)
-
-# Load the model architecture
-model_n_stories = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-num_features = model_n_stories.classifier.in_features
-
-# Use the correct number of output classes (9 as indicated in the error)
-model_n_stories.classifier = torch.nn.Sequential(
-    torch.nn.Flatten(),
-    torch.nn.Linear(num_features, 9),  # Match the number of classes
-    torch.nn.LogSoftmax(dim=1)
-)
-
-# Load the trained weights
-model_n_stories.load_state_dict(torch.load(str(dl_dir / "densenet201_n_stories.pt"), map_location=device))
-model_n_stories.to(device)
-model_n_stories.eval()
-
-
-################### OCCUPANCY model #########################
-# Define the device (CPU-only if no GPU is available)
-
-# Load the model architecture
-model_occupancy = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-num_features = model_occupancy.classifier.in_features
-
-# Use the correct number of output classes (9 as indicated in the error)
-model_occupancy.classifier = torch.nn.Sequential(
-    torch.nn.Flatten(),
-    torch.nn.Linear(num_features, 7),  # Match the number of classes
-    torch.nn.LogSoftmax(dim=1)
-)
-
-# Load the trained weights
-model_occupancy.load_state_dict(torch.load(str(dl_dir / "densenet201_occupancy.pt"), map_location=device))
-model_occupancy.to(device)
-model_occupancy.eval()
-
-
-################### BLOCK POSTION model #########################
-# Define the device (CPU-only if no GPU is available)
-
-# Load the model architecture
-model_bp = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-num_features = model_bp.classifier.in_features
-
-# Use the correct number of output classes (9 as indicated in the error)
-model_bp.classifier = torch.nn.Sequential(
-    torch.nn.Flatten(),
-    torch.nn.Linear(num_features, 3),  # Match the number of classes
-    torch.nn.LogSoftmax(dim=1)
-)
-
-# Load the trained weights
-model_bp.load_state_dict(torch.load(str(dl_dir / "densenet201_block.pt"), map_location=device))
-model_bp.to(device)
-model_bp.eval()
-
-
-################### Roof Shape model #########################
-# Define the device (CPU-only if no GPU is available)
-
-# Load the model architecture
-model_rshp = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-num_features = model_rshp.classifier.in_features
-
-# Use the correct number of output classes (9 as indicated in the error)
-model_rshp.classifier = torch.nn.Sequential(
-    torch.nn.Flatten(),
-    torch.nn.Linear(num_features, 3),  # Match the number of classes
-    torch.nn.LogSoftmax(dim=1)
-)
-
-# Load the trained weights
-model_rshp.load_state_dict(torch.load(str(dl_dir / "densenet201_roof_shape.pt"), map_location=device))
-model_rshp.to(device)
-model_rshp.eval()
+def dl_models():
+    global model_material, model_llrs, model_code, model_n_stories, model_occupancy, model_bp, model_rshp, model_rmt
+    print("Uploading DL models")
+    # Load the model_material architecture
+    model_material = models.densenet201(weights=None)  # Initialize model_material without pre-trained weights
+    num_features = model_material.classifier.in_features
     
+    # Use the correct number of output classes (9 as indicated in the error)
+    model_material = models.densenet201(weights=None)
+    num_features = model_material.classifier.in_features
+    model_material.classifier = torch.nn.Linear(num_features, 8)
+        
+    # Load the trained weights
+    model_material.load_state_dict(torch.load(str(dl_dir / "densenet201_material.pt"), map_location=device))
+    model_material.to(device)
+    model_material.eval()
+    
+    
+    ################### LLRS model #########################
+    # Define the device (CPU-only if no GPU is available)
 
-################### Roof Material model #########################
-# Define the device (CPU-only if no GPU is available)
+    # Load the model architecture
+    model_llrs = models.densenet201(weights=None)  # Initialize model without pre-trained weights
+    num_features = model_llrs.classifier.in_features
 
-# Load the model architecture
-model_rmt = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-num_features = model_rmt.classifier.in_features
+    # Use the correct number of output classes (9 as indicated in the error)
+    model_llrs = models.densenet201(weights=None)
+    num_features = model_llrs.classifier.in_features
+    model_llrs.classifier = torch.nn.Linear(num_features, 6)
 
-# Use the correct number of output classes (9 as indicated in the error)
-model_rmt.classifier = torch.nn.Sequential(
-    torch.nn.Flatten(),
-    torch.nn.Linear(num_features, 3),  # Match the number of classes
-    torch.nn.LogSoftmax(dim=1)
-)
-
-# Load the trained weights
-model_rmt.load_state_dict(torch.load(str(dl_dir / "densenet201_roof_material.pt"), map_location=device))
-model_rmt.to(device)
-model_rmt.eval()
+    # Load the trained weights
+    model_llrs.load_state_dict(torch.load(str(dl_dir / "densenet201_llrs.pt"), map_location=device))
+    model_llrs.to(device)
+    model_llrs.eval()
 
 
+    ################### CODE model #########################
+    # Define the device (CPU-only if no GPU is available)
+
+    # Load the model architecture
+    model_code = models.densenet201(weights=None)  # Initialize model without pre-trained weights
+    num_features = model_code.classifier.in_features
+
+    # Use the correct number of output classes (9 as indicated in the error)
+    num_features = model_code.classifier.in_features  # or model.classifier.in_features if replaced earlier
+    model_code.classifier = torch.nn.Sequential(
+        torch.nn.Linear(num_features, 512),
+        torch.nn.ReLU(),
+        torch.nn.Dropout(0.4),
+        torch.nn.Linear(512, 4)
+    )
+
+    # Load the trained weights
+    model_code.load_state_dict(torch.load(str(dl_dir / "densenet201_code_level.pt"), map_location=device))
+    model_code.to(device)
+    model_code.eval()
+
+
+    ################### N STORIES model #########################
+    # Define the device (CPU-only if no GPU is available)
+
+    # Load the model architecture
+    model_n_stories = models.densenet201(weights=None)  # Initialize model without pre-trained weights
+    num_features = model_n_stories.classifier.in_features
+
+    # Use the correct number of output classes (9 as indicated in the error)
+    model_n_stories = models.densenet201(weights=None)
+    num_features = model_n_stories.classifier.in_features
+    model_n_stories.classifier = torch.nn.Linear(num_features, 9)
+
+    # Load the trained weights
+    model_n_stories.load_state_dict(torch.load(str(dl_dir / "densenet201_n_stories.pt"), map_location=device))
+    model_n_stories.to(device)
+    model_n_stories.eval()
+
+
+    ################### OCCUPANCY model #########################
+    # Define the device (CPU-only if no GPU is available)
+
+    # Load the model architecture
+    model_occupancy = models.densenet201(weights=None)  # Initialize model without pre-trained weights
+    num_features = model_occupancy.classifier.in_features
+
+    # Use the correct number of output classes (9 as indicated in the error)
+    num_features = model_occupancy.classifier.in_features  # or model.classifier.in_features if replaced earlier
+    model_occupancy.classifier = torch.nn.Sequential(
+        torch.nn.Linear(num_features, 512),
+        torch.nn.ReLU(),
+        torch.nn.Dropout(0.4),
+        torch.nn.Linear(512, 4))
+
+    # Load the trained weights
+    model_occupancy.load_state_dict(torch.load(str(dl_dir / "densenet201_occupancy.pt"), map_location=device))
+    model_occupancy.to(device)
+    model_occupancy.eval()
+
+
+    ################### BLOCK POSTION model #########################
+    # Define the device (CPU-only if no GPU is available)
+
+    # Load the model architecture
+    model_bp = models.densenet201(weights=None)  # Initialize model without pre-trained weights
+    num_features = model_bp.classifier.in_features
+
+    # Use the correct number of output classes (9 as indicated in the error)
+    num_features = model_bp.classifier.in_features  # or model.classifier.in_features if replaced earlier
+    model_bp.classifier = torch.nn.Sequential(
+        torch.nn.Linear(num_features, 512),
+        torch.nn.ReLU(),
+        torch.nn.Dropout(0.4),
+        torch.nn.Linear(512, 4)
+    )
+
+    # Load the trained weights
+    model_bp.load_state_dict(torch.load(str(dl_dir / "densenet201_block_position.pt"), map_location=device))
+    model_bp.to(device)
+    model_bp.eval()
+
+
+    ################### Roof Shape model #########################
+    # Define the device (CPU-only if no GPU is available)
+
+    # Load the model architecture
+    model_rshp = models.densenet201(weights=None)  # Initialize model without pre-trained weights
+    num_features = model_rshp.classifier.in_features
+
+    # Use the correct number of output classes (9 as indicated in the error)
+    num_features = model_rshp.classifier.in_features  # or model.classifier.in_features if replaced earlier
+    model_rshp.classifier = torch.nn.Sequential(
+        torch.nn.Linear(num_features, 512),
+        torch.nn.ReLU(),
+        torch.nn.Dropout(0.4),
+        torch.nn.Linear(512, 5)
+    )
+
+    # Load the trained weights
+    model_rshp.load_state_dict(torch.load(str(dl_dir / "densenet201_roof_shape.pt"), map_location=device))
+    model_rshp.to(device)
+    model_rshp.eval()
+        
+
+    ################### Roof Material model #########################
+    # Define the device (CPU-only if no GPU is available)
+
+    # Load the model architecture
+    model_rmt = models.densenet201(weights=None)  # Initialize model without pre-trained weights
+    num_features = model_rmt.classifier.in_features
+
+    # Use the correct number of output classes (9 as indicated in the error) 
+    num_features = model_rmt.classifier.in_features  # or model.classifier.in_features if replaced earlier
+    model_rmt.classifier = torch.nn.Sequential(
+        torch.nn.Linear(num_features, 512),
+        torch.nn.ReLU(),
+        torch.nn.Dropout(0.4),
+        torch.nn.Linear(512, 3)
+    )
+
+    # Load the trained weights
+    model_rmt.load_state_dict(torch.load(str(dl_dir / "densenet201_roof_material.pt"), map_location=device))
+    model_rmt.to(device)
+    model_rmt.eval()
+
+    print("The DL models have been successfully uploaded!")
 #########################################################
 #######===========  Models predicition =========#########
 #########################################################
 
+dl_models()
 
 ############ Material prediction ################
 def predict_material_img (image_path):
@@ -335,7 +358,7 @@ def predict_material_img (image_path):
         prediction = torch.argmax(output, dim=1).item()
 
     # LLRS building image sets prediction
-    material_classes = ['ADO', 'CR', 'MCF', 'MR', 'MUR', 'MX', 'S', 'W']
+    material_classes = ['CR', 'HYB(MCF;MUR)', 'INF','MCF', 'MR', 'MUR','S','W']
     material_id = material_classes[prediction]
 
     return material_id
@@ -352,7 +375,7 @@ def predict_llrs_img (image_path):
         prediction = torch.argmax(output, dim=1).item()
         
     # LLRS building image sets prediction
-    llrs_classes = ['LDUAL', 'LFINF', 'LFM', 'LWAL', 'TW', 'W']
+    llrs_classes = ['LDUAL', 'LFBR', 'LFINF', 'LFM', 'LN', 'LWAL', 'LWAL']
     llrs_id = llrs_classes[prediction]
     
     return llrs_id
@@ -369,7 +392,7 @@ def predict_code_img (image_path):
         prediction = torch.argmax(output, dim=1).item()
         
     # code_level building image sets prediction
-    code_level_classes = ['CDH', 'CDM', 'CDM', 'CDN']
+    code_level_classes = ['CDH','CDL', 'CDM', 'CDN']
     code_level_id = code_level_classes[prediction]
     return code_level_id
 
@@ -399,7 +422,7 @@ def predict_occupancy_img (image_path):
         output = model_occupancy(image)
         prediction = torch.argmax(output, dim=1).item()
         
-    occupancy_class = ['COM', 'EDU', 'GOV', 'IND', 'MIX', 'OCO', 'RES']
+    occupancy_class = ['COM' , 'IND' ,'MIX(RES;COM)', 'RES']
     occupancy_id = occupancy_class[prediction]
     return occupancy_id
 
@@ -414,7 +437,7 @@ def predict_block_position_img (image_path):
         output = model_bp(image)
         prediction = torch.argmax(output, dim=1).item()
         
-    block_position_classes = ['BP1', 'BP2', 'BPD']
+    block_position_classes = ['BP1', 'BP2', 'BP3', 'BPD']
     block_position_id = block_position_classes[prediction]
     return block_position_id
 
@@ -429,7 +452,7 @@ def predict_roof_shape_img (image_path):
         output = model_rshp(image)
         prediction = torch.argmax(output, dim=1).item()
         
-    roof_shape_classes = ['RSH1', 'RSH2', 'RSH3']
+    roof_shape_classes = ['RSH1', 'RSH2', 'RSH3', 'RSH5', 'RSH7']
     roof_shape_id = roof_shape_classes[prediction]
     return roof_shape_id
 
@@ -448,39 +471,65 @@ def predict_roof_material_img (image_path):
     roof_material_classes = ['RMN', 'RMT1', 'RMT6']
     roof_material_id = roof_material_classes[prediction]
     return roof_material_id
+  
+def tax_check(tax_value):
+    # 1) Create a small DataFrame with taxonomy strings
+    df = pd.DataFrame({"TAXONOMY": [tax_value]})
     
+    try:
+        tax = check_taxonomy(df, taxo_col="TAXONOMY")
+    except ValueError as e:
+        print("There are invalid taxonomies ❌")
+        # Convert the error to string
+        err_str = str(e)
+        
+        # Extract the canonical value from the string using regex
+        match = re.search(r"'canonical': '([^']+)'", err_str)
+        if match:
+            tax_canonical = match.group(1)
+            print("Canonical taxonomy:", tax_canonical)
+        else:
+            tax_canonical = None
+            print("No canonical value found.")
+            
 ############ Obtain value of the form of each building image ################       
 def inspection_database (data_ai):
     for i in range (data_ai.shape[0]):
-        data_ai.iloc[i, 0] = footprint_data.iloc[i,0]                                                 # ID
-        data_ai.iloc[i, 1] = footprint_data.loc[i , "latitude"]                                                 # Latitude
-        data_ai.iloc[i, 2] = footprint_data.loc[i , "longitude"] 
+        data_ai.iloc[i, 0] = footprint_data.loc[i, "id"]                                     # ID
+        data_ai.iloc[i, 1] = footprint_data.loc[i , "latitude"]                               # Latitude
+        data_ai.iloc[i, 2] = footprint_data.loc[i , "longitude"]                              # Latitude
         
-        image_file = object_detector_building(float(footprint_data.loc[i,"latitude"]) , float(footprint_data.loc[i,"longitude"]))
-
-        if image_file is None:
+        try:
+            image_file = object_detector_building(float(footprint_data.loc[i,"latitude"]) , 
+                                                  float(footprint_data.loc[i,"longitude"]))
+    
+            if image_file is None:
+                pass
+            else:
+                city, country = get_city_name(float(footprint_data.loc[i,"latitude"]) , float(footprint_data.loc[i,"longitude"]))
+                data_ai.iloc[i, 3], data_ai.iloc[i, 4] = country , city
+                data_ai.iloc[i, 5] = predict_material_img (image_file)                            # LLRS Material
+                data_ai.iloc[i, 6] = predict_llrs_img (image_file)                                # LLRS 
+                data_ai.iloc[i, 7] = predict_code_img (image_file)                                # Code Level 
+                data_ai.iloc[i, 8] = predict_n_stories_img (image_file)                           # Number of Stories 
+                data_ai.iloc[i, 9] = predict_occupancy_img (image_file)                           # Occupancy
+                data_ai.iloc[i, 10] = predict_block_position_img (image_file)                     # Block Position
+                data_ai.iloc[i, 11] = predict_roof_shape_img (image_file)                         # Roof shape
+                data_ai.iloc[i, 12] = predict_roof_material_img (image_file)                      # Roof material
+                
+                try:
+                    data_ai.iloc[i, 13] = (data_ai.iloc[i, 5]+"/"+data_ai.iloc[i, 6]+"/"+data_ai.iloc[i, 7]+"/H:"+
+                                           data_ai.iloc[i, 8]+"/"+data_ai.iloc[i, 10]+"/"+data_ai.iloc[i, 11]+"+"+
+                                           data_ai.iloc[i, 12]+"/"+data_ai.iloc[i, 9])
+                                                                    
+                    # Taxonomy
+                    tax_check(data_ai.iloc[i, 13])
+                except:
+                    pass
+                
+                data_ai.iloc[i, 14] = url_gsv
+        except:
             pass
-        else:
-            city, country = get_city_name(float(footprint_data.loc[i,"latitude"]) , float(footprint_data.loc[i,"longitude"]))
-            data_ai.iloc[i, 3], data_ai.iloc[i, 4] = city, country
-            data_ai.iloc[i, 5] = predict_material_img (image_file)                            # LLRS Material
-            data_ai.iloc[i, 6] = predict_llrs_img (image_file)                                # LLRS 
-            data_ai.iloc[i, 7] = predict_code_img (image_file)                                # Code Level 
-            data_ai.iloc[i, 8] = predict_n_stories_img (image_file)                           # Number of Stories 
-            data_ai.iloc[i, 9] = predict_occupancy_img (image_file)                           # Occupancy
-            data_ai.iloc[i, 10] = predict_block_position_img (image_file)                     # Block Position
-            data_ai.iloc[i, 11] = predict_roof_shape_img (image_file)                         # Roof shape
-            data_ai.iloc[i, 12] = predict_roof_material_img (image_file)                      # Roof material
-            data_ai.iloc[i, 13] = (data_ai.iloc[i, 5]+"/"+
-                                    data_ai.iloc[i, 6]+"+"+
-                                    data_ai.iloc[i, 7]+"/H:"+
-                                    data_ai.iloc[i, 8]+"/"+
-                                    data_ai.iloc[i, 9]+"/"+
-                                    data_ai.iloc[i, 10]+"/"+
-                                    data_ai.iloc[i, 11]+"+"+
-                                    data_ai.iloc[i, 12])                       # Taxonomy
-            
-            data_ai.iloc[i, 14] = url_gsv
         
         print("Inspection: " + str(i+1)+"/"+str(data_ai.shape[0]) +" -------------------------------------")
        
@@ -490,7 +539,7 @@ def inspection_database (data_ai):
 #########################################################
 
 local_building_info = "specific_coordinates_example_data.csv"
-saved_path = "example_prediction_result.csv"
+saved_path = "example_prediction_coordinates.csv"
 
 #########################################################
 #######===========  Function results =========###########

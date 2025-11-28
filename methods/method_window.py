@@ -2,12 +2,10 @@ import numpy as np
 import sys 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QDialog, QMessageBox
-from PyQt5.QtGui import QGuiApplication
 
 from methods.polygon_method import PolygonSetting
 from methods.specific_locations_method import SpecificLocationSetting
 from methods.local_images_method import LocalImageSetting 
-from methods.extrapolation_options import ExtrapolationOptions
 from methods.extrapolation_options import ExtrapolationOptions
 
 class InspectionSetting(QDialog):
@@ -394,7 +392,6 @@ class InspectionSetting(QDialog):
                     self.max_fraction = self.extra_dialog.max_fraction
                     self.max_iterations = self.extra_dialog.max_iterations
                     self.stability_threshold = self.extra_dialog.stability_threshold
-                    
                     self.feature_strata = self.extra_dialog.feature_strata
                 
                 try:

@@ -4,6 +4,9 @@ import pandas as pd
 import os
 import sys 
 import numpy as np
+from shapely.geometry import Point
+import geopandas as gpd
+
 
 class LocalImageSetting(QtWidgets.QDialog):
     def __init__(self, parent=None, method=None):
@@ -204,17 +207,27 @@ class LocalImageSetting(QtWidgets.QDialog):
                 QMessageBox.warning(self, "Invalid Format",
                                     f"The uploaded file is missing the following required columns:\n{', '.join(missing_columns)}")
                 return
-    
+ 
             # If format is valid, continue with your function
-            QMessageBox.information(self, "Success", "Done! Please click the save and continue button.")
+            if self.create_polygon() == True:
+                QMessageBox.information(self, "Success", "Done! Please click the save and continue button.")
             
             self.population = False
             
         except Exception as e:
             QMessageBox.warning(self, "Error",
                                 f"An error occurred. Please check that all required input files are correctly formatted.\n\nDetails: {str(e)}")
-            
-            
+        
+    def create_polygon(self):
+        try:
+            df = self.df
+            # Create geometries for the points using latitude and longitude
+            geometry = [Point(lon, lat) for lon, lat in zip(df['longitude'], df['latitude'])]
+            return True
+        except:
+            QMessageBox.warning(self, "Input Error",
+                    "Some required inputs are missing or invalid. Please review all fields and check the coordinates file for inconsistencies.")
+            return False
     def building_sample(self):
         # Checking is the inspection mode correspond to specific
         try:

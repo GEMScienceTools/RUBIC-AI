@@ -1,0 +1,5 @@
+id,latitude,longitude,country,city,material,llrs,code_level,n_stories,occupancy,block_position,roof_shape,roof_material,taxonomy,image filename or link
+1,6.239855765,-75.58394375,Colombia,Medellín,CR,LFINF,CDL,2,COM,BP1,RSH1,RMN,CR/LFINF/CDL/H:2/BP1/RSH1+RMN/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=6.239855765,-75.58394375&heading=178.19274507126238&pitch=5&fov=120"
+2,34.0234,-42.3871,,,,,,,,,,,,
+3,19.36700465,-99.1471469,Mexico,Mexico City,MUR,LFINF,CDH,2,RES,BP1,RSH1,RMN,MUR/LFINF/CDH/H:2/BP1/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=19.36700465,-99.1471469&heading=98.86732014158463&pitch=5&fov=120"
+4,25.70019152,-100.3337731,Mexico,Monterrey,MUR,LFINF,CDN,1,RES,BP2,RSH1,RMT6,MUR/LFINF/CDN/H:1/BP2/RSH1+RMT6/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=25.70019152,-100.3337731&heading=6.752092989168318&pitch=5&fov=120"

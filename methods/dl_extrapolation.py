@@ -195,50 +195,49 @@ def object_detector_building(lat, lon):
     # Set device GPU or CPU
     device= "cuda" if torch.cuda.is_available() else "cpu"
 
-
     img_gsv, url_gsv  = fetch_three_step_views(lat, lon)
-    cv2.imwrite("img_knn.jpg", img_gsv)
-    # try:
-    # Run inference
-    results = model.predict(img_gsv, device=device)[0]
-
-    h, w, _ = img_gsv.shape
-
-    # Get class names
-    class_names = model.names
-
-    best_box = None
-    best_conf = 0
-
-    # Loop through detected boxes
-    if results.boxes is not None:
-        for box in results.boxes:
-
-            cls_id = int(box.cls[0])
-            label = class_names[cls_id]
-            conf = float(box.conf[0])
-
-            if label == TARGET_CLASS and conf > CONF_THRESHOLD:
-                if conf > best_conf:
-                    best_conf = conf
-                    best_box = box.xyxy[0].cpu().numpy().astype(int)
-
-    if best_box is None:
-        print(f"❌ No '{TARGET_CLASS}' detected in image.")
-        return
-
-    x1, y1, x2, y2 = best_box
-
-    # ✅ Ensure values inside image
-    x1 = max(0, x1)
-    y1 = max(0, y1)
-    x2 = min(w, x2)
-    y2 = min(h, y2)
-
-    # ✅ Crop image
-    cropped_image = img_gsv[y1:y2, x1:x2]
-    return cropped_image
-
+    try:
+        # Run inference
+        results = model.predict(img_gsv, device=device)[0]
+    
+        h, w, _ = img_gsv.shape
+    
+        # Get class names
+        class_names = model.names
+    
+        best_box = None
+        best_conf = 0
+    
+        # Loop through detected boxes
+        if results.boxes is not None:
+            for box in results.boxes:
+    
+                cls_id = int(box.cls[0])
+                label = class_names[cls_id]
+                conf = float(box.conf[0])
+    
+                if label == TARGET_CLASS and conf > CONF_THRESHOLD:
+                    if conf > best_conf:
+                        best_conf = conf
+                        best_box = box.xyxy[0].cpu().numpy().astype(int)
+    
+        if best_box is None:
+            print(f"❌ No '{TARGET_CLASS}' detected in image.")
+            return
+    
+        x1, y1, x2, y2 = best_box
+    
+        # ✅ Ensure values inside image
+        x1 = max(0, x1)
+        y1 = max(0, y1)
+        x2 = min(w, x2)
+        y2 = min(h, y2)
+    
+        # ✅ Crop image
+        cropped_image = img_gsv[y1:y2, x1:x2]
+        return cropped_image
+    except:
+        cropped_image = []
     
 ############ Get city name using coordinates ################
 def get_city_name(lat, lon):  
@@ -573,7 +572,7 @@ def predict_roof_material_img (image_path):
 ############ Obtain value of the form of each building image ################       
 def inspection_database (data_ai):
     for i in range (data_ai.shape[0]):
-        data_ai.iloc[i, 0] = footprint_data.iloc[i,0]                                                 # ID
+        data_ai.iloc[i, 0] = footprint_data.loc[i, "id"]                                                 # ID
         data_ai.iloc[i, 1] = footprint_data.loc[i , "latitude"]                                                 # Latitude
         data_ai.iloc[i, 2] = footprint_data.loc[i , "longitude"] 
         
@@ -583,7 +582,7 @@ def inspection_database (data_ai):
         else:
             city, country = get_city_name(float(footprint_data.loc[i,"latitude"]) , float(footprint_data.loc[i,"longitude"]))
                                              
-            data_ai.iloc[i, 3], data_ai.iloc[i, 4] = city, country
+            data_ai.iloc[i, 3], data_ai.iloc[i, 4] = country , city
             data_ai.iloc[i, 5] = predict_material_img (image_file)                            # LLRS Material
             data_ai.iloc[i, 6] = predict_llrs_img (image_file)                                # LLRS 
             data_ai.iloc[i, 7] = predict_code_img (image_file)                                # Code Level 

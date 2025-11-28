@@ -395,7 +395,8 @@ class PolygonSetting(QtWidgets.QDialog):
             self.population = GUI_geofiles.download_building_footprints(self)
             self.building_value_polygon.setText(str(self.population))
         except:
-            QMessageBox.warning(self, "Error input", "Please complete the input information")
+            QMessageBox.warning(self, "Input Error",
+                    "Some required inputs are missing or invalid. Please review all fields and check the coordinates file for inconsistencies.")
             
     def mode_use(self):
         if self.collection_mode.currentText() == "Manual":
@@ -418,7 +419,9 @@ class PolygonSetting(QtWidgets.QDialog):
             else:
                 self.accept()
         except:
-            QMessageBox.warning(self, "Error input", "Please complete the input information")
+            QMessageBox.warning(self, "Input Error",
+                    "Some required inputs are missing or invalid. Please review all fields and check the coordinates file for inconsistencies.")
+
         
         
     def to_crs_safe(self, gdf, expected_crs):
