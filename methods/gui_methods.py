@@ -33,7 +33,8 @@ from methods.help_window import HelpDialog
 from methods.neighbor_building_extrapolation_feature import find_nearest_neighbors_geodesic, compute_taxonomy_distribution_full_structure
 from methods.dl_extrapolation import create_database, dl_models, inspection_database, extrapolation_existing_reference
 from methods.gsv_image_angle import gsv_angle_setting
-from methods.dl_stratified import iterative_distribution_stability_manual , iterative_label_discovery_cached_fractional, labeling_function
+from methods.dl_stratified import iterative_distribution_stability_manual , iterative_label_discovery_cached_fractional
+from methods.dl_stratified import labeling_function, dl_models
 
 
 class GUIMethods:
@@ -2784,7 +2785,7 @@ class GUIMethods:
                     self.lon_dl = building_data.loc[0, "longitude"]
                     # ========== Run sampling for each feature ==========
                     analysis_features = self.ui.feature_strata
-                    sample_size_def = []
+                    dl_models()
                     for aux in analysis_features:
                         print(" ========== " + aux + " ===========")
                         final_sample, class_dist, final_size = iterative_label_discovery_cached_fractional(
@@ -2798,13 +2799,12 @@ class GUIMethods:
                             max_iterations = self.ui.max_iterations,
                             stability_threshold = self.ui.stability_threshold
                         )
-                        sample_size_def.append(len(final_sample))
                         final_sample.to_csv(f"{self.ui.folder_path_new}/stratified_dl_{aux}.csv", index=False)
                         dist_por = pd.DataFrame(list(class_dist.items()), columns=['Class', 'Proportion'])
                         dist_por.to_csv(f"{self.ui.folder_path_new}/stratified_dl_dist_{aux}.csv", index=False)
                         print("")
                         
-                    print("Sample size definitive: ", np.max(sample_size_def))
+                    print("Sample size definitive: ", final_size)
                     
                 elif self.ui.extrapolation_mode == 1:
                     

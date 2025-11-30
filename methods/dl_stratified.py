@@ -116,7 +116,6 @@ def iterative_label_discovery_cached_fractional(
     all_labeled = pd.DataFrame(columns=[id_column, id_feature])  # Initialize labeled dataset
     previous_dist = None  # Store label distribution from previous iteration
     iteration = 0  # Iteration counter
-    dl_models()
     # Shuffle the dataset for randomized sampling
     np.random.seed(random_state)
     shuffled_data = data.sample(frac=1, random_state=random_state).reset_index(drop=True)
@@ -133,6 +132,7 @@ def iterative_label_discovery_cached_fractional(
             break  # Stop if no more samples to process
         # Apply labeling function to new samples
         next_sample[id_feature] = next_sample[id_column].apply(labeling_function)
+        print("Next sample: ", next_sample)
         all_labeled = pd.concat([all_labeled, next_sample], ignore_index=True)
 
         # Calculate class distribution

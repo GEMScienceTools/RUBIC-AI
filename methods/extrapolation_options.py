@@ -52,7 +52,7 @@ class ExtrapolationOptions(QtWidgets.QDialog):
 
         self.setWindowTitle("Setting Extrapolation Method")
         self.setWindowIcon(QtGui.QIcon("help_img/RUBIC_logo.png"))
-        self.resize(int(1062 * sf_x), int(862 * sf_y))
+        self.resize(int(1060 * sf_x), int(790 * sf_y))
 
         self.method_frame = QtWidgets.QWidget(self)
 
@@ -141,7 +141,7 @@ p, li {{ white-space: pre-wrap; }}
 """)
 
         self.backg_2 = QtWidgets.QLabel(self.method_frame)
-        self.backg_2.setGeometry(QtCore.QRect(int(10 * sf_x), int(420 * sf_y), int(1011 * sf_x), int(371 * sf_y)))
+        self.backg_2.setGeometry(QtCore.QRect(int(10 * sf_x), int(420 * sf_y), int(1011 * sf_x), int(300 * sf_y)))
         self.backg_2.setStyleSheet("background-color: rgb(215, 213, 255);")
 
         self.stratified_check = QtWidgets.QCheckBox(self.method_frame)
@@ -150,7 +150,7 @@ p, li {{ white-space: pre-wrap; }}
         self.stratified_check.setText("Stratified Sampling")
 
         self.stratified_descrip = QtWidgets.QTextBrowser(self.method_frame)
-        self.stratified_descrip.setGeometry(QtCore.QRect(int(30 * sf_x), int(455 * sf_y), int(981 * sf_x), int(325 * sf_y)))
+        self.stratified_descrip.setGeometry(QtCore.QRect(int(30 * sf_x), int(455 * sf_y), int(981 * sf_x), int(250 * sf_y)))
         self.stratified_descrip.setObjectName("stratified_descrip")
         
         fs = int(10 * sf_font)
@@ -195,30 +195,18 @@ p, li {{ white-space: pre-wrap; }}
 <span style="font-size:{fs}pt;">.</span>
 </p>
 
-<p align="justify" style="margin-top:6px; margin-bottom:0px; text-indent:0px;">
-<span style="font-size:{fs}pt;">Once convergence is reached, the </span>
-<span style="font-size:{fs}pt; font-weight:600;">assignment process</span>
-<span style="font-size:{fs}pt;"> begins. This step uses a </span>
-<span style="font-size:{fs}pt; font-weight:600;">hierarchical fallback strategy</span>
-<span style="font-size:{fs}pt;"> that depends on the availability of information. The method prioritizes the use of </span>
-<span style="font-size:{fs}pt; font-weight:600;">specific local data</span>
-<span style="font-size:{fs}pt;"> where available, and progressively falls back to </span>
-<span style="font-size:{fs}pt; font-weight:600;">more general or global information</span>
-<span style="font-size:{fs}pt;"> when needed, ensuring the most accurate classification possible based on the data at hand.</span>
-</p>
-
 </body>
 </html>
 """)
 
         self.load_button = QtWidgets.QPushButton(self.method_frame)
-        self.load_button.setGeometry(QtCore.QRect(int(300 * sf_x), int(800 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.load_button.setGeometry(QtCore.QRect(int(300 * sf_x), int(730 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         self.load_button.setFont(label_font)
         self.load_button.setText("Load files")
         self.load_button.clicked.connect(self.select_method)
 
         self.save_button = QtWidgets.QPushButton(self.method_frame)
-        self.save_button.setGeometry(QtCore.QRect(int(590 * sf_x), int(800 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.save_button.setGeometry(QtCore.QRect(int(590 * sf_x), int(730 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         self.save_button.setFont(label_font)
         self.save_button.setText("Save and continue")
         self.save_button.clicked.connect(self.save_and_continue)
