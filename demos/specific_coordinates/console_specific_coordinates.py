@@ -16,7 +16,6 @@ import requests
 #########################################################
 
 rubicai = Path(__file__).parent.parent.parent.resolve()
-print(f"RubicAI path: {rubicai}")
 sys.path.append(str(rubicai))
 
 from methods.taxonomy import check_taxonomy
