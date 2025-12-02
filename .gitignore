@@ -73,6 +73,7 @@ venv.bak/
 
 # VSCode settings
 */.vscode/
+.vscode/
 
 # Ignore a google street view static api
 gsv_api_key.txt
