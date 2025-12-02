@@ -1221,7 +1221,7 @@ class GUIMethods:
                     llrs_id = [self.ui.llrs_cb_1,self.ui.llrs_cb_1,self.ui.llrs_cb_1]
                     # LLRS building image prediction
                     llrs_index = predict_llrs_img(image_file, self.ui.insp_method, self.box_id, self)
-                    class_names_llrs = ['Dual System', 'Braced Frames', 'Infilled Frames', 'Moment Frames', 
+                    class_names_llrs = ['Dual System', 'Infilled Frames', 'Moment Frames', 
                                    'No lateral load-resisting system', 'Walls', 'Walls']  
                     llrs_id[self.box_id].setCurrentText(class_names_llrs[llrs_index])
                                     
@@ -1275,6 +1275,7 @@ class GUIMethods:
                     llrs_pred = self.ui.llrs_cb_1.currentData()
                     pred_roof_shape = self.ui.roof_shape_cb_1.currentData()
                     roof_mat_pred = self.ui.roof_material_cb_1.currentData()
+                    code_level_pred = self.ui.age_cb_1.currentData()
                     # LLRS
                     if pred_mat_value == "MCF":
                         llrs_id[self.box_id].setCurrentIndex(4) 
@@ -1309,18 +1310,21 @@ class GUIMethods:
                         if roof_mat_pred in ("RMT1", "RMT6"):
                             pass
                         else:
-                            roof_material_id[self.box_id].setCurrentIndex(3)
+                            roof_material_id[self.box_id].setCurrentIndex(2)
                     elif  pred_roof_shape == "RSH5":
                         if roof_mat_pred in ("RMT1", "RMT6"):
                             pass
                         else:
                             roof_material_id[self.box_id].setCurrentIndex(3)        
                             
-                    # Code level
-                    if pred_mat_value == "MUR":
-                        code_level_id[self.box_id].setCurrentText(class_names_code[1]) 
-                    elif pred_mat_value == "INF":
-                        code_level_id[self.box_id].setCurrentText(class_names_code[3]) 
+                    # Code level 
+                    if pred_mat_value == "INF":
+                        code_level_id[self.box_id].setCurrentIndex(4)
+                    elif pred_mat_value == "MUR":
+                        if code_level_pred in ("CDL", "CDN"):
+                            pass
+                        else: 
+                            code_level_id[self.box_id].setCurrentIndex(4) 
                         
                         
                     self.box_id = None
@@ -1980,7 +1984,7 @@ class GUIMethods:
                         pass
                     else:
                         i=1
-                        class_names_llrs = ['Dual System', 'Braced Frames', 'Infilled Frames', 'Moment Frames', 
+                        class_names_llrs = ['Dual System', 'Infilled Frames', 'Moment Frames', 
                                        'No lateral load-resisting system', 'Walls', 'Walls']
                         
                         llrs_id[i].setCurrentText(class_names_llrs[llrs_index])
@@ -1993,17 +1997,17 @@ class GUIMethods:
                         elif self.pred_mat_value == "MR":
                             llrs_id[i].setCurrentText(class_names_llrs[5])
                         elif self.pred_mat_value == "INF":
-                            llrs_id[i].setCurrentText(class_names_llrs[4])
+                            llrs_id[i].setCurrentText(class_names_llrs[3])
                         elif self.pred_mat_value == "CR":
                             if llrs_pred in ("LDUAL", "LFM", "LFINF"):
                                 pass
                             else:
-                                llrs_id[i].setCurrentText(class_names_llrs[3])
+                                llrs_id[i].setCurrentText(class_names_llrs[2])
                         elif self.pred_mat_value == "S":
                             if llrs_pred in ("LFM", "LFBR"):
                                 pass
                             else:
-                                llrs_id[i].setCurrentText(class_names_llrs[3]) 
+                                llrs_id[i].setCurrentText(class_names_llrs[2]) 
                         # Progress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
@@ -2039,7 +2043,7 @@ class GUIMethods:
                 if llrs_index is None:
                     pass
                 else:
-                    class_names_llrs = ['Dual System', 'Braced Frames', 'Infilled Frames', 'Moment Frames', 
+                    class_names_llrs = ['Dual System', 'Infilled Frames', 'Moment Frames', 
                                    'No lateral load-resisting system', 'Walls', 'Walls']
                     
                     llrs_id[aux].setCurrentText(class_names_llrs[llrs_index])
@@ -2052,17 +2056,17 @@ class GUIMethods:
                     elif self.pred_mat_value == "MR":
                         llrs_id[aux].setCurrentText(class_names_llrs[5])
                     elif self.pred_mat_value == "INF":
-                        llrs_id[aux].setCurrentText(class_names_llrs[4])
+                        llrs_id[aux].setCurrentText(class_names_llrs[3])
                     elif self.pred_mat_value == "CR":
                         if llrs_pred in ("LDUAL", "LFM", "LFINF"):
                             pass
                         else:
-                            llrs_id[aux].setCurrentText(class_names_llrs[3])
+                            llrs_id[aux].setCurrentText(class_names_llrs[2])
                     elif self.pred_mat_value == "S":
                         if llrs_pred in ("LFM", "LFBR"):
                             pass
                         else:
-                            llrs_id[aux].setCurrentText(class_names_llrs[3])       
+                            llrs_id[aux].setCurrentText(class_names_llrs[2])       
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
                     self.ui.method_progress.setText("Prediction complete!")
@@ -2124,11 +2128,15 @@ class GUIMethods:
                         i=1
                         class_names_code = ['High-Code','Low-Code', 'Moderate-code', 'No-Code']
                         code_level_id[i].setCurrentText(class_names_code[code_level_index])
-                 
-                        if self.pred_mat_value == "MUR":
-                            code_level_id[i].setCurrentText(class_names_code[1]) 
-                        elif self.pred_mat_value == "INF":
-                            code_level_id[i].setCurrentText(class_names_code[3]) 
+                        code_level_pred = self.ui.age_cb_1.currentData()
+                        # Code level 
+                        if self.pred_mat_value == "INF":
+                            code_level_id[i].setCurrentText(class_names_code[3])
+                        elif self.pred_mat_value == "MUR":
+                            if code_level_pred in ("CDL", "CDN"):
+                                pass
+                            else: 
+                                code_level_id[i].setCurrentIndex(4)
                         
                         # Progress bar update
                         self.ui.progress_bar_method.setValue(100)
@@ -2168,11 +2176,15 @@ class GUIMethods:
                 else:
                     class_names_code = ['High-Code','Low-Code', 'Moderate-code', 'No-Code']
                     code_level_id[aux].setCurrentText(class_names_code[code_level_index])
-             
-                    if self.pred_mat_value == "MUR":
-                        code_level_id[aux].setCurrentText(class_names_code[1]) 
-                    elif self.pred_mat_value == "INF":
+                    code_level_pred = self.ui.age_cb_1.currentData()
+                    # Code level 
+                    if self.pred_mat_value == "INF":
                         code_level_id[aux].setCurrentText(class_names_code[3])
+                    elif self.pred_mat_value == "MUR":
+                        if code_level_pred in ("CDL", "CDN"):
+                            pass
+                        else: 
+                            code_level_id[aux].setCurrentIndex(4) 
                         
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
