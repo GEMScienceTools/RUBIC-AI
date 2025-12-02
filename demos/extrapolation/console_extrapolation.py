@@ -7,14 +7,20 @@ import torchvision.transforms as transforms
 from torchvision import models
 from PIL import Image
 import requests
-from get_building_orientation import get_street_view_image
 from geopy.distance import geodesic
 from collections import defaultdict
 from pathlib import Path
-
-# Taxonomy check
-from taxonomy import check_taxonomy
+import sys 
 import re 
+
+rubicai = Path(__file__).parent.parent.parent.resolve()
+sys.path.append(str(rubicai))
+
+from methods.taxonomy import check_taxonomy
+from methods.get_building_orientation import get_street_view_image
+
+gsv_api_file = rubicai / 'methods/gsv_api_key.txt'
+assert gsv_api_file.exists(), "`gsv_api_key.txt` not found in `methods` directory."
 
 # Function to calculate Geodesic distance (in km)
 def geodesic_distance(lat1, lon1, lat2, lon2):
@@ -95,17 +101,23 @@ def compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row):
 
     return distribution_rows
 
-def extrapolation_existing_reference(data_existing , data_extrapolation, saved_path):
+def extrapolation_existing_reference(data_existing , data_extrapolation, saved_path, sw_dl=False):
   final_distribution_list_full = []   
   # Iterate over each building with no image
+  cont = 0
   for idx, input_row in data_extrapolation.iterrows():
-      # Find 3 nearest neighbors using geodesic distance
-      nearest_neighbors = find_nearest_neighbors_geodesic(input_row, data_existing)
-      # Compute taxonomy-based distributions with full structure
-      distribution_rows = compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row)
       
-      # Append to final result
-      final_distribution_list_full.extend(distribution_rows)
+        # Find 3 nearest neighbors using geodesic distance
+        nearest_neighbors = find_nearest_neighbors_geodesic(input_row, data_existing)
+        # Compute taxonomy-based distributions with full structure
+        distribution_rows = compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row)
+        # Append to final result
+        final_distribution_list_full.extend(distribution_rows)
+        if sw_dl == True:
+            pass
+        else:
+            print("Inspection: " + str(cont+1)+"/"+str(data_extrapolation.shape[0]) +" -------------------------------------")
+            cont +=1 
 
   # Convert final list to DataFrame
   final_distribution_df_full = pd.DataFrame(final_distribution_list_full)
@@ -149,7 +161,7 @@ gsv_dir = (root_dir / '..' / '..' / 'methods').resolve()
 ############ Checks if there is GSV availability ################  
 def check_street_view(lat, lon):
     # Input parameters
-    with open(gsv_dir / "gsv_api_key.txt", "r") as f:
+    with open(gsv_api_file, "r") as f:
         api_key = f.read().strip()
     url = "https://maps.googleapis.com/maps/api/streetview/metadata"
     params = {
@@ -170,14 +182,13 @@ def fetch_three_step_views(lat, lon):
     # Building coordinates
     location = (float(lat), float(lon))
     # API key is required; without it, access to GSV is not possible
-    with open(gsv_dir / "gsv_api_key.txt", "r") as f:
+    with open(gsv_api_file, "r") as f:
         api_key = f.read().strip()  
     
     if check_street_view(lat, lon) == True:
         # Get image from GSV
         angle = 0
-        url_gsv = get_street_view_image(location, api_key, angle)[0]
-        img_gsv = get_street_view_image(location, api_key, angle)[1]
+        url_gsv, img_gsv, year = get_street_view_image(location, api_key, angle, 5, 120)
     else:
         print("Street View not available")
         url_gsv = "Street View not available"
@@ -593,40 +604,41 @@ def inspection_database (data_ai):
         data_ai.iloc[i, 1] = footprint_data.loc[i , "latitude"]                               # Latitude
         data_ai.iloc[i, 2] = footprint_data.loc[i , "longitude"]                              # Latitude
         
-        # try:
-        image_file = object_detector_building(float(footprint_data.loc[i,"latitude"]) , 
-                                              float(footprint_data.loc[i,"longitude"]))
+        try:
+            image_file = object_detector_building(float(footprint_data.loc[i,"latitude"]) , 
+                                                float(footprint_data.loc[i,"longitude"]))
 
-        if image_file is None:
-            pass
-        else:
-            city, country = get_city_name(float(footprint_data.loc[i,"latitude"]) , float(footprint_data.loc[i,"longitude"]))
-            data_ai.iloc[i, 3], data_ai.iloc[i, 4] = country , city
-            data_ai.iloc[i, 5] = predict_material_img (image_file)                            # LLRS Material
-            data_ai.iloc[i, 6] = predict_llrs_img (image_file)                                # LLRS 
-            data_ai.iloc[i, 7] = predict_code_img (image_file)                                # Code Level 
-            data_ai.iloc[i, 8] = predict_n_stories_img (image_file)                           # Number of Stories 
-            data_ai.iloc[i, 9] = predict_occupancy_img (image_file)                           # Occupancy
-            data_ai.iloc[i, 10] = predict_block_position_img (image_file)                     # Block Position
-            data_ai.iloc[i, 11] = predict_roof_shape_img (image_file)                         # Roof shape
-            data_ai.iloc[i, 12] = predict_roof_material_img (image_file)                      # Roof material
-            
-            try:
-                data_ai.iloc[i, 13] = (data_ai.iloc[i, 5]+"/"+data_ai.iloc[i, 6]+"/"+data_ai.iloc[i, 7]+"/H:"+
-                                       data_ai.iloc[i, 8]+"/"+data_ai.iloc[i, 10]+"/"+data_ai.iloc[i, 11]+"+"+
-                                       data_ai.iloc[i, 12]+"/"+data_ai.iloc[i, 9])
-                                                                
-                # Taxonomy
-                tax_check(data_ai.iloc[i, 13])
-            except:
+            if image_file is None:
                 pass
-            
-            data_ai.iloc[i, 14] = url_gsv
-        # except:
-        #     pass
+            else:
+                city, country = get_city_name(float(footprint_data.loc[i,"latitude"]) , float(footprint_data.loc[i,"longitude"]))
+                data_ai.iloc[i, 3], data_ai.iloc[i, 4] = country , city
+                data_ai.iloc[i, 5] = predict_material_img (image_file)                            # LLRS Material
+                data_ai.iloc[i, 6] = predict_llrs_img (image_file)                                # LLRS 
+                data_ai.iloc[i, 7] = predict_code_img (image_file)                                # Code Level 
+                data_ai.iloc[i, 8] = predict_n_stories_img (image_file)                           # Number of Stories 
+                data_ai.iloc[i, 9] = predict_occupancy_img (image_file)                           # Occupancy
+                data_ai.iloc[i, 10] = predict_block_position_img (image_file)                     # Block Position
+                data_ai.iloc[i, 11] = predict_roof_shape_img (image_file)                         # Roof shape
+                data_ai.iloc[i, 12] = predict_roof_material_img (image_file)                      # Roof material
+                
+                try:
+                    data_ai.iloc[i, 13] = (data_ai.iloc[i, 5]+"/"+data_ai.iloc[i, 6]+"/"+data_ai.iloc[i, 7]+"/H:"+
+                                        data_ai.iloc[i, 8]+"/"+data_ai.iloc[i, 10]+"/"+data_ai.iloc[i, 11]+"+"+
+                                        data_ai.iloc[i, 12]+"/"+data_ai.iloc[i, 9])
+                                                                    
+                    # Taxonomy
+                    tax_check(data_ai.iloc[i, 13])
+                except:
+                    pass
+                
+                data_ai.iloc[i, 14] = url_gsv
+        except:
+            print(" Error in building ID: " + str(footprint_data.loc[i, "id"]))    
+            pass
         
         print("Inspection: " + str(i+1)+"/"+str(data_ai.shape[0]) +" -------------------------------------")
-       
+
 #########################################################
 #######===========  Input parameters =========###########
 #########################################################
@@ -636,30 +648,30 @@ def inspection_database (data_ai):
 method = 0  for existing information of reference
 method = 1  for inference first a sample and create the information of reference before the extrapolation
 """
-method = 0
+method = 1
 
 
 if method == 0:
     #########################################################
     #######===========  Input parameters =========###########
     #########################################################
-    data_existing = pd.read_csv("neighbor_building_info.csv")
-    data_extrapolation = pd.read_csv("unclassified_building_coord.csv")
-    saved_path = "extrapolation_data_example.csv"
+    data_existing = pd.read_csv(rubicai / "demos/extrapolation/neighbor_building_info.csv")
+    data_extrapolation = pd.read_csv(rubicai / "demos/extrapolation/unclassified_building_coord.csv")
+    saved_path = rubicai / "demos/extrapolation/extrapolation_data_example.csv"
     
     #########################################################
     #######===========  Function results =========###########
     #########################################################
-    extrapolation_existing_reference(data_existing , data_extrapolation, saved_path)
+    extrapolation_existing_reference(data_existing , data_extrapolation, saved_path, False)
     
 elif method == 1:
     #########################################################
     #######===========  Input parameters =========###########
     #########################################################
-    coord_reference = "building_coordinates_example.csv"
-    coord_reference_building_feature_path = "coordinates_reference_results.csv"
-    data_extrapolation = pd.read_csv("unclassified_building_coord.csv")
-    saved_path = "extrapolation_data_example_using_ai.csv"
+    coord_reference = rubicai / "demos/extrapolation/building_coordinates_example.csv"
+    coord_reference_building_feature_path = rubicai / "demos/extrapolation/coordinates_reference_results.csv"
+    data_extrapolation = pd.read_csv(rubicai / "demos/extrapolation/unclassified_building_coord.csv")
+    saved_path = rubicai / "demos/extrapolation/extrapolation_data_example_using_ai.csv"
     #########################################################
     #######===========  Function results =========###########
     #########################################################
@@ -667,4 +679,4 @@ elif method == 1:
     dl_models()
     inspection_database(data_existing)
     data_existing.to_csv(coord_reference_building_feature_path, index= False)
-    extrapolation_existing_reference(data_existing , data_extrapolation, saved_path)
+    extrapolation_existing_reference(data_existing , data_extrapolation, saved_path, True)

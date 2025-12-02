@@ -1,3 +1,6 @@
+import re 
+import sys
+from pathlib import Path
 import numpy as np
 from geopy.geocoders import Nominatim
 import pandas as pd
@@ -7,16 +10,19 @@ import torchvision.transforms as transforms
 from torchvision import models
 from PIL import Image
 import requests
-from get_building_orientation import get_street_view_image
-from pathlib import Path
-
-# Taxonomy check
-from taxonomy import check_taxonomy
-import re 
 
 #########################################################
 #######===========  General functions ==========#########
 #########################################################
+
+rubicai = Path(__file__).parent.parent.parent.resolve()
+sys.path.append(str(rubicai))
+
+from methods.taxonomy import check_taxonomy
+from methods.get_building_orientation import get_street_view_image
+
+gsv_api_file = rubicai / 'methods/gsv_api_key.txt'
+assert gsv_api_file.exists(), "`gsv_api_key.txt` not found in `methods` directory."
 
 def create_database(local_building_info):
     global footprint_data
@@ -45,13 +51,10 @@ def create_database(local_building_info):
         
     return data_ai
 
-root_dir = Path(__file__).parent.resolve()
-gsv_dir = (root_dir / '..' / '..' / 'methods').resolve()
-
 ############ Checks if there is GSV availability ################  
 def check_street_view(lat, lon):
     # Input parameters
-    with open(gsv_dir / "gsv_api_key.txt", "r") as f:
+    with open(gsv_api_file, "r") as f:
         api_key = f.read().strip()
     url = "https://maps.googleapis.com/maps/api/streetview/metadata"
     params = {
@@ -71,7 +74,7 @@ def fetch_three_step_views(lat, lon):
     # Building coordinates
     location = (float(lat), float(lon))
     # API key is required; without it, access to GSV is not possible
-    with open(gsv_dir / "gsv_api_key.txt", "r") as f:
+    with open(gsv_api_file, "r") as f:
         api_key = f.read().strip()  
     
     if check_street_view(lat, lon) == True:
@@ -501,8 +504,8 @@ def inspection_database (data_ai):
         
         try:
             image_file = object_detector_building(float(footprint_data.loc[i,"latitude"]) , 
-                                                  float(footprint_data.loc[i,"longitude"]))
-    
+                                                    float(footprint_data.loc[i,"longitude"]))
+
             if image_file is None:
                 pass
             else:
@@ -519,8 +522,8 @@ def inspection_database (data_ai):
                 
                 try:
                     data_ai.iloc[i, 13] = (data_ai.iloc[i, 5]+"/"+data_ai.iloc[i, 6]+"/"+data_ai.iloc[i, 7]+"/H:"+
-                                           data_ai.iloc[i, 8]+"/"+data_ai.iloc[i, 10]+"/"+data_ai.iloc[i, 11]+"+"+
-                                           data_ai.iloc[i, 12]+"/"+data_ai.iloc[i, 9])
+                                            data_ai.iloc[i, 8]+"/"+data_ai.iloc[i, 10]+"/"+data_ai.iloc[i, 11]+"+"+
+                                            data_ai.iloc[i, 12]+"/"+data_ai.iloc[i, 9])
                                                                     
                     # Taxonomy
                     tax_check(data_ai.iloc[i, 13])
@@ -529,6 +532,7 @@ def inspection_database (data_ai):
                 
                 data_ai.iloc[i, 14] = url_gsv
         except:
+            print(" Error in building ID: " + str(footprint_data.loc[i, "id"]))
             pass
         
         print("Inspection: " + str(i+1)+"/"+str(data_ai.shape[0]) +" -------------------------------------")
@@ -538,8 +542,8 @@ def inspection_database (data_ai):
 #######===========  Input parameters =========###########
 #########################################################
 
-local_building_info = "specific_coordinates_example_data.csv"
-saved_path = "example_prediction_coordinates.csv"
+local_building_info = rubicai / "demos/specific_coordinates/specific_coordinates_example_data.csv"
+saved_path = rubicai / "demos/specific_coordinates/example_prediction_coordinates.csv"
 
 #########################################################
 #######===========  Function results =========###########

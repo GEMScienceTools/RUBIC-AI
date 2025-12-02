@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 from geopy.geocoders import Nominatim
 import pandas as pd
@@ -7,21 +8,30 @@ import torchvision.transforms as transforms
 from torchvision import models
 from PIL import Image
 import requests
-from get_building_orientation import get_street_view_image
 # Libries for shape and geopackage creation
 from shapely.geometry import Polygon, MultiPolygon
 import osmnx as ox
 import geopandas as gpd
 import os
 from pathlib import Path
-# Taxonomy check
-from taxonomy import check_taxonomy
 import re 
+
 #########################################################
 #######===========  General functions ==========#########
 #########################################################
+
+rubicai = Path(__file__).parent.parent.parent.resolve()
+sys.path.append(str(rubicai))
+
+from methods.taxonomy import check_taxonomy
+from methods.get_building_orientation import get_street_view_image
+
+gsv_api_file = rubicai / 'methods/gsv_api_key.txt'
+assert gsv_api_file.exists(), "`gsv_api_key.txt` not found in `methods` directory."
+
 def polygon_coordinates(file_path, polygon_name):
-    output_gpkg = polygon_name + "_boundary.gpkg"
+    output_gpkg = str(polygon_name) + "_boundary.gpkg"
+    print("Output: ", output_gpkg)
     df = pd.read_csv(file_path)    
     coordinates = list(zip(df["longitude"], df["latitude"]))
     polygon = Polygon(coordinates)
@@ -29,8 +39,8 @@ def polygon_coordinates(file_path, polygon_name):
     gdf.to_file(output_gpkg, driver="GPKG", layer="polygon_layer")
 
 def download_building_footprints_polygon(polygon_name):
-    output_file = polygon_name + "_buildings_footprint.gpkg"
-    boundary_path = polygon_name + "_boundary.gpkg"
+    output_file = str(polygon_name) + "_buildings_footprint.gpkg"
+    boundary_path = str(polygon_name) + "_boundary.gpkg"
     # Conditionional checks for an existing boundary file, and if it exists, avoids creating a duplicate
     if os.path.exists(output_file):
         buildings = gpd.read_file(output_file)
@@ -147,9 +157,9 @@ def download_building_footprints_polygon(polygon_name):
 ############ Random subset buildings ################  
 def extract_random_subset(polygon_name , sample_size):
     # Load buildng footprints
-    footprint = polygon_name + "_buildings_footprint.gpkg"
+    footprint = str(polygon_name) + "_buildings_footprint.gpkg"
     # Create output file for building footprints
-    output_file= polygon_name + "_subset_footprints.gpkg"
+    output_file= str(polygon_name) + "_subset_footprints.gpkg"
     # Ensure sample size is not greater than the number of points in the dataset
     seed=10
     # Check if a subset file exists
@@ -168,9 +178,9 @@ def extract_random_subset(polygon_name , sample_size):
 ############ Create a point layer and extract the coordinates of a subset of buildings ################ 
 def create_centroid_layer(polygon_name):
     # Load selected subset building
-    subset_file = polygon_name + "_subset_footprints.gpkg"
+    subset_file = str(polygon_name) + "_subset_footprints.gpkg"
     # Create output file for building footprints
-    output_file = polygon_name + "_subset_centroids.gpkg"
+    output_file = str(polygon_name) + "_subset_centroids.gpkg"
 
     # Check if a centroid file exists
     if os.path.exists(output_file):
@@ -211,13 +221,13 @@ def create_centroid_layer(polygon_name):
     # Filter columns
     filtered_gdf = centroids[['id', 'latitude', 'longitude']]
     # Export to CSV
-    database_file = polygon_name + "_building_info.csv"
+    database_file = str(polygon_name) + "_building_info.csv"
     filtered_gdf.to_csv(database_file, index=False)             
 
 def create_database(polygon_name):
     global footprint_data
     # Load data
-    footprint_data = pd.read_csv(polygon_name + "_building_info.csv")
+    footprint_data = pd.read_csv(str(polygon_name) + "_building_info.csv")
     
     # Define the column namesfor the inspection database
     column_names = ["id", 
@@ -241,13 +251,10 @@ def create_database(polygon_name):
         
     return data_ai
 
-root_dir = Path(__file__).parent.resolve()
-gsv_dir = (root_dir / '..' / '..' / 'methods').resolve()
-
 ############ Checks if there is GSV availability ################  
 def check_street_view(lat, lon):
     # Input parameters
-    with open(gsv_dir / "gsv_api_key.txt", "r") as f:
+    with open(gsv_api_file, "r") as f:
         api_key = f.read().strip()
     url = "https://maps.googleapis.com/maps/api/streetview/metadata"
     params = {
@@ -267,7 +274,7 @@ def fetch_three_step_views(lat, lon):
     # Building coordinates
     location = (float(lat), float(lon))
     # API key is required; without it, access to GSV is not possible
-    with open(gsv_dir / "gsv_api_key.txt", "r") as f:
+    with open(gsv_api_file, "r") as f:
         api_key = f.read().strip()  
     
     if check_street_view(lat, lon) == True:
@@ -744,11 +751,11 @@ def inspection_database (data_ai):
 #######===========  Input parameters =========###########
 #########################################################
 
-saved_path = "example_prediction_result.csv"
+saved_path = rubicai / "demos/polygon_method/example_prediction_result.csv"
 # File with polygon vertices
-file_path = "polygon_method_example_console.csv"
+file_path = rubicai / "demos/polygon_method/polygon_method_example_console.csv"
 # Polygon name
-polygon_name = "proof_polygon"
+polygon_name = rubicai / "demos/polygon_method/proof_polygon"
 # Percentage of the population that will be included in the sample
 sample_size = 0.09
 #########################################################

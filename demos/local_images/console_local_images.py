@@ -8,15 +8,14 @@ import torchvision.transforms as transforms
 from torchvision import models
 from PIL import Image
 import cv2
-
-# Taxonomy check
-from taxonomy import check_taxonomy
 import re 
+import sys
 #########################################################
 #######===========  General functions ==========#########
 #########################################################
-root_dir = Path(__file__).parent.resolve()
-dl_dir = (root_dir / '..' / '..' / 'dl_weights').resolve()
+rubicai = Path(__file__).parent.parent.parent.resolve()
+sys.path.append(str(rubicai))
+from methods.taxonomy import check_taxonomy
 
 def create_database(local_building_info):
     global footprint_data
@@ -475,6 +474,7 @@ def inspection_database (data_ai, image_folder):
                 
                 data_ai.iloc[i, 14] = img_path
         except:
+            print(" Error in building ID: " + str(footprint_data.loc[i, "id"]))
             pass
         print("Inspection: " + str(i+1)+"/"+str(data_ai.shape[0]) +" -------------------------------------")
        
