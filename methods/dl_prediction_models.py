@@ -137,12 +137,6 @@ def predict_llrs_img(image_path, insp_method, box_id, self):
 
     except Exception as e:
         print(f"[predict_material_img] Error: {e}")
-
-        QMessageBox.warning(
-            self,
-            "Image Error",
-            f"No Street View image found or no building detected for ID: {box_id}"
-        )
         return None
 
 
@@ -238,12 +232,6 @@ def predict_code_img(image_path, insp_method, box_id, self):
     except Exception as e:
         # (Optional) print error to console/log for debugging
         print(f"[predict_material_img] Error: {e}")
-
-        QMessageBox.warning(
-            self,
-            "Image Error",
-            f"No Street View image found or no building detected for ID: {box_id}"
-        )
         return None
 
 
@@ -338,12 +326,6 @@ def predict_n_stories_img(image_path, insp_method, box_id, self):
     except Exception as e:
         # (Optional) print error to console/log for debugging
         print(f"[predict_material_img] Error: {e}")
-
-        QMessageBox.warning(
-            self,
-            "Image Error",
-            f"No Street View image found or no building detected for ID: {box_id}"
-        )
         return None
 
 
@@ -439,12 +421,6 @@ def predict_occupancy_img(image_path, insp_method, box_id, self):
     except Exception as e:
         # (Optional) print error to console/log for debugging
         print(f"[predict_material_img] Error: {e}")
-
-        QMessageBox.warning(
-            self,
-            "Image Error",
-            f"No Street View image found or no building detected for ID: {box_id}"
-        )
         return None
 
 
@@ -510,12 +486,6 @@ def predict_block_position_img(image_path, insp_method, box_id, self):
 
     except Exception as e:
         print(f"[predict_material_img] Error: {e}")
-
-        QMessageBox.warning(
-            self,
-            "Image Error",
-            f"No Street View image found or no building detected for ID: {box_id}"
-        )
         return None
 
 
@@ -580,12 +550,6 @@ def predict_roof_shape_img(image_path, insp_method, box_id, self):
 
     except Exception as e:
         print(f"[predict_material_img] Error: {e}")
-
-        QMessageBox.warning(
-            self,
-            "Image Error",
-            f"No Street View image found or no building detected for ID: {box_id}"
-        )
         return None
 
 
@@ -650,10 +614,4 @@ def predict_roof_material_img(image_path, insp_method, box_id, self):
 
     except Exception as e:
         print(f"[predict_material_img] Error: {e}")
-
-        QMessageBox.warning(
-            self,
-            "Image Error",
-            f"No Street View image found or no building detected for ID: {box_id}"
-        )
         return None

@@ -3,6 +3,7 @@ import numpy as np
 from geopy.geocoders import Nominatim
 import pandas as pd
 import torch
+import torch.nn as nn
 from ultralytics import YOLO
 import torchvision.transforms as transforms
 from torchvision import models
@@ -123,34 +124,39 @@ def dl_models():
     global model_material, model_llrs, model_code, model_n_stories, model_occupancy, model_bp, model_rshp, model_rmt
     print("Uploading DL models")
     # Load the model_material architecture
-    model_material = models.densenet201(weights=None)  # Initialize model_material without pre-trained weights
-    num_features = model_material.classifier.in_features
-    
-    # Use the correct number of output classes (9 as indicated in the error)
-    model_material = models.densenet201(weights=None)
-    num_features = model_material.classifier.in_features
-    model_material.classifier = torch.nn.Linear(num_features, 8)
-        
-    # Load the trained weights
-    model_material.load_state_dict(torch.load(str(dl_dir / "densenet201_material.pt"), map_location=device))
+    model_material = models.densenet201(weights=None)  # base architecture
+    num_features = model_material.classifier.in_features  # 1920 for densenet201
+
+    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
+    model_material.classifier = nn.Sequential(
+        nn.Dropout(p=0.2),
+        nn.Linear(num_features, 8)   # 8 material classes
+    )
+
+    # Load the trained DenseNet201 weights
+    state_dict = torch.load(str(dl_dir / "densenet201_material.pt"),
+                            map_location=device)
+    model_material.load_state_dict(state_dict)  # strict=True (default)
     model_material.to(device)
     model_material.eval()
-    
     
     ################### LLRS model #########################
     # Define the device (CPU-only if no GPU is available)
 
     # Load the model architecture
-    model_llrs = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-    num_features = model_llrs.classifier.in_features
+    model_llrs = models.densenet201(weights=None)  # base architecture
+    num_features = model_llrs.classifier.in_features  # 1920 for densenet201
 
-    # Use the correct number of output classes (9 as indicated in the error)
-    model_llrs = models.densenet201(weights=None)
-    num_features = model_llrs.classifier.in_features
-    model_llrs.classifier = torch.nn.Linear(num_features, 6)
+    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
+    model_llrs.classifier = nn.Sequential(
+        nn.Dropout(p=0.2),
+        nn.Linear(num_features, 6)   # 8 material classes
+    )
 
-    # Load the trained weights
-    model_llrs.load_state_dict(torch.load(str(dl_dir / "densenet201_llrs.pt"), map_location=device))
+    # Load the trained DenseNet201 weights
+    state_dict = torch.load(str(dl_dir / "densenet201_llrs.pt"),
+                            map_location=device)
+    model_llrs.load_state_dict(state_dict)  # strict=True (default)
     model_llrs.to(device)
     model_llrs.eval()
 
@@ -159,20 +165,17 @@ def dl_models():
     # Define the device (CPU-only if no GPU is available)
 
     # Load the model architecture
-    model_code = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-    num_features = model_code.classifier.in_features
+    model_code = models.convnext_tiny(weights=None)
+    in_features = model_code.classifier[2].in_features  # should be 768
 
-    # Use the correct number of output classes (9 as indicated in the error)
-    num_features = model_code.classifier.in_features  # or model.classifier.in_features if replaced earlier
-    model_code.classifier = torch.nn.Sequential(
-        torch.nn.Linear(num_features, 512),
-        torch.nn.ReLU(),
-        torch.nn.Dropout(0.4),
-        torch.nn.Linear(512, 4)
+    model_code.classifier[2] = nn.Sequential(
+        nn.Dropout(p=0.2),
+        nn.Linear(in_features, 4)   # 8 material classes
     )
 
-    # Load the trained weights
-    model_code.load_state_dict(torch.load(str(dl_dir / "densenet201_code_level.pt"), map_location=device))
+    # Load the trained ConvNeXt weights
+    state_dict = torch.load(str(dl_dir / "convnext_tiny_code_level.pt"), map_location=device)
+    model_code.load_state_dict(state_dict)   # strict=True by default
     model_code.to(device)
     model_code.eval()
 
@@ -181,16 +184,17 @@ def dl_models():
     # Define the device (CPU-only if no GPU is available)
 
     # Load the model architecture
-    model_n_stories = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-    num_features = model_n_stories.classifier.in_features
-
-    # Use the correct number of output classes (9 as indicated in the error)
-    model_n_stories = models.densenet201(weights=None)
-    num_features = model_n_stories.classifier.in_features
-    model_n_stories.classifier = torch.nn.Linear(num_features, 9)
-
-    # Load the trained weights
-    model_n_stories.load_state_dict(torch.load(str(dl_dir / "densenet201_n_stories.pt"), map_location=device))
+    model_n_stories = models.convnext_tiny(weights=None)
+    in_features = model_n_stories.classifier[2].in_features  # should be 768
+ 
+    model_n_stories.classifier[2] = nn.Sequential(
+        nn.Dropout(p=0.2),
+        nn.Linear(in_features, 9)   # 8 material classes
+    )
+ 
+    # Load the trained ConvNeXt weights
+    state_dict = torch.load(str(dl_dir / "convnext_tiny_n_stories.pt"), map_location=device)
+    model_n_stories.load_state_dict(state_dict)   # strict=True by default
     model_n_stories.to(device)
     model_n_stories.eval()
 
@@ -199,19 +203,17 @@ def dl_models():
     # Define the device (CPU-only if no GPU is available)
 
     # Load the model architecture
-    model_occupancy = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-    num_features = model_occupancy.classifier.in_features
+    model_occupancy = models.convnext_tiny(weights=None)
+    in_features = model_occupancy.classifier[2].in_features  # should be 768
 
-    # Use the correct number of output classes (9 as indicated in the error)
-    num_features = model_occupancy.classifier.in_features  # or model.classifier.in_features if replaced earlier
-    model_occupancy.classifier = torch.nn.Sequential(
-        torch.nn.Linear(num_features, 512),
-        torch.nn.ReLU(),
-        torch.nn.Dropout(0.4),
-        torch.nn.Linear(512, 4))
+    model_occupancy.classifier[2] = nn.Sequential(
+        nn.Dropout(p=0.2),
+        nn.Linear(in_features, 4)   # 8 material classes
+    )
 
-    # Load the trained weights
-    model_occupancy.load_state_dict(torch.load(str(dl_dir / "densenet201_occupancy.pt"), map_location=device))
+    # Load the trained ConvNeXt weights
+    state_dict = torch.load(str(dl_dir / "convnext_tiny_occupancy.pt"), map_location=device)
+    model_occupancy.load_state_dict(state_dict)   # strict=True by default
     model_occupancy.to(device)
     model_occupancy.eval()
 
@@ -220,20 +222,19 @@ def dl_models():
     # Define the device (CPU-only if no GPU is available)
 
     # Load the model architecture
-    model_bp = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-    num_features = model_bp.classifier.in_features
+    model_bp = models.densenet201(weights=None)  # base architecture
+    num_features = model_bp.classifier.in_features  # 1920 for densenet201
 
-    # Use the correct number of output classes (9 as indicated in the error)
-    num_features = model_bp.classifier.in_features  # or model.classifier.in_features if replaced earlier
-    model_bp.classifier = torch.nn.Sequential(
-        torch.nn.Linear(num_features, 512),
-        torch.nn.ReLU(),
-        torch.nn.Dropout(0.4),
-        torch.nn.Linear(512, 4)
+    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
+    model_bp.classifier = nn.Sequential(
+        nn.Dropout(p=0.2),
+        nn.Linear(num_features, 4)   # 8 material classes
     )
 
-    # Load the trained weights
-    model_bp.load_state_dict(torch.load(str(dl_dir / "densenet201_block_position.pt"), map_location=device))
+    # Load the trained DenseNet201 weights
+    state_dict = torch.load(str(dl_dir / "densenet201_block_position.pt"),
+                            map_location=device)
+    model_bp.load_state_dict(state_dict)  # strict=True (default)
     model_bp.to(device)
     model_bp.eval()
 
@@ -242,20 +243,19 @@ def dl_models():
     # Define the device (CPU-only if no GPU is available)
 
     # Load the model architecture
-    model_rshp = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-    num_features = model_rshp.classifier.in_features
+    model_rshp = models.densenet201(weights=None)  # base architecture
+    num_features = model_rshp.classifier.in_features  # 1920 for densenet201
 
-    # Use the correct number of output classes (9 as indicated in the error)
-    num_features = model_rshp.classifier.in_features  # or model.classifier.in_features if replaced earlier
-    model_rshp.classifier = torch.nn.Sequential(
-        torch.nn.Linear(num_features, 512),
-        torch.nn.ReLU(),
-        torch.nn.Dropout(0.4),
-        torch.nn.Linear(512, 5)
+    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
+    model_rshp.classifier = nn.Sequential(
+        nn.Dropout(p=0.2),
+        nn.Linear(num_features, 5)   # 8 material classes
     )
 
-    # Load the trained weights
-    model_rshp.load_state_dict(torch.load(str(dl_dir / "densenet201_roof_shape.pt"), map_location=device))
+    # Load the trained DenseNet201 weights
+    state_dict = torch.load(str(dl_dir / "densenet201_roof_shape.pt"),
+                            map_location=device)
+    model_rshp.load_state_dict(state_dict)  # strict=True (default)
     model_rshp.to(device)
     model_rshp.eval()
         
@@ -264,20 +264,19 @@ def dl_models():
     # Define the device (CPU-only if no GPU is available)
 
     # Load the model architecture
-    model_rmt = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-    num_features = model_rmt.classifier.in_features
-
-    # Use the correct number of output classes (9 as indicated in the error) 
-    num_features = model_rmt.classifier.in_features  # or model.classifier.in_features if replaced earlier
-    model_rmt.classifier = torch.nn.Sequential(
-        torch.nn.Linear(num_features, 512),
-        torch.nn.ReLU(),
-        torch.nn.Dropout(0.4),
-        torch.nn.Linear(512, 3)
+    model_rmt = models.densenet201(weights=None)  # base architecture
+    num_features = model_rmt.classifier.in_features  # 1920 for densenet201
+ 
+    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
+    model_rmt.classifier = nn.Sequential(
+        nn.Dropout(p=0.2),
+        nn.Linear(num_features, 3)   # 8 material classes
     )
-
-    # Load the trained weights
-    model_rmt.load_state_dict(torch.load(str(dl_dir / "densenet201_roof_material.pt"), map_location=device))
+ 
+    # Load the trained DenseNet201 weights
+    state_dict = torch.load(str(dl_dir / "densenet201_roof_material.pt"),
+                            map_location=device)
+    model_rmt.load_state_dict(state_dict)  # strict=True (default)
     model_rmt.to(device)
     model_rmt.eval()
 
@@ -317,7 +316,7 @@ def predict_llrs_img (image_path):
         prediction = torch.argmax(output, dim=1).item()
         
     # LLRS building image sets prediction
-    llrs_classes = ['LDUAL', 'LFBR', 'LFINF', 'LFM', 'LN', 'LWAL', 'LWAL']
+    llrs_classes = ['LDUAL', 'LFINF', 'LFM', 'LN', 'LWAL', 'LWAL']
     llrs_id = llrs_classes[prediction]
     
     return llrs_id

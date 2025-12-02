@@ -1900,15 +1900,12 @@ class GUIMethods:
                     time.sleep(0.0001)
                     self.ui.progress_bar_method.setValue(j)
                     
-                # for aux in range (self.n_images_local):
-                # Local cropped image path
-                aux = 1
-                aux_path = (self.ui.folder_path+"/Cropped_images/"
-                                +str(self.data_building.iloc[self.old_local + aux, 0]))
-
-                cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
-                
+                # Local cropped image path            
                 try:
+                    aux = 0
+                    aux_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg" 
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
@@ -2019,15 +2016,11 @@ class GUIMethods:
                     time.sleep(0.0001)
                     self.ui.progress_bar_method.setValue(j)
                     
-                # for aux in range (self.n_images_local):
-                aux = 1
-                # Local cropped image path
-                
-                aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                +str(self.data_building.iloc[self.old_local + aux, 0]))
-                cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"                  
-              
                 try:
+                    aux = 0
+                    aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
@@ -2148,16 +2141,12 @@ class GUIMethods:
                 for j in range (100):
                     time.sleep(0.0001)
                     self.ui.progress_bar_method.setValue(j)
-                    
-                # for aux in range (self.n_images_local):
-                aux = 1
-                # Local cropped image path
-                
-                aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                +str(self.data_building.iloc[self.old_local + aux, 0]))
-                cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
-                             
+                           
                 try:
+                    aux = 0
+                    aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
@@ -2259,15 +2248,11 @@ class GUIMethods:
                     time.sleep(0.0001)
                     self.ui.progress_bar_method.setValue(j)
                     
-                # for aux in range (self.n_images_local):
-                aux = 1
-                # Local cropped image path
-                
-                aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                +str(self.data_building.iloc[self.old_local + aux, 0]))
-                cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
-                
                 try:
+                    aux = 0
+                    aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
@@ -2359,14 +2344,11 @@ class GUIMethods:
                     time.sleep(0.0001)
                     self.ui.progress_bar_method.setValue(j)
                     
-                # for aux in range (self.n_images_local):
-                aux = 1
-                
-                aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                +str(self.data_building.iloc[self.old_local + aux, 0]))
-                cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"      
-                
                 try:
+                    aux = 0
+                    aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"  
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
@@ -2460,15 +2442,11 @@ class GUIMethods:
                     time.sleep(0.0001)
                     self.ui.progress_bar_method.setValue(j)
                     
-                # for aux in range (self.n_images_local):
-                aux = 1
-                # Local cropped image path
-                
-                aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                +str(self.data_building.iloc[self.old_local + aux, 0]))
-                cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
-                
                 try:
+                    aux = 0
+                    aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
@@ -2476,7 +2454,6 @@ class GUIMethods:
                     aux = 0
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
                                     +str(self.data_building.iloc[self.old_local + aux, 0]))
-                    
                     cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
                 
                 org_path = (self.ui.folder_path+"/" +str(self.data_building.iloc[self.old_local + aux, 0]))
@@ -2537,15 +2514,11 @@ class GUIMethods:
                     time.sleep(0.0001)
                     self.ui.progress_bar_method.setValue(j)
                     
-                # for aux in range (self.n_images_local):
-                aux = 1
-                # Local cropped image path
-                
-                aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                +str(self.data_building.iloc[self.old_local + aux, 0]))
-                cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
-                
                 try:
+                    aux = 0
+                    aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
@@ -2633,15 +2606,12 @@ class GUIMethods:
                 for j in range (100):
                     time.sleep(0.0001)
                     self.ui.progress_bar_method.setValue(j)
-                    
-                # for aux in range (self.n_images_local):
-                aux = 1
-                # Local cropped image path
-                aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                +str(self.data_building.iloc[self.old_local + aux, 0]))
-                cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
-                     
+                           
                 try:
+                    aux = 0
+                    aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
