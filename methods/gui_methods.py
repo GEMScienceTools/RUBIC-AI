@@ -34,7 +34,7 @@ from methods.neighbor_building_extrapolation_feature import find_nearest_neighbo
 from methods.dl_extrapolation import create_database, dl_models, inspection_database, extrapolation_existing_reference
 from methods.gsv_image_angle import gsv_angle_setting
 from methods.dl_stratified import iterative_distribution_stability_manual , iterative_label_discovery_cached_fractional
-from methods.dl_stratified import labeling_function, dl_models
+from methods.dl_stratified import labeling_function, dl_models_strified
 
 
 class GUIMethods:
@@ -2767,7 +2767,7 @@ class GUIMethods:
                     self.lon_dl = building_data.loc[0, "longitude"]
                     # ========== Run sampling for each feature ==========
                     analysis_features = self.ui.feature_strata
-                    dl_models()
+                    dl_models_strified()
                     for aux in analysis_features:
                         print(" ========== " + aux + " ===========")
                         final_sample, class_dist, final_size = iterative_label_discovery_cached_fractional(

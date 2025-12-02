@@ -5,11 +5,14 @@ import numpy as np
 from geopy.geocoders import Nominatim
 import pandas as pd
 import torch
+import torch.nn as nn
 from ultralytics import YOLO
 import torchvision.transforms as transforms
 from torchvision import models
 from PIL import Image
 import requests
+import math
+import cv2
 
 #########################################################
 #######===========  General functions ==========#########
@@ -19,10 +22,12 @@ rubicai = Path(__file__).parent.parent.parent.resolve()
 sys.path.append(str(rubicai))
 
 from methods.taxonomy import check_taxonomy
-from methods.get_building_orientation import get_street_view_image
 
 gsv_api_file = rubicai / 'methods/gsv_api_key.txt'
 assert gsv_api_file.exists(), "`gsv_api_key.txt` not found in `methods` directory."
+
+roads_api_file = rubicai / 'methods/roads_api_key.txt'
+assert roads_api_file.exists(), "`roads_api_key.txt` not found in `methods` directory."
 
 def create_database(local_building_info):
     global footprint_data
@@ -51,6 +56,209 @@ def create_database(local_building_info):
         
     return data_ai
 
+def get_road_orientation(location):
+    """
+    Determine the road orientation (azimuth) near a specified location using the Google Roads API.
+    """
+    with open(roads_api_file, "r") as f:
+        roads_api_key = f.read().strip()
+
+    base_url = "https://roads.googleapis.com/v1/nearestRoads"
+    params = {"points": f"{location[0]},{location[1]}", "key": roads_api_key}
+
+    response = requests.get(base_url, params=params)
+    if response.status_code == 200:
+        data = response.json()
+        if "snappedPoints" in data and data["snappedPoints"]:
+            snapped_point = data["snappedPoints"][0]
+            road_lat = snapped_point["location"]["latitude"]
+            road_lng = snapped_point["location"]["longitude"]
+            orientation = compute_azimuth(location, (road_lat, road_lng))
+            return orientation
+        else:
+            print("No road found near the location.")
+            return None
+    else:
+        print(f"Error: {response.status_code}, {response.text}")
+        return None
+
+
+def compute_azimuth(point1, point2):
+    """Compute the azimuth (bearing) between two geographic points."""
+    lat1, lon1 = math.radians(point1[0]), math.radians(point1[1])
+    lat2, lon2 = math.radians(point2[0]), math.radians(point2[1])
+    d_lon = lon2 - lon1
+    x = math.sin(d_lon) * math.cos(lat2)
+    y = math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * math.cos(lat2) * math.cos(d_lon)
+    azimuth = math.degrees(math.atan2(x, y))
+    return (azimuth + 360) % 360
+
+
+def get_street_view_image(location, api_key, angle, pitch, fov):
+    """
+    Fetch a Google Street View image (outdoor-only) and generate its corresponding Maps URL.
+    """
+    # --- Metadata request (for year and indoor/outdoor detection) ---
+    meta_url = "https://maps.googleapis.com/maps/api/streetview/metadata"
+    meta_params = {
+        "location": f"{location[0]},{location[1]}",
+        "source": "outdoor",  # ✅ only request outdoor panoramas
+        "key": api_key,
+    }
+    meta_response = requests.get(meta_url, params=meta_params)
+    meta_data = meta_response.json()
+
+    # Check if outdoor panorama is available
+    if meta_data.get("status") != "OK":
+        print(f"No outdoor panorama available at {location}. Status: {meta_data.get('status')}")
+    
+       ######################################################
+       ############# NEW FUNCTION ###########################
+       ######################################################
+        found_close = False
+        max_radius = 20
+        step = 5
+        show_debug = True
+
+        with open(gsv_api_file, "r") as f:
+            api_key = f.read().strip()
+
+        meta_url = "https://maps.googleapis.com/maps/api/streetview/metadata"
+        img_url = "https://maps.googleapis.com/maps/api/streetview"
+
+        pano_id = None
+        pano_lat, pano_lon, used_radius, year = None, None, None, None
+
+        for radius in range(step, max_radius + step, step):
+            meta_params = {
+                "location": f"{location[0]},{location[1]}",
+                "radius": radius,
+                "source": "outdoor",
+                "key": api_key,
+            }
+            r = requests.get(meta_url, params=meta_params)
+            meta = r.json()
+            status = meta.get("status")
+
+            if show_debug:
+                print(f"Checking radius {radius} m → status={status}")
+
+            if status == "OK":
+                pano_id = meta.get("pano_id") or meta.get("panoId")
+                pano_loc = meta.get("location", {})
+                pano_lat, pano_lon = pano_loc.get("lat"), pano_loc.get("lng")
+                found_close, used_radius = True, radius
+                if "date" in meta:
+                    year = meta["date"].split("-")[0]
+                if show_debug:
+                    print(f"✅ Outdoor pano found at {radius} m → ({pano_lat}, {pano_lon})")
+                break
+
+        if not found_close:
+            print(f"⚠️ No outdoor pano found within {max_radius} m of {location}")
+            return None, None, None
+
+        # Determine if pano is to the right or left
+        try:
+            if pano_lon > location[1]:
+                angle = 180
+                side = "right"
+            else:
+                angle = 0
+                side = "left"
+
+            if show_debug:
+                print(f"Pano is located to the {side} of the building → angle={angle}°")
+
+            # Compute road orientation
+            road_orientation = get_road_orientation(location)
+            heading = ((road_orientation or 0) + angle + 180) % 360
+
+            if show_debug:
+                print(f"Road orientation: {road_orientation}")
+                print(f"Final heading: {heading}")
+
+            # Fetch image from pano ID
+            params = {
+                "size": "640x480",
+                "pano": pano_id,
+                "heading": heading,
+                "pitch": pitch,
+                "fov": fov,
+                "source": "outdoor",
+                "key": api_key,
+            }
+
+            resp = requests.get(img_url, params=params)
+            if resp.status_code == 200 and resp.headers.get("content-type", "").startswith("image/"):
+                np_arr = np.frombuffer(resp.content, np.uint8)
+                img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+            else:
+                print(f"❌ Error fetching image: {resp.status_code}")
+                img = None
+
+            maps_url = (
+                f"https://www.google.com/maps/@?api=1&map_action=pano"
+                f"&viewpoint={pano_lat},{pano_lon}&heading={heading}&pitch=5&fov=120"
+            )
+
+            return maps_url, img, year
+
+        except Exception as e:
+            print(f"Error determining pano direction: {e}")
+            return None, None, None
+
+    else:
+        # --- Extract available info ---
+        year = None
+        if "date" in meta_data:
+            year = meta_data["date"].split("-")[0]
+    
+        # --- Compute road orientation ---
+        road_orientation = get_road_orientation(location)
+        try:
+            heading = (road_orientation + angle + 180) % 360
+        except:
+            heading = (0 + angle + 180) % 360
+    
+        # --- Secure API key load ---
+        with open(gsv_api_file, "r") as f:
+            api_key = f.read().strip()
+    
+        # --- Image capture parameters ---
+        scale = 2
+    
+        # --- Base URLs ---
+        base_url = "https://maps.googleapis.com/maps/api/streetview"
+    
+        # --- Define parameters for outdoor imagery ---
+        params = {
+            "size": "640x480",
+            "location": f"{location[0]},{location[1]}",
+            "heading": heading,
+            "fov": fov,
+            "pitch": pitch,
+            "scale": scale,
+            "source": "outdoor",
+            "key": api_key,
+        }
+    
+        # --- Build visualization URL ---
+        maps_url = (
+            f"https://www.google.com/maps/@?api=1&map_action=pano"
+            f"&viewpoint={location[0]},{location[1]}&heading={heading}&pitch={pitch}&fov={fov}"
+        )
+    
+        # --- Request the image ---
+        response = requests.get(base_url, params=params)
+        if response.status_code == 200:
+            np_array = np.frombuffer(response.content, np.uint8)
+            img = cv2.imdecode(np_array, cv2.IMREAD_COLOR)
+        else:
+            print("Error fetching image:", response.status_code)
+            img = None
+    
+        return maps_url, img, year
 ############ Checks if there is GSV availability ################  
 def check_street_view(lat, lon):
     # Input parameters
@@ -184,34 +392,39 @@ def dl_models():
     global model_material, model_llrs, model_code, model_n_stories, model_occupancy, model_bp, model_rshp, model_rmt
     print("Uploading DL models")
     # Load the model_material architecture
-    model_material = models.densenet201(weights=None)  # Initialize model_material without pre-trained weights
-    num_features = model_material.classifier.in_features
-    
-    # Use the correct number of output classes (9 as indicated in the error)
-    model_material = models.densenet201(weights=None)
-    num_features = model_material.classifier.in_features
-    model_material.classifier = torch.nn.Linear(num_features, 8)
-        
-    # Load the trained weights
-    model_material.load_state_dict(torch.load(str(dl_dir / "densenet201_material.pt"), map_location=device))
+    model_material = models.densenet201(weights=None)  # base architecture
+    num_features = model_material.classifier.in_features  # 1920 for densenet201
+
+    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
+    model_material.classifier = nn.Sequential(
+        nn.Dropout(p=0.2),
+        nn.Linear(num_features, 8)   # 8 material classes
+    )
+
+    # Load the trained DenseNet201 weights
+    state_dict = torch.load(str(dl_dir / "densenet201_material.pt"),
+                            map_location=device)
+    model_material.load_state_dict(state_dict)  # strict=True (default)
     model_material.to(device)
     model_material.eval()
-    
     
     ################### LLRS model #########################
     # Define the device (CPU-only if no GPU is available)
 
     # Load the model architecture
-    model_llrs = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-    num_features = model_llrs.classifier.in_features
+    model_llrs = models.densenet201(weights=None)  # base architecture
+    num_features = model_llrs.classifier.in_features  # 1920 for densenet201
 
-    # Use the correct number of output classes (9 as indicated in the error)
-    model_llrs = models.densenet201(weights=None)
-    num_features = model_llrs.classifier.in_features
-    model_llrs.classifier = torch.nn.Linear(num_features, 6)
+    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
+    model_llrs.classifier = nn.Sequential(
+        nn.Dropout(p=0.2),
+        nn.Linear(num_features, 6)   # 8 material classes
+    )
 
-    # Load the trained weights
-    model_llrs.load_state_dict(torch.load(str(dl_dir / "densenet201_llrs.pt"), map_location=device))
+    # Load the trained DenseNet201 weights
+    state_dict = torch.load(str(dl_dir / "densenet201_llrs.pt"),
+                            map_location=device)
+    model_llrs.load_state_dict(state_dict)  # strict=True (default)
     model_llrs.to(device)
     model_llrs.eval()
 
@@ -220,20 +433,17 @@ def dl_models():
     # Define the device (CPU-only if no GPU is available)
 
     # Load the model architecture
-    model_code = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-    num_features = model_code.classifier.in_features
+    model_code = models.convnext_tiny(weights=None)
+    in_features = model_code.classifier[2].in_features  # should be 768
 
-    # Use the correct number of output classes (9 as indicated in the error)
-    num_features = model_code.classifier.in_features  # or model.classifier.in_features if replaced earlier
-    model_code.classifier = torch.nn.Sequential(
-        torch.nn.Linear(num_features, 512),
-        torch.nn.ReLU(),
-        torch.nn.Dropout(0.4),
-        torch.nn.Linear(512, 4)
+    model_code.classifier[2] = nn.Sequential(
+        nn.Dropout(p=0.2),
+        nn.Linear(in_features, 4)   # 8 material classes
     )
 
-    # Load the trained weights
-    model_code.load_state_dict(torch.load(str(dl_dir / "densenet201_code_level.pt"), map_location=device))
+    # Load the trained ConvNeXt weights
+    state_dict = torch.load(str(dl_dir / "convnext_tiny_code_level.pt"), map_location=device)
+    model_code.load_state_dict(state_dict)   # strict=True by default
     model_code.to(device)
     model_code.eval()
 
@@ -242,16 +452,17 @@ def dl_models():
     # Define the device (CPU-only if no GPU is available)
 
     # Load the model architecture
-    model_n_stories = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-    num_features = model_n_stories.classifier.in_features
-
-    # Use the correct number of output classes (9 as indicated in the error)
-    model_n_stories = models.densenet201(weights=None)
-    num_features = model_n_stories.classifier.in_features
-    model_n_stories.classifier = torch.nn.Linear(num_features, 9)
-
-    # Load the trained weights
-    model_n_stories.load_state_dict(torch.load(str(dl_dir / "densenet201_n_stories.pt"), map_location=device))
+    model_n_stories = models.convnext_tiny(weights=None)
+    in_features = model_n_stories.classifier[2].in_features  # should be 768
+ 
+    model_n_stories.classifier[2] = nn.Sequential(
+        nn.Dropout(p=0.2),
+        nn.Linear(in_features, 9)   # 8 material classes
+    )
+ 
+    # Load the trained ConvNeXt weights
+    state_dict = torch.load(str(dl_dir / "convnext_tiny_n_stories.pt"), map_location=device)
+    model_n_stories.load_state_dict(state_dict)   # strict=True by default
     model_n_stories.to(device)
     model_n_stories.eval()
 
@@ -260,19 +471,17 @@ def dl_models():
     # Define the device (CPU-only if no GPU is available)
 
     # Load the model architecture
-    model_occupancy = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-    num_features = model_occupancy.classifier.in_features
+    model_occupancy = models.convnext_tiny(weights=None)
+    in_features = model_occupancy.classifier[2].in_features  # should be 768
 
-    # Use the correct number of output classes (9 as indicated in the error)
-    num_features = model_occupancy.classifier.in_features  # or model.classifier.in_features if replaced earlier
-    model_occupancy.classifier = torch.nn.Sequential(
-        torch.nn.Linear(num_features, 512),
-        torch.nn.ReLU(),
-        torch.nn.Dropout(0.4),
-        torch.nn.Linear(512, 4))
+    model_occupancy.classifier[2] = nn.Sequential(
+        nn.Dropout(p=0.2),
+        nn.Linear(in_features, 4)   # 8 material classes
+    )
 
-    # Load the trained weights
-    model_occupancy.load_state_dict(torch.load(str(dl_dir / "densenet201_occupancy.pt"), map_location=device))
+    # Load the trained ConvNeXt weights
+    state_dict = torch.load(str(dl_dir / "convnext_tiny_occupancy.pt"), map_location=device)
+    model_occupancy.load_state_dict(state_dict)   # strict=True by default
     model_occupancy.to(device)
     model_occupancy.eval()
 
@@ -281,20 +490,19 @@ def dl_models():
     # Define the device (CPU-only if no GPU is available)
 
     # Load the model architecture
-    model_bp = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-    num_features = model_bp.classifier.in_features
+    model_bp = models.densenet201(weights=None)  # base architecture
+    num_features = model_bp.classifier.in_features  # 1920 for densenet201
 
-    # Use the correct number of output classes (9 as indicated in the error)
-    num_features = model_bp.classifier.in_features  # or model.classifier.in_features if replaced earlier
-    model_bp.classifier = torch.nn.Sequential(
-        torch.nn.Linear(num_features, 512),
-        torch.nn.ReLU(),
-        torch.nn.Dropout(0.4),
-        torch.nn.Linear(512, 4)
+    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
+    model_bp.classifier = nn.Sequential(
+        nn.Dropout(p=0.2),
+        nn.Linear(num_features, 4)   # 8 material classes
     )
 
-    # Load the trained weights
-    model_bp.load_state_dict(torch.load(str(dl_dir / "densenet201_block_position.pt"), map_location=device))
+    # Load the trained DenseNet201 weights
+    state_dict = torch.load(str(dl_dir / "densenet201_block_position.pt"),
+                            map_location=device)
+    model_bp.load_state_dict(state_dict)  # strict=True (default)
     model_bp.to(device)
     model_bp.eval()
 
@@ -303,20 +511,19 @@ def dl_models():
     # Define the device (CPU-only if no GPU is available)
 
     # Load the model architecture
-    model_rshp = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-    num_features = model_rshp.classifier.in_features
+    model_rshp = models.densenet201(weights=None)  # base architecture
+    num_features = model_rshp.classifier.in_features  # 1920 for densenet201
 
-    # Use the correct number of output classes (9 as indicated in the error)
-    num_features = model_rshp.classifier.in_features  # or model.classifier.in_features if replaced earlier
-    model_rshp.classifier = torch.nn.Sequential(
-        torch.nn.Linear(num_features, 512),
-        torch.nn.ReLU(),
-        torch.nn.Dropout(0.4),
-        torch.nn.Linear(512, 5)
+    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
+    model_rshp.classifier = nn.Sequential(
+        nn.Dropout(p=0.2),
+        nn.Linear(num_features, 5)   # 8 material classes
     )
 
-    # Load the trained weights
-    model_rshp.load_state_dict(torch.load(str(dl_dir / "densenet201_roof_shape.pt"), map_location=device))
+    # Load the trained DenseNet201 weights
+    state_dict = torch.load(str(dl_dir / "densenet201_roof_shape.pt"),
+                            map_location=device)
+    model_rshp.load_state_dict(state_dict)  # strict=True (default)
     model_rshp.to(device)
     model_rshp.eval()
         
@@ -325,20 +532,19 @@ def dl_models():
     # Define the device (CPU-only if no GPU is available)
 
     # Load the model architecture
-    model_rmt = models.densenet201(weights=None)  # Initialize model without pre-trained weights
-    num_features = model_rmt.classifier.in_features
-
-    # Use the correct number of output classes (9 as indicated in the error) 
-    num_features = model_rmt.classifier.in_features  # or model.classifier.in_features if replaced earlier
-    model_rmt.classifier = torch.nn.Sequential(
-        torch.nn.Linear(num_features, 512),
-        torch.nn.ReLU(),
-        torch.nn.Dropout(0.4),
-        torch.nn.Linear(512, 3)
+    model_rmt = models.densenet201(weights=None)  # base architecture
+    num_features = model_rmt.classifier.in_features  # 1920 for densenet201
+ 
+    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
+    model_rmt.classifier = nn.Sequential(
+        nn.Dropout(p=0.2),
+        nn.Linear(num_features, 3)   # 8 material classes
     )
-
-    # Load the trained weights
-    model_rmt.load_state_dict(torch.load(str(dl_dir / "densenet201_roof_material.pt"), map_location=device))
+ 
+    # Load the trained DenseNet201 weights
+    state_dict = torch.load(str(dl_dir / "densenet201_roof_material.pt"),
+                            map_location=device)
+    model_rmt.load_state_dict(state_dict)  # strict=True (default)
     model_rmt.to(device)
     model_rmt.eval()
 

@@ -256,9 +256,6 @@ def create_database(polygon_name):
         
     return data_ai
 
-root_dir = Path(__file__).parent.resolve()
-gsv_dir = (root_dir / '..' / '..' / 'methods').resolve()
-
 def get_road_orientation(location):
     """
     Determine the road orientation (azimuth) near a specified location using the Google Roads API.
