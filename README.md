@@ -17,10 +17,10 @@
 
 # ✨ Key Features
 
-- **AI-powered building feature prediction** using DenseNet201 with transfer learning
+- **AI-powered building feature prediction** using Deep Learning model e.g.(DenseNet201,ConvNeXt) with transfer learning and fine tuning
 - **Multiple usage modes** for different data sources and use cases
 - **Interactive GUI** for streamlined building assessment workflows
-- **Object detection module** to isolate buildings of interest
+- **Object detection module** to isolate building of interest
 - **Automated building stock collection** from facade images
 - **Flexible data input/output** with CSV support and progress saving
 
@@ -30,7 +30,7 @@
 
 Before you begin, make sure the following are installed on your system:
 
-- [Git](https://git-scm.com/downloads) — Used to clone the repository and manage version control.  
+- [Git](https://git-scm.com/downloads) — Used to clone the repository, manage version control, and install GEM libraries.  
   Git is typically pre-installed on macOS, but on Windows, users need to install it manually. You can verify whether Git is installed by running the following command in the terminal:
   ```bash
   git --version
@@ -64,7 +64,7 @@ Before you begin, make sure the following are installed on your system:
 
     Clone the ropository
    ```bash
-   git clone https://github.com/dangomezm/RUBIC-AI.git
+   git clone https://github.com/GEMScienceTools/RUBIC-AI.git
    ```
 
 3. **Install dependencies**
