@@ -121,21 +121,28 @@ Restarting your system can help resolve potential issues related to environment 
 
 ### 🔧 **Model performance**
 
-#### 🏗️ Lateral Load Resistant System (LLRS) Classifier Performance
+🏗️ **Lateral Load Resistant System (LLRS) Classifier Performance**
 - Current Accuracy: **~71.0%**
-#### 🧱 LLRS Material Classifier Performance
+  
+🧱 **LLRS Material Classifier Performance**
 - Current Accuracy: **~71.5%**
-#### 🏢 Number of Stories Classifier Performance
+  
+🏢 **Number of Stories Classifier Performance**
 - Current Accuracy: **~73.7%**
-#### 🏠 Occupancy Classifier Performance 
+  
+🏠 **Occupancy Classifier Performance** 
 -  Current Accuracy: **~82.3%**
-#### 🧾 Code Level Classifier Performance 
+
+🧾 **Code Level Classifier Performance** 
 -  Current Accuracy: **~64.0%**
-#### 📍 Block Position Classifier Performance 
+  
+📍 **Block Position Classifier Performance** 
 -  Current Accuracy: **~59.1%**
-#### 🏛️ Roof Shape Classifier Performance 
+  
+🏛️ **Roof Shape Classifier Performance**
 -  Current Accuracy: **~72.6%**
-#### 🔨 Roof Material Classifier Performance 
+  
+🔨 **Roof Material Classifier Performance** 
 -  Current Accuracy: **~82.6%**
 
 For each application, there are additional metrics of interest.  
