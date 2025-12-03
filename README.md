@@ -185,7 +185,7 @@ Below is the information from the confusion matrices, which allows users to dete
 
 </details>
 
-### Image input specifications:
+### Image input specifications
 - Supported formats: *[JPG, JPEG, PNG]*
 - Recommended minimum resolution: *640x480*
   
