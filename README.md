@@ -100,13 +100,13 @@ Restarting your system can help resolve potential issues related to environment 
 
 **Best for:** Create a building stock from images stored on your local device. Ideal for characterizing buildings in locations where there is no access with GSV and whose images already exist, e.g., inside a factory.
 
-<a href="https://github.com/dangomezm/GEM_AI_Toolkit/tree/main/demos/specific_coordinates">See detailed instructions in the demos</a>
+<a href="https://github.com/dangomezm/GEM_AI_Toolkit/tree/main/demos/local_images">See detailed instructions in the demos</a>
 
 ### 4. Neighbor Extrapolation
 
 **Best for:** Expanding known building data to classify unknown buildings
 
-<a href="https://github.com/dangomezm/GEM_AI_Toolkit/tree/main/demos/specific_coordinates">See detailed instructions in the demos</a>
+<a href="https://github.com/dangomezm/GEM_AI_Toolkit/tree/main/demos/extrapolation">See detailed instructions in the demos</a>
 
 ## 🖥️ AI Models and Performance
 
@@ -122,21 +122,21 @@ Restarting your system can help resolve potential issues related to environment 
 ### 🔧 **Model performance**
 
 #### 🏗️ Lateral Load Resistant System (LLRS) Classifier Performance
-- Current Accuracy: **~75.6%**
+- Current Accuracy: **~71.0%**
 #### 🧱 LLRS Material Classifier Performance
-- Current Accuracy: **~51.1%**
+- Current Accuracy: **~71.5%**
 #### 🏢 Number of Stories Classifier Performance
-- Current Accuracy: **~79.6%**
+- Current Accuracy: **~73.7%**
 #### 🏠 Occupancy Classifier Performance 
--  Current Accuracy: **~61.7%**
+-  Current Accuracy: **~82.3%**
 #### 🧾 Code Level Classifier Performance 
--  Current Accuracy: **~70.0%**
+-  Current Accuracy: **~64.0%**
 #### 📍 Block Position Classifier Performance 
--  Current Accuracy: **~64.7%**
+-  Current Accuracy: **~59.1%**
 #### 🏛️ Roof Shape Classifier Performance 
--  Current Accuracy: **~87.3%**
+-  Current Accuracy: **~72.6%**
 #### 🔨 Roof Material Classifier Performance 
--  Current Accuracy: **~84.9%**
+-  Current Accuracy: **~82.6%**
 
 For each application, there are additional metrics of interest.  
 Below is the information from the confusion matrices, which allows users to determine whether these models work for their specific needs.  
