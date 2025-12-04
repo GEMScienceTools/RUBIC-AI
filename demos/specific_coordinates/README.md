@@ -1,4 +1,4 @@
-### 2. Specific Coordinates Method 
+# Specific Coordinates Method 
 **Best for:** Characterizing specific buildings, for example: reviewing all hospitals in the area of analysis, even if they are located in different countries.
 
 **Workflow:**
