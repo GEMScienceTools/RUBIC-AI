@@ -112,7 +112,7 @@ Restarting your system can help resolve potential issues related to environment 
 
 ### AI Models
 
-- **Base Architecture:** DenseNet201
+- **Base Architectures:** DenseNet201, ConvNeXt-Tiny
 - **Training Strategy:** Transfer learning from ImageNet with fine-tuning
 - **Inference:** Real-time feature prediction with or without human verification.  
   > ⚠️ **Warning:**  
