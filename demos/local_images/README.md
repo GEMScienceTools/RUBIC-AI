@@ -54,11 +54,11 @@ However, the user can easily switch back to manual inspection by clicking the ch
 
 6. **Main interface features**
    
-	- **5.1 Manual Box**
+	- **6.1 Manual Box**
 	     - If the automatic delimitation of the building is not adequate for proper isolation,  
 		   or if the selected building is not the building of interest, the user can define a manual bounding box by clicking on four points.
 			<img src="../../help_img/manual_box.png">
-	- **5.2 Review Previous Classifications**
+	- **6.2 Review Previous Classifications**
 	     - If you want to check a specific image, use the ***Search Building*** button. First, enter the image ID (e.g., `1_1`) in the adjacent field, then click the ***Search Building*** button. The GUI will automatically display the corresponding image and its saved classification.
 		   > ⚠️ **Important:** *This only works for inspections that were previously saved.*
    
