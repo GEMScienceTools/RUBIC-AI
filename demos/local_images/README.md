@@ -1,4 +1,4 @@
-### 3. Local Images Method 
+# Local Images Method 
 
 **Best for:** Create a building stock from images stored on your local device. Ideal for characterizing buildings in locations where there is no access with GSV and whose images already exist, e.g., inside a factory.
 
@@ -31,9 +31,34 @@
 	- 4.2. A maximum of three windows can display the same location (ideally the same building). These will be displayed automatically if they share the same coordinates.  
 	- 4.3. Upload the information and check the format by clicking the ***Load data*** button. Once a confirmation message appears, click ***Save and continue*** to proceed to the next step.
 
-5. **Classification options and setup main interface**
+5. **Classification options, the user can classify building features in two ways:**
+     
+   **I)** Manually or **II)** Using Deep Learning models with verification of predicted attributes.
 
-   - The process and available features are the same as those presented in sections 5 and 6 of the ***Polygon Method***.
+	- 5.1. 📝 ***Manual Classification***
+		- **5.1.1.** Click the ***Next Building*** button to upload and display the first building image.
+		- **5.1.2.** Specify the construction epoch that is most relevant to the area under analysis (this step is only required for the first analysis).
+		- **5.1.3.** Use the corresponding combo boxes to select the appropriate features based on the displayed image (e.g., select "Concrete" as the LLRS material).
+		- **5.1.4.** Click the ***Next Building*** button again to proceed to the next image, and repeat this process until all images have been reviewed.
+		- **5.1.5.** Save either all results or a partial set by clicking the ***Save data*** button. When the GUI is launched again, previously saved results will be reloaded, allowing the classification process to resume from where it left off.  
+		> ⚠️ **Important:** *If you do not save your data before closing the GUI, your work will be lost.*
+
+	- 5.2. 🤖 ***AI-Powered Classification***
+		- **5.2.1.** The ***AI Powered*** checkbox will be activated, which means the feature will be predicted using AI.  
+However, the user can easily switch back to manual inspection by clicking the checkbox again.
+		- **5.2.2.** Upload the images by clicking the ***Next Building*** button. At this step, the tool will automatically predict the building features.
+		- **5.2.3.** The user should manually define the epoch of construction and image quality, since there is currently no model available for these features
+		- **5.2.4.** Click the ***Next Building*** button again to proceed to the next image, and repeat this process until all images have been reviewed.
+		- **5.2.5.** Save either all results or a partial set by clicking the ***Save data*** button. When the GUI is launched again, previously saved results will be reloaded, allowing the classification process to resume from where it left off.  
+		> ⚠️ **Important:** *If you do not save your data before closing the GUI, your work will be lost.*
+
+6. **Main interface features**
    
-
-
+	- **5.1 Manual Box**
+	     - If the automatic delimitation of the building is not adequate for proper isolation,  
+		   or if the selected building is not the building of interest, the user can define a manual bounding box by clicking on four points.
+			<img src="../../help_img/manual_box.png">
+	- **5.2 Review Previous Classifications**
+	     - If you want to check a specific image, use the ***Search Building*** button. First, enter the image ID (e.g., `1_1`) in the adjacent field, then click the ***Search Building*** button. The GUI will automatically display the corresponding image and its saved classification.
+		   > ⚠️ **Important:** *This only works for inspections that were previously saved.*
+   
