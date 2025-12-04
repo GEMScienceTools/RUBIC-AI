@@ -41,7 +41,7 @@ However, this option may take more time to retrieve the footprints.
 
 6. **Classification options, the user can classify building features in two ways:**
      
-   **I)** Manually** or **II)** Using Deep Learning models with verification of predicted attributes.
+   **I)** Manually or **II)** Using Deep Learning models with verification of predicted attributes.
 
 	- 6.1. 📝 ***Manual Classification***
 		- **6.1.1.** Click the ***Next Building*** button to upload and display the first building image.
@@ -69,8 +69,16 @@ However, the user can easily switch back to manual inspection by clicking the ch
 	     - If the automatic delimitation of the building is not adequate for proper isolation,  
 		   or if the selected building is not the building of interest, the user can define a manual bounding box by clicking on four points.
 
-			<img src="help_img/manual_box.png">
-	- **7.2 Review Previous Classifications**
+			<img src="../../help_img/manual_box.png">
+	- **7.2 Set Image Angle**  
+		- The user can define the **pitch** angle, which controls the **vertical inclination of the camera**, allowing a full view of tall buildings. This angle is limited between **0°** and **60°**, with **5°** as the default value.  
+		<img src="../../help_img/pitch_angle.png" height="350">
+
+		- The user can also define the **heading** angle, which refers to the **horizontal camera angle**, controlling the direction of the camera and even allowing a view of buildings on the opposite side of the street (180°). This angle is limited between **–180°** and **180°**, with **0°** as the default value.
+
+		- The user can also define the **FOV** (field of view). The FOV controls the **camera zoom**: smaller values zoom in, while larger values zoom out. By default, this value is set to **120**, which is the maximum allowed. This helps create a natural zoom effect without losing too much resolution in distant building images.
+
+	- **7.3 Review Previous Classifications**
 	     - If you want to check a specific image, use the ***Search Building*** button. First, enter the image ID (e.g., `1_1`) in the adjacent field, then click the ***Search Building*** button. The GUI will automatically display the corresponding image and its saved classification.
 		   > ⚠️ **Important:** *This only works for inspections that were previously saved.*
 
