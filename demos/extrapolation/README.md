@@ -1,4 +1,4 @@
-### 4. Neighbor Extrapolation
+# Neighbor Extrapolation
 
 **Best for:** Expanding known building data to classify unknown buildings
 
@@ -10,7 +10,7 @@
    Currently, there are two options available:  
 
    - **KNN with soft voting** – a basic extrapolation strategy based on the distance to the closest examples.  
-   - **Stratified sampling** – a statistical method that ensures representative data by dividing a population into homogeneous subgroups (strata) and sampling from each. It employs a hierarchical fallback strategy that yields better results when sufficient information is available for the area of analysis.  
+   - **Stratified sampling** – a statistical method that ensures representative data by dividing a population into homogeneous subgroups (strata) and sampling from each.  
 
    Select one of the two options and then click the ***Load files*** button. A new pop-up window will appear for setting the input files.
    
@@ -48,7 +48,7 @@
 		> 📁 *Example:* `demos/Extrapolation_data_example/building_with_no_image.csv`
 		> 📝 *Required CSV format:*
 		```csv
-		ID,Latitude,Longitude
+		id,Latitude,Longitude
 		1,10.9639,-74.7964
 		2,10.9640,-74.7965
 		```
@@ -59,7 +59,7 @@
 		> 📁 *Example:* `demos/Extrapolation_data_example/building_data.csv`  
 		> 📝 *Required CSV format:
 		```csv
-		ID,Latitude,Longitude
+		id,Latitude,Longitude
 		1,10.9639,-74.7964
 		2,10.9640,-74.7965
 		```
@@ -69,8 +69,6 @@
   Then, click the ***Next Building*** button in the main panel to start the extrapolation analysis.
 
 4. **Set Input Files – Stratified Sampling**  
-
-Set the input files using either the **Existing Distribution** or the **New Distribution** method.  
 
 - **4.1 📄 New Distribution**  
   - Define the output file name using the ***Output name*** field (default: **"new_strat"**).  
@@ -116,12 +114,16 @@ Set the input files using either the **Existing Distribution** or the **New Dist
 	
 	- ***4.1.1*** Define the parameters for stratified sampling or keep the default values.  
 
-- **4.2  🚧 Existing Distribution**  
-  ⚙️ *This feature is currently under development and will be available in a future release.* 
-
 - **4.3** Click the ***Save and continue*** button and follow the instructions provided by the GUI.  
   Then, click the ***Next Building*** button in the main panel to start the extrapolation analysis.
 
-5. **API Key Configuration**
+5. **API Key Configuration**  
 
-   - Same process as explained in the ***Polygon Method***.
+The user must create two Google API keys:  
+- **Google Street View Static API** → saved as ***gsv_api_key.txt***  
+- **Google Roads API** → saved as ***roads_api_key.txt***  
+
+Both files should be placed inside the `methods` folder.  
+
+> 📁📝 *Example:* `methods/gsv_api_key.txt`  
+> 📁📝 *Example:* `methods/roads_api_key.txt`
