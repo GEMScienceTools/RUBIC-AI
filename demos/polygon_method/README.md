@@ -1,4 +1,4 @@
-### Polygon Method 
+# Polygon Method 
 **Best for:** Create a building stock from well defined area such as a neighborhood, city, or similar
 
 **Workflow:**
