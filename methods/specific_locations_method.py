@@ -122,16 +122,11 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         bold_font.setPointSize(int(10 * sf_font))
         bold_font.setBold(True)
 
-        self.load_data_button = QtWidgets.QPushButton(self.coord_frame)
-        self.load_data_button.setGeometry(QtCore.QRect(int(100 * sf_x), int(430 * sf_y), int(191 * sf_x), int(31 * sf_y)))
-        self.load_data_button.setFont(bold_font)
-        self.load_data_button.setText("Load data")
-        self.load_data_button.clicked.connect(self.save_coordinates)
-
         self.save_button = QtWidgets.QPushButton(self.coord_frame)
-        self.save_button.setGeometry(QtCore.QRect(int(340 * sf_x), int(430 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.save_button.setGeometry(QtCore.QRect(int(220 * sf_x), int(430 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         self.save_button.setFont(bold_font)
         self.save_button.setText("Save and continue")
+        self.save_button.clicked.connect(self.save_coordinates)
         self.save_button.clicked.connect(self.building_sample)
               
         # Feature Collection Label
@@ -171,7 +166,6 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         self.output_folder_value.raise_()
         self.csv_button_specific.raise_()
         self.specific_path.raise_()
-        self.load_data_button.raise_()
         self.save_button.raise_()
         self.tableWidget.raise_()
         self.collection_mode.raise_()
@@ -218,8 +212,6 @@ class SpecificLocationSetting(QtWidgets.QDialog):
                     return
                 
                 self.population = True
-                
-                QMessageBox.information(self, "Success", "Done! Please click save and continue.")
             except Exception as e:
                 QMessageBox.warning(self, "Error", f"Could not load file:\n\n{str(e)}")
             # Create geometries for the points using latitude and longitude
@@ -242,9 +234,8 @@ class SpecificLocationSetting(QtWidgets.QDialog):
                 self.mode_use()
                 self.accept()
         except:
-            QMessageBox.warning(self, "Input Error", "Please load the data first using **Load Data**")
-
-
+            pass
+        
     def preview_data(self):
         if hasattr(self, 'df') and not self.df.empty:
             preview_df = self.df.head(10)  # Only show first 10 rows
