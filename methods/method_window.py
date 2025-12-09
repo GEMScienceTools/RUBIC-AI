@@ -99,7 +99,7 @@ class InspectionSetting(QDialog):
         
         # Default (Polygon method) description
         self.default_descrip = QtWidgets.QTextBrowser(self.method_frame)
-        self.default_descrip.setGeometry(QtCore.QRect(int(230 * sf_x), int(50 * sf_y), int(430 * sf_x), int(151 * sf_y)))
+        self.default_descrip.setGeometry(QtCore.QRect(int(230 * sf_x), int(50 * sf_y), int(430 * sf_x), int(130 * sf_y)))
         self.default_descrip.setObjectName("default_descrip")
 
         # Reusable CSS style block for HTML descriptions
@@ -128,7 +128,7 @@ class InspectionSetting(QDialog):
         
         # Specific method description
         self.specific_descrip = QtWidgets.QTextBrowser(self.method_frame)
-        self.specific_descrip.setGeometry(QtCore.QRect(int(230 * sf_x), int(230 * sf_y), int(430 * sf_x), int(151 * sf_y)))
+        self.specific_descrip.setGeometry(QtCore.QRect(int(230 * sf_x), int(230 * sf_y), int(430 * sf_x), int(140 * sf_y)))
         self.specific_descrip.setObjectName("specific_descrip")
 
         # Compute adaptive font size
