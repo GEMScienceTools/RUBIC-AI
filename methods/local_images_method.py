@@ -122,16 +122,12 @@ class LocalImageSetting(QtWidgets.QDialog):
 
         # Buttons
         font.setBold(True)
-        self.load_data_button = QtWidgets.QPushButton(self.coord_frame)
-        self.load_data_button.setGeometry(QtCore.QRect(int(100 * sf_x), int(470 * sf_y), int(191 * sf_x), int(31 * sf_y)))
-        self.load_data_button.setFont(font)
-        self.load_data_button.setText("Load data")
-        self.load_data_button.clicked.connect(self.save_coordinates)
         
         self.save_button = QtWidgets.QPushButton(self.coord_frame)
-        self.save_button.setGeometry(QtCore.QRect(int(320 * sf_x), int(470 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.save_button.setGeometry(QtCore.QRect(int(220 * sf_x), int(470 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         self.save_button.setFont(font)
         self.save_button.setText("Save and continue")
+        self.save_button.clicked.connect(self.save_coordinates)
         self.save_button.clicked.connect(self.building_sample)
         
         # Title
@@ -185,7 +181,6 @@ class LocalImageSetting(QtWidgets.QDialog):
         self.output_local.raise_()
         self.folder_local_button.raise_()
         self.local_folder_path.raise_()
-        self.load_data_button.raise_()
         self.save_button.raise_()
         self.path_out_folder_bt.raise_()
         self.output_folder_value.raise_()
@@ -210,7 +205,7 @@ class LocalImageSetting(QtWidgets.QDialog):
  
             # If format is valid, continue with your function
             if self.create_polygon() == True:
-                QMessageBox.information(self, "Success", "Done! Please click the save and continue button.")
+                pass
             
             self.population = False
             
@@ -236,7 +231,7 @@ class LocalImageSetting(QtWidgets.QDialog):
                 self.mode_use()
                 self.accept()
         except:
-            QMessageBox.warning(self, "Input Error", "First Please upload the data using the **Load Data button**")
+            pass
             
     # ############ Folder Selection ################           
     def select_folder(self):

@@ -834,16 +834,26 @@ class GUIMethods:
                             
                     if best_box is None:
                         # No building dectection 
-                        self.no_image = "No Building detected"
-                        # Skipping prection for this image
-                        self.predicted_img[aux] = 0
-                        font = QtGui.QFont()
-                        font.setPointSize(int(16 * self.sf_font))
-                        font.setBold(True)
-                        font.setWeight(75)
-                        img_frames[aux].setFont(font)
-                        img_frames[aux].setText(self.no_image)
-                        img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)  # Center-align text
+                        image_rgb = self.add_not_detected_overlay(image_rgb, opacity=0.5,
+                                     text="CLEAR VIEW OF BUILDING NOT DETECTED")
+                        
+                        # Convert BGR image (OpenCV) to RGB format
+                        display_image_rgb = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2RGB)
+                        # display_image_rgb = image_rgb.copy()
+                        # Convert the RGB image to QImage
+                        height, width, channel = display_image_rgb.shape
+                        bytes_per_line = 3 * width
+                        qimage = QtGui.QImage(display_image_rgb.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
+                        
+                        # Convert QImage to QPixmap
+                        building_pixmap = QtGui.QPixmap.fromImage(qimage)
+                        
+                        img_frames[aux].setPixmap(
+                            building_pixmap.scaled(
+                                img_frames[aux].width(),
+                                img_frames[aux].height(),
+                                QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
+                                QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
                         continue
                 
                     # Bounding box coordinates
@@ -967,7 +977,7 @@ class GUIMethods:
                             if cls_name == TARGET_CLASS and score > best_score and score > 0.5:
                                 best_score = score
                                 best_box = box
-                    
+                                          
                         # Bounding box coordinates
                         x1, y1, x2, y2 = map(int, best_box.xyxy[0])
                             
@@ -975,7 +985,7 @@ class GUIMethods:
                         cropped_image = image_rgb[y1:y2, x1:x2]
                         # Save image in local device
                         cv2.imwrite(cropped_path, cropped_image)
-                    
+                        
                         # Draw a dashed red rectangle for the highest confidence box
                         if self.gap == 0:
                             self.gap = 1
@@ -1033,29 +1043,71 @@ class GUIMethods:
                             pass
                         else:
                             # Displayed image in corresponding frames
-                            self.no_image = """
-                            <b><u>NO BUILDING DETECTED</u></b><br><br>
-                            There is no building detected by the tool. However, if you believe there is a building in the image,<br>
-                            <b><u>PLEASE CLICK THE "MANUAL BOX" BUTTON</u></b> and manually select the building.<br>
-                            <b><u>The building detector has high precision</u></b>; therefore, you may ignore this message <br>
-                            and simply click <b><u>Next Building</u></b> to continue classifying.
-                            """
+                            image_rgb = self.add_not_detected_overlay(image_rgb, opacity=0.5,
+                                         text="CLEAR VIEW OF BUILDING NOT DETECTED")
                             
-                            font = QtGui.QFont()
-                            font.setPointSize(int(12 * self.sf_font))    
-                            font.setBold(True)
-                            font.setWeight(75)
+                            # Convert BGR image (OpenCV) to RGB format
+                            display_image_rgb = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2RGB)
+                            # display_image_rgb = image_rgb.copy()
+                            # Convert the RGB image to QImage
+                            height, width, channel = display_image_rgb.shape
+                            bytes_per_line = 3 * width
+                            qimage = QtGui.QImage(display_image_rgb.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
                             
-                            img_frames[aux].setFont(font)
-                            img_frames[aux].setTextFormat(QtCore.Qt.RichText)  # Enable rich text (HTML)
-                            img_frames[aux].setText(self.no_image)
-                            img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)
-                            img_frames[aux].setWordWrap(True)  # Wrap long text
+                            # Convert QImage to QPixmap
+                            building_pixmap = QtGui.QPixmap.fromImage(qimage)
+                            
+                            img_frames[aux].setPixmap(
+                                building_pixmap.scaled(
+                                    img_frames[aux].width(),
+                                    img_frames[aux].height(),
+                                    QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
+                                    QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
+                            
                                         
         # Chance progress bar to complete
         self.ui.progress_bar_method.setValue(100)
         self.ui.method_progress.setText("Done!")
     
+    def add_not_detected_overlay(self, image_bgr, opacity=0.5, text="BUILDING NOT DETECTED"):
+        """
+        Takes a BGR image and returns a new image with:
+        - 50% opacity (white background)
+        - centered 'BUILDING NOT DETECTED' in red over white box
+        """
+        if image_bgr is None:
+            raise ValueError("Image is None in add_not_detected_overlay")
+    
+        # White background (same size)
+        background = np.ones_like(image_bgr) * 255
+    
+        # Blend for opacity
+        blended = cv2.addWeighted(image_bgr, opacity, background, 1 - opacity, 0)
+    
+        # Text settings
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        font_scale = 1
+        thickness = 2
+        text = text
+    
+        # Text size
+        (text_w, text_h), baseline = cv2.getTextSize(text, font, font_scale, thickness)
+    
+        # Center position
+        x = (blended.shape[1] - text_w) // 2
+        y = (blended.shape[0] + text_h) // 2
+    
+        # White rectangle behind text
+        padding = 10
+        top_left = (x - padding, y - text_h - padding)
+        bottom_right = (x + text_w + padding, y + baseline + padding)
+        cv2.rectangle(blended, top_left, bottom_right, (255, 255, 255), -1)
+    
+        # Red text
+        cv2.putText(blended, text, (x, y), font, font_scale, (0, 0, 255),
+                    thickness, cv2.LINE_AA)
+    
+        return blended
        
     ############ Left Bounding Box Manual Selection ################
     def bounding_box_frame_left(self):
@@ -2689,8 +2741,26 @@ class GUIMethods:
                 if result.shape[0]<0:
                     result = self.data_ai[self.data_ai['id'] == int(search_value)]
     
+            try:
+                n_building = result.iloc[0,0]
+            except:
+                self.data_ai.to_csv(self.ui.output_folder_value+"/"+"search_aux.csv",index=False)
+                self.data_ai = pd.read_csv(self.ui.output_folder_value+"/"+"search_aux.csv")
+                try:
+                    result = self.data_ai[self.data_ai['id'] == int(search_value)]
+                    if result.shape[0]<0:
+                        result = self.data_ai[self.data_ai['id'] == search_value]
+                except:
+                    result = self.data_ai[self.data_ai['id'] == search_value]
+                    if result.shape[0]<0:
+                        result = self.data_ai[self.data_ai['id'] == int(search_value)]
+                #Remove auxiliar file
+                os.remove(self.ui.output_folder_value+"/"+"search_aux.csv")
+               
+            
             n_building = result.iloc[0,0]
-                    
+                
+                
             try:
                 if self.ui.insp_method == 0:
                     self.click_count = int(n_building) - 1
@@ -2712,8 +2782,7 @@ class GUIMethods:
             self.search_count = True
             
         except:
-            QMessageBox.warning(self.ui,"Data Error", "Please click the *Next Building* button to load the inspection database.\n"
-                                        "If this message continues to appear, there is no saved inspection for this Image ID.")
+            QMessageBox.warning(self.ui,"Data Error", "There is no saved inspection for this Image ID.")
 
 
     def neighbor_extrapolation(self):
