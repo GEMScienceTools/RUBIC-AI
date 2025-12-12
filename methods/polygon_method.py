@@ -174,6 +174,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.input_button_polygon.setFont(font)
         self.input_button_polygon.setObjectName("input_button_polygon")
         self.input_button_polygon.setText("Upload polygon file")
+        self.input_button_polygon.clicked.connect(self.upload_input)
         
         self.polygon_path_value = QtWidgets.QLabel(self.coord_frame)
         self.polygon_path_value.setGeometry(QtCore.QRect(240, 190, 291, 31))
@@ -273,7 +274,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.tableWidget.setRowCount(0)
         
         self.save_button = QtWidgets.QPushButton(self.coord_frame)
-        self.save_button.setGeometry(QtCore.QRect(int(220 * sf_x), int(650 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.save_button.setGeometry(QtCore.QRect(int(220 * sf_x), int(670 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         self.save_button.setFont(label_font)
         self.save_button.setText("Save and continue")
         self.save_button.clicked.connect(self.building_sample)
@@ -286,57 +287,65 @@ class PolygonSetting(QtWidgets.QDialog):
             folder_display = os.path.basename(folder_path)
             self.output_folder_value.setText(folder_display)
             
+    def upload_input (self):
+        if self.polygon_source_value.currentIndex() == 0:
+            self.upload_csv()
+        elif self.polygon_source_value.currentIndex() == 1:
+            self.select_polygon()
+            
     def select_polygon(self):
-        if self.existing_polygon_check.isChecked():
-            # Open file dialog restricted to .shp and .gpkg
-            file_path, _ = QFileDialog.getOpenFileName(
-                None,
-                "Select Polygon File",
-                "",
-                "Vector files (*.shp *.gpkg)"
+        # Open file dialog restricted to .shp and .gpkg
+        file_path, _ = QFileDialog.getOpenFileName(
+            None,
+            "Select Polygon File",
+            "",
+            "Vector files (*.shp *.gpkg)"
+        )
+        if file_path:
+            # Show only file name (not full path) in the GUI element
+            file_display = os.path.basename(file_path)
+            self.polygon_path_value.setText(file_display)
+            gdf = self.load_polygon_layer(
+                path = file_path,
+                expected_crs = "EPSG:4326",
+                fix_invalid=True
             )
-            if file_path:
-                # Show only file name (not full path) in the GUI element
-                file_display = os.path.basename(file_path)
-                self.polygon_existing_path.setText(file_display)
-                gdf = self.load_polygon_layer(
-                    path = file_path,
-                    expected_crs = "EPSG:4326",
-                    fix_invalid=True
-                )
-                output_file_existing = os.path.join(self.method.output_folder_value, f"{self.output_polygon.text()}_boundary.gpkg")
-                self.save_polygon_layer(
-                                gdf,  
-                                output_path=output_file_existing,
-                                layer="boundary",
-                                overwrite=True
-                            )
-                self.boundary_path = output_file_existing
-                # Centroid geometry as a new column
-                gdf = gdf.to_crs(epsg=4326)  # reproject to WGS84
-                layer_union = gdf.geometry.unary_union
-                center = layer_union.centroid              
-                lon = center.x
-                lat = center.y
-                try:
-                    geolocator = Nominatim(user_agent="city_name_locator")
-                    location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
-                    if location and 'address' in location.raw:
-                        address = location.raw['address']
-                        self.city = address.get('city', address.get('town', address.get('village', 'Unknown')))
-                        self.country = address.get('country', 'Unknown')
-                except:
-                    QMessageBox.warning(self.ui, "OSM Error", "The city and country could not be retrieved. Please try again.")
-                    self.city = "Unknown"
-                    self.country = "Unknown"
-                    return self.city , self.country
+            output_file_existing = os.path.join(self.method.output_folder_value, f"{self.output_polygon.text()}_boundary.gpkg")
+            self.save_polygon_layer(
+                            gdf,  
+                            output_path=output_file_existing,
+                            layer="boundary",
+                            overwrite=True
+                        )
+            self.boundary_path = output_file_existing
+            # Centroid geometry as a new column
+            gdf = gdf.to_crs(epsg=4326)  # reproject to WGS84
+            layer_union = gdf.geometry.unary_union
+            center = layer_union.centroid              
+            lon = center.x
+            lat = center.y
+            try:
+                geolocator = Nominatim(user_agent="city_name_locator")
+                location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
+                if location and 'address' in location.raw:
+                    address = location.raw['address']
+                    self.city = address.get('city', address.get('town', address.get('village', 'Unknown')))
+                    self.country = address.get('country', 'Unknown')
+            except:
+                QMessageBox.warning(self.ui, "OSM Error", "The city and country could not be retrieved. Please try again.")
+                self.city = "Unknown"
+                self.country = "Unknown"
+                return self.city , self.country
+        self.df = pd.DataFrame({"Polygon": ["OK"]})
+        self.preview_data()
+                
     def upload_csv(self):
         options = QFileDialog.Options()
         file_path, _ = QFileDialog.getOpenFileName(self, "Open CSV File", "", "CSV Files (*.csv);;All Files (*)", options=options)
         if file_path:
             try:
                 self.df = pd.read_csv(file_path)
-                self.polygon_path.setText(os.path.basename(file_path))
+                self.polygon_path_value.setText(os.path.basename(file_path))
                 if self.method:
                     self.method.file_polygon_csv = file_path
 
@@ -346,13 +355,12 @@ class PolygonSetting(QtWidgets.QDialog):
                 if missing:
                     QMessageBox.warning(self, "Missing Columns", f"Required columns missing: {', '.join(missing)}")
                     return
-                QMessageBox.information(self, "Success", "Done! Please click load data button.")
                 self.preview_data()
             except Exception as e:
-                self.polygon_path.setText(f"Error: {str(e)}")
+                self.polygon_path_value.setText(f"Error: {str(e)}")
                 QMessageBox.warning(self, "Input Error", f"Error loading CSV:\n{e}")
         else:
-            self.polygon_path.setText("No file selected.")
+            self.polygon_path_value.setText("No file selected.")
             QMessageBox.warning(self, "Input Error", "No file selected.")
             
     def preview_data(self):
@@ -388,7 +396,7 @@ class PolygonSetting(QtWidgets.QDialog):
             QMessageBox.warning(self, "No Data", "No data available to preview. Please upload a valid CSV first.")
 
     def save_coordinates(self):
-        if self.existing_polygon_check.isChecked():
+        if self.polygon_source_value.currentIndex() == 1:
             pass
         else:
             try:
