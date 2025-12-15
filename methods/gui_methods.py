@@ -834,8 +834,7 @@ class GUIMethods:
                             
                     if best_box is None:
                         # No building dectection 
-                        image_rgb = self.add_not_detected_overlay(image_rgb, opacity=0.5,
-                                     text="CLEAR VIEW OF BUILDING NOT DETECTED")
+                        image_rgb = self.add_not_detected_overlay(image_rgb, opacity=0.5)
                         
                         # Convert BGR image (OpenCV) to RGB format
                         display_image_rgb = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2RGB)
@@ -1043,8 +1042,7 @@ class GUIMethods:
                             pass
                         else:
                             # Displayed image in corresponding frames
-                            image_rgb = self.add_not_detected_overlay(image_rgb, opacity=0.5,
-                                         text="CLEAR VIEW OF BUILDING NOT DETECTED")
+                            image_rgb = self.add_not_detected_overlay(image_rgb, opacity=0.5)
                             
                             # Convert BGR image (OpenCV) to RGB format
                             display_image_rgb = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2RGB)
