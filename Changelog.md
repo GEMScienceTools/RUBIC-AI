@@ -4,8 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog,
 and this project adheres to Semantic Versioning.
 
-## [1.0.0-beta.1] – 2025-12-12
-
+## [1.0.0-beta.1]
 ### Added
 - First beta release of RUBIC-AI.
 - PyQt5-based graphical user interface for building-stock inspection and labeling.
