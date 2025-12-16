@@ -253,50 +253,53 @@ class PolygonSetting(QtWidgets.QDialog):
             self.select_polygon()
             
     def select_polygon(self):
-        # Open file dialog restricted to .shp and .gpkg
-        file_path, _ = QFileDialog.getOpenFileName(
-            None,
-            "Select Polygon File",
-            "",
-            "Vector files (*.shp *.gpkg)"
-        )
-        if file_path:
-            # Show only file name (not full path) in the GUI element
-            file_display = os.path.basename(file_path)
-            self.polygon_path_value.setText(file_display)
-            gdf = self.load_polygon_layer(
-                path = file_path,
-                expected_crs = "EPSG:4326",
-                fix_invalid=True
-            )
+        try:
             output_file_existing = os.path.join(self.method.output_folder_value, f"{self.output_polygon.text()}_boundary.gpkg")
-            self.save_polygon_layer(
-                            gdf,  
-                            output_path=output_file_existing,
-                            layer="boundary",
-                            overwrite=True
-                        )
-            self.boundary_path = output_file_existing
-            # Centroid geometry as a new column
-            gdf = gdf.to_crs(epsg=4326)  # reproject to WGS84
-            layer_union = gdf.geometry.unary_union
-            center = layer_union.centroid              
-            lon = center.x
-            lat = center.y
-            try:
-                geolocator = Nominatim(user_agent="city_name_locator")
-                location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
-                if location and 'address' in location.raw:
-                    address = location.raw['address']
-                    self.city = address.get('city', address.get('town', address.get('village', 'Unknown')))
-                    self.country = address.get('country', 'Unknown')
-            except:
-                QMessageBox.warning(self.ui, "OSM Error", "The city and country could not be retrieved. Please try again.")
-                self.city = "Unknown"
-                self.country = "Unknown"
-                return self.city , self.country
-        self.df = pd.DataFrame({"Polygon": ["OK"]})
-        self.preview_data()
+            # Open file dialog restricted to .shp and .gpkg
+            file_path, _ = QFileDialog.getOpenFileName(
+                None,
+                "Select Polygon File",
+                "",
+                "Vector files (*.shp *.gpkg)"
+            )
+            if file_path:
+                # Show only file name (not full path) in the GUI element
+                file_display = os.path.basename(file_path)
+                self.polygon_path_value.setText(file_display)
+                gdf = self.load_polygon_layer(
+                    path = file_path,
+                    expected_crs = "EPSG:4326",
+                    fix_invalid=True
+                )
+                self.save_polygon_layer(
+                                gdf,  
+                                output_path=output_file_existing,
+                                layer="boundary",
+                                overwrite=True
+                            )
+                self.boundary_path = output_file_existing
+                # Centroid geometry as a new column
+                gdf = gdf.to_crs(epsg=4326)  # reproject to WGS84
+                layer_union = gdf.geometry.unary_union
+                center = layer_union.centroid              
+                lon = center.x
+                lat = center.y
+                try:
+                    geolocator = Nominatim(user_agent="city_name_locator")
+                    location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
+                    if location and 'address' in location.raw:
+                        address = location.raw['address']
+                        self.city = address.get('city', address.get('town', address.get('village', 'Unknown')))
+                        self.country = address.get('country', 'Unknown')
+                except:
+                    QMessageBox.warning(self.ui, "OSM Error", "The city and country could not be retrieved. Please try again.")
+                    self.city = "Unknown"
+                    self.country = "Unknown"
+                    return self.city , self.country
+            self.df = pd.DataFrame({"Polygon": ["OK"]})
+            self.preview_data()
+        except:
+            QMessageBox.warning(self, "Input Error", "Please select the output folder first")
                 
     def upload_csv(self):
         options = QFileDialog.Options()
@@ -321,6 +324,7 @@ class PolygonSetting(QtWidgets.QDialog):
         else:
             self.polygon_path_value.setText("No file selected.")
             QMessageBox.warning(self, "Input Error", "No file selected.")
+
             
     def preview_data(self):
         if hasattr(self, 'df') and not self.df.empty:
