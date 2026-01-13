@@ -1400,7 +1400,6 @@ class GUIMethods:
     def tax_check(self, tax_value):
         # 1) Create a small DataFrame with taxonomy strings
         df = pd.DataFrame({"TAXONOMY": [tax_value]})
-        
         try:
             tax = check_taxonomy(df, taxo_col="TAXONOMY")
         except ValueError as e:
@@ -1460,75 +1459,109 @@ class GUIMethods:
             # -------------------  Left building image ---------------------- 
             
             if self.ui.insp_method == 0 or self.ui.insp_method == 1:
-                self.data_ai.iloc[self.click_count , 0] = self.ui.img_id_value_1.text()[:-2]                 # ID
-                self.data_ai.iloc[self.click_count , 1] = self.data_building.loc[self.click_count, 'latitude']    # latitude
-                self.data_ai.iloc[self.click_count , 2] = self.data_building.loc[self.click_count, 'longitude']    # longitude
-                self.data_ai.iloc[self.click_count , 3] = self.ui.country_value.text()                   # Country
-                self.data_ai.iloc[self.click_count , 4] = self.ui.city_value.text()                      # City
-                self.data_ai.iloc[self.click_count , 5] = self.ui.material_cb_1.currentData()            # LLRS Material
-                self.data_ai.iloc[self.click_count , 6] = self.ui.llrs_cb_1.currentData()                # LLRS 
-                self.data_ai.iloc[self.click_count , 7] = self.ui.age_cb_1.currentData()                 # Code Level 
-                self.data_ai.iloc[self.click_count , 8] = self.ui.n_stories_value_1.currentData()        # Number of Stories 
-                self.data_ai.iloc[self.click_count , 9] = self.ui.occup_cb_1.currentData()               # Occupancy
-                self.data_ai.iloc[self.click_count , 10] = self.ui.bck_pos_cb_1.currentData()            # Block Position
-                self.data_ai.iloc[self.click_count , 11] = self.ui.epc_const_cb_1.currentText()          # Epoch of construction
-                self.data_ai.iloc[self.click_count , 12] = self.ui.roof_shape_cb_1.currentData()         # Roof shape
-                self.data_ai.iloc[self.click_count , 13] = self.ui.roof_material_cb_1.currentData()      # Roof material
-                self.data_ai.iloc[self.click_count , 14] = self.ui.img_q_cb_1.currentData()              # Image Quality
-                
-                try:
-                    self.data_ai.iloc[self.click_count , 15] = (self.ui.material_cb_1.currentData()+"/"+
-                                                                    self.ui.llrs_cb_1.currentData()+"/"+
-                                                                    self.ui.age_cb_1.currentData()+"/H:"+
-                                                                    self.ui.n_stories_value_1.currentText()+"/"+
-                                                                    self.ui.bck_pos_cb_1.currentData()+"/"+
-                                                                    self.ui.roof_shape_cb_1.currentData()+"+"+
-                                                                    self.ui.roof_material_cb_1.currentData()+"/"+
-                                                                    self.ui.occup_cb_1.currentData())
-                                                                    
-                    # Taxonomy
-                    self.tax_check(self.data_ai.iloc[self.click_count , 15])
-                except:
-                    pass
-                
-                if self.img_url[0]  != "":
-                    self.data_ai.iloc[self.click_count , 16] = self.img_url[0]                           # Image URL
+                self.data_ai.iloc[self.click_count, 0]  = self.ui.img_id_value_1.text()[:-2]
+                self.data_ai.iloc[self.click_count, 1]  = self.data_building.loc[self.click_count, 'latitude']
+                self.data_ai.iloc[self.click_count, 2]  = self.data_building.loc[self.click_count, 'longitude']
+                self.data_ai.iloc[self.click_count, 3]  = self.ui.country_value.text()
+                self.data_ai.iloc[self.click_count, 4]  = self.ui.city_value.text()
+                self.data_ai.iloc[self.click_count, 5]  = self.ui.material_cb_1.currentData()
+                self.data_ai.iloc[self.click_count, 6]  = self.ui.llrs_cb_1.currentData()
+                self.data_ai.iloc[self.click_count, 7]  = self.ui.age_cb_1.currentData()
+                self.data_ai.iloc[self.click_count, 8]  = self.ui.n_stories_value_1.currentData()
+                self.data_ai.iloc[self.click_count, 9]  = self.ui.occup_cb_1.currentData()
+                self.data_ai.iloc[self.click_count, 10] = self.ui.bck_pos_cb_1.currentData()
+                self.data_ai.iloc[self.click_count, 11] = self.ui.epc_const_cb_1.currentText()
+                self.data_ai.iloc[self.click_count, 12] = self.ui.roof_shape_cb_1.currentData()
+                self.data_ai.iloc[self.click_count, 13] = self.ui.roof_material_cb_1.currentData()
+                self.data_ai.iloc[self.click_count, 14] = self.ui.img_q_cb_1.currentData()
+            
+                # Taxonomy (safe + partial)
+                def _s(v): return "" if v is None else str(v).strip()
+                def _add(out, v): 
+                    v = _s(v)
+                    if v: out.append(v)
+            
+                parts = []
+                _add(parts, self.ui.material_cb_1.currentData())
+                _add(parts, self.ui.llrs_cb_1.currentData())
+                _add(parts, self.ui.age_cb_1.currentData())
+                st = _s(self.ui.n_stories_value_1.currentText())
+                if st: parts.append(f"H:{st}")
+                _add(parts, self.ui.bck_pos_cb_1.currentData())
+            
+                roof_shape = _s(self.ui.roof_shape_cb_1.currentData())
+                roof_mat   = _s(self.ui.roof_material_cb_1.currentData())
+                if roof_shape and roof_mat:
+                    parts.append(f"{roof_shape}+{roof_mat}")
+                elif roof_shape:
+                    parts.append(roof_shape)
+                elif roof_mat:
+                    parts.append(roof_mat)
+            
+                _add(parts, self.ui.occup_cb_1.currentData())
+            
+                tax = "/".join(parts)
+                self.data_ai.iloc[self.click_count, 15] = tax
+                if tax:
+                    self.tax_check(tax)
+            
+                if self.img_url[0] != "":
+                    self.data_ai.iloc[self.click_count, 16] = self.img_url[0]
                 else:
                     if isinstance(heading, int):
-                        self.data_ai.iloc[self.click_count , 16] = base_url + coord +"&heading="+str((heading+ 180) % 360)+"&pitch=5&fov=120"
-            
+                        self.data_ai.iloc[self.click_count, 16] = base_url + coord + "&heading=" + str((heading + 180) % 360) + "&pitch=5&fov=120"
+
             # ------------------- Local  -----------------------
             elif self.ui.insp_method == 2:
                 # Left building image
-                self.data_ai.iloc[self.old_local , 0] = self.ui.img_id_value_1.text()[:-2]                  # ID
-                self.data_ai.iloc[self.old_local , 1] = self.data_building.loc[self.old_local,'latitude']      # latitude
-                self.data_ai.iloc[self.old_local , 2] = self.data_building.loc[self.old_local,'longitude']      # longitude
-                self.data_ai.iloc[self.old_local , 3] = self.ui.country_value.text()                   # Country
-                self.data_ai.iloc[self.old_local , 4] = self.ui.city_value.text()                      # City
-                self.data_ai.iloc[self.old_local , 5] = self.ui.material_cb_1.currentData()            # LLRS Material
-                self.data_ai.iloc[self.old_local , 6] = self.ui.llrs_cb_1.currentData()                # LLRS 
-                self.data_ai.iloc[self.old_local , 7] = self.ui.age_cb_1.currentData()                 # Code Level 
-                self.data_ai.iloc[self.old_local , 8] = self.ui.n_stories_value_1.currentData()        # Number of Stories 
-                self.data_ai.iloc[self.old_local , 9] = self.ui.occup_cb_1.currentData()               # Occupancy
-                self.data_ai.iloc[self.old_local , 10] = self.ui.bck_pos_cb_1.currentData()            # Block Position
-                self.data_ai.iloc[self.old_local , 11] = self.ui.epc_const_cb_1.currentText()          # Epoch of construction
-                self.data_ai.iloc[self.old_local , 12] = self.ui.roof_shape_cb_1.currentData()         # Roof shape
-                self.data_ai.iloc[self.old_local , 13] = self.ui.roof_material_cb_1.currentData()      # Roof material
-                self.data_ai.iloc[self.old_local , 14] = self.ui.img_q_cb_1.currentData()              # Image Quality
+                self.data_ai.iloc[self.old_local, 0]  = self.ui.img_id_value_1.text()[:-2]                 # ID
+                self.data_ai.iloc[self.old_local, 1]  = self.data_building.loc[self.old_local,'latitude']  # latitude
+                self.data_ai.iloc[self.old_local, 2]  = self.data_building.loc[self.old_local,'longitude'] # longitude
+                self.data_ai.iloc[self.old_local, 3]  = self.ui.country_value.text()                       # Country
+                self.data_ai.iloc[self.old_local, 4]  = self.ui.city_value.text()                          # City
+                self.data_ai.iloc[self.old_local, 5]  = self.ui.material_cb_1.currentData()                # LLRS Material
+                self.data_ai.iloc[self.old_local, 6]  = self.ui.llrs_cb_1.currentData()                    # LLRS
+                self.data_ai.iloc[self.old_local, 7]  = self.ui.age_cb_1.currentData()                     # Code Level
+                self.data_ai.iloc[self.old_local, 8]  = self.ui.n_stories_value_1.currentData()            # Number of Stories
+                self.data_ai.iloc[self.old_local, 9]  = self.ui.occup_cb_1.currentData()                   # Occupancy
+                self.data_ai.iloc[self.old_local, 10] = self.ui.bck_pos_cb_1.currentData()                 # Block Position
+                self.data_ai.iloc[self.old_local, 11] = self.ui.epc_const_cb_1.currentText()               # Epoch of construction
+                self.data_ai.iloc[self.old_local, 12] = self.ui.roof_shape_cb_1.currentData()             # Roof shape
+                self.data_ai.iloc[self.old_local, 13] = self.ui.roof_material_cb_1.currentData()          # Roof material
+                self.data_ai.iloc[self.old_local, 14] = self.ui.img_q_cb_1.currentData()                  # Image Quality
                 
-                try:
-                    self.data_ai.iloc[self.old_local , 15] = (self.ui.material_cb_1.currentData()+"/"+
-                                                                    self.ui.llrs_cb_1.currentData()+"+"+
-                                                                    self.ui.age_cb_1.currentData()+"/H:"+
-                                                                    self.ui.n_stories_value_1.currentText()+"/"+
-                                                                    self.ui.occup_cb_1.currentData()+"/"+
-                                                                    self.ui.bck_pos_cb_1.currentData())            # Taxonomy
-                except:
-                    pass
+                # Taxonomy (works with missing fields)
+                def _s(v): return "" if v is None else str(v).strip()
+                parts = []
                 
-                self.data_ai.iloc[self.old_local , 16] = self.data_building.iloc[self.old_local , 0] 
-            
-        
+                for v in (_s(self.ui.material_cb_1.currentData()),
+                          _s(self.ui.llrs_cb_1.currentData()),
+                          _s(self.ui.age_cb_1.currentData()),
+                          f"H:{_s(self.ui.n_stories_value_1.currentText())}" if _s(self.ui.n_stories_value_1.currentText()) else "",
+                          _s(self.ui.bck_pos_cb_1.currentData())):
+                    if v:
+                        parts.append(v)
+                
+                roof_shape = _s(self.ui.roof_shape_cb_1.currentData())
+                roof_mat   = _s(self.ui.roof_material_cb_1.currentData())
+                if roof_shape and roof_mat:
+                    parts.append(f"{roof_shape}+{roof_mat}")
+                elif roof_shape:
+                    parts.append(roof_shape)
+                elif roof_mat:
+                    parts.append(roof_mat)
+                
+                occup = _s(self.ui.occup_cb_1.currentData())
+                if occup:
+                    parts.append(occup)
+                
+                tax = "/".join(parts)
+                self.data_ai.iloc[self.old_local, 15] = tax  # Taxonomy
+                if tax:
+                    self.tax_check(tax)
+                    
+                self.data_ai.iloc[self.old_local, 16] = self.data_building.iloc[self.old_local, 0]
+ 
             
     ############ Saves the data from the inspections that were conducted ################       
     def save_database (self):
