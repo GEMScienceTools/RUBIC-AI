@@ -1429,6 +1429,26 @@ background-color: rgb(209, 170, 255);</string>
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
     </property>
    </widget>
+   <widget class="QPushButton" name="vulnerability_curve_button">
+    <property name="geometry">
+     <rect>
+      <x>930</x>
+      <y>640</y>
+      <width>191</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Vulnerability curve</string>
+    </property>
+   </widget>
    <zorder>label_2</zorder>
    <zorder>frame_location</zorder>
    <zorder>country_label_input</zorder>
@@ -1477,6 +1497,7 @@ background-color: rgb(209, 170, 255);</string>
    <zorder>img_quality</zorder>
    <zorder>roof_shape_1</zorder>
    <zorder>epoch_1</zorder>
+   <zorder>vulnerability_curve_button</zorder>
   </widget>
  </widget>
  <resources/>

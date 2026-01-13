@@ -2997,3 +2997,7 @@ class GUIMethods:
         help_window = HelpDialog(self.images, w_size_width=700, w_size_height=500, w_title= "Roof Material - visual example",
                                  img_width=180, img_height=180, parent=self.ui, main_window=self.ui)
         help_window.exec_()
+        
+        
+    def vulnerability_curve(self):
+        print("Entra")

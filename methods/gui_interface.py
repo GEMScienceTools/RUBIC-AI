@@ -118,6 +118,9 @@ class GUIInterface(QtWidgets.QMainWindow):
         # Save the values of the inspections
         self.save_data_button.clicked.connect(self.methods.save_database)
         
+        # Save the values of the inspections
+        self.vulnerability_curve_button.clicked.connect(self.methods.vulnerability_curve)
+        
         # Clean the values of the previous inspections
         self.next_button.clicked.connect(self.methods.clean_database)
         self.previous_button.clicked.connect(self.methods.clean_database)
@@ -1028,6 +1031,18 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.save_data_button.setFont(font)
         self.save_data_button.setObjectName("save_data_button")
         
+        """ Vulnerability curve button""" 
+        # Save data button
+        self.vulnerability_curve_button = QtWidgets.QPushButton(self.centralwidget)
+        self.vulnerability_curve_button.setGeometry(QtCore.QRect(int(930 * sf_x), int(640 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_font))
+        font.setBold(True)
+        font.setWeight(75)
+        self.vulnerability_curve_button.setFont(font)
+        self.vulnerability_curve_button.setObjectName("vulnerability_curve_button")
+        self.vulnerability_curve_button.setText("Vulnerability curve")
+        
         icon_size = QtCore.QSize(int(31 * sf_x), int(31 * sf_x))  # Icon is square
         self.bloc_pos_help = QtWidgets.QPushButton(self.centralwidget)
         
@@ -1157,7 +1172,8 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.roof_material_cb_1.raise_()     
         self.bloc_pos_help.raise_()
         self.roof_shape_help.raise_()
-        self.roof_material_help.raise_()  
+        self.roof_material_help.raise_() 
+        self.vulnerability_curve_button.raise_() 
         
         GUIInterface.setCentralWidget(self.centralwidget)
 
