@@ -35,6 +35,7 @@ from methods.dl_extrapolation import create_database, dl_models, inspection_data
 from methods.gsv_image_angle import gsv_angle_setting
 from methods.dl_stratified import iterative_distribution_stability_manual , iterative_label_discovery_cached_fractional
 from methods.dl_stratified import labeling_function, dl_models_strified
+from methods.vulnerability_plot import labeling_function, dl_models_strified
 
 
 class GUIMethods:
