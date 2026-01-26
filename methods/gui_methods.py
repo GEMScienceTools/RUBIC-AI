@@ -22,6 +22,7 @@ import re
 
 # Google Street Maps libry
 import requests
+import glob
 
 # *.py scripts with complex methods
 from methods.dl_prediction_models import predict_llrs_img, predict_material_img, predict_code_img, predict_roof_shape_img
@@ -35,7 +36,7 @@ from methods.dl_extrapolation import create_database, dl_models, inspection_data
 from methods.gsv_image_angle import gsv_angle_setting
 from methods.dl_stratified import iterative_distribution_stability_manual , iterative_label_discovery_cached_fractional
 from methods.dl_stratified import labeling_function, dl_models_strified
-from methods.vulnerability_plot import labeling_function, dl_models_strified
+from methods.vulnerability_plot import VulnerabilityDialog
 
 
 class GUIMethods:
@@ -3001,4 +3002,26 @@ class GUIMethods:
         
         
     def vulnerability_curve(self):
-        print("Entra")
+        # Conditional to avoid executing the method if there is no project folder
+        if self.ui.output_folder_value == "-":
+            QMessageBox.warning(self.ui, "File Error", "This option is only available once the building image is displayed.")
+        # Conditional to avoid executing the method if there is no country name
+        elif self.ui.country_value.text() == "-":
+            QMessageBox.warning(self.ui, "File Error", "This option is only available once the building image is displayed.")
+        # Conditional to avoid executing the method if there is no city name 
+        elif self.ui.city_value.text() == "-":
+            QMessageBox.warning(self.ui, "File Error", "This option is only available once the building image is displayed.")
+        else:
+            if self.ui.material_cb_1.currentData() is None:
+                QMessageBox.warning(
+                    self.ui,
+                    "Feature Required",
+                    "This option becomes available after you classify at least one feature.")
+            else:
+                vul_plot = VulnerabilityDialog(parent=self.ui, main_window=self.ui)
+                vul_plot.feature_comboboxes()
+                vul_plot.exec_()
+
+            
+            
+

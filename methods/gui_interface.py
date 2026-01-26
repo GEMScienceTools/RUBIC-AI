@@ -944,7 +944,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         """ Search button elements """
         self.search_img_button = QtWidgets.QPushButton(self.centralwidget)
-        self.search_img_button.setGeometry(QtCore.QRect(int(1400 * sf_x), int(640 * sf_y), int(151 * sf_x), int(31 * sf_y)))
+        self.search_img_button.setGeometry(QtCore.QRect(int(1400 * sf_x), int(630 * sf_y), int(151 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -954,14 +954,14 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         self.search_img_value = QtWidgets.QLineEdit(self.centralwidget)
         self.search_img_value.setPlaceholderText("Enter image ID to search")
-        self.search_img_value.setGeometry(QtCore.QRect(int(1250 * sf_x), int(640 * sf_y), int(141 * sf_x), int(31 * sf_y)))
+        self.search_img_value.setGeometry(QtCore.QRect(int(1250 * sf_x), int(630 * sf_y), int(141 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.search_img_value.setFont(font)
         self.search_img_value.setObjectName("search_img_value")
         
         self.search_img_label = QtWidgets.QLabel(self.centralwidget)
-        self.search_img_label.setGeometry(QtCore.QRect(int(1140 * sf_x), int(640 * sf_y), int(91 * sf_x), int(31 * sf_y)))
+        self.search_img_label.setGeometry(QtCore.QRect(int(1130 * sf_x), int(630 * sf_y), int(101 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -1023,7 +1023,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         """ Save data button elements """ 
         # Save data button
         self.save_data_button = QtWidgets.QPushButton(self.centralwidget)
-        self.save_data_button.setGeometry(QtCore.QRect(int(1130 * sf_x), int(670 * sf_y), int(111 * sf_x), int(31 * sf_y)))
+        self.save_data_button.setGeometry(QtCore.QRect(int(1400 * sf_x), int(670 * sf_y), int(111 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -1034,7 +1034,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         """ Vulnerability curve button""" 
         # Save data button
         self.vulnerability_curve_button = QtWidgets.QPushButton(self.centralwidget)
-        self.vulnerability_curve_button.setGeometry(QtCore.QRect(int(930 * sf_x), int(640 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.vulnerability_curve_button.setGeometry(QtCore.QRect(int(1130 * sf_x), int(670 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
