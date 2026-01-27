@@ -3013,14 +3013,22 @@ class GUIMethods:
             QMessageBox.warning(self.ui, "File Error", "This option is only available once the building image is displayed.")
         else:
             if self.ui.material_cb_1.currentData() is None:
-                QMessageBox.warning(
-                    self.ui,
-                    "Feature Required",
-                    "This option becomes available after you classify at least one feature.")
+                QMessageBox.warning(self.ui,"Feature required",
+                                    "This option becomes available after you have classified at least the material, LLRS, and number of stories.")
+            elif self.ui.llrs_cb_1.currentData() is None:
+                QMessageBox.warning(self.ui,"Feature required",
+                                    "This option becomes available after you have classified at least the material, LLRS, and number of stories.")
+            elif self.ui.n_stories_value_1.currentData() is None:
+                QMessageBox.warning(self.ui,"Feature required",
+                                    "This option becomes available after you have classified at least the material, LLRS, and number of stories.")
             else:
-                vul_plot = VulnerabilityDialog(parent=self.ui, main_window=self.ui)
-                vul_plot.feature_comboboxes()
-                vul_plot.exec_()
+                try:
+                    vul_plot = VulnerabilityDialog(parent=self.ui, main_window=self.ui)
+                    vul_plot.feature_comboboxes()
+                    vul_plot.exec_()
+                except:
+                    QMessageBox.warning(self.ui, "Invalid feature combination",
+                                        "Some feature combinations are not allowed. Please verify that your selection follows the GEM taxonomy.")
 
             
             
