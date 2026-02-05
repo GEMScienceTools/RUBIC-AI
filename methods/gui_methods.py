@@ -3022,13 +3022,13 @@ class GUIMethods:
                 QMessageBox.warning(self.ui,"Feature required",
                                     "This option becomes available after you have classified at least the material, LLRS, and number of stories.")
             else:
-                try:
+                # try:
                     vul_plot = VulnerabilityDialog(parent=self.ui, main_window=self.ui)
                     vul_plot.feature_comboboxes()
                     vul_plot.exec_()
-                except:
-                    QMessageBox.warning(self.ui, "Invalid feature combination",
-                                        "Some feature combinations are not allowed. Please verify that your selection follows the GEM taxonomy.")
+                # except:
+                #     QMessageBox.warning(self.ui, "Invalid feature combination",
+                #                         "Some feature combinations are not allowed. Please verify that your selection follows the GEM taxonomy.")
 
             
             
