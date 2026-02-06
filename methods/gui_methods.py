@@ -22,7 +22,6 @@ import re
 
 # Google Street Maps libry
 import requests
-import glob
 
 # *.py scripts with complex methods
 from methods.dl_prediction_models import predict_llrs_img, predict_material_img, predict_code_img, predict_roof_shape_img
