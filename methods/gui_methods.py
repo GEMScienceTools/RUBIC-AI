@@ -3013,17 +3013,20 @@ class GUIMethods:
         else:
             if self.ui.material_cb_1.currentData() is None:
                 QMessageBox.warning(self.ui,"Feature required",
-                                    "This option becomes available after you have classified at least the material, LLRS, and number of stories.")
+                                    "This option becomes available after you have classified at least the material, LLRS, occupancy, and number of stories.")
             elif self.ui.llrs_cb_1.currentData() is None:
                 QMessageBox.warning(self.ui,"Feature required",
-                                    "This option becomes available after you have classified at least the material, LLRS, and number of stories.")
+                                    "This option becomes available after you have classified at least the material, LLRS, occupancy, and number of stories.")
             elif self.ui.n_stories_value_1.currentData() is None:
                 QMessageBox.warning(self.ui,"Feature required",
-                                    "This option becomes available after you have classified at least the material, LLRS, and number of stories.")
+                                    "This option becomes available after you have classified at least the material, LLRS, occupancy, and number of stories.")
+            elif self.ui.occup_cb_1.currentData() is None:
+                QMessageBox.warning(self.ui,"Feature required",
+                                    "This option becomes available after you have classified at least the material, LLRS, occupancy, and number of stories.")
             else:
                 # try:
                     vul_plot = VulnerabilityDialog(parent=self.ui, main_window=self.ui)
-                    vul_plot.feature_comboboxes()
+                    vul_plot.filter_comboboxes()
                     vul_plot.exec_()
                 # except:
                 #     QMessageBox.warning(self.ui, "Invalid feature combination",
