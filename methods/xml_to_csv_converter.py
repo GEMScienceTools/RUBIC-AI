@@ -142,38 +142,3 @@ def extract_vulnerability_function(xml_url: str, function_id: str, save_csv: boo
         print(f"Data saved to: {output_filename}")
     
     return df
-
-
-def main():
-    """
-    Main function for command-line usage
-    """
-    # Example usage
-    xml_url = "https://raw.githubusercontent.com/gem/global_vulnerability_model/refs/heads/v2025.0.0/Europe/Italy/vulnerability_structural.xml"
-    function_id = "CR_LDUAL+CDH+DUH_H6/RES"
-    
-    print(f"Extracting vulnerability function: {function_id}")
-    print(f"From: {xml_url}\n")
-    
-    # Extract and convert to DataFrame
-    df = extract_vulnerability_function(xml_url, function_id, save_csv=True)
-    
-    # Display results
-    print("\nDataFrame Preview:")
-    print("=" * 80)
-    print(f"Function ID: {df.attrs['function_id']}")
-    print(f"Distribution: {df.attrs['distribution']}")
-    print(f"IMT: {df.attrs['imt']}")
-    print(f"Number of data points: {len(df)}")
-    print("\nFirst 10 rows:")
-    print(df.head(10))
-    print("\nLast 10 rows:")
-    print(df.tail(10))
-    print("\nDataFrame Info:")
-    print(df.info())
-    print("\nDataFrame Statistics:")
-    print(df.describe())
-
-
-if __name__ == "__main__":
-    main()

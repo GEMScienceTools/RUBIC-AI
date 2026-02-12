@@ -277,24 +277,24 @@ class GUIMethods:
                     self.old_local = self.cont_local
                     self.cont_local = self.cont_local + self.n_images_local
     
-                    try:    
-                        geolocator = Nominatim(user_agent="city_name_locator")
-                        location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
-                        if location and 'address' in location.raw:
-                            address = location.raw['address']
-                            self.city = (address.get("city") or address.get("town") or address.get("village")
-                                or address.get("municipality") or address.get("county") or address.get("state_district")
-                                or "Unknown")
-                            self.country = address.get('country', 'Unknown')
-                            self.city_name_manual = self.city+"_"+self.country
-                            self.ui.city_value.setText(self.city) 
-                            self.ui.country_value.setText(self.country) 
-                            return (self.city , self.country)
-                    except:
-                        QMessageBox.warning(self.ui, "OSM Error", "The city and country could not be retrieved. Please try again.")
-                        self.city = "Unknown"
-                        self.country = "Unknown"
-                        return self.city , self.country
+                    # try:    
+                    #     geolocator = Nominatim(user_agent="city_name_locator")
+                    #     location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
+                    #     if location and 'address' in location.raw:
+                    #         address = location.raw['address']
+                    #         self.city = (address.get("city") or address.get("town") or address.get("village")
+                    #             or address.get("municipality") or address.get("county") or address.get("state_district")
+                    #             or "Unknown")
+                    #         self.country = address.get('country', 'Unknown')
+                    #         self.city_name_manual = self.city+"_"+self.country
+                    #         self.ui.city_value.setText(self.city) 
+                    #         self.ui.country_value.setText(self.country) 
+                    #         return (self.city , self.country)
+                    # except:
+                    #     QMessageBox.warning(self.ui, "OSM Error", "The city and country could not be retrieved. Please try again.")
+                    #     self.city = "Unknown"
+                    #     self.country = "Unknown"
+                    #     return self.city , self.country
                 except:
                      QMessageBox.warning(self.ui, "Input Error",
                              "Some required inputs are missing or invalid. Please review all fields and check the coordinates file for inconsistencies.")
@@ -3005,11 +3005,11 @@ class GUIMethods:
         if self.ui.output_folder_value == "-":
             QMessageBox.warning(self.ui, "File Error", "This option is only available once the building image is displayed.")
         # Conditional to avoid executing the method if there is no country name
-        elif self.ui.country_value.text() == "-":
-            QMessageBox.warning(self.ui, "File Error", "This option is only available once the building image is displayed.")
-        # Conditional to avoid executing the method if there is no city name 
-        elif self.ui.city_value.text() == "-":
-            QMessageBox.warning(self.ui, "File Error", "This option is only available once the building image is displayed.")
+        # elif self.ui.country_value.text() == "-":
+        #     QMessageBox.warning(self.ui, "File Error", "This option is only available once the building image is displayed.")
+        # # Conditional to avoid executing the method if there is no city name 
+        # elif self.ui.city_value.text() == "-":
+        #     QMessageBox.warning(self.ui, "File Error", "This option is only available once the building image is displayed.")
         else:
             if self.ui.material_cb_1.currentData() is None:
                 QMessageBox.warning(self.ui,"Feature required",
@@ -3024,13 +3024,8 @@ class GUIMethods:
                 QMessageBox.warning(self.ui,"Feature required",
                                     "This option becomes available after you have classified at least the material, LLRS, occupancy, and number of stories.")
             else:
-                # try:
-                    vul_plot = VulnerabilityDialog(parent=self.ui, main_window=self.ui)
-                    vul_plot.filter_comboboxes()
-                    vul_plot.exec_()
-                # except:
-                #     QMessageBox.warning(self.ui, "Invalid feature combination",
-                #                         "Some feature combinations are not allowed. Please verify that your selection follows the GEM taxonomy.")
+                vul_plot = VulnerabilityDialog(parent=self.ui, main_window=self.ui)
+                vul_plot.exec_()
 
             
             

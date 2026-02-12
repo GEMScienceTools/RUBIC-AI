@@ -223,6 +223,7 @@ class LocalImageSetting(QtWidgets.QDialog):
             QMessageBox.warning(self, "Input Error",
                     "Some required inputs are missing or invalid. Please review all fields and check the coordinates file for inconsistencies.")
             return False
+        
     def building_sample(self):
         # Checking is the inspection mode correspond to specific
         try:
