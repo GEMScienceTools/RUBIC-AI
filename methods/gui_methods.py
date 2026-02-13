@@ -13,7 +13,7 @@ import pandas as pd
 import numpy as np
 import cv2
 from ultralytics import YOLO
-from geopy.geocoders import Nominatim
+from geopy.geocoders import Nominatim, Photon, ArcGIS
 import torch
 
 # Taxonomy check
@@ -235,7 +235,84 @@ class GUIMethods:
                 elif self.ui.insp_method == 0 or self.ui.insp_method == 1:
                     self.click_count += -1
                         
+    def get_location_with_fallback(self, lat, lon, ui_instance=None):
+        """
+        Try multiple geocoding providers with automatic fallback.
+        
+        Args:
+            lat: Latitude coordinate
+            lon: Longitude coordinate
+            ui_instance: Optional UI instance (for showing which provider worked)
+        
+        Returns:
+            tuple: (city, country) or ("Unknown", "Unknown") if all fail
+        """
+        
+        providers = [
+            ('ArcGIS', self.get_location_arcgis),
+            ('Photon', self.get_location_photon),
+            ('Nominatim', self.get_location_nominatim),
+        ]
+        
+        for provider_name, provider_func in providers:
+            try:
+                city, country = provider_func(lat, lon)
+                if city and country and city != "Unknown":
+                    if ui_instance:
+                        print(f"Successfully geocoded using {provider_name}")
+                    return city, country
+            except Exception as e:
+                print(f"{provider_name} failed: {e}")
+                continue
+        
+        return "Unknown", "Unknown"
 
+
+    def get_location_nominatim(self, lat, lon):
+        """Try Nominatim provider."""
+        geolocator = Nominatim(user_agent="city_name_locator")
+        time.sleep(1)  # Rate limiting
+        location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
+        
+        if location and 'address' in location.raw:
+            address = location.raw['address']
+            city = (address.get("city") or address.get("town") or address.get("village")
+                    or address.get("municipality") or address.get("county") or 
+                    address.get("state_district") or "Unknown")
+            country = address.get('country', 'Unknown')
+            return city, country
+        
+        return "Unknown", "Unknown"
+
+
+    def get_location_photon(self, lat, lon):
+        """Try Photon provider."""
+        geolocator = Photon(user_agent="city_name_locator")
+        location = geolocator.reverse((lat, lon), exactly_one=True, timeout=3)
+        
+        if location and hasattr(location, 'raw') and 'properties' in location.raw:
+            props = location.raw['properties']
+            city = (props.get('city') or props.get('town') or props.get('village') or 
+                    props.get('county') or "Unknown")
+            country = props.get('country', 'Unknown')
+            return city, country
+        
+        return "Unknown", "Unknown"
+
+
+    def get_location_arcgis(self, lat, lon):
+        """Try ArcGIS provider (most reliable)."""
+        geolocator = ArcGIS(user_agent="city_name_locator")
+        location = geolocator.reverse((lat, lon), exactly_one=True, timeout=5)
+        
+        if location and hasattr(location, 'raw') and 'address' in location.raw:
+            address = location.raw['address']
+            city = address.get('City') or address.get('Subregion') or "Unknown"
+            country = address.get('CountryCode') or "Unknown"
+            return city, country
+        
+        return "Unknown", "Unknown"
+    
     ############ Get city name using coordinates ################
     def get_city_name(self):
         """
@@ -276,25 +353,30 @@ class GUIMethods:
                     self.n_images_local = len(matching_rows)
                     self.old_local = self.cont_local
                     self.cont_local = self.cont_local + self.n_images_local
-    
-                    try:    
-                        geolocator = Nominatim(user_agent="city_name_locator")
-                        location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
-                        if location and 'address' in location.raw:
-                            address = location.raw['address']
-                            self.city = (address.get("city") or address.get("town") or address.get("village")
-                                or address.get("municipality") or address.get("county") or address.get("state_district")
-                                or "Unknown")
-                            self.country = address.get('country', 'Unknown')
-                            self.city_name_manual = self.city+"_"+self.country
-                            self.ui.city_value.setText(self.city) 
-                            self.ui.country_value.setText(self.country) 
-                            return (self.city , self.country)
+                      
+                    try:
+                        # Try multiple providers automatically
+                        city, country = self.get_location_with_fallback(lat, lon)
+                        
+                        if city != "Unknown" and country != "Unknown":
+                            self.city = city
+                            self.country = country
+                            self.city_name_manual = f"{self.city}_{self.country}"
+                            self.ui.city_value.setText(self.city)
+                            self.ui.country_value.setText(self.country)
+                            return (self.city, self.country)
+                        else:
+                            raise Exception("All geocoding providers failed")
+                            
                     except:
-                        QMessageBox.warning(self.ui, "OSM Error", "The city and country could not be retrieved. Please try again.")
+                        QMessageBox.warning(self.ui, "Geocoding Error", 
+                                          "The city and country could not be retrieved. Please try again.")
                         self.city = "Unknown"
                         self.country = "Unknown"
-                        return self.city , self.country
+                        self.ui.city_value.setText(self.city)
+                        self.ui.country_value.setText(self.country)
+                        return self.city, self.country
+                    
                 except:
                      QMessageBox.warning(self.ui, "Input Error",
                              "Some required inputs are missing or invalid. Please review all fields and check the coordinates file for inconsistencies.")
@@ -308,23 +390,27 @@ class GUIMethods:
                 lon = float(self.ui.lon_value.text())
                     
                 try:
-                    geolocator = Nominatim(user_agent="city_name_locator")
-                    location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
-                    if location and 'address' in location.raw:
-                        address = location.raw['address']
-                        self.city = (address.get("city") or address.get("town") or address.get("village")
-                            or address.get("municipality") or address.get("county") or address.get("state_district")
-                            or "Unknown")
-                        self.country = address.get('country', 'Unknown')
-                        self.city_name_manual = self.city+"_"+self.country
-                        self.ui.city_value.setText(self.city) 
-                        self.ui.country_value.setText(self.country) 
-                        return (self.city , self.country)
+                    # Try multiple providers automatically
+                    city, country = self.get_location_with_fallback(lat, lon)
+                    
+                    if city != "Unknown" and country != "Unknown":
+                        self.city = city
+                        self.country = country
+                        self.city_name_manual = f"{self.city}_{self.country}"
+                        self.ui.city_value.setText(self.city)
+                        self.ui.country_value.setText(self.country)
+                        return (self.city, self.country)
+                    else:
+                        raise Exception("All geocoding providers failed")
+                        
                 except:
-                    QMessageBox.warning(self.ui, "OSM Error", "The city and country could not be retrieved. Please try again.")
+                    QMessageBox.warning(self.ui, "Geocoding Error", 
+                                      "The city and country could not be retrieved. Please try again.")
                     self.city = "Unknown"
                     self.country = "Unknown"
-                    return self.city , self.country
+                    self.ui.city_value.setText(self.city)
+                    self.ui.country_value.setText(self.country)
+                    return self.city, self.country
         else:
             pass
      
