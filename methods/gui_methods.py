@@ -3111,6 +3111,7 @@ class GUIMethods:
                                     "This option becomes available after you have classified at least the material, LLRS, occupancy, and number of stories.")
             else:
                 vul_plot = VulnerabilityDialog(parent=self.ui, main_window=self.ui)
+                vul_plot.filter_comboboxes_main()
                 vul_plot.exec_()
 
             
