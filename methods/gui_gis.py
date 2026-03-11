@@ -19,15 +19,14 @@ class GUI_geofiles:
           
     ############ City boundary shape file ################
     def download_building_footprints(self):
-        # Create output file for building footprints
-        self.city_method = self.city
-        self.country_method = self.country
-        if self.city_method == "Unknown" or self.country_method == "Unknown":
-            QMessageBox.warning(self.ui, "OSM Error", "The city and country could not be retrieved.")
-
+        """
+        Downloads or loads building footprints for the selected boundary, processes and filters 
+        the retrieved geometries, saves the results as a GeoPackage file, and updates the 
+        progress indicators in the interface.
+        """
         output_file = (
             self.method.output_folder_value + "/" +
-            self.output_polygon.text() + "_buildings_footprint.gpkg"
+            self.output_polygon + "_buildings_footprint.gpkg"
         )
     
         # Check for existing footprint file
@@ -40,9 +39,9 @@ class GUI_geofiles:
         else:
             # Ensure boundary exists
             if os.path.exists(self.boundary_path):
-                # ==============================================================
-                # MODE 0: OpenStreetMap
-                # ==============================================================
+    # ==============================================================
+    # MODE 0: OpenStreetMap
+    # ==============================================================
                 if self.footprint_mode.currentData() == 0:
                     # Load and ensure EPSG:4326
                     gdf = gpd.read_file(self.boundary_path)
@@ -162,9 +161,9 @@ class GUI_geofiles:
                     QMessageBox.information(self,"Success","Footprints successfully generated")
                     return len(buildings)
                     
-                # ==============================================================
-                # MODE 1: Overture Maps
-                # ==============================================================
+    # ==============================================================
+    # MODE 1: Overture Maps
+    # ==============================================================
                 elif self.footprint_mode.currentData() == 1:
                     gdf = gpd.read_file(self.boundary_path)
                     if gdf.crs is None or gdf.crs.to_string() != "EPSG:4326":
@@ -298,35 +297,13 @@ class GUI_geofiles:
     ############ Random subset buildings ################  
     def extract_random_subset(self , sample_size):
         """
-        Extract a random subset of building footprints and save it as a GeoPackage.
-    
-        This method selects a random sample of building footprints from a previously saved GeoPackage 
-        and saves the subset to a new GeoPackage file. It ensures that the sample size does not 
-        exceed the number of features in the dataset.
-    
-        Args:
-            None. The method operates on instance attributes such as `city_method`, `country_method`, 
-            and the output folder path provided in the UI.
-    
-        Returns:
-            None. The random subset is saved to a GeoPackage file in the specified output folder.
-    
-        Effects:
-            - Saves a randomly selected subset of building footprints to a new GeoPackage.
-            - Logs messages about the saving process.
-    
-        Raises:
-            ValueError: If the sample size exceeds the number of features in the dataset.
-    
-        Notes:
-            - The random sample is controlled by a predefined sample size (`sample_size`) and seed 
-              (`seed`) for reproducibility.
+        Extracts a random subset of building footprints based on the specified sample size and 
+        saves the selected features as a new GeoPackage file.
         """
-
         # Load buildng footprints
-        footprint = self.method.output_folder_value+"/"+self.output_polygon.text()+"_buildings_footprint.gpkg"
+        footprint = self.method.output_folder_value+"/"+self.output_polygon+"_buildings_footprint.gpkg"
         # Create output file for building footprints
-        output_file= self.method.output_folder_value+"/"+self.output_polygon.text()+"_subset_footprints.gpkg"
+        output_file= self.method.output_folder_value+"/"+self.output_polygon+"_subset_footprints.gpkg"
         # Ensure sample size is not greater than the number of points in the dataset
         seed=10
         # Check if a subset file exists
@@ -343,9 +320,6 @@ class GUI_geofiles:
             # Load the input point layer
             gdf = gpd.read_file(footprint)
             
-            print("Sample size: ", sample_size)
-            print("N° Buildings: ", len(gdf))
-            
             if sample_size > len(gdf):
                 QMessageBox.warning(
                     self,
@@ -355,39 +329,18 @@ class GUI_geofiles:
             # Extract a random sample
             subset = gdf.sample(n=sample_size, random_state=seed)
             # Save the subset to a GeoPackage
-            print(f"Saving random subset to: {output_file}")
             subset.to_file(output_file, driver="GPKG", layer="random_subset")
 
     ############ Create a point layer and extract the coordinates of a subset of buildings ################ 
     def create_centroid_layer(self):
         """
-        Create a GeoPackage layer of centroids from building footprints, including latitude and longitude.
-        
-        This method calculates the centroids of building footprints from a subset GeoPackage file, 
-        extracts their latitude and longitude, and saves the resulting data to a new GeoPackage layer. 
-        If the centroid file already exists, it skips the execution.
-        
-        Args:
-            None. The method operates on instance attributes such as `city_method`, `country_method`, 
-            and the output folder path provided in the UI.
-        
-        Returns:
-            None. The centroid data is saved to a GeoPackage file in the specified output folder.
-        
-        Effects:
-            - Computes the centroids of building footprints.
-            - Extracts latitude and longitude from centroid geometries.
-            - Saves the centroids to a GeoPackage file.
-        
-        Notes:
-            - The method checks for an existing centroid GeoPackage to avoid duplicate processing.
-            - Ensures the output retains the same CRS as the input building footprints.
+        Creates a centroid layer from the selected subset of building footprints, extracts the 
+        centroid coordinates, and saves the result as a new GeoPackage file.
         """
-
         # Load selected subset building
-        subset_file=self.method.output_folder_value+"/"+self.output_polygon.text()+"_subset_footprints.gpkg"
+        subset_file=self.method.output_folder_value+"/"+self.output_polygon+"_subset_footprints.gpkg"
         # Create output file for building footprints
-        output_file=self.method.output_folder_value+"/"+self.output_polygon.text()+"_subset_centroids.gpkg"
+        output_file=self.method.output_folder_value+"/"+self.output_polygon+"_subset_centroids.gpkg"
         # Check if a centroid file exists
         if os.path.exists(output_file):
             pass
@@ -395,7 +348,6 @@ class GUI_geofiles:
             # Load the building footprints
             buildings = gpd.read_file(subset_file)
             # Calculate centroids
-            print("Calculating centroids...")
             buildings["centroid"] = buildings.geometry.centroid
             # Create a new GeoDataFrame for the centroids
             centroids = gpd.GeoDataFrame(
@@ -406,11 +358,9 @@ class GUI_geofiles:
             if "centroid" in centroids.columns:
                 centroids = centroids.drop(columns=["centroid"])
             # Add latitude and longitude columns
-            print("Extracting latitude and longitude...")
             centroids["latitude"] = centroids.geometry.y
             centroids["longitude"] = centroids.geometry.x
             # Save the centroids to a GeoPackage
-            print(f"Saving centroids to: {output_file}")
             centroids.to_file(output_file, driver="GPKG", layer="centroids")
                     
                     

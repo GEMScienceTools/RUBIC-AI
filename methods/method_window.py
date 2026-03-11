@@ -4,7 +4,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QDialog, QMessageBox
 
 from methods.polygon_method import PolygonSetting
-from methods.specific_locations_method import SpecificLocationSetting
+from methods.specific_coordinates_method import SpecificLocationSetting
 from methods.local_images_method import LocalImageSetting 
 from methods.extrapolation_options import ExtrapolationOptions
 
@@ -344,14 +344,11 @@ class InspectionSetting(QDialog):
             # Print the selected method if only one checkbox is checked
             if self.default_check.isChecked():
                 self.insp_method = 0
-                # QMessageBox.warning(self, "Usage mode error", "This option is currently unavailable. Please select either 'Local Images' or 'Neighbor Extrapolation'.")
                 self.accept()
                 self.polygon_dialog = PolygonSetting(method=self)  # Pass main window reference if needed
                 self.polygon_dialog.exec_()
                 self.output_polygon = self.polygon_dialog.output_polygon
-                self.ai_value = self.polygon_dialog.ai_value 
-                self.city = self.polygon_dialog.city 
-                self.country = self.polygon_dialog.country 
+                self.ai_value = self.polygon_dialog.ai_value       
                 
             if self.specific_check.isChecked():
                 self.insp_method = 1
@@ -359,7 +356,8 @@ class InspectionSetting(QDialog):
                 self.specific_dialog = SpecificLocationSetting(method=self)  # Pass main window reference if needed
                 self.specific_dialog.exec_()
                 self.data_specific = self.specific_dialog.df 
-                self.ai_value = self.specific_dialog.ai_value 
+                self.ai_value = self.specific_dialog.ai_value
+                
                 
             if self.local_check.isChecked():
                 self.insp_method = 2

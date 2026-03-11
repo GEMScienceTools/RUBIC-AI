@@ -19,11 +19,10 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.method_dialog = InspectionSetting()  # Pass main window reference if needed
         self.method_dialog.exec_()  # This will show the method window as a modal dialog    
         self.insp_method = self.method_dialog.insp_method
+        
         if self.insp_method == 0:
             self.output_folder_value = self.method_dialog.output_folder_value
-            self.file_name = self.method_dialog.output_polygon.text()
-            self.city = self.method_dialog.city
-            self.country = self.method_dialog.country
+            self.file_name = self.method_dialog.output_polygon
             self.ai_value = self.method_dialog.ai_value
             
         elif self.insp_method == 1:
@@ -91,7 +90,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.next_button.clicked.connect(self.methods.get_city_name)
         self.previous_button.clicked.connect(self.methods.get_city_name)
         
-        # Set eóch construction values
+        # Set epoch construction values
         self.next_button.clicked.connect(self.methods.epoch_construction)
         
         # Gets the image from Google Street View

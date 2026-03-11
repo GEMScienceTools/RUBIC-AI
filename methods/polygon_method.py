@@ -6,10 +6,10 @@ from shapely.geometry import Polygon, MultiPolygon
 import os
 import sys
 import numpy as np
-from geopy.geocoders import Nominatim
 from typing import Optional, Union
     
 from methods.gui_gis import GUI_geofiles
+from methods.utilities import select_output_folder, preview_data, upload_csv, mode_use, save_coordinates
 
 class PolygonSetting(QtWidgets.QDialog):
     def __init__(self, parent=None, method=None):
@@ -63,13 +63,14 @@ class PolygonSetting(QtWidgets.QDialog):
         self.resize(int(618 * sf_x), int(708 * sf_y))
 
         self.coord_frame = QtWidgets.QWidget(self)
-
+        # Background color
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.backg_1 = QtWidgets.QLabel(self.coord_frame)
         self.backg_1.setGeometry(QtCore.QRect(int(10 * sf_x), int(10 * sf_y), int(601 * sf_x), int(651 * sf_y)))
         self.backg_1.setStyleSheet("background-color: rgb(255, 224, 185);")
-
+        
+        # Title
         self.polygon_label = QtWidgets.QLabel(self.coord_frame)
         self.polygon_label.setGeometry(QtCore.QRect(int(210 * sf_x), int(20 * sf_y), int(221 * sf_x), int(21 * sf_y)))
         title_font = QtGui.QFont()
@@ -80,6 +81,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.polygon_label.setFont(title_font)
         self.polygon_label.setText("Polygon Method Input")
 
+        # output label
         self.output_label_polygon = QtWidgets.QLabel(self.coord_frame)
         self.output_label_polygon.setGeometry(QtCore.QRect(int(20 * sf_x), int(50 * sf_y), int(121 * sf_x), int(31 * sf_y)))
         label_font = QtGui.QFont()
@@ -97,7 +99,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.path_out_folder_bt.setGeometry(QtCore.QRect(int(20 * sf_x), int(95 * sf_y), int(231 * sf_x), int(31 * sf_y)))
         self.path_out_folder_bt.setFont(font)
         self.path_out_folder_bt.setText("Select output folder")
-        self.path_out_folder_bt.clicked.connect(self.select_output_folder)
+        self.path_out_folder_bt.clicked.connect(self._on_select_output_folder)
 
         self.output_folder_value = QtWidgets.QLabel(self.coord_frame)
         self.output_folder_value.setGeometry(QtCore.QRect(int(270 * sf_x), int(100 * sf_y), int(331 * sf_x), int(21 * sf_y)))
@@ -168,7 +170,7 @@ class PolygonSetting(QtWidgets.QDialog):
         self.load_data_button.setGeometry(QtCore.QRect(int(20 * sf_x), int(290 * sf_y), int(271 * sf_x), int(31 * sf_y)))
         self.load_data_button.setFont(label_font)
         self.load_data_button.setText("Get footprints available")
-        self.load_data_button.clicked.connect(self.save_coordinates)
+        self.load_data_button.clicked.connect(self._on_save_coordinates)
         self.load_data_button.clicked.connect(self.building_polulation)
         
         self.footprint_progress_label = QtWidgets.QLabel(self.coord_frame)
@@ -238,23 +240,37 @@ class PolygonSetting(QtWidgets.QDialog):
         self.save_button.setText("Save and continue")
         self.save_button.clicked.connect(self.building_sample)
 
-    def select_output_folder(self):
-        folder_path = QFileDialog.getExistingDirectory(None, "Select Folder")
-        if self.method:
-            self.method.output_folder_value = folder_path
-        if folder_path:
-            folder_display = os.path.basename(folder_path)
-            self.output_folder_value.setText(folder_display)
+        # ==============================================================
+        # Polygon method function
+        # ==============================================================
+        
+
+    def _on_select_output_folder(self):
+        """
+        Opens a folder selection dialog, stores the selected output folder path, and displays 
+        the folder name in the interface.
+        """
+        self.method.output_folder_value, self.output_polygon = select_output_folder(self)
+        self.output_folder_value.setText(self.output_polygon)
             
+        
     def upload_input (self):
+        """
+        Calls the appropriate input loading method based on the selected polygon source.
+        """
         if self.polygon_source_value.currentIndex() == 0:
-            self.upload_csv()
+            upload_csv(self)
         elif self.polygon_source_value.currentIndex() == 1:
             self.select_polygon()
+ 
             
     def select_polygon(self):
+        """
+        Opens a dialog to select a polygon file, loads and saves the boundary layer, and updates 
+        the interface with the selected file information.
+        """
         try:
-            output_file_existing = os.path.join(self.method.output_folder_value, f"{self.output_polygon.text()}_boundary.gpkg")
+            output_file_existing = os.path.join(self.method.output_folder_value, f"{self.output_polygon}_boundary.gpkg")
             # Open file dialog restricted to .shp and .gpkg
             file_path, _ = QFileDialog.getOpenFileName(
                 None,
@@ -278,147 +294,44 @@ class PolygonSetting(QtWidgets.QDialog):
                                 overwrite=True
                             )
                 self.boundary_path = output_file_existing
-                # Centroid geometry as a new column
-                gdf = gdf.to_crs(epsg=4326)  # reproject to WGS84
-                layer_union = gdf.geometry.unary_union
-                center = layer_union.centroid              
-                lon = center.x
-                lat = center.y
-                try:
-                    geolocator = Nominatim(user_agent="city_name_locator")
-                    location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
-                    if location and 'address' in location.raw:
-                        address = location.raw['address']
-                        self.city = address.get('city', address.get('town', address.get('village', 'Unknown')))
-                        self.country = address.get('country', 'Unknown')
-                except:
-                    QMessageBox.warning(self.ui, "OSM Error", "The city and country could not be retrieved. Please try again.")
-                    self.city = "Unknown"
-                    self.country = "Unknown"
-                    return self.city , self.country
             self.df = pd.DataFrame({"Polygon": ["OK"]})
-            self.preview_data()
+            preview_data(self)
         except:
             QMessageBox.warning(self, "Input Error", "Please select the output folder first")
-                
-    def upload_csv(self):
-        options = QFileDialog.Options()
-        file_path, _ = QFileDialog.getOpenFileName(self, "Open CSV File", "", "CSV Files (*.csv);;All Files (*)", options=options)
-        if file_path:
-            try:
-                self.df = pd.read_csv(file_path)
-                self.polygon_path_value.setText(os.path.basename(file_path))
-                if self.method:
-                    self.method.file_polygon_csv = file_path
-
-                df = self.df
-                required_columns = ['id', 'latitude', 'longitude']
-                missing = [col for col in required_columns if col not in df.columns]
-                if missing:
-                    QMessageBox.warning(self, "Missing Columns", f"Required columns missing: {', '.join(missing)}")
-                    return
-                self.preview_data()
-            except Exception as e:
-                self.polygon_path_value.setText(f"Error: {str(e)}")
-                QMessageBox.warning(self, "Input Error", f"Error loading CSV:\n{e}")
-        else:
-            self.polygon_path_value.setText("No file selected.")
-            QMessageBox.warning(self, "Input Error", "No file selected.")
-
             
-    def preview_data(self):
-        if hasattr(self, 'df') and not self.df.empty:
-            preview_df = self.df.head(10)  # Only show first 10 rows
-    
-            self.tableWidget.clear()
-            self.tableWidget.setRowCount(len(preview_df))
-            self.tableWidget.setColumnCount(len(preview_df.columns))
-            self.tableWidget.setHorizontalHeaderLabels(preview_df.columns)
-    
-            for row in range(len(preview_df)):
-                for column in range(len(preview_df.columns)):
-                    value = str(preview_df.iloc[row, column])
-                    item = QtWidgets.QTableWidgetItem(value)
-                    # ---- Set font size ----
-                    font = item.font()
-                    font.setPointSize(int(10 * self.sf_font))  # change to any size
-                    item.setFont(font)
-                    self.tableWidget.setItem(row, column, item)
-                    header = self.tableWidget.horizontalHeader()
-                    font = header.font()
-                    font.setPointSize(int(10 * self.sf_font))
-                    font.setBold(True)  # optional
-                    header.setFont(font)
-                    vheader = self.tableWidget.verticalHeader()
-                    vfont = vheader.font()
-                    vfont.setPointSize(int(10 * self.sf_font))
-                    vheader.setFont(vfont)
 
-            self.tableWidget.resizeColumnsToContents()
-        else:
-            QMessageBox.warning(self, "No Data", "No data available to preview. Please upload a valid CSV first.")
+    def _on_save_coordinates(self):
+        """
+        Validates input coordinate data, converts latitude/longitude values into
+        point or polygon geometries, and saves the result as a GeoPackage file.
+        """
+        save_coordinates(self)
 
-    def save_coordinates(self):
-        if self.polygon_source_value.currentIndex() == 1:
-            pass
-        else:
-            try:
-                lat = self.df.loc[0, 'latitude']
-                lon = self.df.loc[0,'longitude']
-                try:
-                    geolocator = Nominatim(user_agent="city_name_locator")
-                    location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
-                    if location and 'address' in location.raw:
-                        address = location.raw['address']
-                        self.city = address.get('city', address.get('town', address.get('village', 'Unknown')))
-                        self.country = address.get('country', 'Unknown')
-                        self.method.city = self.city
-                        self.method.country = self.country
-                        self.city_name_manual = self.city + "_" + self.country
-                except:
-                    QMessageBox.warning(self.ui, "OSM Error", "The city and country could not be retrieved. Please try again.")
-                    self.city = "Unknown"
-                    self.country = "Unknown"
-                    return self.city , self.country
-                
-                output_gpkg = os.path.join(self.method.output_folder_value, f"{self.output_polygon.text()}_boundary.gpkg")
-                self.boundary_path = output_gpkg
-                if os.path.exists(output_gpkg):
-                    os.remove(output_gpkg)
-    
-                df = self.df
-                if "latitude" not in df.columns or "longitude" not in df.columns:
-                    QMessageBox.warning(self, "Input Error", "The CSV file must have 'latitude' and 'longitude' columns.")
-                    return
-    
-                coordinates = list(zip(df["longitude"], df["latitude"]))
-                polygon = Polygon(coordinates)
-                gdf = gpd.GeoDataFrame({'geometry': [polygon]}, crs="EPSG:4326")
-                gdf.to_file(output_gpkg, driver="GPKG", layer="polygon_layer")
-      
-            except Exception as e:
-                QMessageBox.warning(self, "Error", f"Could not generate GPKG:\n{str(e)}")
 
     def building_polulation(self):
+        """
+        Downloads or loads building footprints for the selected boundary, processes and filters 
+        the retrieved geometries, saves the results as a GeoPackage file, and updates the 
+        progress indicators in the interface.
+        """
         try:
             self.population = GUI_geofiles.download_building_footprints(self)
             self.building_value_polygon.setText(str(self.population))
         except:
             QMessageBox.warning(self, "Input Error",
                     "Some required inputs are missing or invalid. Please review all fields and check the coordinates file for inconsistencies.")
-            
-    def mode_use(self):
-        if self.collection_mode.currentText() == "Manual":
-            self.ai_value = False 
-        elif self.collection_mode.currentText() == "AI Powered":
-            self.ai_value = True
+
 
     def building_sample(self):
+        """
+        Retrieve the function that extracts a random sample of footprints (or the entire population), estimates 
+        their centroids, which will be used later to retrieve the corresponding GSV images.
+        """
         try:
             GUI_geofiles.extract_random_subset(self, self.sample_size_polygon.text())
             GUI_geofiles.create_centroid_layer(self)
             self.method.output_polygon = self.output_polygon
-            self.mode_use()
+            mode_use(self)
             
             if self.building_value_polygon.text()=="0000":
                 QMessageBox.warning(self,
@@ -431,8 +344,7 @@ class PolygonSetting(QtWidgets.QDialog):
             QMessageBox.warning(self, "Input Error",
                     "Some required inputs are missing or invalid. Please review all fields and check the coordinates file for inconsistencies.")
 
-        
-        
+
     def to_crs_safe(self, gdf, expected_crs):
         """
         Safer CRS comparison/reprojection across older GeoPandas/pyproj combos.
@@ -454,13 +366,14 @@ class PolygonSetting(QtWidgets.QDialog):
             # If anything fails, just return original (we’ll already warn above)
             return gdf
     
+    
     def load_polygon_layer(
         self,
         path: str,
         layer: Optional[str] = None,
         expected_crs: Optional[Union[str, int]] = None,
         fix_invalid: bool = True,
-    ) -> Optional[gpd.GeoDataFrame]:
+        ) -> Optional[gpd.GeoDataFrame]:
         """
         Load a polygon layer from a Shapefile (.shp) or GeoPackage (.gpkg) using GeoPandas 1.1.1-compatible calls.
         Shows QMessageBox warnings on any issue and returns None on failure.
@@ -600,13 +513,14 @@ class PolygonSetting(QtWidgets.QDialog):
     
         return gdf_polys
       
+        
     def save_polygon_layer(
         self,
         gdf: gpd.GeoDataFrame,
         output_path: str,
         layer: str = "polygons",
         overwrite: bool = True,
-    ) -> bool:
+        ) -> bool:
         """
         Save a polygon GeoDataFrame to a GeoPackage (.gpkg) or Shapefile (.shp).
     

@@ -31,7 +31,8 @@ from methods.bounding_box_manual import BoundingBoxWindow
 from methods.epoch_construction import EpochSelectionDialog
 from methods.help_window import HelpDialog
 from methods.neighbor_building_extrapolation_feature import find_nearest_neighbors_geodesic, compute_taxonomy_distribution_full_structure
-from methods.dl_extrapolation import create_database, dl_models, inspection_database, extrapolation_existing_reference
+# from methods.dl_extrapolation import create_database, dl_models, inspection_database, extrapolation_existing_reference
+from methods.dl_extrapolation import dl_models, inspection_database, extrapolation_existing_reference
 from methods.gsv_image_angle import gsv_angle_setting
 from methods.dl_stratified import iterative_distribution_stability_manual , iterative_label_discovery_cached_fractional
 from methods.dl_stratified import labeling_function, dl_models_strified
@@ -440,8 +441,8 @@ class GUIMethods:
         """       
         
         if self.ui.insp_method == 0:
-            self.city_method = self.ui.city
-            self.country_method = self.ui.country
+            # self.city_method = self.ui.city
+            # self.country_method = self.ui.country
             # Input and output for the method
             centroid_file=self.ui.output_folder_value+"/"+self.ui.file_name+"_subset_centroids.gpkg"
             database_file=self.ui.output_folder_value+"/"+self.ui.file_name+"_building_info.csv"
@@ -2912,7 +2913,7 @@ class GUIMethods:
                 #####################################
                 if self.ui.coord_reference is not True:
                     #######===========  Function results =========###########
-                    data_existing_dl = create_database(self.ui.coord_reference)
+                    data_existing_dl = self.create_database(self.ui.coord_reference)
                     dl_models()
                     inspection_database(data_existing_dl)
                     predicted_path =  self.ui.output_path+"/"+self.ui.coord_reference_building_feature_path

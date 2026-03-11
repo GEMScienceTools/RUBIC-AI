@@ -116,32 +116,32 @@ def extrapolation_existing_reference(data_existing , data_extrapolation, saved_p
 #######===========  General functions ==========#########
 #########################################################
 
-def create_database(local_building_info):
-    global footprint_data
-    # Load data
-    footprint_data = local_building_info
+# def create_database(local_building_info):
+#     global footprint_data
+#     # Load data
+#     footprint_data = local_building_info
     
-    # Define the column namesfor the inspection database
-    column_names = ["id", 
-                    "latitude", 
-                    "longitude",
-                    "country",
-                    "city",
-                    "material",
-                    "llrs",
-                    "code_level",
-                    "n_stories",
-                    "occupancy",
-                    "block_position",
-                    "roof_shape",
-                    "roof_material",
-                    "taxonomy",
-                    "Image filename or link"]
+#     # Define the column namesfor the inspection database
+#     column_names = ["id", 
+#                     "latitude", 
+#                     "longitude",
+#                     "country",
+#                     "city",
+#                     "material",
+#                     "llrs",
+#                     "code_level",
+#                     "n_stories",
+#                     "occupancy",
+#                     "block_position",
+#                     "roof_shape",
+#                     "roof_material",
+#                     "taxonomy",
+#                     "Image filename or link"]
     
-    # Create an empty DataFrame for number of footprint available
-    data_ai = pd.DataFrame(np.full((footprint_data.shape[0], len(column_names)), None), columns=column_names)
+#     # Create an empty DataFrame for number of footprint available
+#     data_ai = pd.DataFrame(np.full((footprint_data.shape[0], len(column_names)), None), columns=column_names)
         
-    return data_ai
+#     return data_ai
 
 root_dir = Path(__file__).parent.resolve()
 gsv_dir = (root_dir / '..' / 'methods').resolve()

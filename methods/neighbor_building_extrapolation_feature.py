@@ -5,7 +5,7 @@ import sys
 import numpy as np 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import pandas as pd
-from methods.dl_extrapolation import create_database, dl_models, inspection_database, extrapolation_existing_reference
+# from methods.dl_extrapolation import dl_models, inspection_database, extrapolation_existing_reference
 
 class data_options_window(QtWidgets.QDialog):
     def __init__(self, parent=None, main_window=None):
