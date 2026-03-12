@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from methods.neighbor_building_extrapolation_feature import data_options_window
+from methods.knn_extrapolation_feature import knn_options_window
 from methods.stratified_extrapolation_feature import stratified_extrapolation
 import sys 
 import numpy as np
@@ -14,7 +14,7 @@ class ExtrapolationOptions(QtWidgets.QDialog):
         screen_width = screen_geometry.width()
         screen_height = screen_geometry.height()
 
-        #
+        # Design screen size
         DESIGN_WIDTH = 1920
         DESIGN_HEIGHT = 1080
         DESIGN_DPI = 96 * 1.25  # 125% Windows baseline -> 120 DPI
@@ -214,24 +214,36 @@ p, li {{ white-space: pre-wrap; }}
         self.setLayout(QtWidgets.QVBoxLayout())
         self.layout().addWidget(self.method_frame)
 
-
+    # ==============================================================
+    # Extrapolation method functions
+    # ==============================================================
+    
     def select_method(self):
+        """
+        Validates that only one extrapolation method is selected, opens the corresponding setup 
+        dialog, retrieves the required input parameters, and stores the selected method settings.
+        """
         checked_count = sum([self.knn_check.isChecked(), self.stratified_check.isChecked()])
 
         if checked_count > 1:
             QtWidgets.QMessageBox.warning(self, "Selection Warning", "You can only select one method at a time.")
+            
+        #####################################################################################################    
+        ########################## --------- KNN method ---------------###################################### 
+        #####################################################################################################  
         elif self.knn_check.isChecked():
-            dialog = data_options_window(parent=self)
+            dialog = knn_options_window(parent=self)
             self.load_check = True
             if dialog.exec_() == QtWidgets.QDialog.Accepted:
                 try:
+                    # KNN Manual
                     self.info_existing = dialog.info_existing
                     self.info_pending = dialog.info_pending
                     self.extrapolation_name = dialog.output_manual_value.text()
                     self.output_path = dialog.folder_path
                     self.k_value = dialog.k_value_manual.value()
-                    self.extrapolation_mode = 2
-                    # DL method
+                    self.extrapolation_mode = 2 # for manual and DL knn
+                    # KNN DL method
                     try:
                         self.coord_reference = dialog.coord_reference
                         self.knn_dl_saved_path = dialog.knn_dl_saved_path
@@ -253,10 +265,9 @@ p, li {{ white-space: pre-wrap; }}
                         "again and confirm that all files follow the required structure, or upload your data"
                     )
                            
- #####################################################################################################    
- ########################## ---------Stratified method ---------------################################   
- #####################################################################################################  
-           
+        #####################################################################################################    
+        ########################## ---------Stratified method ---------------################################   
+        #####################################################################################################      
         elif self.stratified_check.isChecked():
             dialog = stratified_extrapolation(parent=self)
             self.load_check = True
@@ -294,6 +305,9 @@ p, li {{ white-space: pre-wrap; }}
  ##################################################################################################### 
             
     def save_and_continue(self):
+        """
+        Confirms the model input setup and closes the dialog if a method has been successfully loaded.
+        """
         try:
             if self.load_check:
                 self.accept()

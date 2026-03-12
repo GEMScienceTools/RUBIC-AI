@@ -30,7 +30,7 @@ from methods.get_building_orientation import get_street_view_image , get_road_or
 from methods.bounding_box_manual import BoundingBoxWindow
 from methods.epoch_construction import EpochSelectionDialog
 from methods.help_window import HelpDialog
-from methods.neighbor_building_extrapolation_feature import find_nearest_neighbors_geodesic, compute_taxonomy_distribution_full_structure
+from methods.knn_extrapolation_feature import find_nearest_neighbors_geodesic, compute_taxonomy_distribution_full_structure
 # from methods.dl_extrapolation import create_database, dl_models, inspection_database, extrapolation_existing_reference
 from methods.dl_extrapolation import dl_models, inspection_database, extrapolation_existing_reference
 from methods.gsv_image_angle import gsv_angle_setting
@@ -487,7 +487,7 @@ class GUIMethods:
             elif self.ui.insp_method == 2:
                 footprint_data = pd.read_csv(self.ui.file_local_csv)
             elif self.ui.insp_method == 3:
-                pass
+                footprint_data = self.ui.coord_reference
             
             # Define the column namesfor the inspection database
             column_names = ["id", 
@@ -2913,10 +2913,13 @@ class GUIMethods:
                 #####################################
                 if self.ui.coord_reference is not True:
                     #######===========  Function results =========###########
-                    data_existing_dl = self.create_database(self.ui.coord_reference)
+                    self.create_database()
+                    data_existing_dl = self.data_ai
                     dl_models()
-                    inspection_database(data_existing_dl)
+                    inspection_database(data_existing_dl, self.ui.coord_reference)
+                    # self.proof_dl_model()
                     predicted_path =  self.ui.output_path+"/"+self.ui.coord_reference_building_feature_path
+                    data_existing_dl = data_existing_dl.dropna(subset=["llrs"])
                     data_existing_dl.to_csv(predicted_path, index= False)
                     extra_path =  self.ui.output_path+"/"+self.ui.knn_dl_saved_path
                     n_neighbors = self.ui.k_value

@@ -18,7 +18,7 @@ class InspectionSetting(QDialog):
         screen_width = screen_geometry.width()
         screen_height = screen_geometry.height()
 
-        #
+        # Screen scale
         DESIGN_WIDTH = 1920
         DESIGN_HEIGHT = 1080
         DESIGN_DPI = 96 * 1.25  # 125% Windows baseline -> 120 DPI
@@ -313,18 +313,6 @@ class InspectionSetting(QDialog):
         If multiple checkboxes are selected, it displays a warning message and prevents 
         selection. If a single checkbox is checked, it assigns the corresponding inspection 
         method to `insp_method` in the main window and confirms the selection.
-    
-        Effects:
-            - Displays a warning if more than one checkbox is selected.
-            - Assigns the corresponding inspection method:
-                - `0` for polygon method (`default_check`).
-                - `1` for specific method (`specific_check`).
-                - `2` for local method (`local_check`).
-                - `3` for local method (`extrapolation_check`).
-            - Calls `accept()` to confirm the selection.
-    
-        Notes:
-            - Only one checkbox can be selected at a time.
         """
 
         # Check how many checkboxes are checked
@@ -341,7 +329,9 @@ class InspectionSetting(QDialog):
             msg.setWindowTitle("Selection Warning")
             msg.exec_()
         else:
-            # Print the selected method if only one checkbox is checked
+            # ==============================================================
+            # Polygon method
+            # ==============================================================
             if self.default_check.isChecked():
                 self.insp_method = 0
                 self.accept()
@@ -349,7 +339,10 @@ class InspectionSetting(QDialog):
                 self.polygon_dialog.exec_()
                 self.output_polygon = self.polygon_dialog.output_polygon
                 self.ai_value = self.polygon_dialog.ai_value       
-                
+            
+            # ==============================================================
+            # Specific coordinates method
+            # ============================================================== 
             if self.specific_check.isChecked():
                 self.insp_method = 1
                 self.accept()
@@ -358,7 +351,9 @@ class InspectionSetting(QDialog):
                 self.data_specific = self.specific_dialog.df 
                 self.ai_value = self.specific_dialog.ai_value
                 
-                
+            # ==============================================================
+            # Local images method
+            # ==============================================================    
             if self.local_check.isChecked():
                 self.insp_method = 2
                 self.accept()
@@ -367,6 +362,9 @@ class InspectionSetting(QDialog):
                 self.data_local = self.local_dialog.df
                 self.ai_value = self.local_dialog.ai_value 
                 
+            # ==============================================================
+            # Extrapolation method
+            # ============================================================== 
             if self.extrapolation_check.isChecked():
                 self.insp_method = 3
                 self.accept()

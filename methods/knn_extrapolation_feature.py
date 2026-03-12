@@ -5,9 +5,10 @@ import sys
 import numpy as np 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import pandas as pd
-# from methods.dl_extrapolation import dl_models, inspection_database, extrapolation_existing_reference
 
-class data_options_window(QtWidgets.QDialog):
+from methods.utilities import select_output_folder
+
+class knn_options_window(QtWidgets.QDialog):
     def __init__(self, parent=None, main_window=None):
         super().__init__(parent)
         self.main_window = main_window
@@ -276,6 +277,8 @@ class data_options_window(QtWidgets.QDialog):
         self.output_path_button.setFont(font)
         self.output_path_button.setObjectName("output_path_button")
         self.output_path_button.clicked.connect(self.select_output_folder_manual)
+        # self.output_path_button.clicked.connect(self._on_select_output_folder)
+        
           
         # Saved Path Label (DL)
         self.saved_path_dl = QtWidgets.QLabel(self.data_frame)
@@ -294,8 +297,9 @@ class data_options_window(QtWidgets.QDialog):
         font.setWeight(50)
         self.output_path_dl_button.setFont(font)
         self.output_path_dl_button.setObjectName("output_path_dl_button")
+        # self.output_path_dl_button.clicked.connect(self._on_select_output_folder)
         self.output_path_dl_button.clicked.connect(self.select_output_folder_dl)
-            
+        
         # Set default values manually
         self.output_manual_value.setText("KNN_manual")
         self.output_dl_value.setText("KNN_dl")
@@ -320,36 +324,7 @@ class data_options_window(QtWidgets.QDialog):
         self.output_path_button.setText("Select output folder")
         self.saved_path_manual.setText("path/where/save/the/results")
               
-    def select_method(self):
-        # Check how many checkboxes are checked
-        checked_count = sum([self.manual_op.isChecked(), 
-                              self.dl_op.isChecked()])
-        
-        if checked_count > 1:
-            # Show a warning if more than one checkbox is checked
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Warning)
-            msg.setText("You can only select one method at a time.")
-            msg.setWindowTitle("Selection Warning")
-            msg.exec_()
-        elif checked_count == 0:
-            QtWidgets.QMessageBox.warning(self, "Input Error", "Please select one method")
-        else:
-            if self.manual_op.isChecked():
-                try:
-                    self.info_existing
-                    self.info_pending
-                    self.accept()
-                except:
-                    QtWidgets.QMessageBox.warning(self, "Input Error", "There are missing the inputs files")
-            elif self.dl_op.isChecked():
-                #######===========  Input parameters =========###########
-                self.coord_reference = self.info_existing
-                self.coord_reference_building_feature_path = self.output_dl_value.text()+"_reference_results.csv"
-                self. data_extrapolation = self.info_pending
-                self.knn_dl_saved_path = self.output_dl_value.text()+".csv"
-                self.accept()
-                              
+                                     
     def data_existing(self):
         self.info_existing = self.upload_csv(self.manual_info_path)
         self.preview_data(self.info_existing)
@@ -411,7 +386,7 @@ class data_options_window(QtWidgets.QDialog):
 
         return self.df
     
-    ############ Folder Selection ################
+    ########### Folder Selection ################
     def select_output_folder_manual(self):
         """Open a folder selection dialog and display the selected folder in a text output."""
         self.folder_path = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Folder")
@@ -419,12 +394,52 @@ class data_options_window(QtWidgets.QDialog):
             folder_display = os.path.basename(self.folder_path)    
             self.saved_path_manual.setText(folder_display)
     
+    # def _on_select_output_folder(self):
+    #     """
+    #     Opens a folder selection dialog, stores the selected output folder path, and displays 
+    #     the folder name in the interface.
+    #     """
+    #     self.folder_path, self.display_folder = select_output_folder(self)
+    #     if self.manual_op.isChecked():
+    #         self.saved_path_manual.setText(self.display_folder)
+    #     else:
+    #         self.saved_path_dl.setText(self.display_folder)
+    
     def select_output_folder_dl(self):
         """Open a folder selection dialog and display the selected folder in a text output."""
         self.folder_path = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Folder")
         if self.folder_path:  # If a folder is selected
             folder_display = os.path.basename(self.folder_path)    
             self.saved_path_dl.setText(folder_display)
+            
+    def select_method(self):
+        """
+        Validates the selected method, ensures that only one option is chosen, and saves the 
+        corresponding input settings before continuing.
+        """
+        # Check how many checkboxes are checked
+        checked_count = sum([self.manual_op.isChecked(), 
+                              self.dl_op.isChecked()])
+        # Check proper setting
+        if checked_count > 1:
+            QtWidgets.QMessageBox.warning(self, "Selection Warning", "You can only select one method at a time")
+        elif checked_count == 0:
+            QtWidgets.QMessageBox.warning(self, "Input Error", "Please select one method")
+        else:
+            if self.manual_op.isChecked():
+                try:
+                    self.info_existing
+                    self.info_pending
+                    self.accept()
+                except:
+                    QtWidgets.QMessageBox.warning(self, "Input Error", "There are missing the inputs files")
+            elif self.dl_op.isChecked():
+                #######===========  Input parameters =========###########
+                self.coord_reference = self.info_existing
+                self.coord_reference_building_feature_path = self.output_dl_value.text()+"_reference_results.csv"
+                self. data_extrapolation = self.info_pending
+                self.knn_dl_saved_path = self.output_dl_value.text()+".csv"
+                self.accept()
             
 
 # Function to calculate Geodesic distance (in km)

@@ -100,9 +100,9 @@ def extrapolation_existing_reference(data_existing , data_extrapolation, saved_p
   # Iterate over each building with no image
   for idx, input_row in data_extrapolation.iterrows():
       # Find 3 nearest neighbors using geodesic distance
-      nearest_neighbors = find_nearest_neighbors_geodesic(input_row, data_existing, n_neigh)
+      nearest_neighbors_value = find_nearest_neighbors_geodesic(input_row, data_existing, n_neigh)
       # Compute taxonomy-based distributions with full structure
-      distribution_rows = compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row)
+      distribution_rows = compute_taxonomy_distribution_full_structure(nearest_neighbors_value, input_row)
       
       # Append to final result
       final_distribution_list_full.extend(distribution_rows)
@@ -569,7 +569,7 @@ def predict_roof_material_img (image_path):
     return roof_material_id
     
 ############ Obtain value of the form of each building image ################       
-def inspection_database (data_ai):
+def inspection_database (data_ai, footprint_data):
     for i in range (data_ai.shape[0]):
         data_ai.iloc[i, 0] = footprint_data.loc[i, "id"]                                                 # ID
         data_ai.iloc[i, 1] = footprint_data.loc[i , "latitude"]                                                 # Latitude
@@ -588,17 +588,17 @@ def inspection_database (data_ai):
             data_ai.iloc[i, 8] = predict_n_stories_img (image_file)                           # Number of Stories 
             data_ai.iloc[i, 9] = predict_occupancy_img (image_file)                           # Occupancy
             data_ai.iloc[i, 10] = predict_block_position_img (image_file)                     # Block Position
-            data_ai.iloc[i, 11] = predict_roof_shape_img (image_file)                         # Roof shape
-            data_ai.iloc[i, 12] = predict_roof_material_img (image_file)                      # Roof material
-            data_ai.iloc[i, 13] = (data_ai.iloc[i, 5]+"/"+
+            data_ai.iloc[i, 12] = predict_roof_shape_img (image_file)                         # Roof shape
+            data_ai.iloc[i, 13] = predict_roof_material_img (image_file)                      # Roof material
+            data_ai.iloc[i, 15] = (data_ai.iloc[i, 5]+"/"+
                                     data_ai.iloc[i, 6]+"+"+
                                     data_ai.iloc[i, 7]+"/H:"+
                                     data_ai.iloc[i, 8]+"/"+
                                     data_ai.iloc[i, 9]+"/"+
                                     data_ai.iloc[i, 10]+"/"+
-                                    data_ai.iloc[i, 11]+"+"+
-                                    data_ai.iloc[i, 12])                       # Taxonomy
+                                    data_ai.iloc[i, 12]+"+"+
+                                    data_ai.iloc[i, 13])                       # Taxonomy
             
-            data_ai.iloc[i, 14] = url_gsv
+            data_ai.iloc[i, 16] = url_gsv
         
         print("Inspection: " + str(i+1)+"/"+str(data_ai.shape[0]) +" -------------------------------------")
