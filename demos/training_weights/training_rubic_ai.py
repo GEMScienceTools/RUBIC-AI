@@ -14,7 +14,7 @@ from sklearn.metrics import confusion_matrix
 # ======================
 # CONFIGURATION (edit)
 # ======================
-features_path = os.path.join("..", "..", "dl_weights", "densenet201_n_stories.pt")
+features_path = "densenet201_n_stories.pt"
 train_dir = os.path.join("stories", "n_stories_train")
 test_dir  = os.path.join("stories", "n_stories_test")
 save_path = os.path.join("stories", "densenet201_example_feature.pt")

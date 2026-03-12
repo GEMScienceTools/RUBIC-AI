@@ -36,7 +36,7 @@ assert roads_api_file.exists(), "`roads_api_key.txt` not found in `methods` dire
 
 def polygon_coordinates(file_path, polygon_name):
     output_gpkg = str(polygon_name) + "_boundary.gpkg"
-    print("Output: ", output_gpkg)
+    os.makedirs(os.path.dirname(output_gpkg), exist_ok=True)
     df = pd.read_csv(file_path)    
     coordinates = list(zip(df["longitude"], df["latitude"]))
     polygon = Polygon(coordinates)
@@ -957,13 +957,14 @@ def inspection_database (data_ai):
 #######===========  Input parameters =========###########
 #########################################################
 
-saved_path = rubicai / "demos/polygon_method/example_prediction_result.csv"
 # File with polygon vertices
 file_path = rubicai / "demos/polygon_method/polygon_method_example.csv"
 # Polygon name
-polygon_name = rubicai / "demos/polygon_method/proof_polygon"
+polygon_name = rubicai / "demos/polygon_method/console_mode/proof_polygon"
+# Saved path
+saved_path = rubicai / "demos/polygon_method/console_mode/example_prediction_result.csv"
 # Percentage of the population that will be included in the sample
-sample_size = 0.09
+sample_size = 0.15
 #########################################################
 #######===========  Function results =========###########
 #########################################################

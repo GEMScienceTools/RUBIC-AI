@@ -9,12 +9,14 @@ import torchvision.transforms as transforms
 from torchvision import models
 from PIL import Image
 import cv2
+import os
 import re 
 import sys
 #########################################################
 #######===========  General functions ==========#########
 #########################################################
 rubicai = Path(__file__).parent.parent.parent.resolve()
+dir_path = Path(__file__).parent.resolve()
 sys.path.append(str(rubicai))
 from methods.taxonomy import check_taxonomy
 
@@ -483,10 +485,9 @@ def inspection_database (data_ai, image_folder):
 #########################################################
 
 # Input parameters using Path
-dir_path = Path(__file__).parent.resolve()
 local_building_info = dir_path / "data_ex1.csv"
 image_folder = dir_path / "images_ex1"
-saved_path = dir_path / "local_results_ex1.csv"
+saved_path = dir_path / "console_mode/local_results_ex1.csv"
 
 #########################################################
 #######===========  Function results =========###########
@@ -494,4 +495,5 @@ saved_path = dir_path / "local_results_ex1.csv"
 
 data_ai = create_database(local_building_info)
 inspection_database(data_ai, image_folder)
+os.makedirs(os.path.dirname(saved_path), exist_ok=True)
 data_ai.to_csv(str(saved_path), index= False)

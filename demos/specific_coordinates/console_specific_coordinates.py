@@ -1,5 +1,6 @@
 import re 
 import sys
+import os
 from pathlib import Path
 import numpy as np
 from geopy.geocoders import Nominatim
@@ -259,6 +260,7 @@ def get_street_view_image(location, api_key, angle, pitch, fov):
             img = None
     
         return maps_url, img, year
+    
 ############ Checks if there is GSV availability ################  
 def check_street_view(lat, lon):
     # Input parameters
@@ -748,8 +750,10 @@ def inspection_database (data_ai):
 #######===========  Input parameters =========###########
 #########################################################
 
+# Input data
 local_building_info = rubicai / "demos/specific_coordinates/specific_coordinates_example_data.csv"
-saved_path = rubicai / "demos/specific_coordinates/example_prediction_coordinates.csv"
+# Output path
+saved_path = rubicai / "demos/specific_coordinates/console_mode/example_prediction_coordinates.csv"
 
 #########################################################
 #######===========  Function results =========###########
@@ -757,5 +761,6 @@ saved_path = rubicai / "demos/specific_coordinates/example_prediction_coordinate
 
 data_ai = create_database(local_building_info)
 inspection_database(data_ai)
+os.makedirs(os.path.dirname(saved_path), exist_ok=True)
 data_ai.to_csv(saved_path, index= False)
 
