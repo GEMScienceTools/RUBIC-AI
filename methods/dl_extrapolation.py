@@ -116,145 +116,118 @@ def extrapolation_existing_reference(data_existing , data_extrapolation, saved_p
 #######===========  General functions ==========#########
 #########################################################
 
-# def create_database(local_building_info):
-#     global footprint_data
-#     # Load data
-#     footprint_data = local_building_info
-    
-#     # Define the column namesfor the inspection database
-#     column_names = ["id", 
-#                     "latitude", 
-#                     "longitude",
-#                     "country",
-#                     "city",
-#                     "material",
-#                     "llrs",
-#                     "code_level",
-#                     "n_stories",
-#                     "occupancy",
-#                     "block_position",
-#                     "roof_shape",
-#                     "roof_material",
-#                     "taxonomy",
-#                     "Image filename or link"]
-    
-#     # Create an empty DataFrame for number of footprint available
-#     data_ai = pd.DataFrame(np.full((footprint_data.shape[0], len(column_names)), None), columns=column_names)
-        
-#     return data_ai
-
 root_dir = Path(__file__).parent.resolve()
 gsv_dir = (root_dir / '..' / 'methods').resolve()
 
-############ Checks if there is GSV availability ################  
-def check_street_view(lat, lon):
-    # Input parameters
-    with open(gsv_dir / "gsv_api_key.txt", "r") as f:
-        api_key = f.read().strip()
-    url = "https://maps.googleapis.com/maps/api/streetview/metadata"
-    params = {
-        "location": f"{lat},{lon}",
-        "key": api_key
-    }
-    response = requests.get(url, params=params)
-    data = response.json()
-    # Check status
-    if data.get("status") == "OK":
-        return True  # Street View is available
-    else:
-        return False  # No Street View coverage
+# ############ Checks if there is GSV availability ################  
+# def check_street_view(lat, lon):
+#     # Input parameters
+#     with open(gsv_dir / "gsv_api_key.txt", "r") as f:
+#         api_key = f.read().strip()
+#     url = "https://maps.googleapis.com/maps/api/streetview/metadata"
+#     params = {
+#         "location": f"{lat},{lon}",
+#         "key": api_key
+#     }
+#     response = requests.get(url, params=params)
+#     data = response.json()
+#     # Check status
+#     if data.get("status") == "OK":
+#         return True  # Street View is available
+#     else:
+#         return False  # No Street View coverage
     
         
-############# Downnload GSV building images ################   
-def fetch_three_step_views(lat, lon):                                                                             
-    # Building coordinates
-    location = (float(lat), float(lon))
-    # API key is required; without it, access to GSV is not possible
-    with open(gsv_dir / "gsv_api_key.txt", "r") as f:
-        api_key = f.read().strip()  
+# ############# Downnload GSV building images ################   
+# def fetch_three_step_views(lat, lon):                                                                             
+#     # Building coordinates
+#     location = (float(lat), float(lon))
+#     # API key is required; without it, access to GSV is not possible
+#     with open(gsv_dir / "gsv_api_key.txt", "r") as f:
+#         api_key = f.read().strip()  
     
-    if check_street_view(lat, lon) == True:
-        # Get image from GSV
-        angle = 0
-        url_gsv, img_gsv, year = get_street_view_image(location, api_key, angle, 5, 120)
-    else:
-        print("Street View not available")
-        url_gsv = "Street View not available"
-        img_gsv = []
+#     if check_street_view(lat, lon) == True:
+#         # Get image from GSV
+#         angle = 0
+#         url_gsv, img_gsv, year = get_street_view_image(location, api_key, angle, 5, 120)
+#     else:
+#         print("Street View not available")
+#         url_gsv = "Street View not available"
+#         img_gsv = []
         
-    return img_gsv, url_gsv
+#     return img_gsv, url_gsv
         
 
-############ Building detector model ################
-def object_detector_building(lat, lon):
-    global url_gsv
-    # Class mapping (update this with your actual mappings)
-    weight_path = dl_dir / "building_detector.pt" # Replace with your YOLO .pt file
-    model = YOLO(weight_path)
-    TARGET_CLASS = 'building-xzyh'
-    CONF_THRESHOLD = 0.5
-    # Set device GPU or CPU
-    device= "cuda" if torch.cuda.is_available() else "cpu"
+# ############ Building detector model ################
+# def object_detector_building(lat, lon):
+#     global url_gsv
+#     # Class mapping (update this with your actual mappings)
+#     weight_path = dl_dir / "building_detector.pt" # Replace with your YOLO .pt file
+#     model = YOLO(weight_path)
+#     TARGET_CLASS = 'building-xzyh'
+#     CONF_THRESHOLD = 0.5
+#     # Set device GPU or CPU
+#     device= "cuda" if torch.cuda.is_available() else "cpu"
 
-    img_gsv, url_gsv  = fetch_three_step_views(lat, lon)
-    try:
-        # Run inference
-        results = model.predict(img_gsv, device=device)[0]
+#     img_gsv, url_gsv  = fetch_three_step_views(lat, lon)
+#     try:
+#         # Run inference
+#         results = model.predict(img_gsv, device=device)[0]
     
-        h, w, _ = img_gsv.shape
+#         h, w, _ = img_gsv.shape
     
-        # Get class names
-        class_names = model.names
+#         # Get class names
+#         class_names = model.names
     
-        best_box = None
-        best_conf = 0
+#         best_box = None
+#         best_conf = 0
     
-        # Loop through detected boxes
-        if results.boxes is not None:
-            for box in results.boxes:
+#         # Loop through detected boxes
+#         if results.boxes is not None:
+#             for box in results.boxes:
     
-                cls_id = int(box.cls[0])
-                label = class_names[cls_id]
-                conf = float(box.conf[0])
+#                 cls_id = int(box.cls[0])
+#                 label = class_names[cls_id]
+#                 conf = float(box.conf[0])
     
-                if label == TARGET_CLASS and conf > CONF_THRESHOLD:
-                    if conf > best_conf:
-                        best_conf = conf
-                        best_box = box.xyxy[0].cpu().numpy().astype(int)
+#                 if label == TARGET_CLASS and conf > CONF_THRESHOLD:
+#                     if conf > best_conf:
+#                         best_conf = conf
+#                         best_box = box.xyxy[0].cpu().numpy().astype(int)
     
-        if best_box is None:
-            print(f"❌ No '{TARGET_CLASS}' detected in image.")
-            return
+#         if best_box is None:
+#             print(f"❌ No '{TARGET_CLASS}' detected in image.")
+#             return
     
-        x1, y1, x2, y2 = best_box
+#         x1, y1, x2, y2 = best_box
     
-        # ✅ Ensure values inside image
-        x1 = max(0, x1)
-        y1 = max(0, y1)
-        x2 = min(w, x2)
-        y2 = min(h, y2)
+#         # ✅ Ensure values inside image
+#         x1 = max(0, x1)
+#         y1 = max(0, y1)
+#         x2 = min(w, x2)
+#         y2 = min(h, y2)
     
-        # ✅ Crop image
-        cropped_image = img_gsv[y1:y2, x1:x2]
-        return cropped_image
-    except:
-        cropped_image = []
+#         # ✅ Crop image
+#         cropped_image = img_gsv[y1:y2, x1:x2]
+#         return cropped_image
+#     except:
+#         cropped_image = []
     
-############ Get city name using coordinates ################
-def get_city_name(lat, lon):  
-        try:         
-            geolocator = Nominatim(user_agent="city_name_locator")
-            location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
+# ############ Get city name using coordinates ################
+# def get_city_name(lat, lon):  
+#         try:         
+#             geolocator = Nominatim(user_agent="city_name_locator")
+#             location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
             
-            if location and 'address' in location.raw:
-                address = location.raw['address']
-                city = address.get('city', address.get('town', address.get('village', 'Unknown')))
-                country = address.get('country', 'Unknown')
-                return city , country
-        except:
-            city = "Unknown"
-            country = "Unknown"
-            return city , country
+#             if location and 'address' in location.raw:
+#                 address = location.raw['address']
+#                 city = address.get('city', address.get('town', address.get('village', 'Unknown')))
+#                 country = address.get('country', 'Unknown')
+#                 return city , country
+#         except:
+#             city = "Unknown"
+#             country = "Unknown"
+#             return city , country
 
 
 

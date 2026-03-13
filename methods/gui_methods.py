@@ -32,7 +32,7 @@ from methods.epoch_construction import EpochSelectionDialog
 from methods.help_window import HelpDialog
 from methods.knn_extrapolation_feature import find_nearest_neighbors_geodesic, compute_taxonomy_distribution_full_structure
 # from methods.dl_extrapolation import create_database, dl_models, inspection_database, extrapolation_existing_reference
-from methods.dl_extrapolation import dl_models, inspection_database, extrapolation_existing_reference
+from methods.dl_extrapolation import extrapolation_existing_reference
 from methods.gsv_image_angle import gsv_angle_setting
 from methods.dl_stratified import iterative_distribution_stability_manual , iterative_label_discovery_cached_fractional
 from methods.dl_stratified import labeling_function, dl_models_strified
@@ -61,6 +61,7 @@ class GUIMethods:
         self.limit_local = True
         self.search_count = False
         self.sw_angle = None
+        self.sw_extrapolation = False
         """Get screen resolution to adapt to different screen sizes"""
         # Get screen resolution
         screen = QApplication.primaryScreen()
@@ -412,6 +413,20 @@ class GUIMethods:
                     self.ui.city_value.setText(self.city)
                     self.ui.country_value.setText(self.country)
                     return self.city, self.country
+            elif self.ui.insp_method == 3:
+                try:         
+                    geolocator = Nominatim(user_agent="city_name_locator")
+                    location = geolocator.reverse((self.lat_extrapolation, self.lon_extrapolation), exactly_one=True, language="en", timeout=3)
+                    
+                    if location and 'address' in location.raw:
+                        address = location.raw['address']
+                        city = address.get('city', address.get('town', address.get('village', 'Unknown')))
+                        country = address.get('country', 'Unknown')
+                        return city , country
+                except:
+                    city = "Unknown"
+                    country = "Unknown"
+                    return city , country
         else:
             pass
      
@@ -593,25 +608,43 @@ class GUIMethods:
             - The API key used in this function is hardcoded, which may pose security risks.
             - Ensures execution only if project details are correctly set.
         """
-        # Input parameters
-        with open("methods/gsv_api_key.txt", "r") as f:
-            api_key = f.read().strip()
-
-        lat= self.ui.lat_value.text()
-        lon= self.ui.lon_value.text() 
-        url = "https://maps.googleapis.com/maps/api/streetview/metadata"
-        params = {
-            "location": f"{lat},{lon}",
-            "key": api_key
-        }
-        response = requests.get(url, params=params)
-        data = response.json()
-        # Check status
-        if data.get("status") == "OK":
-            return True  # Street View is available
-        else:
-            return False  # No Street View coverage
+        if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+            # Input parameters
+            with open("methods/gsv_api_key.txt", "r") as f:
+                api_key = f.read().strip()
+    
+            lat= self.ui.lat_value.text()
+            lon= self.ui.lon_value.text() 
+            url = "https://maps.googleapis.com/maps/api/streetview/metadata"
+            params = {
+                "location": f"{lat},{lon}",
+                "key": api_key
+            }
+            response = requests.get(url, params=params)
+            data = response.json()
+            # Check status
+            if data.get("status") == "OK":
+                return True  # Street View is available
+            else:
+                return False  # No Street View coverage
         
+        
+        else:
+            # Input parameters
+            with open("methods/gsv_api_key.txt", "r") as f:
+                api_key = f.read().strip()
+            url = "https://maps.googleapis.com/maps/api/streetview/metadata"
+            params = {
+                "location": f"{self.lat_extrapolation},{self.lon_extrapolation}",
+                "key": api_key
+            }
+            response = requests.get(url, params=params)
+            data = response.json()
+            # Check status
+            if data.get("status") == "OK":
+                return True  # Street View is available
+            else:
+                return False  # No Street View coverage
         
     ############# Downnload GSV building images ################   
     def fetch_three_step_views(self):
@@ -675,8 +708,27 @@ class GUIMethods:
             self.ui.year_value_1.setText(str(self.year_left))
             self.ui.year_value_2.setText(str(self.year_center))
             self.ui.year_value_3.setText(str(self.year_right))
-        else:
-            pass
+        elif self.ui.insp_method == 3:
+            if self.sw_extrapolation == False:
+                pass
+            else:
+                # Building coordinates
+                lat, lon = self.lat_extrapolation, self.lon_extrapolation
+                location = (lat, lon)
+                # API key is required; without it, access to GSV is not possible
+                with open("methods/gsv_api_key.txt", "r") as f:
+                    api_key = f.read().strip()  
+                
+                if self.check_street_view() == True:
+                    # Get image from GSV
+                    angle = 0
+                    url_gsv, img_gsv, year = get_street_view_image(location, api_key, angle, 5, 120)
+                else:
+                    print("Street View not available")
+                    url_gsv = "Street View not available"
+                    img_gsv = []
+                    
+                return img_gsv, url_gsv
 
     def img_angle_left (self):
         """Open the image angle setting pop-up window."""
@@ -715,7 +767,7 @@ class GUIMethods:
                                   QtCore.Qt.SmoothTransformation))
                 
                 # Building detector function
-                self.object_detector_building()
+                self.object_detector_building(None)
                 
             except:
                 QMessageBox.warning(self.ui, "Image Error",
@@ -761,7 +813,7 @@ class GUIMethods:
                                   QtCore.Qt.SmoothTransformation))
                 
                 # Building detector function
-                self.object_detector_building()
+                self.object_detector_building(None)
                 
             except:
                 QMessageBox.warning(self.ui, "Image Error",
@@ -807,7 +859,7 @@ class GUIMethods:
                                   QtCore.Qt.SmoothTransformation))
                 
                 # Building detector function
-                self.object_detector_building()
+                self.object_detector_building(None)
                 
             except:
                 QMessageBox.warning(self.ui, "Image Error",
@@ -818,7 +870,7 @@ class GUIMethods:
             
             
     ############ Building detector model ################
-    def object_detector_building(self):
+    def object_detector_building(self, aux):
         """
         Detect and isolate buildings from Google Street View (GSV) images using a YOLO-based object detector.
         
@@ -853,205 +905,62 @@ class GUIMethods:
         TARGET_CLASS = 'building-xzyh'
         # Set device GPU or CPU
         device= "cuda" if torch.cuda.is_available() else "cpu"
-        # Clear old image
-        if self.sw_angle == 0:
-            self.ui.left_gsv_img.clear()
-            n_img = 1
-        elif self.sw_angle == 1:
-            self.ui.central_gsv_img.clear()
-            n_img = 1
-        elif self.sw_angle == 2:
-            self.ui.right_gsv_img.clear()
-            n_img = 1
-        else:
-            self.ui.left_gsv_img.clear()
-            self.ui.central_gsv_img.clear()
-            self.ui.right_gsv_img.clear()
-            n_img = 3
-            
-        # List of the frame
-        img_frames = [self.ui.left_gsv_img,self.ui.central_gsv_img,self.ui.right_gsv_img]
-        sw = True
-        #Check inspection mode
-        if self.ui.insp_method == 0 or self.ui.insp_method == 1:
-            try:
-                # Getting the images from GSV
-                org_img = [self.img_original_1,self.img_original_2,self.img_original_3]
-                # Vector for check if the building is detected
-                self.predicted_img = [0,0,0]
-                # Check GSV availability
+        if self.ui.insp_method in (0, 1, 2):
+            # Clear old image
+            if self.sw_angle == 0:
+                self.ui.left_gsv_img.clear()
+                n_img = 1
+            elif self.sw_angle == 1:
+                self.ui.central_gsv_img.clear()
+                n_img = 1
+            elif self.sw_angle == 2:
+                self.ui.right_gsv_img.clear()
+                n_img = 1
+            else:
+                self.ui.left_gsv_img.clear()
+                self.ui.central_gsv_img.clear()
+                self.ui.right_gsv_img.clear()
+                n_img = 3
                 
-                for aux in range (n_img):
-                    if sw == True:
-                        for i in range(100):
-                            self.ui.progress_bar_method.setValue(i)
-                            QApplication.processEvents()
-                            self.ui.method_progress.setText("Isolating building ....")
-                        sw = False
-            
-                    # Ensure the image is in RGB format
-                    if self.sw_angle == 0:
-                        image_rgb = self.img_original_1
-                        self.sw_angle = None
-                        aux = 0
-                    elif self.sw_angle == 1:
-                        image_rgb = self.img_original_2
-                        self.sw_angle = None
-                        aux = 1
-                    elif self.sw_angle == 2:
-                        image_rgb = self.img_original_3
-                        self.sw_angle = None
-                        aux = 2
-                    else:
-                        image_rgb = org_img[aux]
-            
-                    # Run inference
-                    results = model.predict(image_rgb, device=device)
-                    
-                    best_box = None
-                    best_score = 0.0
-            
-                    # for box in results.boxes:
-                    for box in results[0].boxes:
-                        cls_id = int(box.cls)
-                        cls_name = class_names[cls_id]
-                        score = float(box.conf)  # confidence score
-                        if cls_name == TARGET_CLASS and score > best_score and score > 0.5:
-                            best_score = score
-                            best_box = box
-                            
-                    if best_box is None:
-                        # No building dectection 
-                        image_rgb = self.add_not_detected_overlay(image_rgb, opacity=0.5)
-                        
-                        # Convert BGR image (OpenCV) to RGB format
-                        display_image_rgb = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2RGB)
-                        # display_image_rgb = image_rgb.copy()
-                        # Convert the RGB image to QImage
-                        height, width, channel = display_image_rgb.shape
-                        bytes_per_line = 3 * width
-                        qimage = QtGui.QImage(display_image_rgb.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
-                        
-                        # Convert QImage to QPixmap
-                        building_pixmap = QtGui.QPixmap.fromImage(qimage)
-                        
-                        img_frames[aux].setPixmap(
-                            building_pixmap.scaled(
-                                img_frames[aux].width(),
-                                img_frames[aux].height(),
-                                QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
-                                QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
-                        continue
-                
-                    # Bounding box coordinates
-                    x1, y1, x2, y2 = map(int, best_box.xyxy[0])
-                        
-                    # Crop the area within the selected bounding box
-                    self.cropped_image[aux] = org_img[1][y1:y2, x1:x2]
-                    self.org_img_bp = org_img[1]
-                    
-                    # Create image for cropped and displayed
-                    display_image = org_img[aux].copy()
-                            
-                    for i in range(x1, x2, 14):
-                        cv2.line(display_image, (i, y1), (min(i + 5, x2), y1), (0, 0, 255), 3)
-                        cv2.line(display_image, (i, y2), (min(i + 5, x2), y2), (0, 0, 255), 3)
-                
-                    for i in range(y1, y2, 14):
-                        cv2.line(display_image, (x1, i), (x1, min(i + 5, y2)), (0, 0, 255), 3)
-                        cv2.line(display_image, (x2, i), (x2, min(i + 5, y2)), (0, 0, 255), 3)
-                
-                    display_image_rgb = cv2.cvtColor(display_image, cv2.COLOR_BGR2RGB)
-                    h, w, ch = display_image_rgb.shape
-                    bytes_per_line = w * 3
-                    qimg = QtGui.QImage(display_image_rgb.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
-                
-                    pixmap = QtGui.QPixmap.fromImage(qimg)
-                    self.predicted_img[aux] = 1
-                
-                    img_frames[aux].setPixmap(
-                        pixmap.scaled(img_frames[aux].width(), img_frames[aux].height(),
-                                      QtCore.Qt.IgnoreAspectRatio,
-                                      QtCore.Qt.SmoothTransformation))
-                    
-            # There is not GSV image coverage
-            except:
-                self.no_image = "Street View not available" 
-                for aux in range (3):
-                    font = QtGui.QFont()
-                    font.setPointSize(int(16 * self.sf_font))
-                    font.setBold(True)
-                    font.setWeight(75)
-                    img_frames[aux].setFont(font)
-                    img_frames[aux].setText(self.no_image)
-                    img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)  # Center-align text
-        
-        # Checking Inspection method (manual option)
-        elif self.ui.insp_method == 2:
-            # Image frames
-            img_frames = [self.ui.left_gsv_img, self.ui.central_gsv_img, self.ui.right_gsv_img]
-            # Loop for the number of image displayed selected with the option in the coordinates pop-up
-            for aux in range (self.n_images_local):
-                # Load the image for drawing
+            # List of the frame
+            img_frames = [self.ui.left_gsv_img,self.ui.central_gsv_img,self.ui.right_gsv_img]
+            sw = True
+            #Check inspection mode
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1:
                 try:
-                    img_path = self.ui.folder_path+"/"+str(self.data_building.iloc[self.old_local + aux, 0])
-                except:
-                    QMessageBox.warning(self.ui, "Input Error", "No further inspections are available")
-            
-                aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                +str(self.data_building.iloc[self.old_local + aux, 0]))
-                cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
-                
-                aux_displayed_path = (self.ui.folder_path+"/displayed_images/"
-                                +str(self.data_building.iloc[self.old_local + aux, 0]))
-                displayed_path = os.path.splitext(aux_displayed_path)[0]+"_displayed.jpg"
-
-                # Display building image
-                if os.path.exists(displayed_path):
-                    # Display an already isolated image
-                    building_pixmap = QtGui.QPixmap(displayed_path)
-                    # Selection of image frame using "aux" variable
-                    img_frames[aux].setPixmap(
-                        building_pixmap.scaled(
-                            img_frames[aux].width(),
-                            img_frames[aux].height(),
-                            QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
-                            QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
-                else:
-                    # Display a new image
-                    if sw == True:
-                        # Star progress bar until 99%
-                        for i in range (100):
-                            time.sleep(0.0001)
-                            self.ui.progress_bar_method.setValue(i)
-                            self.ui.method_progress.setText("Isolating building ....")
-                        sw = False  
-                    # Check and/or create cropped folder
-                    if not os.path.exists(self.ui.folder_path+"/Cropped_images"):
-                        os.makedirs(self.ui.folder_path+"/Cropped_images")
+                    # Getting the images from GSV
+                    org_img = [self.img_original_1,self.img_original_2,self.img_original_3]
+                    # Vector for check if the building is detected
+                    self.predicted_img = [0,0,0]
+                    # Check GSV availability
                     
-                    self.gap = None
-                    try:
-                        # Image results
-                        # results = model(img_path)
-                        results = model.predict(img_path, device=device)
-                        image_rgb = cv2.imread(img_path)
-                        # Adapting line weight depending of image size, in order to have an appropiate thickness
-                        height, width, channels = image_rgb.shape
-                        area = height*width
-                        ratio = int(area*3/307200)
-                        # Lines ratio
-                        if area <= 600000:
-                            # Small images
-                            self.gap = int(area*14/307200)
-                        elif area < 1000000:
-                            # Medium images
-                            self.gap = int(area*14/307200 * 3/4)
+                    for aux in range (n_img):
+                        if sw == True:
+                            for i in range(100):
+                                self.ui.progress_bar_method.setValue(i)
+                                QApplication.processEvents()
+                                self.ui.method_progress.setText("Isolating building ....")
+                            sw = False
+                
+                        # Ensure the image is in RGB format
+                        if self.sw_angle == 0:
+                            image_rgb = self.img_original_1
+                            self.sw_angle = None
+                            aux = 0
+                        elif self.sw_angle == 1:
+                            image_rgb = self.img_original_2
+                            self.sw_angle = None
+                            aux = 1
+                        elif self.sw_angle == 2:
+                            image_rgb = self.img_original_3
+                            self.sw_angle = None
+                            aux = 2
                         else:
-                            # Large images
-                            self.gap = int(area*14/307200 * 3/8)
-                            ratio = int(area*3/307200 * 5/8)
-                       
+                            image_rgb = org_img[aux]
+                
+                        # Run inference
+                        results = model.predict(image_rgb, device=device)
+                        
                         best_box = None
                         best_score = 0.0
                 
@@ -1060,76 +969,12 @@ class GUIMethods:
                             cls_id = int(box.cls)
                             cls_name = class_names[cls_id]
                             score = float(box.conf)  # confidence score
-                        
                             if cls_name == TARGET_CLASS and score > best_score and score > 0.5:
                                 best_score = score
                                 best_box = box
-                                          
-                        # Bounding box coordinates
-                        x1, y1, x2, y2 = map(int, best_box.xyxy[0])
-                            
-                        # Crop the area within the bounding box
-                        cropped_image = image_rgb[y1:y2, x1:x2]
-                        # Save image in local device
-                        cv2.imwrite(cropped_path, cropped_image)
-                        
-                        # Draw a dashed red rectangle for the highest confidence box
-                        if self.gap == 0:
-                            self.gap = 1
-                        for i in range(x1, x2, self.gap):
-                            cv2.line(image_rgb, (i, y1), (min(i + 5, x2), y1), (0, 0, 255), max(1, int(ratio)))  # Top edge
-                            cv2.line(image_rgb, (i, y2), (min(i + 5, x2), y2), (0, 0, 255), max(1, int(ratio)))  # Bottom edge
-                        for i in range(y1, y2, self.gap):
-                            cv2.line(image_rgb, (x1, i), (x1, min(i + 5, y2)), (0, 0, 255), max(1, int(ratio)))  # Left edge
-                            cv2.line(image_rgb, (x2, i), (x2, min(i + 5, y2)), (0, 0, 255), max(1, int(ratio)))  # Right edge
-                         
-                        # Check and/or create diplayed folder              
-                        if not os.path.exists(self.ui.folder_path+"/displayed_images"):
-                            os.makedirs(self.ui.folder_path+"/displayed_images")
-                        cv2.imwrite(displayed_path, image_rgb)
-                        
-                        if image_rgb is not None:
-                            # Convert BGR image (OpenCV) to RGB format
-                            display_image_rgb = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2RGB)
-                            # display_image_rgb = image_rgb.copy()
-                            # Convert the RGB image to QImage
-                            height, width, channel = display_image_rgb.shape
-                            bytes_per_line = 3 * width
-                            qimage = QtGui.QImage(display_image_rgb.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
-                            
-                            # Convert QImage to QPixmap
-                            building_pixmap = QtGui.QPixmap.fromImage(qimage)
-
-                    except:
-                        self.no_image = f"""
-                                        <b><u>No image found</u></b><br><br>
-                                        Please check that the image file exists at the specified path:<br>
-                                        <code>{img_path}</code>
-                                        """
-                        font = QtGui.QFont()
-                        font.setPointSize(int(12 * self.sf_font))
-                        font.setBold(True)
-                        font.setWeight(75)
-                    
-                        img_frames[aux].setFont(font)
-                        img_frames[aux].setTextFormat(QtCore.Qt.RichText)  # Enable rich text (HTML)
-                        img_frames[aux].setText(self.no_image)
-                        img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)
-                        img_frames[aux].setWordWrap(True)
-                        
-                    try:
-                        # Displayed image in corresponding frames
-                        img_frames[aux].setPixmap(
-                            building_pixmap.scaled(
-                                img_frames[aux].width(),
-                                img_frames[aux].height(),
-                                QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
-                                QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
-                    except:
-                        if self.gap == None:
-                            pass
-                        else:
-                            # Displayed image in corresponding frames
+                                
+                        if best_box is None:
+                            # No building dectection 
                             image_rgb = self.add_not_detected_overlay(image_rgb, opacity=0.5)
                             
                             # Convert BGR image (OpenCV) to RGB format
@@ -1149,12 +994,273 @@ class GUIMethods:
                                     img_frames[aux].height(),
                                     QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
                                     QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
+                            continue
+                    
+                        # Bounding box coordinates
+                        x1, y1, x2, y2 = map(int, best_box.xyxy[0])
                             
-                                        
-        # Chance progress bar to complete
-        self.ui.progress_bar_method.setValue(100)
-        self.ui.method_progress.setText("Done!")
+                        # Crop the area within the selected bounding box
+                        self.cropped_image[aux] = org_img[1][y1:y2, x1:x2]
+                        self.org_img_bp = org_img[1]
+                        
+                        # Create image for cropped and displayed
+                        display_image = org_img[aux].copy()
+                                
+                        for i in range(x1, x2, 14):
+                            cv2.line(display_image, (i, y1), (min(i + 5, x2), y1), (0, 0, 255), 3)
+                            cv2.line(display_image, (i, y2), (min(i + 5, x2), y2), (0, 0, 255), 3)
+                    
+                        for i in range(y1, y2, 14):
+                            cv2.line(display_image, (x1, i), (x1, min(i + 5, y2)), (0, 0, 255), 3)
+                            cv2.line(display_image, (x2, i), (x2, min(i + 5, y2)), (0, 0, 255), 3)
+                    
+                        display_image_rgb = cv2.cvtColor(display_image, cv2.COLOR_BGR2RGB)
+                        h, w, ch = display_image_rgb.shape
+                        bytes_per_line = w * 3
+                        qimg = QtGui.QImage(display_image_rgb.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+                    
+                        pixmap = QtGui.QPixmap.fromImage(qimg)
+                        self.predicted_img[aux] = 1
+                    
+                        img_frames[aux].setPixmap(
+                            pixmap.scaled(img_frames[aux].width(), img_frames[aux].height(),
+                                          QtCore.Qt.IgnoreAspectRatio,
+                                          QtCore.Qt.SmoothTransformation))
+                        
+                # There is not GSV image coverage
+                except:
+                    self.no_image = "Street View not available" 
+                    for aux in range (3):
+                        font = QtGui.QFont()
+                        font.setPointSize(int(16 * self.sf_font))
+                        font.setBold(True)
+                        font.setWeight(75)
+                        img_frames[aux].setFont(font)
+                        img_frames[aux].setText(self.no_image)
+                        img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)  # Center-align text
+            
+            # Checking Inspection method (manual option)
+            elif self.ui.insp_method == 2:
+                # Image frames
+                img_frames = [self.ui.left_gsv_img, self.ui.central_gsv_img, self.ui.right_gsv_img]
+                # Loop for the number of image displayed selected with the option in the coordinates pop-up
+                for aux in range (self.n_images_local):
+                    # Load the image for drawing
+                    try:
+                        img_path = self.ui.folder_path+"/"+str(self.data_building.iloc[self.old_local + aux, 0])
+                    except:
+                        QMessageBox.warning(self.ui, "Input Error", "No further inspections are available")
+                
+                    aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
+                    
+                    aux_displayed_path = (self.ui.folder_path+"/displayed_images/"
+                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                    displayed_path = os.path.splitext(aux_displayed_path)[0]+"_displayed.jpg"
     
+                    # Display building image
+                    if os.path.exists(displayed_path):
+                        # Display an already isolated image
+                        building_pixmap = QtGui.QPixmap(displayed_path)
+                        # Selection of image frame using "aux" variable
+                        img_frames[aux].setPixmap(
+                            building_pixmap.scaled(
+                                img_frames[aux].width(),
+                                img_frames[aux].height(),
+                                QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
+                                QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
+                    else:
+                        # Display a new image
+                        if sw == True:
+                            # Star progress bar until 99%
+                            for i in range (100):
+                                time.sleep(0.0001)
+                                self.ui.progress_bar_method.setValue(i)
+                                self.ui.method_progress.setText("Isolating building ....")
+                            sw = False  
+                        # Check and/or create cropped folder
+                        if not os.path.exists(self.ui.folder_path+"/Cropped_images"):
+                            os.makedirs(self.ui.folder_path+"/Cropped_images")
+                        
+                        self.gap = None
+                        try:
+                            # Image results
+                            # results = model(img_path)
+                            results = model.predict(img_path, device=device)
+                            image_rgb = cv2.imread(img_path)
+                            # Adapting line weight depending of image size, in order to have an appropiate thickness
+                            height, width, channels = image_rgb.shape
+                            area = height*width
+                            ratio = int(area*3/307200)
+                            # Lines ratio
+                            if area <= 600000:
+                                # Small images
+                                self.gap = int(area*14/307200)
+                            elif area < 1000000:
+                                # Medium images
+                                self.gap = int(area*14/307200 * 3/4)
+                            else:
+                                # Large images
+                                self.gap = int(area*14/307200 * 3/8)
+                                ratio = int(area*3/307200 * 5/8)
+                           
+                            best_box = None
+                            best_score = 0.0
+                    
+                            # for box in results.boxes:
+                            for box in results[0].boxes:
+                                cls_id = int(box.cls)
+                                cls_name = class_names[cls_id]
+                                score = float(box.conf)  # confidence score
+                            
+                                if cls_name == TARGET_CLASS and score > best_score and score > 0.5:
+                                    best_score = score
+                                    best_box = box
+                                              
+                            # Bounding box coordinates
+                            x1, y1, x2, y2 = map(int, best_box.xyxy[0])
+                                
+                            # Crop the area within the bounding box
+                            cropped_image = image_rgb[y1:y2, x1:x2]
+                            # Save image in local device
+                            cv2.imwrite(cropped_path, cropped_image)
+                            
+                            # Draw a dashed red rectangle for the highest confidence box
+                            if self.gap == 0:
+                                self.gap = 1
+                            for i in range(x1, x2, self.gap):
+                                cv2.line(image_rgb, (i, y1), (min(i + 5, x2), y1), (0, 0, 255), max(1, int(ratio)))  # Top edge
+                                cv2.line(image_rgb, (i, y2), (min(i + 5, x2), y2), (0, 0, 255), max(1, int(ratio)))  # Bottom edge
+                            for i in range(y1, y2, self.gap):
+                                cv2.line(image_rgb, (x1, i), (x1, min(i + 5, y2)), (0, 0, 255), max(1, int(ratio)))  # Left edge
+                                cv2.line(image_rgb, (x2, i), (x2, min(i + 5, y2)), (0, 0, 255), max(1, int(ratio)))  # Right edge
+                             
+                            # Check and/or create diplayed folder              
+                            if not os.path.exists(self.ui.folder_path+"/displayed_images"):
+                                os.makedirs(self.ui.folder_path+"/displayed_images")
+                            cv2.imwrite(displayed_path, image_rgb)
+                            
+                            if image_rgb is not None:
+                                # Convert BGR image (OpenCV) to RGB format
+                                display_image_rgb = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2RGB)
+                                # display_image_rgb = image_rgb.copy()
+                                # Convert the RGB image to QImage
+                                height, width, channel = display_image_rgb.shape
+                                bytes_per_line = 3 * width
+                                qimage = QtGui.QImage(display_image_rgb.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
+                                
+                                # Convert QImage to QPixmap
+                                building_pixmap = QtGui.QPixmap.fromImage(qimage)
+    
+                        except:
+                            self.no_image = f"""
+                                            <b><u>No image found</u></b><br><br>
+                                            Please check that the image file exists at the specified path:<br>
+                                            <code>{img_path}</code>
+                                            """
+                            font = QtGui.QFont()
+                            font.setPointSize(int(12 * self.sf_font))
+                            font.setBold(True)
+                            font.setWeight(75)
+                        
+                            img_frames[aux].setFont(font)
+                            img_frames[aux].setTextFormat(QtCore.Qt.RichText)  # Enable rich text (HTML)
+                            img_frames[aux].setText(self.no_image)
+                            img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)
+                            img_frames[aux].setWordWrap(True)
+                            
+                        try:
+                            # Displayed image in corresponding frames
+                            img_frames[aux].setPixmap(
+                                building_pixmap.scaled(
+                                    img_frames[aux].width(),
+                                    img_frames[aux].height(),
+                                    QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
+                                    QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
+                        except:
+                            if self.gap == None:
+                                pass
+                            else:
+                                # Displayed image in corresponding frames
+                                image_rgb = self.add_not_detected_overlay(image_rgb, opacity=0.5)
+                                
+                                # Convert BGR image (OpenCV) to RGB format
+                                display_image_rgb = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2RGB)
+                                # display_image_rgb = image_rgb.copy()
+                                # Convert the RGB image to QImage
+                                height, width, channel = display_image_rgb.shape
+                                bytes_per_line = 3 * width
+                                qimage = QtGui.QImage(display_image_rgb.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
+                                
+                                # Convert QImage to QPixmap
+                                building_pixmap = QtGui.QPixmap.fromImage(qimage)
+                                
+                                img_frames[aux].setPixmap(
+                                    building_pixmap.scaled(
+                                        img_frames[aux].width(),
+                                        img_frames[aux].height(),
+                                        QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
+                                        QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
+                                
+                                            
+            # Chance progress bar to complete
+            self.ui.progress_bar_method.setValue(100)
+            self.ui.method_progress.setText("Done!")
+        
+        else:
+            if self.sw_extrapolation == False:
+                self.sw_extrapolation = True
+            else:
+                print("Entra TRUE")
+                CONF_THRESHOLD = 0.5
+                self.lat_extrapolation = float(self.ui.coord_reference.loc[aux,"latitude"])
+                self.lon_extrapolation =  float(self.ui.coord_reference.loc[aux,"longitude"])
+                img_gsv, url_gsv  = self.fetch_three_step_views()
+                try:
+                    # Run inference
+                    results = model.predict(img_gsv, device=device)[0]
+                
+                    h, w, _ = img_gsv.shape
+                
+                    # Get class names
+                    class_names = model.names
+                
+                    best_box = None
+                    best_conf = 0
+                
+                    # Loop through detected boxes
+                    if results.boxes is not None:
+                        for box in results.boxes:
+                
+                            cls_id = int(box.cls[0])
+                            label = class_names[cls_id]
+                            conf = float(box.conf[0])
+                
+                            if label == TARGET_CLASS and conf > CONF_THRESHOLD:
+                                if conf > best_conf:
+                                    best_conf = conf
+                                    best_box = box.xyxy[0].cpu().numpy().astype(int)
+                
+                    if best_box is None:
+                        print(f"❌ No '{TARGET_CLASS}' detected in image.")
+                        return
+                
+                    x1, y1, x2, y2 = best_box
+                
+                    # ✅ Ensure values inside image
+                    x1 = max(0, x1)
+                    y1 = max(0, y1)
+                    x2 = min(w, x2)
+                    y2 = min(h, y2)
+                
+                    # ✅ Crop image
+                    cropped_image = img_gsv[y1:y2, x1:x2]
+                    return cropped_image, url_gsv
+                except:
+                    cropped_image = []
+        
+        
     def add_not_detected_overlay(self, image_bgr, opacity=0.5, text="BUILDING NOT DETECTED"):
         """
         Takes a BGR image and returns a new image with:
@@ -1534,123 +1640,170 @@ class GUIMethods:
             - Each entry in the database corresponds to a specific building image.
             - Requires properly configured UI components to retrieve and store data.
         """
-        if self.ui.city_value.text() == "-":
-            QMessageBox.warning(self.ui,"File Error", "This option is only available once the building image is displayed.\n"
-                                                      "Please click the *Next Building* button.")
-        else:
-            # Save inspection function
-            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                base_url = "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint="
-                coord = str(self.ui.lat_value.text()) + "," + str(self.ui.lon_value.text())
-                heading = get_road_orientation((float(self.ui.lat_value.text()), float(self.ui.lon_value.text())))
-                
-            # -------------------  Left building image ---------------------- 
-            
-            if self.ui.insp_method == 0 or self.ui.insp_method == 1:
-                self.data_ai.iloc[self.click_count, 0]  = self.ui.img_id_value_1.text()[:-2]
-                self.data_ai.iloc[self.click_count, 1]  = self.data_building.loc[self.click_count, 'latitude']
-                self.data_ai.iloc[self.click_count, 2]  = self.data_building.loc[self.click_count, 'longitude']
-                self.data_ai.iloc[self.click_count, 3]  = self.ui.country_value.text()
-                self.data_ai.iloc[self.click_count, 4]  = self.ui.city_value.text()
-                self.data_ai.iloc[self.click_count, 5]  = self.ui.material_cb_1.currentData()
-                self.data_ai.iloc[self.click_count, 6]  = self.ui.llrs_cb_1.currentData()
-                self.data_ai.iloc[self.click_count, 7]  = self.ui.age_cb_1.currentData()
-                self.data_ai.iloc[self.click_count, 8]  = self.ui.n_stories_value_1.currentData()
-                self.data_ai.iloc[self.click_count, 9]  = self.ui.occup_cb_1.currentData()
-                self.data_ai.iloc[self.click_count, 10] = self.ui.bck_pos_cb_1.currentData()
-                self.data_ai.iloc[self.click_count, 11] = self.ui.epc_const_cb_1.currentText()
-                self.data_ai.iloc[self.click_count, 12] = self.ui.roof_shape_cb_1.currentData()
-                self.data_ai.iloc[self.click_count, 13] = self.ui.roof_material_cb_1.currentData()
-                self.data_ai.iloc[self.click_count, 14] = self.ui.img_q_cb_1.currentData()
-            
-                # Taxonomy (safe + partial)
-                def _s(v): return "" if v is None else str(v).strip()
-                def _add(out, v): 
-                    v = _s(v)
-                    if v: out.append(v)
-            
-                parts = []
-                _add(parts, self.ui.material_cb_1.currentData())
-                _add(parts, self.ui.llrs_cb_1.currentData())
-                _add(parts, self.ui.age_cb_1.currentData())
-                st = _s(self.ui.n_stories_value_1.currentText())
-                if st: parts.append(f"H:{st}")
-                _add(parts, self.ui.bck_pos_cb_1.currentData())
-            
-                roof_shape = _s(self.ui.roof_shape_cb_1.currentData())
-                roof_mat   = _s(self.ui.roof_material_cb_1.currentData())
-                if roof_shape and roof_mat:
-                    parts.append(f"{roof_shape}+{roof_mat}")
-                elif roof_shape:
-                    parts.append(roof_shape)
-                elif roof_mat:
-                    parts.append(roof_mat)
-            
-                _add(parts, self.ui.occup_cb_1.currentData())
-            
-                tax = "/".join(parts)
-                self.data_ai.iloc[self.click_count, 15] = tax
-                if tax:
-                    self.tax_check(tax)
-            
-                if self.img_url[0] != "":
-                    self.data_ai.iloc[self.click_count, 16] = self.img_url[0]
-                else:
-                    if isinstance(heading, int):
-                        self.data_ai.iloc[self.click_count, 16] = base_url + coord + "&heading=" + str((heading + 180) % 360) + "&pitch=5&fov=120"
-
-            # ------------------- Local  -----------------------
-            elif self.ui.insp_method == 2:
-                # Left building image
-                self.data_ai.iloc[self.old_local, 0]  = self.ui.img_id_value_1.text()[:-2]                 # ID
-                self.data_ai.iloc[self.old_local, 1]  = self.data_building.loc[self.old_local,'latitude']  # latitude
-                self.data_ai.iloc[self.old_local, 2]  = self.data_building.loc[self.old_local,'longitude'] # longitude
-                self.data_ai.iloc[self.old_local, 3]  = self.ui.country_value.text()                       # Country
-                self.data_ai.iloc[self.old_local, 4]  = self.ui.city_value.text()                          # City
-                self.data_ai.iloc[self.old_local, 5]  = self.ui.material_cb_1.currentData()                # LLRS Material
-                self.data_ai.iloc[self.old_local, 6]  = self.ui.llrs_cb_1.currentData()                    # LLRS
-                self.data_ai.iloc[self.old_local, 7]  = self.ui.age_cb_1.currentData()                     # Code Level
-                self.data_ai.iloc[self.old_local, 8]  = self.ui.n_stories_value_1.currentData()            # Number of Stories
-                self.data_ai.iloc[self.old_local, 9]  = self.ui.occup_cb_1.currentData()                   # Occupancy
-                self.data_ai.iloc[self.old_local, 10] = self.ui.bck_pos_cb_1.currentData()                 # Block Position
-                self.data_ai.iloc[self.old_local, 11] = self.ui.epc_const_cb_1.currentText()               # Epoch of construction
-                self.data_ai.iloc[self.old_local, 12] = self.ui.roof_shape_cb_1.currentData()             # Roof shape
-                self.data_ai.iloc[self.old_local, 13] = self.ui.roof_material_cb_1.currentData()          # Roof material
-                self.data_ai.iloc[self.old_local, 14] = self.ui.img_q_cb_1.currentData()                  # Image Quality
-                
-                # Taxonomy (works with missing fields)
-                def _s(v): return "" if v is None else str(v).strip()
-                parts = []
-                
-                for v in (_s(self.ui.material_cb_1.currentData()),
-                          _s(self.ui.llrs_cb_1.currentData()),
-                          _s(self.ui.age_cb_1.currentData()),
-                          f"H:{_s(self.ui.n_stories_value_1.currentText())}" if _s(self.ui.n_stories_value_1.currentText()) else "",
-                          _s(self.ui.bck_pos_cb_1.currentData())):
-                    if v:
-                        parts.append(v)
-                
-                roof_shape = _s(self.ui.roof_shape_cb_1.currentData())
-                roof_mat   = _s(self.ui.roof_material_cb_1.currentData())
-                if roof_shape and roof_mat:
-                    parts.append(f"{roof_shape}+{roof_mat}")
-                elif roof_shape:
-                    parts.append(roof_shape)
-                elif roof_mat:
-                    parts.append(roof_mat)
-                
-                occup = _s(self.ui.occup_cb_1.currentData())
-                if occup:
-                    parts.append(occup)
-                
-                tax = "/".join(parts)
-                self.data_ai.iloc[self.old_local, 15] = tax  # Taxonomy
-                if tax:
-                    self.tax_check(tax)
+        if self.ui.insp_method in (0, 1, 2):
+            if self.ui.city_value.text() == "-":
+                QMessageBox.warning(self.ui,"File Error", "This option is only available once the building image is displayed.\n"
+                                                          "Please click the *Next Building* button.")
+            else:
+                # Save inspection function
+                if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+                    base_url = "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint="
+                    coord = str(self.ui.lat_value.text()) + "," + str(self.ui.lon_value.text())
+                    heading = get_road_orientation((float(self.ui.lat_value.text()), float(self.ui.lon_value.text())))
                     
-                self.data_ai.iloc[self.old_local, 16] = self.data_building.iloc[self.old_local, 0]
- 
-            
+                # -------------------  Left building image ---------------------- 
+                
+                if self.ui.insp_method == 0 or self.ui.insp_method == 1:
+                    self.data_ai.iloc[self.click_count, 0]  = self.ui.img_id_value_1.text()[:-2]
+                    self.data_ai.iloc[self.click_count, 1]  = self.data_building.loc[self.click_count, 'latitude']
+                    self.data_ai.iloc[self.click_count, 2]  = self.data_building.loc[self.click_count, 'longitude']
+                    self.data_ai.iloc[self.click_count, 3]  = self.ui.country_value.text()
+                    self.data_ai.iloc[self.click_count, 4]  = self.ui.city_value.text()
+                    self.data_ai.iloc[self.click_count, 5]  = self.ui.material_cb_1.currentData()
+                    self.data_ai.iloc[self.click_count, 6]  = self.ui.llrs_cb_1.currentData()
+                    self.data_ai.iloc[self.click_count, 7]  = self.ui.age_cb_1.currentData()
+                    self.data_ai.iloc[self.click_count, 8]  = self.ui.n_stories_value_1.currentData()
+                    self.data_ai.iloc[self.click_count, 9]  = self.ui.occup_cb_1.currentData()
+                    self.data_ai.iloc[self.click_count, 10] = self.ui.bck_pos_cb_1.currentData()
+                    self.data_ai.iloc[self.click_count, 11] = self.ui.epc_const_cb_1.currentText()
+                    self.data_ai.iloc[self.click_count, 12] = self.ui.roof_shape_cb_1.currentData()
+                    self.data_ai.iloc[self.click_count, 13] = self.ui.roof_material_cb_1.currentData()
+                    self.data_ai.iloc[self.click_count, 14] = self.ui.img_q_cb_1.currentData()
+                
+                    # Taxonomy (safe + partial)
+                    def _s(v): return "" if v is None else str(v).strip()
+                    def _add(out, v): 
+                        v = _s(v)
+                        if v: out.append(v)
+                
+                    parts = []
+                    _add(parts, self.ui.material_cb_1.currentData())
+                    _add(parts, self.ui.llrs_cb_1.currentData())
+                    _add(parts, self.ui.age_cb_1.currentData())
+                    st = _s(self.ui.n_stories_value_1.currentText())
+                    if st: parts.append(f"H:{st}")
+                    _add(parts, self.ui.bck_pos_cb_1.currentData())
+                
+                    roof_shape = _s(self.ui.roof_shape_cb_1.currentData())
+                    roof_mat   = _s(self.ui.roof_material_cb_1.currentData())
+                    if roof_shape and roof_mat:
+                        parts.append(f"{roof_shape}+{roof_mat}")
+                    elif roof_shape:
+                        parts.append(roof_shape)
+                    elif roof_mat:
+                        parts.append(roof_mat)
+                
+                    _add(parts, self.ui.occup_cb_1.currentData())
+                
+                    tax = "/".join(parts)
+                    self.data_ai.iloc[self.click_count, 15] = tax
+                    if tax:
+                        self.tax_check(tax)
+                
+                    if self.img_url[0] != "":
+                        self.data_ai.iloc[self.click_count, 16] = self.img_url[0]
+                    else:
+                        if isinstance(heading, int):
+                            self.data_ai.iloc[self.click_count, 16] = base_url + coord + "&heading=" + str((heading + 180) % 360) + "&pitch=5&fov=120"
+    
+                # ------------------- Local  -----------------------
+                elif self.ui.insp_method == 2:
+                    # Left building image
+                    self.data_ai.iloc[self.old_local, 0]  = self.ui.img_id_value_1.text()[:-2]                 # ID
+                    self.data_ai.iloc[self.old_local, 1]  = self.data_building.loc[self.old_local,'latitude']  # latitude
+                    self.data_ai.iloc[self.old_local, 2]  = self.data_building.loc[self.old_local,'longitude'] # longitude
+                    self.data_ai.iloc[self.old_local, 3]  = self.ui.country_value.text()                       # Country
+                    self.data_ai.iloc[self.old_local, 4]  = self.ui.city_value.text()                          # City
+                    self.data_ai.iloc[self.old_local, 5]  = self.ui.material_cb_1.currentData()                # LLRS Material
+                    self.data_ai.iloc[self.old_local, 6]  = self.ui.llrs_cb_1.currentData()                    # LLRS
+                    self.data_ai.iloc[self.old_local, 7]  = self.ui.age_cb_1.currentData()                     # Code Level
+                    self.data_ai.iloc[self.old_local, 8]  = self.ui.n_stories_value_1.currentData()            # Number of Stories
+                    self.data_ai.iloc[self.old_local, 9]  = self.ui.occup_cb_1.currentData()                   # Occupancy
+                    self.data_ai.iloc[self.old_local, 10] = self.ui.bck_pos_cb_1.currentData()                 # Block Position
+                    self.data_ai.iloc[self.old_local, 11] = self.ui.epc_const_cb_1.currentText()               # Epoch of construction
+                    self.data_ai.iloc[self.old_local, 12] = self.ui.roof_shape_cb_1.currentData()             # Roof shape
+                    self.data_ai.iloc[self.old_local, 13] = self.ui.roof_material_cb_1.currentData()          # Roof material
+                    self.data_ai.iloc[self.old_local, 14] = self.ui.img_q_cb_1.currentData()                  # Image Quality
+                    
+                    # Taxonomy (works with missing fields)
+                    def _s(v): return "" if v is None else str(v).strip()
+                    parts = []
+                    
+                    for v in (_s(self.ui.material_cb_1.currentData()),
+                              _s(self.ui.llrs_cb_1.currentData()),
+                              _s(self.ui.age_cb_1.currentData()),
+                              f"H:{_s(self.ui.n_stories_value_1.currentText())}" if _s(self.ui.n_stories_value_1.currentText()) else "",
+                              _s(self.ui.bck_pos_cb_1.currentData())):
+                        if v:
+                            parts.append(v)
+                    
+                    roof_shape = _s(self.ui.roof_shape_cb_1.currentData())
+                    roof_mat   = _s(self.ui.roof_material_cb_1.currentData())
+                    if roof_shape and roof_mat:
+                        parts.append(f"{roof_shape}+{roof_mat}")
+                    elif roof_shape:
+                        parts.append(roof_shape)
+                    elif roof_mat:
+                        parts.append(roof_mat)
+                    
+                    occup = _s(self.ui.occup_cb_1.currentData())
+                    if occup:
+                        parts.append(occup)
+                    
+                    tax = "/".join(parts)
+                    self.data_ai.iloc[self.old_local, 15] = tax  # Taxonomy
+                    if tax:
+                        self.tax_check(tax)
+                        
+                    self.data_ai.iloc[self.old_local, 16] = self.data_building.iloc[self.old_local, 0]
+               
+        # ------------------- Extrapolation  -----------------------
+        elif self.ui.insp_method == 3:
+            for i in range (self.data_ai.shape[0]):
+                self.data_ai.iloc[i, 0] = self.ui.coord_reference.loc[i, "id"]                                                 # ID
+                self.data_ai.iloc[i, 1] = self.ui.coord_reference.loc[i , "latitude"]                                                 # Latitude
+                self.data_ai.iloc[i, 2] = self.ui.coord_reference.loc[i , "longitude"] 
+                try:
+                    image_file, url_gsv = self.object_detector_building(i)
+                    if image_file is None:
+                        pass
+                    else:
+                        city, country = self.get_city_name()
+                        
+                        material_classes = ['CR', 'HYB(MCF;MUR)', 'INF','MCF', 'MR', 'MUR','S','W']
+                        llrs_classes = ['LDUAL', 'LFBR', 'LFINF', 'LFM', 'LN', 'LWAL', 'LWAL']
+                        code_level_classes = ['CDH','CDL', 'CDM', 'CDN']
+                        ns_classes = ['10-12', '13+', '1', '2', '3', '4', '5', '6-7', '8-9']
+                        occupancy_class = ['COM' , 'IND' ,'MIX(RES;COM)', 'RES']
+                        block_position_classes = ['BP1', 'BP2', 'BP3', 'BPD']
+                        roof_shape_classes = ['RSH1', 'RSH2', 'RSH3', 'RSH5', 'RSH7']
+                        roof_material_classes = ['RMN', 'RMT1', 'RMT6']
+                        
+                        self.data_ai.iloc[i, 3], self.data_ai.iloc[i, 4] = country , city
+                        self.data_ai.iloc[i, 5] = material_classes[predict_material_img(image_file, self.ui.insp_method, None, self.ui)]                           # LLRS Material
+                        self.data_ai.iloc[i, 6] = llrs_classes[predict_llrs_img (image_file, self.ui.insp_method, None, self.ui)]                               # LLRS 
+                        self.data_ai.iloc[i, 7] = code_level_classes[predict_code_img (image_file, self.ui.insp_method, None, self.ui)]                                 # Code Level 
+                        self.data_ai.iloc[i, 8] = ns_classes[predict_n_stories_img (image_file, self.ui.insp_method, None, self.ui)]                           # Number of Stories               
+                        self.data_ai.iloc[i, 9] = occupancy_class[predict_occupancy_img (image_file, self.ui.insp_method, None, self.ui) ]                        
+                        self.data_ai.iloc[i, 10] = block_position_classes[predict_block_position_img (image_file, self.ui.insp_method, None, self.ui)]   # Block Position                   
+                        self.data_ai.iloc[i, 12] = roof_shape_classes[predict_roof_shape_img (image_file, self.ui.insp_method, None, self.ui)   ]                      # Roof shape
+                        self.data_ai.iloc[i, 13] = roof_material_classes[predict_roof_material_img (image_file, self.ui.insp_method, None, self.ui)  ]   
+                        
+                        self.data_ai.iloc[i, 15] = (self.data_ai.iloc[i, 5]+"/"+
+                                                self.data_ai.iloc[i, 6]+"+"+
+                                                self.data_ai.iloc[i, 7]+"/H:"+
+                                                str(self.data_ai.iloc[i, 8])+"/"+
+                                                self.data_ai.iloc[i, 9]+"/"+
+                                                self.data_ai.iloc[i, 10]+"/"+
+                                                self.data_ai.iloc[i, 12]+"+"+
+                                                self.data_ai.iloc[i, 13])                       # Taxonomy
+                        
+                        self.data_ai.iloc[i, 16] = url_gsv
+                except:
+                    pass
+                
+                print("Inspection: " + str(i+1)+"/"+str(self.data_ai.shape[0]) +" -------------------------------------")
+                    
     ############ Saves the data from the inspections that were conducted ################       
     def save_database (self):
         """
@@ -2893,7 +3046,7 @@ class GUIMethods:
             try:
                 self.get_city_name()
                 self.fetch_three_step_views()
-                self.object_detector_building()
+                self.object_detector_building(None)
                 self.clean_database()
             except:
                 pass
@@ -2915,15 +3068,16 @@ class GUIMethods:
                     #######===========  Function results =========###########
                     self.create_database()
                     data_existing_dl = self.data_ai
-                    dl_models()
-                    inspection_database(data_existing_dl, self.ui.coord_reference)
-                    # self.proof_dl_model()
+                    self.inspection_database()
+                    
                     predicted_path =  self.ui.output_path+"/"+self.ui.coord_reference_building_feature_path
                     data_existing_dl = data_existing_dl.dropna(subset=["llrs"])
                     data_existing_dl.to_csv(predicted_path, index= False)
                     extra_path =  self.ui.output_path+"/"+self.ui.knn_dl_saved_path
                     n_neighbors = self.ui.k_value
                     extrapolation_existing_reference(data_existing_dl , self.ui.building_extra_path, extra_path, n_neighbors)
+                    self.ui.progress_bar_method.setValue(100)
+                    self.ui.method_progress.setText("Successful extrapolation process")
                 else:
                     building_no_info = self.ui.building_extra_path
                     building_reference = self.ui.example_building_path
@@ -3094,12 +3248,6 @@ class GUIMethods:
         # Conditional to avoid executing the method if there is no project folder
         if self.ui.output_folder_value == "-":
             QMessageBox.warning(self.ui, "File Error", "This option is only available once the building image is displayed.")
-        # Conditional to avoid executing the method if there is no country name
-        # elif self.ui.country_value.text() == "-":
-        #     QMessageBox.warning(self.ui, "File Error", "This option is only available once the building image is displayed.")
-        # # Conditional to avoid executing the method if there is no city name 
-        # elif self.ui.city_value.text() == "-":
-        #     QMessageBox.warning(self.ui, "File Error", "This option is only available once the building image is displayed.")
         else:
             if self.ui.material_cb_1.currentData() is None:
                 QMessageBox.warning(self.ui,"Feature required",
