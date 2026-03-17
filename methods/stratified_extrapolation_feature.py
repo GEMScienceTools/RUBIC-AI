@@ -4,6 +4,7 @@ import numpy as np
 from PyQt5 import QtCore, QtGui, QtWidgets
 import pandas as pd
 
+from methods.utilities import select_output_folder, upload_csv
 
 class stratified_extrapolation(QtWidgets.QDialog):
     def __init__(self, parent=None, main_window=None):
@@ -153,6 +154,8 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.output_path_new_button.setFont(font)
         self.output_path_new_button.setObjectName("output_path_new_button")
         self.output_path_new_button.clicked.connect(self.select_output_folder_new)
+        # self.output_path_new_button.clicked.connect(self._on_select_output_folder)
+        
         
         self.extra_label_new = QtWidgets.QLabel(self.data_frame)
         self.extra_label_new.setGeometry(QtCore.QRect(int(40 * sf_x), int(140 * sf_y), int(181 * sf_x), int(31 * sf_y)))
@@ -300,14 +303,21 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.n_iter_new_label.setText("N° iter:")
         self.threshold_new.setText("Maximum threshold:")
         
+        # ==============================================================
+        # Stratified method functions
+        # ==============================================================
+    
     def select_method(self):
+        """
+        Sets the stratified extrapolation mode based on the selected option and closes the dialog.
+        """
         if self.extrap_mode_new.currentData() == 0:
             # stratified deep learning
             self.stratified_mode = 0
             self.accept()
         else:
-            self.stratified_mode = 1
             # stratified manually
+            self.stratified_mode = 1       
             self.accept()
                 
     def preview_data(self, database):
@@ -374,6 +384,14 @@ class stratified_extrapolation(QtWidgets.QDialog):
         if self.folder_path_new:  # If a folder is selected
             folder_display = os.path.basename(self.folder_path_new)    
             self.saved_path_new.setText(folder_display)
+    
+    # def _on_select_output_folder(self):
+    #     """
+    #     Opens a folder selection dialog, stores the selected output folder path, and displays 
+    #     the folder name in the interface.
+    #     """
+    #     self.folder_path_new, self.display_folder = select_output_folder(self)
+    #     self.saved_path_new.setText(self.display_folder)
     
     def data_population(self):
         self.data_population = self.upload_csv(self.population_new_path)

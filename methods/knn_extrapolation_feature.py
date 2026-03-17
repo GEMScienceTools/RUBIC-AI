@@ -1,17 +1,16 @@
 from geopy.distance import geodesic
 from collections import defaultdict
-import os
 import sys
 import numpy as np 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import pandas as pd
 
-from methods.utilities import select_output_folder
+from methods.utilities import select_output_folder, upload_csv
 
 class knn_options_window(QtWidgets.QDialog):
     def __init__(self, parent=None, main_window=None):
         super().__init__(parent)
-        self.main_window = main_window
+        self.method = parent
 
         # Get screen resolution
         screen = QtWidgets.QApplication.primaryScreen()
@@ -276,8 +275,7 @@ class knn_options_window(QtWidgets.QDialog):
         font.setWeight(50)
         self.output_path_button.setFont(font)
         self.output_path_button.setObjectName("output_path_button")
-        self.output_path_button.clicked.connect(self.select_output_folder_manual)
-        # self.output_path_button.clicked.connect(self._on_select_output_folder)
+        self.output_path_button.clicked.connect(self._on_select_output_folder)
         
           
         # Saved Path Label (DL)
@@ -297,8 +295,7 @@ class knn_options_window(QtWidgets.QDialog):
         font.setWeight(50)
         self.output_path_dl_button.setFont(font)
         self.output_path_dl_button.setObjectName("output_path_dl_button")
-        # self.output_path_dl_button.clicked.connect(self._on_select_output_folder)
-        self.output_path_dl_button.clicked.connect(self.select_output_folder_dl)
+        self.output_path_dl_button.clicked.connect(self._on_select_output_folder)
         
         # Set default values manually
         self.output_manual_value.setText("KNN_manual")
@@ -323,95 +320,56 @@ class knn_options_window(QtWidgets.QDialog):
         self.output_path_dl_button.setText("Select output folder")
         self.output_path_button.setText("Select output folder")
         self.saved_path_manual.setText("path/where/save/the/results")
-              
-                                     
+           
+        
+        # ==============================================================
+        # KNN method functions
+        # ==============================================================
+        
+    def _on_select_output_folder(self):
+        """
+        Opens a folder selection dialog, stores the selected output folder path, and displays 
+        the folder name in the interface.
+        """
+        self.folder_path, self.display_folder = select_output_folder(self)
+        if self.manual_op.isChecked():
+            self.saved_path_manual.setText(self.display_folder)
+        elif self.dl_op.isChecked():
+            self.saved_path_dl.setText(self.display_folder)
+            
     def data_existing(self):
-        self.info_existing = self.upload_csv(self.manual_info_path)
-        self.preview_data(self.info_existing)
+        """
+        Loads the reference dataset from the selected manual input file and stores its path.
+        """
+        self.sf_font = self.method.sf_font
+        self.label_path = self.manual_info_path
+        self.info_existing = upload_csv(self)
         
     def data_extrapolation(self):
-        self.info_pending = self.upload_csv(self.unclassfied_path)
-        self.preview_data(self.info_pending)
+        """
+        Loads the reference dataset from the selected manual input file and stores its path.
+        """
+        self.sf_font = self.method.sf_font
+        self.label_path = self.unclassfied_path
+        self.info_pending = upload_csv(self)
         
     def data_existing_dl(self):
-        self.info_existing = self.upload_csv(self.coord_value_knn)
-        self.preview_data(self.info_existing)
+        """
+        Loads the reference dataset from the selected manual input file and stores its path.
+        """
+        self.sf_font = self.method.sf_font
+        self.label_path = self.coord_value_knn
+        self.info_existing = upload_csv(self)
         
     def data_extrapolation_dl(self):
-        self.info_pending = self.upload_csv(self.unclassfied_dl_path)
-        self.preview_data(self.info_pending)
+        """
+        Loads the reference dataset from the selected manual input file and stores its path.
+        """
+        self.sf_font = self.method.sf_font
+        self.label_path = self.unclassfied_dl_path
+        self.info_pending = upload_csv(self)
         
-    def preview_data(self, database):
-        if hasattr(self, 'df') and not self.df.empty:
-            preview_df = database.head(10)  # Only show first 10 rows
-
-            self.tableWidget.clear()
-            self.tableWidget.setRowCount(len(preview_df))
-            self.tableWidget.setColumnCount(len(preview_df.columns))
-            self.tableWidget.setHorizontalHeaderLabels(preview_df.columns)
-
-            for row in range(len(preview_df)):
-                for column in range(len(preview_df.columns)):
-                    value = str(preview_df.iloc[row, column])
-                    item = QtWidgets.QTableWidgetItem(value)
-                    self.tableWidget.setItem(row, column, item)
-
-            self.tableWidget.resizeColumnsToContents()
-        else:
-            QtWidgets.QMessageBox.warning(self, "No Data", "No data available to preview. Please upload a valid CSV first.")
-
-    def upload_csv(self, label):
         
-        options = QtWidgets.QFileDialog.Options()
-        # File path
-        file_path, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open CSV File", "", "CSV Files (*.csv);;All Files (*)", options=options)
-        # Send path to UI
-        self.file_local_csv = file_path
-            
-        if file_path:
-            try:
-                # Upload csv with building coordinates
-                self.df = pd.read_csv(file_path)
-                file_path = file_path.rsplit("/", 1)[-1]
-                label.setText(file_path)
-            except FileNotFoundError:
-                label.setText("File not found.")
-            except pd.errors.ParserError:
-                label.setText("Error parsing CSV file. Check the format.")
-            except Exception as e: #catch other exceptions
-                label.setText(f"An error occurred: {e}")
-        else:
-            label.setText("No file selected.")
-            QtWidgets.QMessageBox.warning(self, "Input Error", "No file selected.")
-
-        return self.df
-    
-    ########### Folder Selection ################
-    def select_output_folder_manual(self):
-        """Open a folder selection dialog and display the selected folder in a text output."""
-        self.folder_path = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Folder")
-        if self.folder_path:  # If a folder is selected
-            folder_display = os.path.basename(self.folder_path)    
-            self.saved_path_manual.setText(folder_display)
-    
-    # def _on_select_output_folder(self):
-    #     """
-    #     Opens a folder selection dialog, stores the selected output folder path, and displays 
-    #     the folder name in the interface.
-    #     """
-    #     self.folder_path, self.display_folder = select_output_folder(self)
-    #     if self.manual_op.isChecked():
-    #         self.saved_path_manual.setText(self.display_folder)
-    #     else:
-    #         self.saved_path_dl.setText(self.display_folder)
-    
-    def select_output_folder_dl(self):
-        """Open a folder selection dialog and display the selected folder in a text output."""
-        self.folder_path = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Folder")
-        if self.folder_path:  # If a folder is selected
-            folder_display = os.path.basename(self.folder_path)    
-            self.saved_path_dl.setText(folder_display)
-            
     def select_method(self):
         """
         Validates the selected method, ensures that only one option is chosen, and saves the 
@@ -435,21 +393,32 @@ class knn_options_window(QtWidgets.QDialog):
                     QtWidgets.QMessageBox.warning(self, "Input Error", "There are missing the inputs files")
             elif self.dl_op.isChecked():
                 #######===========  Input parameters =========###########
-                self.coord_reference = self.info_existing
-                self.coord_reference_building_feature_path = self.output_dl_value.text()+"_reference_results.csv"
-                self. data_extrapolation = self.info_pending
-                self.knn_dl_saved_path = self.output_dl_value.text()+".csv"
-                self.accept()
+                try:
+                    self.coord_reference = self.info_existing
+                    self.coord_reference_building_feature_path = self.output_dl_value.text()+"_reference_results.csv"
+                    self. data_extrapolation = self.info_pending
+                    self.knn_dl_saved_path = self.output_dl_value.text()+".csv"
+                    self.accept()
+                except:
+                    QtWidgets.QMessageBox.warning(self, "Input Error", "There are missing the inputs files")
             
 
 # Function to calculate Geodesic distance (in km)
 def geodesic_distance(lat1, lon1, lat2, lon2):
+    """
+    Calculates the geodesic distance in kilometers between two geographic coordinates.
+    """
     coords_1 = (lat1, lon1)
     coords_2 = (lat2, lon2)
     return geodesic(coords_1, coords_2).km
 
+
 # Function to find 3 nearest neighbors using geodesic distance
 def find_nearest_neighbors_geodesic(input_row, info_df, n_neighbors):
+    """
+    Finds the nearest neighbors to an input location using geodesic distance and returns 
+    their data along with the computed distances in kilometers.
+    """
     # Apply geodesic distance for each row in reference dataframe
     distances = info_df.apply(
         lambda row: geodesic_distance(
@@ -468,19 +437,13 @@ def find_nearest_neighbors_geodesic(input_row, info_df, n_neighbors):
     neighbor_data['distance_km'] = distances.loc[nearest_indices].values
     return neighbor_data
 
+
 # Function to compute taxonomy probabilities using inverse-distance weighted soft voting
 def compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row):
     """
-    Computes taxonomy probabilities using weighted soft voting based on geodesic distance.
-
-    Parameters:
-    - nearest_neighbors: DataFrame containing the neighbors with 'Taxonomy' and 'distance_km' columns.
-    - input_row: The row of the input point.
-    - kernel: Kernel type ('inverse' or 'gaussian').
-    - bandwidth: Bandwidth for the Gaussian kernel.
-
-    Returns:
-    - List of dictionaries, each representing a taxonomy and its probability, along with extra metadata.
+    Computes a probability distribution of taxonomies from the nearest neighbors using 
+    inverse-distance weighted voting and returns the results with the corresponding 
+    building attributes.
     """
     class_weights = defaultdict(float)
 
@@ -523,3 +486,25 @@ def compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row):
 
     return distribution_rows
 
+
+def extrapolation_existing_reference(data_existing , data_extrapolation, saved_path, n_neigh):
+    """
+    Applies nearest-neighbor extrapolation to each input record, computes the taxonomy 
+    probability distribution based on nearby reference data, and saves the results to a CSV file.
+    """
+    final_distribution_list_full = []   
+    # Iterate over each building with no image
+    for idx, input_row in data_extrapolation.iterrows():
+        # Find 3 nearest neighbors using geodesic distance
+        nearest_neighbors_value = find_nearest_neighbors_geodesic(input_row, data_existing, n_neigh)
+        # Compute taxonomy-based distributions with full structure
+        distribution_rows = compute_taxonomy_distribution_full_structure(nearest_neighbors_value, input_row)
+        
+        # Append to final result
+        final_distribution_list_full.extend(distribution_rows)
+    
+    # Convert final list to DataFrame
+    final_distribution_df_full = pd.DataFrame(final_distribution_list_full)
+    # Export to CSV
+    final_distribution_df_full.to_csv(saved_path, index=False)
+  

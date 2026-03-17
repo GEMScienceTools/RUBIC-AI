@@ -7,7 +7,8 @@ import numpy as np
 class ExtrapolationOptions(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-
+        self.method = parent
+        
         # Get screen resolution
         screen = QtWidgets.QApplication.primaryScreen()
         screen_geometry = screen.geometry()
@@ -63,6 +64,7 @@ class ExtrapolationOptions(QtWidgets.QDialog):
         label_font = QtGui.QFont()
         label_font.setPointSize(int(10 * sf_font))
         label_font.setBold(True)
+        self.sf_font = sf_font
 
         self.w_tittle = QtWidgets.QLabel(self.method_frame)
         self.w_tittle.setGeometry(QtCore.QRect(int(370 * sf_x), int(0 * sf_y), int(301 * sf_x), int(41 * sf_y)))
@@ -233,6 +235,8 @@ p, li {{ white-space: pre-wrap; }}
         #####################################################################################################  
         elif self.knn_check.isChecked():
             dialog = knn_options_window(parent=self)
+            # This should be passed at this stage because it has an additional layer compared with the other methods
+            self.insp_method = self.method.insp_method
             self.load_check = True
             if dialog.exec_() == QtWidgets.QDialog.Accepted:
                 try:

@@ -59,14 +59,16 @@ def upload_csv(self):
     """
     options = QtWidgets.QFileDialog.Options()
     file_path, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open CSV File", "", "CSV Files (*.csv);;All Files (*)", options=options)
-    self.method.file_local_csv = file_path
     
     if self.method.insp_method == 0:
         display_path = self.polygon_path_value
     elif self.method.insp_method == 1:
         display_path = self.specific_path
     elif self.method.insp_method == 2:
+        self.method.file_local_csv = file_path
         display_path = self.local_path
+    elif self.method.insp_method == 3:
+        display_path = self.label_path
         
     if file_path:
         try:
@@ -80,6 +82,9 @@ def upload_csv(self):
         display_path.setText("No file selected.")
         QtWidgets.QMessageBox.warning(self, "Input Error", "No file selected.")
  
+    if self.method.insp_method == 3:
+        return self.df
+      
     
 def save_coordinates(self):
     """

@@ -368,7 +368,7 @@ class InspectionSetting(QDialog):
             if self.extrapolation_check.isChecked():
                 self.insp_method = 3
                 self.accept()
-                self.extra_dialog = ExtrapolationOptions()  # Pass main window reference if needed
+                self.extra_dialog = ExtrapolationOptions(self)  # Pass main window reference if needed
                 self.extra_dialog.exec_()
                 self.extrapolation_mode = self.extra_dialog.extrapolation_mode
                 # KNN method

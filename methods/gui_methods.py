@@ -30,9 +30,7 @@ from methods.get_building_orientation import get_street_view_image , get_road_or
 from methods.bounding_box_manual import BoundingBoxWindow
 from methods.epoch_construction import EpochSelectionDialog
 from methods.help_window import HelpDialog
-from methods.knn_extrapolation_feature import find_nearest_neighbors_geodesic, compute_taxonomy_distribution_full_structure
-# from methods.dl_extrapolation import create_database, dl_models, inspection_database, extrapolation_existing_reference
-from methods.dl_extrapolation import extrapolation_existing_reference
+from methods.knn_extrapolation_feature import find_nearest_neighbors_geodesic, compute_taxonomy_distribution_full_structure, extrapolation_existing_reference
 from methods.gsv_image_angle import gsv_angle_setting
 from methods.dl_stratified import iterative_distribution_stability_manual , iterative_label_discovery_cached_fractional
 from methods.dl_stratified import labeling_function, dl_models_strified
@@ -502,7 +500,8 @@ class GUIMethods:
             elif self.ui.insp_method == 2:
                 footprint_data = pd.read_csv(self.ui.file_local_csv)
             elif self.ui.insp_method == 3:
-                footprint_data = self.ui.coord_reference
+                if self.ui.extrapolation_mode == 2:
+                    footprint_data = self.ui.coord_reference
             
             # Define the column namesfor the inspection database
             column_names = ["id", 
@@ -1212,7 +1211,6 @@ class GUIMethods:
             if self.sw_extrapolation == False:
                 self.sw_extrapolation = True
             else:
-                print("Entra TRUE")
                 CONF_THRESHOLD = 0.5
                 self.lat_extrapolation = float(self.ui.coord_reference.loc[aux,"latitude"])
                 self.lon_extrapolation =  float(self.ui.coord_reference.loc[aux,"longitude"])
@@ -3058,7 +3056,6 @@ class GUIMethods:
 
 
     def neighbor_extrapolation(self):
-        
         if self.ui.insp_method == 3:
             if self.ui.extrapolation_mode == 2:
                 #####################################
@@ -3066,6 +3063,7 @@ class GUIMethods:
                 #####################################
                 if self.ui.coord_reference is not True:
                     #######===========  Function results =========###########
+                    
                     self.create_database()
                     data_existing_dl = self.data_ai
                     self.inspection_database()
@@ -3100,6 +3098,7 @@ class GUIMethods:
                     saved_path = self.ui.output_path+"/"+self.ui.extrapolation_name+".csv"
                     
                     final_distribution_df_full.to_csv(saved_path, index=False)
+                    self.ui.progress_bar_method.setValue(100)
                     self.ui.method_progress.setText("Successful extrapolation process")
              
             #####################################
@@ -3107,6 +3106,10 @@ class GUIMethods:
             #####################################
             else:
                 if self.ui.extrapolation_mode == 0:
+                    
+                    self.ui.progress_bar_method.setValue(10)
+                    self.ui.method_progress.setText("Extrapolation in process ...")
+                    
                     building_data = self.ui.data_population
                     self.lat_dl = building_data.loc[0, "latitude"]
                     self.lon_dl = building_data.loc[0, "longitude"]
@@ -3133,7 +3136,13 @@ class GUIMethods:
                         
                     print("Sample size definitive: ", final_size)
                     
+                    self.ui.progress_bar_method.setValue(100)
+                    self.ui.method_progress.setText("Successful extrapolation process")
+                    
                 elif self.ui.extrapolation_mode == 1:
+                    
+                    self.ui.progress_bar_method.setValue(10)
+                    self.ui.method_progress.setText("Extrapolation in process ...")
                     
                     building_data = self.ui.data_population
                     # ========== Run sampling for each feature ==========
@@ -3155,7 +3164,10 @@ class GUIMethods:
                         dist_por.to_csv(f"{self.ui.folder_path_new}/stratified_dist_{feature}.csv", index=False)
                         final_sample.to_csv(f"{self.ui.folder_path_new}/stratified_{feature}.csv", index=False)
                         print("")
-        
+                    
+                    self.ui.progress_bar_method.setValue(100)
+                    self.ui.method_progress.setText("Successful extrapolation process")
+                    
     def epoch_construction(self):
         if self.ui.insp_method != 3:
             path = self.ui.output_folder_value+"/epoch_value.csv"
