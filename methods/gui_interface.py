@@ -1027,6 +1027,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
+        self.save_data_button.setStyleSheet("background-color: rgb(216, 216, 216);")
         self.save_data_button.setFont(font)
         self.save_data_button.setObjectName("save_data_button")
         

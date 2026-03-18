@@ -1,8 +1,14 @@
+"""
+xml_to_csv_converter.py
+=======================
+This module provides functions to extract and convert OpenQuake NRML vulnerability
+and fragility XML data into pandas DataFrames or CSV files.
+"""
+
 import pandas as pd
 import xml.etree.ElementTree as ET
 import requests
-from typing import Optional, Union
-import sys
+from typing import Optional
 
 
 def extract_vulnerability_function(xml_url: str, function_id: str, save_csv: bool = False, 

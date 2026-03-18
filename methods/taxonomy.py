@@ -1,7 +1,10 @@
-# -*- coding: utf-8 -*-
-# vim: tabstop=4 shiftwidth=4 softtabstop=4
+"""
+taxonomy.py
+===========
+This module provides utility functions for validating, extracting, and simplifying
+building taxonomy strings following the GEM Taxonomy standard.
+"""
 
-import re
 import pandas as pd
 from openquake.gem_taxonomy import GemTaxonomy
 

@@ -1,4 +1,10 @@
-from PyQt5 import QtWidgets, QtCore
+"""
+epoch_construction.py
+=====================
+This module provides a PyQt5-based dialog for selecting and inputting
+construction epoch values through a dynamically adjustable set of fields.
+"""
+from PyQt5 import QtWidgets
 import sys 
 import numpy as np
 
@@ -16,7 +22,6 @@ class EpochSelectionDialog(QtWidgets.QDialog):
         #
         DESIGN_WIDTH = 1920
         DESIGN_HEIGHT = 1080
-        DESIGN_DPI = 96 * 1.25  # 125% Windows baseline -> 120 DPI
         
         # Scale the GUI based on resolution
         sf_x = screen_width / DESIGN_WIDTH
@@ -38,16 +43,10 @@ class EpochSelectionDialog(QtWidgets.QDialog):
             # If logical DPI looks weird, fallback to physical
             if dpi < 60 or dpi > 200:
                 dpi = screen.physicalDotsPerInch()
-
-        # Normalize to your design environment (Windows @ 125% = 120 DPI)
-        # If dpi == 120 => scale_dpi = 1 (your original machine)
-        scale_dpi = DESIGN_DPI / dpi
         
         # For geometry: mainly resolution-based
         sf_x = sf_factor
         sf_y = sf_factor
-        # Scale the GUI based on resolution
-        sf_font = sf_factor * scale_dpi
 
         # Window Title
         self.setWindowTitle("Epoch of construction values")
@@ -94,6 +93,10 @@ class EpochSelectionDialog(QtWidgets.QDialog):
         self.update_fields()
 
     def update_fields(self):
+        """
+        Updates the visibility of epoch input fields based on the selected count, while always 
+        keeping the first two inputs visible.
+        """
         count = int(self.epoch_count_cb.currentText())
 
         # Always show first 2 inputs
@@ -105,5 +108,8 @@ class EpochSelectionDialog(QtWidgets.QDialog):
             self.inputs_layout.labelForField(line_edit).setVisible(visible)
 
     def get_epochs(self):
+        """
+        Returns the epoch values entered by the user based on the selected number of epochs.
+        """
         count = int(self.epoch_count_cb.currentText())
         return [self.epoch_inputs[i].text() for i in range(count)]

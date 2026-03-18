@@ -1,3 +1,9 @@
+"""
+gsv_image_angle.py
+==================
+This module provides a PyQt5-based dialog for configuring Google Street View
+image capture parameters, including pitch, heading, and field of view (FOV).
+"""
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 import numpy as np

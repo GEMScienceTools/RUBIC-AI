@@ -1,3 +1,9 @@
+"""
+gui_gis.py
+==========
+This module provides GIS-related methods for downloading building footprints,
+extracting random subsets, and generating centroid layers from geographic data.
+"""
 # GUI pyqt5 libraries
 from PyQt5.QtWidgets import QMessageBox
 

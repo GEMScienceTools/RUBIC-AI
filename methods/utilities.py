@@ -1,3 +1,10 @@
+"""
+utilities.py
+============
+This module provides general-purpose utility functions for file selection, data preview,
+CSV uploading, coordinate saving, and collection mode configuration within the GUI.
+"""
+
 from PyQt5 import QtWidgets
 import pandas as pd
 import os
@@ -68,7 +75,16 @@ def upload_csv(self):
         self.method.file_local_csv = file_path
         display_path = self.local_path
     elif self.method.insp_method == 3:
-        display_path = self.label_path
+        try: 
+            if self.extrap_mode_new.currentData() == 0:
+                # Stratified DL
+                display_path = self.population_new_path
+            else:
+                # Stratified Manually
+                display_path = self.population_new_path
+        except:
+            # KNN
+            display_path = self.label_path
         
     if file_path:
         try:
@@ -81,7 +97,7 @@ def upload_csv(self):
     else:
         display_path.setText("No file selected.")
         QtWidgets.QMessageBox.warning(self, "Input Error", "No file selected.")
- 
+    
     if self.method.insp_method == 3:
         return self.df
       
@@ -178,3 +194,4 @@ def mode_use(self):
         self.ai_value = False 
     elif self.collection_mode.currentText() == "AI Powered":
         self.ai_value = True
+        

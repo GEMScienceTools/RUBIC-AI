@@ -401,7 +401,12 @@ class knn_options_window(QtWidgets.QDialog):
                     self.accept()
                 except:
                     QtWidgets.QMessageBox.warning(self, "Input Error", "There are missing the inputs files")
+ 
             
+#####################################################################################################    
+############## --------- KNN function for calling gui_methods.py ---------------#####################
+##################################################################################################### 
+
 
 # Function to calculate Geodesic distance (in km)
 def geodesic_distance(lat1, lon1, lat2, lon2):

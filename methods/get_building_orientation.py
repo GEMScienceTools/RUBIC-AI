@@ -1,3 +1,10 @@
+"""
+get_building_orientation.py
+===========================
+This module provides utility functions to determine road orientation and retrieve
+Google Street View imagery based on a geographic location.
+"""
+
 import requests
 import math
 import numpy as np

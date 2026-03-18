@@ -32,8 +32,8 @@ from methods.epoch_construction import EpochSelectionDialog
 from methods.help_window import HelpDialog
 from methods.knn_extrapolation_feature import find_nearest_neighbors_geodesic, compute_taxonomy_distribution_full_structure, extrapolation_existing_reference
 from methods.gsv_image_angle import gsv_angle_setting
-from methods.dl_stratified import iterative_distribution_stability_manual , iterative_label_discovery_cached_fractional
-from methods.dl_stratified import labeling_function, dl_models_strified
+from methods.stratified_extrapolation_feature import iterative_distribution_stability_manual , iterative_label_discovery_cached_fractional
+from methods.stratified_extrapolation_feature import labeling_function
 from methods.vulnerability_plot import VulnerabilityDialog
 
 
@@ -132,7 +132,7 @@ class GUIMethods:
                 self.data_building = pd.DataFrame(np.zeros((2,1)))
                 
         # Verify that the building ID is less than the number of sample
-        if self.ui.insp_method != 2:
+        if self.ui.insp_method !=2:
             limit_insp = self.data_building.shape[0] - 1
         elif self.ui.insp_method == 2:
             if self.limit_local == True:
@@ -249,9 +249,9 @@ class GUIMethods:
         """
         
         providers = [
+            ('Nominatim', self.get_location_nominatim),
             ('ArcGIS', self.get_location_arcgis),
             ('Photon', self.get_location_photon),
-            ('Nominatim', self.get_location_nominatim),
         ]
         
         for provider_name, provider_func in providers:
@@ -411,20 +411,15 @@ class GUIMethods:
                     self.ui.city_value.setText(self.city)
                     self.ui.country_value.setText(self.country)
                     return self.city, self.country
+            
             elif self.ui.insp_method == 3:
-                try:         
-                    geolocator = Nominatim(user_agent="city_name_locator")
-                    location = geolocator.reverse((self.lat_extrapolation, self.lon_extrapolation), exactly_one=True, language="en", timeout=3)
-                    
-                    if location and 'address' in location.raw:
-                        address = location.raw['address']
-                        city = address.get('city', address.get('town', address.get('village', 'Unknown')))
-                        country = address.get('country', 'Unknown')
-                        return city , country
+                # Try multiple providers automatically
+                try:
+                    city, country = self.get_location_with_fallback(self.lat_extrapolation, self.lon_extrapolation)
                 except:
                     city = "Unknown"
                     country = "Unknown"
-                    return city , country
+                return city , country
         else:
             pass
      
@@ -500,6 +495,8 @@ class GUIMethods:
             elif self.ui.insp_method == 2:
                 footprint_data = pd.read_csv(self.ui.file_local_csv)
             elif self.ui.insp_method == 3:
+                self.ui.progress_bar_method.setValue(10)
+                self.ui.method_progress.setText("Extrapolation in progress...")
                 if self.ui.extrapolation_mode == 2:
                     footprint_data = self.ui.coord_reference
             
@@ -869,6 +866,70 @@ class GUIMethods:
             
             
     ############ Building detector model ################
+    def _prepare_display_with_bbox(self, img_bgr, bbox_xyxy, target_w, target_h):
+        """
+        Returns a BGR image resized to (target_w, target_h) with a dashed bbox drawn
+        with consistent visual style in DISPLAY pixels.
+        """
+        x1, y1, x2, y2 = map(int, bbox_xyxy)
+    
+        h0, w0 = img_bgr.shape[:2]
+    
+        # Resize for the QLabel
+        disp_bgr = cv2.resize(img_bgr, (target_w, target_h), interpolation=cv2.INTER_AREA)
+    
+        # Scale bbox coords to display size
+        sx = target_w / float(w0)
+        sy = target_h / float(h0)
+        dx1 = int(round(x1 * sx))
+        dy1 = int(round(y1 * sy))
+        dx2 = int(round(x2 * sx))
+        dy2 = int(round(y2 * sy))
+    
+        # Consistent style in DISPLAY pixels (tune once)
+        
+        short_side = max(1, min(target_w, target_h))
+        long_side  = max(1, max(target_w, target_h))
+        
+        thickness = int(np.clip(round(short_side / 180), 1, 5))
+        dash_len  = int(np.clip(round(long_side  / 90), 8, 45))
+        gap_len   = int(np.clip(round(long_side  / 140)*2.5, 5, 30))
+
+    
+        self._draw_dashed_rect(
+            disp_bgr, dx1, dy1, dx2, dy2,
+            color=(0, 0, 255),
+            thickness=thickness,
+            dash_len=dash_len,
+            gap_len=gap_len
+        )
+        return disp_bgr
+    
+    def _draw_dashed_rect(self, img_bgr, x1, y1, x2, y2, color=(0, 0, 255), thickness=2, dash_len=10, gap_len=6):
+        """
+        Draw dashed rectangle using 4 dashed lines.
+        """
+        # Ensure proper ordering
+        x1, x2 = sorted((int(x1), int(x2)))
+        y1, y2 = sorted((int(y1), int(y2)))
+    
+        # Top & bottom edges
+        x = x1
+        while x < x2:
+            x_end = min(x + dash_len, x2)
+            cv2.line(img_bgr, (x, y1), (x_end, y1), color, thickness, lineType=cv2.LINE_AA)
+            cv2.line(img_bgr, (x, y2), (x_end, y2), color, thickness, lineType=cv2.LINE_AA)
+            x = x_end + gap_len
+    
+        # Left & right edges
+        y = y1
+        while y < y2:
+            y_end = min(y + dash_len, y2)
+            cv2.line(img_bgr, (x1, y), (x1, y_end), color, thickness, lineType=cv2.LINE_AA)
+            cv2.line(img_bgr, (x2, y), (x2, y_end), color, thickness, lineType=cv2.LINE_AA)
+            y = y_end + gap_len
+            
+            
     def object_detector_building(self, aux):
         """
         Detect and isolate buildings from Google Street View (GSV) images using a YOLO-based object detector.
@@ -905,6 +966,11 @@ class GUIMethods:
         # Set device GPU or CPU
         device= "cuda" if torch.cuda.is_available() else "cpu"
         if self.ui.insp_method in (0, 1, 2):
+            #####################################################################################################    
+            ########################## --------------- Polygon method -----------------##########################
+            ########################## --------- Specific coordinates method ----------########################## 
+            ########################## ------------ Local images method ---------------########################## 
+            #####################################################################################################
             # Clear old image
             if self.sw_angle == 0:
                 self.ui.left_gsv_img.clear()
@@ -1084,74 +1150,81 @@ class GUIMethods:
                         
                         self.gap = None
                         try:
-                            # Image results
-                            # results = model(img_path)
+                            # -----------------------------
+                            # 1) YOLO inference
+                            # -----------------------------
                             results = model.predict(img_path, device=device)
-                            image_rgb = cv2.imread(img_path)
-                            # Adapting line weight depending of image size, in order to have an appropiate thickness
-                            height, width, channels = image_rgb.shape
-                            area = height*width
-                            ratio = int(area*3/307200)
-                            # Lines ratio
-                            if area <= 600000:
-                                # Small images
-                                self.gap = int(area*14/307200)
-                            elif area < 1000000:
-                                # Medium images
-                                self.gap = int(area*14/307200 * 3/4)
-                            else:
-                                # Large images
-                                self.gap = int(area*14/307200 * 3/8)
-                                ratio = int(area*3/307200 * 5/8)
-                           
+                        
+                            # -----------------------------
+                            # 2) Read ORIGINAL image (BGR)
+                            #    (keep original resolution for saving crop)
+                            # -----------------------------
+                            img_bgr = cv2.imread(img_path)
+                            if img_bgr is None:
+                                raise RuntimeError(f"Could not read image: {img_path}")
+                        
+                            h0, w0 = img_bgr.shape[:2]
+                        
+                            # -----------------------------
+                            # 3) Pick best bbox (highest conf)
+                            # -----------------------------
                             best_box = None
                             best_score = 0.0
-                    
-                            # for box in results.boxes:
+                        
                             for box in results[0].boxes:
                                 cls_id = int(box.cls)
                                 cls_name = class_names[cls_id]
-                                score = float(box.conf)  # confidence score
-                            
+                                score = float(box.conf)
+                        
                                 if cls_name == TARGET_CLASS and score > best_score and score > 0.5:
                                     best_score = score
                                     best_box = box
-                                              
-                            # Bounding box coordinates
+                        
+                            # If no building detected, trigger your "overlay" logic
+                            if best_box is None:
+                                self.gap = 1  # used later in your except block for "not detected"
+                                raise RuntimeError("No building detected with confidence > 0.5")
+                        
+                            # -----------------------------
+                            # 4) ORIGINAL bbox coords (on original image)
+                            # -----------------------------
                             x1, y1, x2, y2 = map(int, best_box.xyxy[0])
-                                
-                            # Crop the area within the bounding box
-                            cropped_image = image_rgb[y1:y2, x1:x2]
-                            # Save image in local device
+                        
+                            # -----------------------------
+                            # 5) Save CROPPED image (ORIGINAL resolution)
+                            # -----------------------------
+                            cropped_image = img_bgr[y1:y2, x1:x2]
                             cv2.imwrite(cropped_path, cropped_image)
-                            
-                            # Draw a dashed red rectangle for the highest confidence box
-                            if self.gap == 0:
-                                self.gap = 1
-                            for i in range(x1, x2, self.gap):
-                                cv2.line(image_rgb, (i, y1), (min(i + 5, x2), y1), (0, 0, 255), max(1, int(ratio)))  # Top edge
-                                cv2.line(image_rgb, (i, y2), (min(i + 5, x2), y2), (0, 0, 255), max(1, int(ratio)))  # Bottom edge
-                            for i in range(y1, y2, self.gap):
-                                cv2.line(image_rgb, (x1, i), (x1, min(i + 5, y2)), (0, 0, 255), max(1, int(ratio)))  # Left edge
-                                cv2.line(image_rgb, (x2, i), (x2, min(i + 5, y2)), (0, 0, 255), max(1, int(ratio)))  # Right edge
-                             
-                            # Check and/or create diplayed folder              
-                            if not os.path.exists(self.ui.folder_path+"/displayed_images"):
-                                os.makedirs(self.ui.folder_path+"/displayed_images")
-                            cv2.imwrite(displayed_path, image_rgb)
-                            
-                            if image_rgb is not None:
-                                # Convert BGR image (OpenCV) to RGB format
-                                display_image_rgb = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2RGB)
-                                # display_image_rgb = image_rgb.copy()
-                                # Convert the RGB image to QImage
-                                height, width, channel = display_image_rgb.shape
-                                bytes_per_line = 3 * width
-                                qimage = QtGui.QImage(display_image_rgb.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
-                                
-                                # Convert QImage to QPixmap
-                                building_pixmap = QtGui.QPixmap.fromImage(qimage)
-    
+                        
+                            # -----------------------------
+                            # 6) Prepare DISPLAY image sized to the QLabel frame
+                            #    + draw bbox with consistent thickness/dash/gap
+                            # -----------------------------
+                            label_w = img_frames[aux].width()
+                            label_h = img_frames[aux].height()
+                        
+                            disp_bgr = self._prepare_display_with_bbox(
+                                img_bgr, (x1, y1, x2, y2), label_w, label_h
+                            )
+                        
+                            # -----------------------------
+                            # 7) Save DISPLAYED image (this is the frame-sized image)
+                            # -----------------------------
+                            if not os.path.exists(self.ui.folder_path + "/displayed_images"):
+                                os.makedirs(self.ui.folder_path + "/displayed_images")
+                        
+                            cv2.imwrite(displayed_path, disp_bgr)
+                        
+                            # -----------------------------
+                            # 8) Convert DISPLAY image to QPixmap for QLabel
+                            # -----------------------------
+                            disp_rgb = cv2.cvtColor(disp_bgr, cv2.COLOR_BGR2RGB)
+                            h, w, ch = disp_rgb.shape
+                            bytes_per_line = ch * w
+                            qimage = QtGui.QImage(disp_rgb.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+                        
+                            building_pixmap = QtGui.QPixmap.fromImage(qimage)
+                        
                         except:
                             self.no_image = f"""
                                             <b><u>No image found</u></b><br><br>
@@ -1168,6 +1241,7 @@ class GUIMethods:
                             img_frames[aux].setText(self.no_image)
                             img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)
                             img_frames[aux].setWordWrap(True)
+    
                             
                         try:
                             # Displayed image in corresponding frames
@@ -1208,6 +1282,9 @@ class GUIMethods:
             self.ui.method_progress.setText("Done!")
         
         else:
+            #####################################################################################################    
+            ########################## --------- Extrapolation method ---------------############################ 
+            ##################################################################################################### 
             if self.sw_extrapolation == False:
                 self.sw_extrapolation = True
             else:
@@ -3059,7 +3136,7 @@ class GUIMethods:
         if self.ui.insp_method == 3:
             if self.ui.extrapolation_mode == 2:
                 #####################################
-                ######## KNN mode ############
+                ######## KNN mode ###################
                 #####################################
                 if self.ui.coord_reference is not True:
                     #######===========  Function results =========###########
@@ -3076,7 +3153,7 @@ class GUIMethods:
                     extrapolation_existing_reference(data_existing_dl , self.ui.building_extra_path, extra_path, n_neighbors)
                     self.ui.progress_bar_method.setValue(100)
                     self.ui.method_progress.setText("Successful extrapolation process")
-                else:
+                else:          
                     building_no_info = self.ui.building_extra_path
                     building_reference = self.ui.example_building_path
                     final_distribution_list_full = []
@@ -3115,7 +3192,6 @@ class GUIMethods:
                     self.lon_dl = building_data.loc[0, "longitude"]
                     # ========== Run sampling for each feature ==========
                     analysis_features = self.ui.feature_strata
-                    dl_models_strified()
                     for aux in analysis_features:
                         print(" ========== " + aux + " ===========")
                         final_sample, class_dist, final_size = iterative_label_discovery_cached_fractional(
@@ -3139,11 +3215,7 @@ class GUIMethods:
                     self.ui.progress_bar_method.setValue(100)
                     self.ui.method_progress.setText("Successful extrapolation process")
                     
-                elif self.ui.extrapolation_mode == 1:
-                    
-                    self.ui.progress_bar_method.setValue(10)
-                    self.ui.method_progress.setText("Extrapolation in process ...")
-                    
+                elif self.ui.extrapolation_mode == 1:                 
                     building_data = self.ui.data_population
                     # ========== Run sampling for each feature ==========
                     analysis_features = self.ui.feature_strata

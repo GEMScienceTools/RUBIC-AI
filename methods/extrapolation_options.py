@@ -274,6 +274,8 @@ p, li {{ white-space: pre-wrap; }}
         #####################################################################################################      
         elif self.stratified_check.isChecked():
             dialog = stratified_extrapolation(parent=self)
+            # This should be passed at this stage because it has an additional layer compared with the other methods
+            self.insp_method = self.method.insp_method
             self.load_check = True
             if dialog.exec_() == QtWidgets.QDialog.Accepted:
                 try:
@@ -303,10 +305,7 @@ p, li {{ white-space: pre-wrap; }}
                         "again and confirm that all files follow the required structure, or upload your data"
                     )
             
- #####################################################################################################    
- #####################################################################################################  
- #####################################################################################################  
- ##################################################################################################### 
+
             
     def save_and_continue(self):
         """

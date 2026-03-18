@@ -1,7 +1,11 @@
-from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QComboBox,
-    QPushButton, QLabel, QDialog, QGridLayout, QScrollArea
-)
+"""
+help_window.py
+==============
+This module provides a PyQt5-based, scrollable help dialog that displays labeled 
+reference images and includes access to the GEM documentation website.
+"""
+
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QDialog, QGridLayout, QScrollArea
 from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtCore import Qt
 import sys
@@ -19,10 +23,8 @@ class HelpDialog(QDialog):
         screen_width = screen_geometry.width()
         screen_height = screen_geometry.height()
 
-        #
         DESIGN_WIDTH = 1920
         DESIGN_HEIGHT = 1080
-        DESIGN_DPI = 96 * 1.25  # 125% Windows baseline -> 120 DPI
         
         # Scale the GUI based on resolution
         sf_x = screen_width / DESIGN_WIDTH
@@ -45,15 +47,10 @@ class HelpDialog(QDialog):
             if dpi < 60 or dpi > 200:
                 dpi = screen.physicalDotsPerInch()
 
-        # Normalize to your design environment (Windows @ 125% = 120 DPI)
-        # If dpi == 120 => scale_dpi = 1 (your original machine)
-        scale_dpi = DESIGN_DPI / dpi
-        
         # For geometry: mainly resolution-based
         sf_x = sf_factor
         sf_y = sf_factor
-        # Scale the GUI based on resolution
-        sf_font = sf_factor * scale_dpi
+
 
         # Window Title
         self.setWindowTitle(w_title)

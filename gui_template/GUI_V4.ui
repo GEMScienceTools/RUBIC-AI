@@ -1029,6 +1029,9 @@ background-color: rgb(209, 170, 255);</string>
       <bold>true</bold>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(216, 216, 216);</string>
+    </property>
     <property name="text">
      <string>Save data</string>
     </property>

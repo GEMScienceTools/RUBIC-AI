@@ -1,3 +1,9 @@
+"""
+bounding_box_manual.py
+======================
+This module provides a PyQt5-based interactive dialog for manually selecting a bounding box
+region on an image through a four-point perspective crop workflow.
+"""
 import cv2
 import numpy as np
 import sys
@@ -20,7 +26,6 @@ class BoundingBoxWindow(QDialog):
         #
         DESIGN_WIDTH = 1920
         DESIGN_HEIGHT = 1080
-        DESIGN_DPI = 96 * 1.25  # 125% Windows baseline -> 120 DPI
         
         # Scale the GUI based on resolution
         sf_x = screen_width / DESIGN_WIDTH
@@ -42,16 +47,10 @@ class BoundingBoxWindow(QDialog):
             # If logical DPI looks weird, fallback to physical
             if dpi < 60 or dpi > 200:
                 dpi = screen.physicalDotsPerInch()
-
-        # Normalize to your design environment (Windows @ 125% = 120 DPI)
-        # If dpi == 120 => scale_dpi = 1 (your original machine)
-        scale_dpi = DESIGN_DPI / dpi
         
         # For geometry: mainly resolution-based
         sf_x = sf_factor
         sf_y = sf_factor
-        # Scale the GUI based on resolution
-        sf_font = sf_factor * scale_dpi
 
         self.setWindowTitle("Manual Bounding Box Selection")
         self.setGeometry(int(100*sf_x), int(100*sf_y), int(700*sf_x), int(600*sf_y))
@@ -86,6 +85,10 @@ class BoundingBoxWindow(QDialog):
 
     # ================= LOAD IMAGE =================
     def load_image(self):
+        """
+        Loads the input image according to the inspection method, converts it to RGB format, 
+        resizes it for display, stores backup copies, and updates the image viewer in the interface.
+        """
         if self.insp_method != 2:
             self.image = cv2.cvtColor(self.image_path, cv2.COLOR_BGR2RGB)
         else:
@@ -106,6 +109,10 @@ class BoundingBoxWindow(QDialog):
 
     # ================= UPDATE DISPLAY =================
     def update_display(self):
+        """
+        Converts the current image into a Qt-compatible format and updates the image label 
+        to display it with the predefined size settings.
+        """
         height, width, channel = self.image.shape
         bytes_per_line = 3 * width
         q_img = QImage(self.image.data, width, height, bytes_per_line, QImage.Format_RGB888)
@@ -123,6 +130,10 @@ class BoundingBoxWindow(QDialog):
 
     # ================= MOUSE CLICK EVENT =================
     def mouse_click_event(self, event):
+        """
+        Records up to four user-selected points on the image, draws markers for each click, 
+        and connects the points with dashed lines once the selection is complete.
+        """
         if len(self.points) < 4:
             x = int(event.pos().x() * (self.fixed_width / self.image_label.width()))
             y = int(event.pos().y() * (self.fixed_height / self.image_label.height()))
@@ -140,6 +151,10 @@ class BoundingBoxWindow(QDialog):
 
     # ================= SORT POINTS =================
     def sort_points(self, points):
+        """
+        Sorts four selected points into a consistent order: top-left, top-right, 
+        bottom-left, and bottom-right.
+        """
         points = sorted(points, key=lambda p: (p[1], p[0]))
         top_points = sorted(points[:2], key=lambda p: p[0])
         bottom_points = sorted(points[2:], key=lambda p: p[0])
@@ -147,6 +162,9 @@ class BoundingBoxWindow(QDialog):
 
     # ================= DRAW DASHED LINE =================
     def draw_dashed_line(self, pt1, pt2, color=(255, 0, 0), thickness=3, dash_length=10, gap_length=10):
+        """
+        Draws a dashed line between two points on the image using the specified style settings.
+        """
         dist = ((pt2[0] - pt1[0]) ** 2 + (pt2[1] - pt1[1]) ** 2) ** 0.5
         num_dashes = int(dist / (dash_length + gap_length))
         for i in range(num_dashes):
@@ -158,6 +176,11 @@ class BoundingBoxWindow(QDialog):
 
     # ================= CROP IMAGE =================
     def crop_image(self):
+        """
+        Crops the selected image region using a perspective transformation based on four user-defined 
+        points, generates both display-size and original-resolution cropped outputs, and saves or stores 
+        the result depending on the inspection method.
+        """
         # Ensure exactly 4 points are provided for cropping
         if len(self.points) != 4:
             print("Error: Exactly 4 points are required to crop the image.")
@@ -244,6 +267,10 @@ class BoundingBoxWindow(QDialog):
 
     # ================= CONFIRM SELECTION =================
     def confirm_selection(self):
+        """
+        Confirms the selected four-point region, crops the image, updates the preview frame 
+        with the selected result, and closes the dialog.
+        """
         if len(self.points) == 4:
             image_bgr = self.image
             self.crop_image()

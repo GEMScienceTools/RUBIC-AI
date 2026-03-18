@@ -335,7 +335,7 @@ class InspectionSetting(QDialog):
             if self.default_check.isChecked():
                 self.insp_method = 0
                 self.accept()
-                self.polygon_dialog = PolygonSetting(method=self)  # Pass main window reference if needed
+                self.polygon_dialog = PolygonSetting(method=self)
                 self.polygon_dialog.exec_()
                 self.output_polygon = self.polygon_dialog.output_polygon
                 self.ai_value = self.polygon_dialog.ai_value       
@@ -346,7 +346,7 @@ class InspectionSetting(QDialog):
             if self.specific_check.isChecked():
                 self.insp_method = 1
                 self.accept()
-                self.specific_dialog = SpecificLocationSetting(method=self)  # Pass main window reference if needed
+                self.specific_dialog = SpecificLocationSetting(method=self) 
                 self.specific_dialog.exec_()
                 self.data_specific = self.specific_dialog.df 
                 self.ai_value = self.specific_dialog.ai_value
@@ -357,7 +357,7 @@ class InspectionSetting(QDialog):
             if self.local_check.isChecked():
                 self.insp_method = 2
                 self.accept()
-                self.local_dialog = LocalImageSetting(method=self)  # Pass main window reference if needed
+                self.local_dialog = LocalImageSetting(method=self) 
                 self.local_dialog.exec_()
                 self.data_local = self.local_dialog.df
                 self.ai_value = self.local_dialog.ai_value 
@@ -368,7 +368,7 @@ class InspectionSetting(QDialog):
             if self.extrapolation_check.isChecked():
                 self.insp_method = 3
                 self.accept()
-                self.extra_dialog = ExtrapolationOptions(self)  # Pass main window reference if needed
+                self.extra_dialog = ExtrapolationOptions(self)  
                 self.extra_dialog.exec_()
                 self.extrapolation_mode = self.extra_dialog.extrapolation_mode
                 # KNN method
