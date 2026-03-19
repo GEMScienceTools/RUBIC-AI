@@ -144,6 +144,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.bloc_pos_help.clicked.connect(self.methods.help_block_position)
         self.roof_shape_help.clicked.connect(self.methods.help_roof_shape)
         self.roof_material_help.clicked.connect(self.methods.help_roof_material)
+        self.irregularity_help.clicked.connect(self.methods.help_irregularity)
         
     # Method which close the GUI in the console     
     def closeEvent(self, event):
@@ -718,9 +719,35 @@ class GUIInterface(QtWidgets.QMainWindow):
         # Scale dropdown width
         self.bck_pos_cb_1.view().setFixedWidth(int(250 * sf_x))
 
+        # Irregularity
+        self.irregularity = QtWidgets.QLabel(self.centralwidget)
+        self.irregularity.setGeometry(QtCore.QRect(int(1010 * sf_x), int(470 * sf_y), int(201 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_font))
+        font.setBold(True)
+        font.setWeight(75)
+        self.irregularity.setFont(font)
+        self.irregularity.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.irregularity.setObjectName("irregularity")
+        self.irregularity.setText("Verical Irregularity:")
+        
+        self.irregularity_cb = QtWidgets.QComboBox(self.centralwidget)
+        self.irregularity_cb.setGeometry(QtCore.QRect(int(1220 * sf_x), int(470 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_font))
+        self.irregularity_cb.setFont(font)
+        self.irregularity_cb.setObjectName("irregularity_cb")
+        self.irregularity_cb.addItem("Select Irregularity")
+        self.irregularity_cb.addItem("Soft story", "SOS")
+        self.irregularity_cb.addItem("Short column", "SHC")
+        self.irregularity_cb.addItem("Pounding potential", "POP")
+        self.irregularity_cb.addItem("Setback", "SET")
+        self.irregularity_cb.addItem("Change in vertical structure", "CHV")
+        self.irregularity_cb.addItem("Other vertical irregularity", "IRVO")
+        
         # Epoch of construction for left image label
         self.epc_const_label_1 = QtWidgets.QLabel(self.centralwidget)
-        self.epc_const_label_1.setGeometry(QtCore.QRect(int(1010 * sf_x), int(470 * sf_y), int(201 * sf_x), int(31 * sf_y)))
+        self.epc_const_label_1.setGeometry(QtCore.QRect(int(1010 * sf_x), int(510 * sf_y), int(201 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -731,7 +758,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.epc_const_label_1.setText("Epoch of construction:")
         
         self.epc_const_cb_1 = QtWidgets.QComboBox(self.centralwidget)
-        self.epc_const_cb_1.setGeometry(QtCore.QRect(int(1220 * sf_x), int(470 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.epc_const_cb_1.setGeometry(QtCore.QRect(int(1220 * sf_x), int(510 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.epc_const_cb_1.setFont(font)
@@ -741,7 +768,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Image quality for left image label
         self.img_quality = QtWidgets.QLabel(self.centralwidget)
-        self.img_quality.setGeometry(QtCore.QRect(int(1010 * sf_x), int(510 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        self.img_quality.setGeometry(QtCore.QRect(int(1010 * sf_x), int(550 * sf_y), int(131 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -752,7 +779,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Image quality Combobox elements
         self.img_q_cb_1 = QtWidgets.QComboBox(self.centralwidget)
-        self.img_q_cb_1.setGeometry(QtCore.QRect(int(1220 * sf_x), int(510 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.img_q_cb_1.setGeometry(QtCore.QRect(int(1220 * sf_x), int(550 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.img_q_cb_1.setFont(font)
@@ -1122,6 +1149,32 @@ class GUIInterface(QtWidgets.QMainWindow):
             }
         """)
         
+        # ===========================
+        # Irregularity Help Button
+        # ===========================
+        self.irregularity_help = QtWidgets.QPushButton(self.centralwidget)
+        self.irregularity_help.setIcon(icon)
+        self.irregularity_help.setIconSize(icon_size)
+        self.irregularity_help.setGeometry(QtCore.QRect(
+            int(1480 * sf_x), int(470 * sf_y),
+            int(31 * sf_x), int(31 * sf_y)
+        ))
+        self.irregularity_help.setObjectName("irregularity_help")
+        
+        # Flat, transparent style
+        self.irregularity_help.setFlat(True)
+        self.irregularity_help.setStyleSheet("""
+            QPushButton {
+                border: none;
+                background-color: transparent;
+            }
+            QPushButton:hover {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+        """)
+        
+        ################################################################################
+        ################################################################################
         """ Raise all elements """
         self.frame_location.raise_()
         self.country_label_input.raise_()
@@ -1172,7 +1225,8 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.roof_material_cb_1.raise_()     
         self.bloc_pos_help.raise_()
         self.roof_shape_help.raise_()
-        self.roof_material_help.raise_() 
+        self.roof_material_help.raise_()
+        self.irregularity_help.raise_()
         self.vulnerability_curve_button.raise_() 
         
         GUIInterface.setCentralWidget(self.centralwidget)

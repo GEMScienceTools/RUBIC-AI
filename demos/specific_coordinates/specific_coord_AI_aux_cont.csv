@@ -1,0 +1,5 @@
+id,latitude,longitude,country,city,material,llrs,code_level,n_stories,occupancy,block_position,epoch_construction,roof_shape,roof_material,image_quality,taxonomy,image filename or link
+1,11.0088,-74.8145,Colombia,Perímetro Urbano Barranquilla,CR,LFM,CDH,6.0-7.0,RES,BP1,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDH/H:6-7/BP1/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=11.0088,-74.8145&heading=177.94506241650288&pitch=5&fov=120"
+2,40.6369,-8.6491,Portugal,Aveiro,MUR,LWAL,CDN,1,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=40.6369,-8.6491&heading=104.19288912432518&pitch=5&fov=120"
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,

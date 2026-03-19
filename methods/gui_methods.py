@@ -107,40 +107,41 @@ class GUIMethods:
     ############ Counts the number of clicks made on the next button ################ 
     def count_clicks_next(self):
         """
-        Increment the click counter and update the inspection dataset.
-    
-        This method increments the click counter to navigate through building inspections. 
-        It ensures that a project folder, country, and city name are defined before execution. 
-        If necessary, it loads the subset of buildings from a CSV file based on the selected 
-        inspection method. The method also verifies that the current building ID does not 
-        exceed the number of available samples.
+        Advances to the next inspection record, loads the corresponding building dataset when needed, 
+        updates the inspection counter based on the selected method and previously saved results, and 
+        manages limits, progress messages, and navigation through the available inspections.
         """
-    
-        """Increment the click counter and update the label."""
         # load the dataset of the subset buildings
         if self.data_building is None:
             
             if self.ui.insp_method == 0:
+                # Polygon method
                 path=self.ui.output_folder_value+"/"+self.ui.file_name+"_building_info.csv"
                 self.data_building = pd.read_csv(path)
             elif self.ui.insp_method == 1:
+                # Specific coordinates
                 path= self.ui.output_folder_value+"/"+self.ui.file_name+"_building_info.csv"
                 self.data_building = pd.read_csv(path)
             elif self.ui.insp_method == 2:
+                # Local images
                 self.data_building = pd.read_csv(self.ui.file_local_csv)
             elif self.ui.insp_method == 3:
-                self.data_building = pd.DataFrame(np.zeros((2,1)))
+                # Extrapolation
+                pass
                 
         # Verify that the building ID is less than the number of sample
-        if self.ui.insp_method !=2:
+        if self.ui.insp_method in (0,1):
+            # Polygon and Specific Coordinates
             limit_insp = self.data_building.shape[0] - 1
         elif self.ui.insp_method == 2:
+            # Local images
             if self.limit_local == True:
                 limit_insp = self.data_building.shape[0] - 1
             else:
                 limit_insp = len(self.index_id)-1
         self.limit_local = False
         
+        # Warning about last inspection
         if self.click_count >= limit_insp:
             QMessageBox.warning(self.ui, "Database Error", "No further inspections are available")
         else:
@@ -150,6 +151,9 @@ class GUIMethods:
             if self.click_count >= 0:
                 self.inspection_database()
             
+            # ==============================================================
+            # Local images existing inspection counter
+            # ==============================================================
             if self.ui.insp_method == 2:
                 if self.sw_local_previous == True:
                     valid_coords = self.ui.data_method[['latitude', 'longitude']].dropna()
@@ -168,9 +172,13 @@ class GUIMethods:
                     self.n_insp = int(self.data_ai.dropna(how='all').shape[0])
                     self.data_old = None  # Only give the number of inspection one time per saved button clicked
             else:
+            # ==============================================================
+            # Other methods existing inspection counter
+            # ==============================================================
                 if self.data_old is not None:
                     self.n_insp = int(self.data_ai.dropna(how='all').shape[0])
                     self.data_old = None  # Only give the number of inspection one time per saved button clicked
+            
             
             # Calculates the number of inspections saved
             if self.search_count == False:
@@ -198,6 +206,7 @@ class GUIMethods:
             # ID increaser
             self.click_count += 1
             
+            # Turn AI-powered mode on or off
             if self.aux_ai_check == True:
                 try:
                     self.ui.ai_check.setChecked(self.ui.ai_value)
@@ -205,6 +214,7 @@ class GUIMethods:
                     pass
                 self.aux_ai_check = False
                 
+            # Check the size of inspection available    
             if self.start_click == True:
                 if self.click_count >= self.data_building.shape[0] - 1:
                     self.click_count = self.data_building.shape[0] - 1
@@ -234,19 +244,10 @@ class GUIMethods:
                                           
                 elif self.ui.insp_method == 0 or self.ui.insp_method == 1:
                     self.click_count += -1
-                        
+                    
+    ############ Gets city name ################ 
     def get_location_with_fallback(self, lat, lon, ui_instance=None):
-        """
-        Try multiple geocoding providers with automatic fallback.
-        
-        Args:
-            lat: Latitude coordinate
-            lon: Longitude coordinate
-            ui_instance: Optional UI instance (for showing which provider worked)
-        
-        Returns:
-            tuple: (city, country) or ("Unknown", "Unknown") if all fail
-        """
+        """ Try multiple geocoding providers with automatic fallback. """
         
         providers = [
             ('Nominatim', self.get_location_nominatim),
@@ -313,20 +314,17 @@ class GUIMethods:
         
         return "Unknown", "Unknown"
     
-    ############ Get city name using coordinates ################
+    ############ Assign city name using coordinates ################
     def get_city_name(self):
         """
-        Get the city name for a given latitude and longitude using reverse geocoding.
-        
-        Args:
-            lat (float): latitude of the point.
-            lon (float): longitude of the point.
-        
-        Returns:
-            str: The name of the city, including the country, or an error message.
+        Retrieves the city and country associated with the current inspection coordinates, updates 
+        the interface with the location information, and handles the logic for local images, polygon, 
+        specific coordinates, and extrapolation workflows.
         """
-        
         if self.click_count >= 0:
+            # ==============================================================
+            # Local images city name
+            # ==============================================================
             if self.ui.insp_method == 2:
                 try:
                     if self.data_old_local == True:
@@ -361,7 +359,6 @@ class GUIMethods:
                         if city != "Unknown" and country != "Unknown":
                             self.city = city
                             self.country = country
-                            self.city_name_manual = f"{self.city}_{self.country}"
                             self.ui.city_value.setText(self.city)
                             self.ui.country_value.setText(self.country)
                             return (self.city, self.country)
@@ -381,6 +378,9 @@ class GUIMethods:
                      QMessageBox.warning(self.ui, "Input Error",
                              "Some required inputs are missing or invalid. Please review all fields and check the coordinates file for inconsistencies.")
           
+            # ==============================================================
+            # Poligon and Specific Coordinates city name
+            # ==============================================================
             elif self.ui.insp_method == 0 or self.ui.insp_method == 1:                
                 self.ui.lat_value.setText(str(round(self.data_building.loc[self.click_count, 'latitude'], 8)))
                 self.ui.lon_value.setText(str(round(self.data_building.loc[self.click_count, 'longitude'], 8)))
@@ -396,7 +396,6 @@ class GUIMethods:
                     if city != "Unknown" and country != "Unknown":
                         self.city = city
                         self.country = country
-                        self.city_name_manual = f"{self.city}_{self.country}"
                         self.ui.city_value.setText(self.city)
                         self.ui.country_value.setText(self.country)
                         return (self.city, self.country)
@@ -412,8 +411,10 @@ class GUIMethods:
                     self.ui.country_value.setText(self.country)
                     return self.city, self.country
             
+            # ==============================================================
+            # Extrapolation city name
+            # ==============================================================
             elif self.ui.insp_method == 3:
-                # Try multiple providers automatically
                 try:
                     city, country = self.get_location_with_fallback(self.lat_extrapolation, self.lon_extrapolation)
                 except:
@@ -427,30 +428,14 @@ class GUIMethods:
     ############ Create building dataset for upload images from GSV ################ 
     def create_database(self):
         """
-        Create a CSV dataset of building information for uploading images from Google Street View (GSV).
-    
-        This method extracts relevant data (ID, latitude, and longitude) from a GeoPackage file containing 
-        building centroids and saves it to a CSV file. If the CSV file already exists, the method skips execution.
-    
-        Args:
-            None. The method operates on instance attributes such as `city_method`, `country_method`, 
-            and the output folder path provided in the UI.
-    
-        Returns:
-            None. The filtered building dataset is saved as a CSV file in the specified output folder.
-    
-        Effects:
-            - Filters the GeoDataFrame to retain only the `id`, `latitude`, and `longitude` columns.
-            - Exports the filtered data to a CSV file.
-    
-        Notes:
-            - Checks for the existence of the CSV file to avoid creating duplicate files.
-            - The exported CSV can be used for further processing, such as batch uploading to GSV.
-        """       
-        
+        Creates the inspection database for the selected workflow, exports the required building 
+        coordinate information when needed, and initializes an empty results table to store the 
+        inspection attributes for all available buildings.
+        """
+        # ==============================================================
+        # Polygon method database
+        # ============================================================== 
         if self.ui.insp_method == 0:
-            # self.city_method = self.ui.city
-            # self.country_method = self.ui.country
             # Input and output for the method
             centroid_file=self.ui.output_folder_value+"/"+self.ui.file_name+"_subset_centroids.gpkg"
             database_file=self.ui.output_folder_value+"/"+self.ui.file_name+"_building_info.csv"
@@ -465,7 +450,10 @@ class GUIMethods:
                 # Export to CSV
                 filtered_gdf.to_csv(database_file, index=False)             
                 print("Filtered CSV exported successfully!")
-                
+         
+        # ==============================================================
+        # Specific coordinates method database
+        # ============================================================== 
         elif self.ui.insp_method == 1:
             
             self.city_method = self.ui.city_value.text()
@@ -479,22 +467,22 @@ class GUIMethods:
             filtered_gdf = gdf[['id', 'latitude', 'longitude']]
             # Export to CSV
             filtered_gdf.to_csv(database_file, index=False)             
-        
-        elif self.ui.insp_method == 2:  
-            pass # There is already the information in the csv with building information
-            
-                
+                       
         # Upload the create building info to get the size of the inspection dataset
         # Craete an empty dataframe with the exact size
         if self.data_building is None:
             # Load the footprint database           
             if self.ui.insp_method == 0:
+                # Polygon method
                 footprint_data = pd.read_csv(self.ui.output_folder_value+"/"+self.ui.file_name+"_building_info.csv")
             elif self.ui.insp_method == 1:
+                # Specific Coordinates method
                 footprint_data = pd.read_csv(self.ui.output_folder_value+"/"+self.ui.file_name+"_building_info.csv")
             elif self.ui.insp_method == 2:
+                # Local Images method
                 footprint_data = pd.read_csv(self.ui.file_local_csv)
             elif self.ui.insp_method == 3:
+                # Extrapolation
                 self.ui.progress_bar_method.setValue(10)
                 self.ui.method_progress.setText("Extrapolation in progress...")
                 if self.ui.extrapolation_mode == 2:
@@ -527,20 +515,20 @@ class GUIMethods:
                 pass
         
             
-    ############ Create building dataset for upload images from GSV ################     
+    ############ Uploads existing database ################     
     def load_existing_insp(self):
         """
-        Load existing inspection data from CSV files based on the selected inspection method.
-
-        This method checks whether a project folder, country, and city name are defined before 
-        attempting to load previously saved inspection data. It retrieves existing AI and 
-        exposure model inspection records from CSV files and integrates them into the 
-        current dataset.
+        Loads previously saved inspection results at startup, fills the current inspection 
+        dataframe with the existing records, and restores the corresponding progress state 
+        for polygon, specific coordinates, or local image workflows.
         """
-        # Upload existing inspections
+        # Upload existing inspections when the GUI is started for first time
         if self.start == True:
             try:
                 if self.ui.insp_method == 0:
+                    # ==============================================================
+                    # Polygon method existing inpection
+                    # ============================================================== 
                     output_folder = self.ui.output_folder_value
                     insp_path = f"{output_folder}/{self.ui.file_name}"
                     # Upload the existing inspections for AI 
@@ -552,6 +540,9 @@ class GUIMethods:
                     self.start = False
                     
                 elif self.ui.insp_method == 1:
+                    # ==============================================================
+                    # Specific coordinates existing inpection
+                    # ============================================================== 
                     insp_path = self.ui.output_folder_value+"/"+self.ui.file_name
                     # Upload the existing inspections for AI 
                     self.data_ai_existing = pd.read_csv(insp_path+"_AI_aux_cont.csv")
@@ -562,6 +553,9 @@ class GUIMethods:
                     self.start = False
                     
                 elif self.ui.insp_method == 2:
+                    # ==============================================================
+                    # Local images existing inpection
+                    # ============================================================== 
                     insp_path = self.ui.output_folder_value+"/"+self.ui.file_name_local.text()
                     # Upload the existing inspections for AI 
                     self.data_ai_existing = pd.read_csv(insp_path+"_AI_classification.csv")
@@ -573,9 +567,6 @@ class GUIMethods:
                     self.data_old = "OK"  # THERE IS EXISTING DATA
                     self.data_old_local = True
                     self.start = False
-                    
-                elif self.ui.insp_method == 3:
-                    pass
             except:
                 pass
 
@@ -583,28 +574,13 @@ class GUIMethods:
     ############ Checks if there is GSV availability ################  
     def check_street_view(self):
         """
-        Check if Google Street View is available at the building's location.
-    
-        This method sends a request to the Google Street View API to determine 
-        whether Street View imagery is available for the latitude and longitude 
-        of the currently selected building. It ensures that a project folder, 
-        country, and city name are defined before execution.
-    
-        Returns:
-            bool: 
-                - `True` if Street View imagery is available at the given location.
-                - `False` if no Street View coverage exists.
-    
-        Effects:
-            - Sends an HTTP request to the Google Street View API.
-            - Retrieves metadata about Street View availability.
-    
-        Notes:
-            - Requires a valid Google Street View API key.
-            - The API key used in this function is hardcoded, which may pose security risks.
-            - Ensures execution only if project details are correctly set.
+        Checks whether Google Street View coverage is available for the current inspection or 
+        extrapolation coordinates by querying the Street View metadata service.
         """
         if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
+            # ==============================================================
+            # Polygon method or Specific coordinates
+            # ============================================================== 
             # Input parameters
             with open("methods/gsv_api_key.txt", "r") as f:
                 api_key = f.read().strip()
@@ -624,8 +600,10 @@ class GUIMethods:
             else:
                 return False  # No Street View coverage
         
-        
         else:
+            # ==============================================================
+            # Local images 
+            # ============================================================== 
             # Input parameters
             with open("methods/gsv_api_key.txt", "r") as f:
                 api_key = f.read().strip()
@@ -642,30 +620,14 @@ class GUIMethods:
             else:
                 return False  # No Street View coverage
         
-    ############# Downnload GSV building images ################   
+        
+    ############# Retrieve GSV building images ################   
     def fetch_three_step_views(self):
         """
-        Get in memory three directional Google Street View (GSV) images for a building's location.
-    
-        This method retrieves the latitude and longitude of a building, fetches three images from 
-        Google Street View at angles of -30°, 0°, and +30°, and keep them in memory. The method updates 
-        the UI with the image IDs for the current building. 
-        If images already exist, it skips them.
-    
-        Args:
-            None. The method relies on instance attributes such as `city_method`, `country_method`, 
-            `data_building`, and UI elements for user input and display.
-    
-        Effects:
-            - Fetches images from Google Street View using the provided API key.
-            - Updates UI fields with image IDs.
-    
-        Notes:
-            - Requires a valid Google Street View API key to fetch images.
-            - Checks for Street View availability before attempting to fetch images.
-            - Skips execution if no project folder is defined or if images already exist.
+        Retrieves and stores up to three Google Street View images for the current building 
+        location at different viewing angles, updates the displayed image IDs and capture years, 
+        and supports both standard inspection and extrapolation workflows.
         """
-           
         # Image ID displayed values
         # left image
         self.ui.img_id_value_1.setText(str(self.click_count+1)+"_1")
@@ -674,15 +636,16 @@ class GUIMethods:
         # right image
         self.ui.img_id_value_3.setText(str(self.click_count+1)+"_3")
         
+        # ==============================================================
+        # Polygon method or Specific Coordinates
+        # ============================================================== 
         
         if self.ui.insp_method == 0 or self.ui.insp_method == 1:  
-
             # Building coordinates
             location = (float(self.ui.lat_value.text()), float(self.ui.lon_value.text()))
             # API key is required; without it, access to GSV is not possible
             with open("methods/gsv_api_key.txt", "r") as f:
-                api_key = f.read().strip() 
-                                    
+                api_key = f.read().strip()                                    
             # angles for taking the images
             angle = (-30,0,30)
             self.img_url = ["","",""]
@@ -701,9 +664,14 @@ class GUIMethods:
                     self.img_original_2, self.year_center = ["",""]
                     self.img_original_3, self.year_right = ["",""]
                     
+            # Year of the GSV IMAGE
             self.ui.year_value_1.setText(str(self.year_left))
             self.ui.year_value_2.setText(str(self.year_center))
             self.ui.year_value_3.setText(str(self.year_right))
+            
+        # ==============================================================
+        # Extrapolation
+        # ============================================================== 
         elif self.ui.insp_method == 3:
             if self.sw_extrapolation == False:
                 pass
@@ -726,6 +694,8 @@ class GUIMethods:
                     
                 return img_gsv, url_gsv
 
+
+    ############ Camara angle setting for better building image perspective ################ 
     def img_angle_left (self):
         """Open the image angle setting pop-up window."""
         if self.ui.insp_method == 0 or self.ui.insp_method == 1:
@@ -744,17 +714,22 @@ class GUIMethods:
                 gsv_dialog = gsv_angle_setting(parent=self.ui, main_window=self.ui, gui_methods=self)
                 gsv_dialog.exec_()  # Open the pop-up
                 
+                # Get the feature values provide by the user
                 self.pitch_left = gsv_dialog.pitch_value.value()
                 self.heading_left = gsv_dialog.heading_value.value()
                 self.fov_left = gsv_dialog.fov_value.value()
-                        
+                
+                # Left image identifier
                 self.img_original_1 = get_street_view_image(location, api_key, self.heading_left, self.pitch_left, self.fov_left)[1]
                 self.sw_angle = 0
+                
+                # Prepare new image
                 display_image_rgb = cv2.cvtColor(self.img_original_1, cv2.COLOR_BGR2RGB)
                 h, w, ch = display_image_rgb.shape
                 bytes_per_line = w * 3
                 qimg = QtGui.QImage(display_image_rgb.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
-            
+                
+                #Plot new img in the GUI
                 pixmap = QtGui.QPixmap.fromImage(qimg)
                 img_frames = [self.ui.left_gsv_img,self.ui.central_gsv_img,self.ui.right_gsv_img]
                 img_frames[0].setPixmap(
@@ -771,7 +746,9 @@ class GUIMethods:
         else:
             QMessageBox.warning(self.ui, "Method Error",
                                 "This option is not available for local images.")
-            
+       
+    
+    ############ Camara angle setting for better building image perspective ################ 
     def img_angle_central (self):
         """Open the image angle setting pop-up window."""
         if self.ui.insp_method == 0 or self.ui.insp_method == 1:
@@ -790,6 +767,7 @@ class GUIMethods:
                 gsv_dialog = gsv_angle_setting(parent=self.ui, main_window=self.ui, gui_methods=self)
                 gsv_dialog.exec_()  # Open the pop-up
                 
+                # Get the feature values provide by the user
                 self.pitch_central = gsv_dialog.pitch_value.value()
                 self.heading_central = gsv_dialog.heading_value.value()
                 self.fov_central = gsv_dialog.fov_value.value()
@@ -817,7 +795,9 @@ class GUIMethods:
         else:
             QMessageBox.warning(self.ui, "Method Error",
                                 "This option is not available for local images.")
-
+    
+    
+    ############ Camara angle setting for better building image perspective ################ 
     def img_angle_right (self):
         """Open the image angle setting pop-up window."""
         if self.ui.insp_method == 0 or self.ui.insp_method == 1:
@@ -865,7 +845,7 @@ class GUIMethods:
                                 "This option is not available for local images.")
             
             
-    ############ Building detector model ################
+    ############ Building detector model bounding box ################
     def _prepare_display_with_bbox(self, img_bgr, bbox_xyxy, target_w, target_h):
         """
         Returns a BGR image resized to (target_w, target_h) with a dashed bbox drawn
@@ -905,6 +885,7 @@ class GUIMethods:
         )
         return disp_bgr
     
+    
     def _draw_dashed_rect(self, img_bgr, x1, y1, x2, y2, color=(0, 0, 255), thickness=2, dash_len=10, gap_len=6):
         """
         Draw dashed rectangle using 4 dashed lines.
@@ -932,30 +913,11 @@ class GUIMethods:
             
     def object_detector_building(self, aux):
         """
-        Detect and isolate buildings from Google Street View (GSV) images using a YOLO-based object detector.
-        
-        This method processes three directional GSV images (-30°, 0°, +30°) for a building's location and 
-        applies a YOLO-based object detection model to identify and isolate buildings. The detected building 
-        with the highest confidence is cropped and displayed in the User Interface. If no building is detected, a message 
-        is displayed instead. The method handles images both in memory and from the local device.
-        
-        Args:
-            None. The method relies on instance attributes such as `ui` for image display elements, 
-            `img_orginial_1`, `img_orginial_2`, `img_orginial_3` for input images, and `data_building` 
-            for project-specific data.
-        
-        Effects:
-            - Loads a YOLO model for building detection.
-            - Fetches and processes GSV images.
-            - Identifies the most confident bounding box for buildings.
-            - Crops and displays detected buildings in the UI.
-            - Handles scenarios where no buildings are detected or Street View is unavailable.
-        
-        Notes:
-            - Requires a trained YOLO model and corresponding weight file (`building_detector.pt`).
-            - Checks if Street View coverage is available before performing detection.
+        Detects and isolates the target building in the available images using a YOLO object 
+        detector, updates the corresponding image frames with the detection results, saves 
+        cropped and displayed images when needed, and supports polygon, specific coordinates, 
+        local image, and extrapolation workflows.
         """
-
         # Class mapping (update this with your actual mappings)
         weight_path = "dl_weights/building_detector.pt" # Replace with your YOLO .pt file
         # Load the YOLO model
@@ -990,7 +952,11 @@ class GUIMethods:
             # List of the frame
             img_frames = [self.ui.left_gsv_img,self.ui.central_gsv_img,self.ui.right_gsv_img]
             sw = True
-            #Check inspection mode
+            
+            # ==============================================================
+            # Polygon method and Specific coordinates building detector 
+            # ==============================================================
+            
             if self.ui.insp_method == 0 or self.ui.insp_method == 1:
                 try:
                     # Getting the images from GSV
@@ -1104,7 +1070,10 @@ class GUIMethods:
                         img_frames[aux].setText(self.no_image)
                         img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)  # Center-align text
             
-            # Checking Inspection method (manual option)
+            # ==============================================================
+            # Local images building detector 
+            # ==============================================================
+            
             elif self.ui.insp_method == 2:
                 # Image frames
                 img_frames = [self.ui.left_gsv_img, self.ui.central_gsv_img, self.ui.right_gsv_img]
@@ -1150,24 +1119,15 @@ class GUIMethods:
                         
                         self.gap = None
                         try:
-                            # -----------------------------
-                            # 1) YOLO inference
-                            # -----------------------------
+                            # Run inference
                             results = model.predict(img_path, device=device)
-                        
-                            # -----------------------------
-                            # 2) Read ORIGINAL image (BGR)
-                            #    (keep original resolution for saving crop)
-                            # -----------------------------
+
                             img_bgr = cv2.imread(img_path)
                             if img_bgr is None:
                                 raise RuntimeError(f"Could not read image: {img_path}")
                         
                             h0, w0 = img_bgr.shape[:2]
-                        
-                            # -----------------------------
-                            # 3) Pick best bbox (highest conf)
-                            # -----------------------------
+
                             best_box = None
                             best_score = 0.0
                         
@@ -1184,40 +1144,23 @@ class GUIMethods:
                             if best_box is None:
                                 self.gap = 1  # used later in your except block for "not detected"
                                 raise RuntimeError("No building detected with confidence > 0.5")
-                        
-                            # -----------------------------
-                            # 4) ORIGINAL bbox coords (on original image)
-                            # -----------------------------
+
                             x1, y1, x2, y2 = map(int, best_box.xyxy[0])
-                        
-                            # -----------------------------
-                            # 5) Save CROPPED image (ORIGINAL resolution)
-                            # -----------------------------
+
                             cropped_image = img_bgr[y1:y2, x1:x2]
                             cv2.imwrite(cropped_path, cropped_image)
-                        
-                            # -----------------------------
-                            # 6) Prepare DISPLAY image sized to the QLabel frame
-                            #    + draw bbox with consistent thickness/dash/gap
-                            # -----------------------------
+
                             label_w = img_frames[aux].width()
                             label_h = img_frames[aux].height()
                         
                             disp_bgr = self._prepare_display_with_bbox(
-                                img_bgr, (x1, y1, x2, y2), label_w, label_h
-                            )
-                        
-                            # -----------------------------
-                            # 7) Save DISPLAYED image (this is the frame-sized image)
-                            # -----------------------------
+                                img_bgr, (x1, y1, x2, y2), label_w, label_h)
+
                             if not os.path.exists(self.ui.folder_path + "/displayed_images"):
                                 os.makedirs(self.ui.folder_path + "/displayed_images")
                         
                             cv2.imwrite(displayed_path, disp_bgr)
                         
-                            # -----------------------------
-                            # 8) Convert DISPLAY image to QPixmap for QLabel
-                            # -----------------------------
                             disp_rgb = cv2.cvtColor(disp_bgr, cv2.COLOR_BGR2RGB)
                             h, w, ch = disp_rgb.shape
                             bytes_per_line = ch * w
@@ -1295,19 +1238,15 @@ class GUIMethods:
                 try:
                     # Run inference
                     results = model.predict(img_gsv, device=device)[0]
-                
-                    h, w, _ = img_gsv.shape
-                
+                    h, w, _ = img_gsv.shape               
                     # Get class names
-                    class_names = model.names
-                
+                    class_names = model.names              
                     best_box = None
                     best_conf = 0
                 
                     # Loop through detected boxes
                     if results.boxes is not None:
                         for box in results.boxes:
-                
                             cls_id = int(box.cls[0])
                             label = class_names[cls_id]
                             conf = float(box.conf[0])
@@ -1335,7 +1274,8 @@ class GUIMethods:
                 except:
                     cropped_image = []
         
-        
+    
+    ############ Opacity function ################   
     def add_not_detected_overlay(self, image_bgr, opacity=0.5, text="BUILDING NOT DETECTED"):
         """
         Takes a BGR image and returns a new image with:
@@ -1375,6 +1315,7 @@ class GUIMethods:
                     thickness, cv2.LINE_AA)
     
         return blended
+    
        
     ############ Left Bounding Box Manual Selection ################
     def bounding_box_frame_left(self):
@@ -1391,7 +1332,7 @@ class GUIMethods:
                 # From GSV (Polygon and Specific method)
                 self.image_bb = self.img_original_1
             elif self.ui.insp_method == 2:
-                # From local device 
+                # From local device (original)
                 self.image_bb = self.ui.folder_path+"/"+str(self.data_building.iloc[self.old_local, 0])
             # Left Frame to display
             self.frame_bb_disp = self.ui.left_gsv_img
@@ -1399,8 +1340,10 @@ class GUIMethods:
             # Getting the path for image prediction
             if self.ui.insp_method == 2:
                 try:   
+                    # auxiliar cropped image
                     aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
                                     +str(self.data_building.iloc[self.old_local, 0]))
+                    # Left cropped image
                     self.cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg" 
                 except:
                     QMessageBox.warning(self.ui, "File Error", "This option is only available if there is a previous building detection.")
@@ -1412,7 +1355,7 @@ class GUIMethods:
         except:
             pass
     
-    ############ Left Bounding Box Manual Selection ################       
+    ############ Central Bounding Box Manual Selection ################       
     def bounding_box_frame_central(self):
         """
         Select the central frame image for building detection and retrieve its corresponding path.
@@ -1427,7 +1370,7 @@ class GUIMethods:
                 # From GSV (Polygon and Specific method)
                 self.image_bb = self.img_original_2
             elif self.ui.insp_method == 2:
-                # From local device 
+                # From local device (original)
                 self.image_bb = self.ui.folder_path+"/"+str(self.data_building.iloc[self.old_local + 1, 0])
             # Central Frame to display 
             self.frame_bb_disp = self.ui.central_gsv_img
@@ -1464,7 +1407,7 @@ class GUIMethods:
                 # From GSV (Polygon and Specific method)
                 self.image_bb = self.img_original_3
             elif self.ui.insp_method == 2:
-                # From local device 
+                # From local device (original)
                 self.image_bb = self.ui.folder_path+"/"+str(self.data_building.iloc[self.old_local + 2, 0])
             
             self.frame_bb_disp = self.ui.right_gsv_img
@@ -1483,20 +1426,37 @@ class GUIMethods:
             self.box_id = 2
         except:
             pass  
-    ############ Folder Selection ################
+        
+    ############ Lists of features ################  
+    def feature_comboboxes_values(self):
+        # Material
+        self.class_mat = ['Concrete', 'Hybrid - Confined and Unreinforced masonry', 'Informal materials', 
+                       'Masonry - Confined', 'Masonry - Reinforced', 'Masonry - Unreinforced', 'Steel','Wood'] 
+        # LLRS
+        self.class_llrs = ['Dual System', 'Infilled Frames', 'Moment Frames', 
+                           'No lateral load-resisting system', 'Walls', 'Walls'] 
+        # Code level
+        self.class_code = ['High-Code','Low-Code', 'Moderate-code', 'No-Code']
+        # Number of stories
+        self.class_ns = ['10-12', '13+', '1', '2', '3', '4', '5', '6-7', '8-9']
+        # Occupancy
+        self.class_occ = [ 'Commercial' , 'Industrial' ,'Mixed (Residential + Commercial)', 'Residential']
+        # Block position
+        self.class_bp= ["Adjoining building(s) one side","Adjoining building(s) two side", 
+                        "Adjoining building(s) three side", "Detached building"]     
+        # Roof Shape
+        self.class_r_shape = ['Flat','Pitched with gable ends', 'Pitched and hipped', 'Monopitch', 'Curved']    
+        # Roof material
+        self.class_r_mat = ['Concrete','Clay or concrete tile', 'Metal or asbestos sheets']
+        
+        
+    ############ Manual bounding box Selection ################
     def bounding_box(self):
         """
-        Open a bounding box selection pop-up for manual annotation.
-    
         This method allows the user to manually define a bounding box around a building 
-        in an image by selecting four points. The bounding box is then displayed in the UI 
-        frame. Before execution, the method verifies that the project folder, country, and 
-        city name are correctly set.
-    
-        Notes:
-            - If the AI-powered option is enabled, users must manually label the building 
-              or verify that existing labels are correct.
-            - Ensures a valid PyQt5 `QApplication` instance exists before opening the pop-up.
+        in an image by selecting four points. If AI-powered mode is enabled, runs the image classification 
+        models to automatically update the building attribute fields in the interface.Furthermore, perform 
+        prediction adjustments based on expert engineering criteria for different features.
         """
         # Conditional to avoid executing the method if there is no project folder
         if self.ui.output_folder_value == "-":
@@ -1525,128 +1485,102 @@ class GUIMethods:
                 image_file = dialog.prediction_img
                 
                 if self.ui.ai_check.isChecked():
-                    
-                    # Comboboxes for each image label
-                    material_id = [self.ui.material_cb_1,self.ui.material_cb_1,self.ui.material_cb_1]
-
+    
+                    self.feature_comboboxes_values()
+                    # LLRS building image sets prediction  
                     material_index = predict_material_img(image_file, self.ui.insp_method, self.box_id, self)
-                    # LLRS building image sets prediction
-                    class_names_mat = ['Concrete', 'Hybrid - Confined and Unreinforced masonry', 'Informal materials', 
-                                   'Masonry - Confined', 'Masonry - Reinforced', 'Masonry - Unreinforced', 
-                                   'Steel','Wood']                       
-                    material_id[self.box_id].setCurrentText(class_names_mat[material_index])
+                    self.ui.material_cb_1.setCurrentText(self.class_mat[material_index])
                     
-                    # Comboboxes for each image label
-                    llrs_id = [self.ui.llrs_cb_1,self.ui.llrs_cb_1,self.ui.llrs_cb_1]
                     # LLRS building image prediction
                     llrs_index = predict_llrs_img(image_file, self.ui.insp_method, self.box_id, self)
-                    class_names_llrs = ['Dual System', 'Infilled Frames', 'Moment Frames', 
-                                   'No lateral load-resisting system', 'Walls', 'Walls']  
-                    llrs_id[self.box_id].setCurrentText(class_names_llrs[llrs_index])
+                    self.ui.llrs_cb_1.setCurrentText(self.class_llrs[llrs_index])
                                     
-                    # Comboboxes for each image label
-                    code_level_id = [self.ui.age_cb_1,self.ui.age_cb_1,self.ui.age_cb_1]
                     # LLRS building image prediction
                     code_level_index = predict_code_img(image_file, self.ui.insp_method, self.box_id, self)
-                    # LLRS building image sets prediction
-                    class_names_code = ['High-Code','Low-Code', 'Moderate-code', 'No-Code']
-                    code_level_id[self.box_id].setCurrentText(class_names_code[code_level_index])
+                    self.ui.age_cb_1.setCurrentText(self.class_code[code_level_index])
                     
-                    # Comboboxes for each image label
-                    n_stories_id = [self.ui.n_stories_value_1,self.ui.n_stories_value_1,self.ui.n_stories_value_1]
                     # LLRS building image prediction
                     n_stories_index = predict_n_stories_img(image_file, self.ui.insp_method, self.box_id, self)
-                    # LLRS building image sets prediction
-                    class_names = ['10-12', '13+', '1', '2', '3', '4', '5', '6-7', '8-9']
-                    n_stories_id[self.box_id].setCurrentText(class_names[n_stories_index])
+                    self.ui.n_stories_value_1.setCurrentText(self.class_ns[n_stories_index])
                     
-                    # Comboboxes for each image label
-                    occupancy_id = [self.ui.occup_cb_1,self.ui.occup_cb_1,self.ui.occup_cb_1]
                     # LLRS building image prediction
                     occupancy_index = predict_occupancy_img(image_file, self.ui.insp_method, self.box_id, self)
-                    # LLRS building image sets prediction
-                    occupancy_class = [ 'Commercial' , 'Industrial' ,'Mixed (Residential + Commercial)', 'Residential']
-                    occupancy_id[self.box_id].setCurrentText(occupancy_class[occupancy_index])  
-                    
-                    # Comboboxes for each image label
-                    block_position_id = [self.ui.bck_pos_cb_1,self.ui.bck_pos_cb_1,self.ui.bck_pos_cb_1]    
+                    self.ui.occup_cb_1.setCurrentText(self.class_occ[occupancy_index])  
+                     
                     # block_position building image prediction
                     block_position_index = predict_block_position_img(image_file, self.ui.insp_method, self.box_id, self)
-                    # block_position building image sets prediction
-                    block_position_id[self.box_id].setCurrentIndex(block_position_index+1)
+                    self.ui.bck_pos_cb_1.setCurrentText(self.class_bp[block_position_index])  
                     
-                    # Comboboxes for each image label
-                    roof_shape_id = [self.ui.roof_shape_cb_1,self.ui.roof_shape_cb_1,self.ui.roof_shape_cb_1]   
                     # roof_shape building image prediction
                     roof_shape_index = predict_roof_shape_img(image_file, self.ui.insp_method, self.box_id, self)
-                    # roof_shape building image sets prediction
-                    roof_shape_id[self.box_id].setCurrentIndex(roof_shape_index+1)
-                    
-                    # Comboboxes for each image label
-                    roof_material_id = [self.ui.roof_material_cb_1,self.ui.roof_material_cb_1,self.ui.roof_material_cb_1]   
+                    self.ui.roof_shape_cb_1.setCurrentText(self.class_r_shape[roof_shape_index])
+                      
                     # roof_material building image prediction
                     roof_material_index = predict_roof_material_img(image_file, self.ui.insp_method, self.box_id, self)
-                    # roof_material building image sets prediction
-                    roof_material_id[self.box_id].setCurrentIndex(roof_material_index+1)
+                    self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[roof_material_index])
                     
                     # Taxonomy adjustments
-                    pred_mat_value = self.ui.material_cb_1.currentData()
-                    llrs_pred = self.ui.llrs_cb_1.currentData()
-                    pred_roof_shape = self.ui.roof_shape_cb_1.currentData()
-                    roof_mat_pred = self.ui.roof_material_cb_1.currentData()
-                    code_level_pred = self.ui.age_cb_1.currentData()
-                    # LLRS
-                    if pred_mat_value == "MCF":
-                        llrs_id[self.box_id].setCurrentIndex(4) 
-                    elif pred_mat_value == "MUR":
-                        llrs_id[self.box_id].setCurrentIndex(4) 
-                    elif pred_mat_value == "MR":
-                        llrs_id[self.box_id].setCurrentIndex(4)
-                    elif pred_mat_value == "INF":
-                        llrs_id[self.box_id].setCurrentIndex(6)
-                    elif pred_mat_value == "CR":
-                        if llrs_pred in ("LDUAL", "LFM", "LFINF"):
+                    self.pred_mat_value = self.ui.material_cb_1.currentData()
+                    self.llrs_pred = self.ui.llrs_cb_1.currentData()
+                    self.pred_roof_shape = self.ui.roof_shape_cb_1.currentData()
+                    self.roof_mat_pred = self.ui.roof_material_cb_1.currentData()
+                    self.code_level_pred = self.ui.age_cb_1.currentData()
+                    
+                    # LLRS adjusments based on material
+                    if self.pred_mat_value == "MCF":
+                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5]) 
+                    elif self.pred_mat_value == "MUR":
+                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5]) 
+                    elif self.pred_mat_value == "MR":
+                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5])
+                    elif self.pred_mat_value == "INF":
+                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[3])
+                    elif self.pred_mat_value == "CR":
+                        if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
                             pass
                         else:
-                            llrs_id[self.box_id].setCurrentIndex(3)
-                    elif pred_mat_value == "S":
-                        if llrs_pred in ("LFM", "LFBR"):
+                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
+                    elif self.pred_mat_value == "S":
+                        if self.llrs_pred in ("LFM", "LFBR"):
                             pass
                         else:
-                            llrs_id[self.box_id].setCurrentIndex(3)
+                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2]) 
                      
-                    # Roof shape    
-                    if  pred_roof_shape == "RSH1":
-                        roof_material_id[self.box_id].setCurrentIndex(1) 
-                    elif  pred_roof_shape == "RSH7":
-                        roof_material_id[self.box_id].setCurrentIndex(3)
-                    elif  pred_roof_shape == "RSH2":
-                        if roof_mat_pred in ("RMT1", "RMT6"):
+                    # Roof material adjument based on roof shape    
+                    if  self.pred_roof_shape == "RSH1":
+                        self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[0])
+                    elif  self.pred_roof_shape == "RSH7":
+                        self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[2])
+                    elif  self.pred_roof_shape == "RSH2":
+                        if self.roof_mat_pred in ("RMT1", "RMT6"):
                             pass
                         else:
-                            roof_material_id[self.box_id].setCurrentIndex(3)
-                    elif  pred_roof_shape == "RSH3":
-                        if roof_mat_pred in ("RMT1", "RMT6"):
+                            # This depends on the country
+                            self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[2])
+                    elif  self.pred_roof_shape == "RSH3":
+                        if self.roof_mat_pred in ("RMT1", "RMT6"):
                             pass
                         else:
-                            roof_material_id[self.box_id].setCurrentIndex(2)
-                    elif  pred_roof_shape == "RSH5":
-                        if roof_mat_pred in ("RMT1", "RMT6"):
+                            self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[1])
+                    elif  self.pred_roof_shape == "RSH5":
+                        if self.roof_mat_pred in ("RMT1", "RMT6"):
                             pass
                         else:
-                            roof_material_id[self.box_id].setCurrentIndex(3)        
+                            # This depends on the country
+                            self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[2])       
                             
-                    # Code level 
-                    if pred_mat_value == "INF":
-                        code_level_id[self.box_id].setCurrentIndex(4)
-                    elif pred_mat_value == "MUR":
-                        if code_level_pred in ("CDL", "CDN"):
+                    # Code level adjustment based on material
+                    if self.pred_mat_value == "INF":
+                        self.ui.age_cb_1.setCurrentText(self.class_code[3])
+                    elif self.pred_mat_value == "MUR":
+                        if self.code_level_pred in ("CDL", "CDN"):
                             pass
                         else: 
-                            code_level_id[self.box_id].setCurrentIndex(4) 
+                            self.ui.age_cb_1.setCurrentText(self.class_code[3]) 
                         
-                        
+                    # For conditional within dl models  
                     self.box_id = None
+                    
                 # Message with special format
                 message = """
                 If you are making predictions using the AI-powered option, when a manual bounding box is created, 
@@ -1666,7 +1600,12 @@ class GUIMethods:
             except:
                 pass
             
+    ############ Taxonomy check ################  
     def tax_check(self, tax_value):
+        """
+        Validates a taxonomy string, and if it is invalid, extracts and reports the canonical 
+        taxonomy suggestion from the validation error message.
+        """
         # 1) Create a small DataFrame with taxonomy strings
         df = pd.DataFrame({"TAXONOMY": [tax_value]})
         try:
@@ -1689,45 +1628,29 @@ class GUIMethods:
     ############ Obtain value of the form of each building image ################       
     def inspection_database (self):
         """
-        Populate the inspection database with data extracted from building images and user inputs.
-    
-        This method collects information for three building images (left, central, right) and appends 
-        the data to the inspection database. Data includes geographic coordinates, building attributes, 
-        and user-provided metadata from the UI fields. Each building's data is treated as a separate 
-        entry in the database.
-    
-        Args:
-            None. The method operates on instance attributes such as `click_count`, `data_building`, 
-            and various UI elements for user inputs and data display.
-    
-        Returns:
-            None. The collected data is appended to `self.ui.database`.
-    
-        Effects:
-            - Updates `self.ui.database` with building attributes and metadata for the current 
-              set of images.
-            - Gathers inputs such as material type, lateral load-resisting system (LLRS), code level, 
-              number of stories, occupancy, block position, and image quality.
-    
-        Notes:
-            - The database is populated only if `click_count` is greater than zero.
-            - Assumes the `data_building` DataFrame contains valid latitude and longitude values.
-            - Each entry in the database corresponds to a specific building image.
-            - Requires properly configured UI components to retrieve and store data.
+        Stores the inspection results for the current workflow by saving the building location, 
+        assigned attributes, generated taxonomy, and image reference into the inspection database, 
+        while supporting polygon, specific coordinates, local images, and extrapolation methods.
         """
+        #####################################################################################################    
+        ########################## --------------- Polygon method -----------------##########################
+        ########################## --------- Specific coordinates method ----------########################## 
+        ########################## ------------ Local images method ---------------########################## 
+        #####################################################################################################
         if self.ui.insp_method in (0, 1, 2):
+            # Check the stage to avoid trying to use the feature button before all the information is properly set up
             if self.ui.city_value.text() == "-":
                 QMessageBox.warning(self.ui,"File Error", "This option is only available once the building image is displayed.\n"
                                                           "Please click the *Next Building* button.")
             else:
-                # Save inspection function
+                # ==============================================================
+                # Polygon and Specific coordinates method
+                # ==============================================================
                 if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
                     base_url = "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint="
                     coord = str(self.ui.lat_value.text()) + "," + str(self.ui.lon_value.text())
                     heading = get_road_orientation((float(self.ui.lat_value.text()), float(self.ui.lon_value.text())))
                     
-                # -------------------  Left building image ---------------------- 
-                
                 if self.ui.insp_method == 0 or self.ui.insp_method == 1:
                     self.data_ai.iloc[self.click_count, 0]  = self.ui.img_id_value_1.text()[:-2]
                     self.data_ai.iloc[self.click_count, 1]  = self.data_building.loc[self.click_count, 'latitude']
@@ -1781,7 +1704,9 @@ class GUIMethods:
                         if isinstance(heading, int):
                             self.data_ai.iloc[self.click_count, 16] = base_url + coord + "&heading=" + str((heading + 180) % 360) + "&pitch=5&fov=120"
     
-                # ------------------- Local  -----------------------
+                # ==============================================================
+                # Local images
+                # ==============================================================
                 elif self.ui.insp_method == 2:
                     # Left building image
                     self.data_ai.iloc[self.old_local, 0]  = self.ui.img_id_value_1.text()[:-2]                 # ID
@@ -1832,7 +1757,9 @@ class GUIMethods:
                         
                     self.data_ai.iloc[self.old_local, 16] = self.data_building.iloc[self.old_local, 0]
                
-        # ------------------- Extrapolation  -----------------------
+        #####################################################################################################    
+        ########################## --------------- Extrapolation -----------------###########################
+        #####################################################################################################
         elif self.ui.insp_method == 3:
             for i in range (self.data_ai.shape[0]):
                 self.data_ai.iloc[i, 0] = self.ui.coord_reference.loc[i, "id"]                                                 # ID
@@ -1879,31 +1806,13 @@ class GUIMethods:
                 
                 print("Inspection: " + str(i+1)+"/"+str(self.data_ai.shape[0]) +" -------------------------------------")
                     
+                
     ############ Saves the data from the inspections that were conducted ################       
     def save_database (self):
         """
-        Save the inspection data to a CSV file.
-    
-        This method consolidates new inspection data with any previously saved data and exports 
-        the combined dataset to a CSV file. If no prior data exists, it creates a new CSV file 
-        containing only the current inspections. The CSV file is named using the city and country 
-        information and stored in the specified output folder.
-    
-        Args:
-            None. The method operates on the `self.ui.database` attribute and the UI-provided output folder path.
-    
-        Returns:
-            None. The inspection data is saved or updated in the CSV file.
-    
-        Effects:
-            - Reads previous inspection data from an existing CSV file (if available).
-            - Appends the new inspection data to the existing dataset.
-            - Exports the combined dataset to a CSV file in the specified output folder.
-    
-        Notes:
-            - The CSV file is named with the pattern `<city>_<country>_inspection.csv`.
-            - Handles exceptions gracefully when no previous CSV file exists.
-            - Calls `self.inspection_database()` to gather new inspection data before saving.
+        Saves the inspection database to CSV files for the current workflow, exports both the 
+        full auxiliary results and the filtered classification results, updates the progress 
+        indicators, and resets the internal flags related to saved inspections.
         """
         # Load path 
         output_folder = self.ui.output_folder_value
@@ -1916,8 +1825,10 @@ class GUIMethods:
         for j in range (101):
             time.sleep(0.0001)
             self.ui.progress_bar_method.setValue(j)
-        # Save inspections
-        ############################## Polygon #######################################
+        
+        # ==============================================================
+        # Polygon method
+        # ==============================================================
         if self.ui.insp_method == 0:
             try:
                 # Save the AI inspection data to a CSV file
@@ -1932,7 +1843,9 @@ class GUIMethods:
                 # Show a warning message box if there's a permission error
                 QMessageBox.warning(self.ui, "File Error", "The file is open or the folder is inaccessible."
                                     +" Please close the file or check folder permissions.")
-        ############################## Specific #######################################
+        # ==============================================================
+        # Specific coordinates
+        # ==============================================================
         elif self.ui.insp_method == 1:
             try:
                 # Save the AI inspection data to a CSV file
@@ -1946,7 +1859,9 @@ class GUIMethods:
                 # Show a warning message box if there's a permission error
                 QMessageBox.warning(self.ui, "File Error", "The file is open or the folder is inaccessible."
                                     +"Please close the file or check folder permissions.")
-        ############################## Local #######################################
+        # ==============================================================
+        # Local images
+        # ==============================================================
         elif self.ui.insp_method == 2:
             # Save the AI inspection data to a CSV file
             try:
@@ -1962,10 +1877,8 @@ class GUIMethods:
                 # Show a warning message box if there's a permission error
                 QMessageBox.warning(self.ui, "File Error", "The file is open or the folder is inaccessible. "
                                     +"Please close the file or check folder permissions.")
-         ############################## Local #######################################
-        elif self.ui.insp_method == 3:
-            pass
-        
+
+        # restart varibles
         self.data_old = "OK" # TO BE SAVED THERE IS EXISTING DATA
         self.sw_insp = True
         self.save_id = True
@@ -1974,28 +1887,7 @@ class GUIMethods:
             
     def setComboBoxByData(self, comboBox, data):
         """
-        Set the index of a QComboBox based on its associated data value.
-    
-        This method iterates through the items in a `QComboBox` and selects the index 
-        corresponding to the provided `data` value. If a match is found, the combo box 
-        is updated to that index. If no match is found, the default return value is an 
-        empty string.
-    
-        Args:
-            comboBox (QComboBox): The combo box to update.
-            data (Any): The data value to search for within the combo box items.
-    
-        Returns:
-            str: Returns an empty string if no match is found; otherwise, returns the 
-                 result of `setCurrentIndex(i)`, though `setCurrentIndex` does not 
-                 explicitly return a value.
-    
-        Effects:
-            - Updates the `comboBox` selection if a matching data value is found.
-    
-        Notes:
-            - If no match is found, the combo box remains unchanged.
-            - The method assumes `comboBox.itemData(i)` correctly retrieves stored data values.
+        Selects the combobox item whose associated data matches the given value and returns the result.
         """
         # Iterate through the comboBox items to find the one with matching data
         match_data = [""]
@@ -2009,30 +1901,14 @@ class GUIMethods:
     ############ Restart default value of each building feature ################  
     def clean_database (self):
         """
-        Reset the UI fields for building features to their default values.
-    
-        This method clears and resets all inputs related to the building features for the left, 
-        central, and right building images. It sets dropdown menus to default selections, 
-        numeric fields to zero, and other UI components to their initial states.
-    
-        Args:
-            None. The method operates on UI elements for user inputs.
-    
-        Returns:
-            None. The UI fields for building features are reset to their default values.
-    
-        Effects:
-            - Resets dropdowns for material type, lateral load-resisting system (LLRS), code level, 
-              occupancy type, block position, and image quality to default values.
-            - Resets numeric fields for the number of stories to zero.
-    
-        Notes:
-            - This method ensures that the UI is cleared and ready for new input after processing 
-              or a reset action.
-            - Requires properly configured UI elements to work as intended.
+        Restores the inspection form fields from the saved database for the current building, 
+        resetting empty values to their default selections and repopulating the corresponding 
+        comboboxes for polygon, specific coordinates, or local image workflows.
         """
         if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-            # ----------------------- LEFT -----------------------------
+            # ==============================================================
+            # Polygon and Specific coordinates
+            # ==============================================================
             # Material
             if self.data_ai.iloc[self.click_count , 5] is None:
                 self.ui.material_cb_1.setCurrentText("Select Material")
@@ -2126,9 +2002,9 @@ class GUIMethods:
                 
         
         elif self.ui.insp_method == 2: 
-            #########################################################
-            ##########============  Local images ===========#########
-            #########################################################
+            # ==============================================================
+            # Local images
+            # ==============================================================
             # Material
                 if self.data_ai.iloc[self.old_local , 5] is None:
                     self.ui.material_cb_1.setCurrentText("Select Material")
@@ -2224,76 +2100,59 @@ class GUIMethods:
     ############ Deep learning model for predict the LLRS Material ################
     def material_prediction (self):
         """
-        Predict the Material of the Lateral Load Resisting System (LLRS) of a building using a deep learning model.
-    
-        This method applies a deep learning model to predict the LLRS Material for three building images 
-        (e.g., from Google Street View). If the AI-powered checkbox is activated in the UI, the 
-        method processes each image, retrieves predictions, and updates the corresponding UI 
-        comboboxes with the predicted LLRS Material values.
-    
-        Returns:
-            None. The predicted LLRS values are set in the UI comboboxes.
-    
-        Effects:
-            - Loads and applies a deep learning model to predict LLRS for the images.
-            - Updates the comboboxes (`material_cb_1`, `material_cb_2`, `material_cb_3`) in the UI with predictions.
-            - Updates the progress bar and status message in the UI.
-    
-        Notes:
-            - The progress bar provides visual feedback during model loading and prediction.
-            - Handles exceptions silently if predictions or UI updates fail.
-            - Requires the AI-powered checkbox (`ai_check`) to be selected for predictions to proceed.
-            - Assumes a predefined function `predict_material_img` for making predictions.
+        Runs the AI-based material classification model on the currently selected building image, 
+        updates the material field with the predicted class, and refreshes the progress indicators 
+        for polygon, specific coordinates, or local image workflows.
         """
-        # Comboboxes for each image label
-        material_id = [self.ui.material_cb_1,self.ui.material_cb_1,self.ui.material_cb_1]
         # Checkbox for the AI powered activation
         if self.ui.ai_check.isChecked():
-            # Polygon and Specific method
+            # Create list of feature
+            self.feature_comboboxes_values()
+            # ==============================================================
+            # Polygon and Specific coordinates
+            # ==============================================================
             if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
                 self.ui.method_progress.setText("Loading AI model ...")
                 for j in range (100):
                     time.sleep(0.0001)
                     self.ui.progress_bar_method.setValue(j)
-                # for i in range (3):
-                # Image path
+                # Image for prediction: central image by default, followed by the left image, and finally the right image
                 pred_img = False
                 for aux_img in range (3):
                     if self.predicted_img[1] == 1:
+                        # Central image
                         pred_img = True
                         j = 1
                     elif self.predicted_img[0] == 1:
+                        # Left image
                         pred_img = True
                         j = 0
                     elif self.predicted_img[2] == 1:
+                        # Right image
                         pred_img = True
                         j = 2
+                        
                 if pred_img == True:
                     
                     image_file = self.cropped_image[j]
-                    # LLRS building image prediction
                     box_aux = None
                     material_index = predict_material_img(image_file, self.ui.insp_method, box_aux, self.ui)
               
                     # Set DL model prediction
-                    # LLRS building image sets prediction
                     if material_index is None:
                         pass
-                    else:
-                        i=1
-                        class_names_mat = ['Concrete', 'Hybrid - Confined and Unreinforced masonry', 'Informal materials', 
-                                       'Masonry - Confined', 'Masonry - Reinforced', 'Masonry - Unreinforced', 
-                                       'Steel','Wood']                         
-                        material_id[i].setCurrentText(class_names_mat[material_index])
+                    else:                       
+                        self.ui.material_cb_1.setCurrentText(self.class_mat[material_index])
                         self.pred_mat_value = self.ui.material_cb_1.currentData()
 
-                        # Peogress bar update
+                        # Progress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
             
-            # Local method
+            # ==============================================================
+            # Local images
+            # ==============================================================
             elif self.ui.insp_method == 2:
-                
                 self.ui.method_progress.setText("Loading AI model ...")
                 for j in range (100):
                     time.sleep(0.0001)
@@ -2301,17 +2160,15 @@ class GUIMethods:
                     
                 # Local cropped image path            
                 try:
-                    aux = 0
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                                    +str(self.data_building.iloc[self.old_local, 0]))
                     cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg" 
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
                 except:
-                    aux = 0
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                                    +str(self.data_building.iloc[self.old_local, 0]))
                     
                     cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
     
@@ -2320,11 +2177,8 @@ class GUIMethods:
                 # LLRS building image sets prediction
                 if material_index is None:
                     pass
-                else:
-                    class_names_mat = ['Concrete', 'Hybrid - Confined and Unreinforced masonry', 'Informal materials', 
-                                   'Masonry - Confined', 'Masonry - Reinforced', 'Masonry - Unreinforced', 
-                                   'Steel','Wood']                       
-                    material_id[aux].setCurrentText(class_names_mat[material_index])
+                else:                      
+                    self.ui.material_cb_1.setCurrentText(self.class_mat[material_index])
                     self.pred_mat_value = self.ui.material_cb_1.currentData()
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
@@ -2334,39 +2188,31 @@ class GUIMethods:
     ############ Deep learning model for predict the LLRS ################
     def llrs_prediction (self):
         """
-        Predict the Lateral Load Resisting System (LLRS) of a building using a deep learning model.
-    
-        This method applies a deep learning model to predict the LLRS for three building images 
-        (e.g., from Google Street View). If the AI-powered checkbox is activated in the UI, the 
-        method processes each image, retrieves predictions, and updates the corresponding UI 
-        comboboxes with the predicted LLRS values.
-    
-        Effects:
-            - Loads and applies a deep learning model to predict LLRS for the images.
-            - Updates the comboboxes (`llrs_cb_1`, `llrs_cb_2`, `llrs_cb_3`) in the UI with predictions.
-            - Updates the progress bar and status message in the UI.
-    
-        Notes:
-            - The progress bar provides visual feedback during model loading and prediction.
-            - Handles exceptions silently if predictions or UI updates fail.
-            - Requires the AI-powered checkbox (`ai_check`) to be selected for predictions to proceed.
-            - Assumes a predefined function `predict_llrs_img` for making predictions.
+        Runs the AI-based LLRS classification model on the currently selected building image, 
+        updates the LLRS field with the predicted class, and refreshes the progress indicators 
+        for polygon, specific coordinates, or local image workflows.
         """
-        # Comboboxes for each image label
-        llrs_id = [self.ui.llrs_cb_1,self.ui.llrs_cb_1,self.ui.llrs_cb_1]
         # Checkbox for the AI powered activation
         if self.ui.ai_check.isChecked():
+            # Create list of feature
+            self.feature_comboboxes_values()
+            # ==============================================================
+            # Polygon and Specific coordinates
+            # ==============================================================
             if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                # for i in range (3):
+                # Image for prediction: central image by default, followed by the left image, and finally the right image
                 pred_img = False
                 for aux_img in range (3):
                     if self.predicted_img[1] == 1:
+                        # Central image
                         pred_img = True
                         j = 1
                     elif self.predicted_img[0] == 1:
+                        # Left image
                         pred_img = True
                         j = 0
                     elif self.predicted_img[2] == 1:
+                        # Right image
                         pred_img = True
                         j = 2
                 if pred_img == True:
@@ -2378,55 +2224,53 @@ class GUIMethods:
                     # LLRS building image sets prediction
                     if llrs_index is None:
                         pass
-                    else:
-                        i=1
-                        class_names_llrs = ['Dual System', 'Infilled Frames', 'Moment Frames', 
-                                       'No lateral load-resisting system', 'Walls', 'Walls']
+                    else:                    
+                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[llrs_index])
+                        self.llrs_pred = self.ui.llrs_cb_1.currentData()
                         
-                        llrs_id[i].setCurrentText(class_names_llrs[llrs_index])
-                        llrs_pred = self.ui.llrs_cb_1.currentData()
-                        
+                        # LLRS adjusments based on material
                         if self.pred_mat_value == "MCF":
-                            llrs_id[i].setCurrentText(class_names_llrs[5]) 
+                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5]) 
                         elif self.pred_mat_value == "MUR":
-                            llrs_id[i].setCurrentText(class_names_llrs[5]) 
+                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5]) 
                         elif self.pred_mat_value == "MR":
-                            llrs_id[i].setCurrentText(class_names_llrs[5])
+                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5])
                         elif self.pred_mat_value == "INF":
-                            llrs_id[i].setCurrentText(class_names_llrs[3])
+                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[3])
                         elif self.pred_mat_value == "CR":
-                            if llrs_pred in ("LDUAL", "LFM", "LFINF"):
+                            if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
                                 pass
                             else:
-                                llrs_id[i].setCurrentText(class_names_llrs[2])
+                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
                         elif self.pred_mat_value == "S":
-                            if llrs_pred in ("LFM", "LFBR"):
+                            if self.llrs_pred in ("LFM", "LFBR"):
                                 pass
                             else:
-                                llrs_id[i].setCurrentText(class_names_llrs[2]) 
+                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2]) 
+                                
                         # Progress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
             
             elif self.ui.insp_method == 2:
-                
+                # ==============================================================
+                # Local images
+                # ==============================================================
                 self.ui.method_progress.setText("Loading AI model ...")
                 for j in range (100):
                     time.sleep(0.0001)
                     self.ui.progress_bar_method.setValue(j)
                     
                 try:
-                    aux = 0
                     aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                                    +str(self.data_building.iloc[self.old_local, 0]))
                     cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
                 except:
-                    aux = 0
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                                    +str(self.data_building.iloc[self.old_local, 0]))
                     
                     cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
                 # LLRS building image prediction
@@ -2435,30 +2279,29 @@ class GUIMethods:
                 if llrs_index is None:
                     pass
                 else:
-                    class_names_llrs = ['Dual System', 'Infilled Frames', 'Moment Frames', 
-                                   'No lateral load-resisting system', 'Walls', 'Walls']
+                    self.ui.llrs_cb_1.setCurrentText(self.class_llrs[llrs_index])
+                    self.llrs_pred = self.ui.llrs_cb_1.currentData()
                     
-                    llrs_id[aux].setCurrentText(class_names_llrs[llrs_index])
-                    llrs_pred = self.ui.llrs_cb_1.currentData()
-                    
+                    # LLRS adjusments based on material
                     if self.pred_mat_value == "MCF":
-                        llrs_id[aux].setCurrentText(class_names_llrs[5]) 
+                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5]) 
                     elif self.pred_mat_value == "MUR":
-                        llrs_id[aux].setCurrentText(class_names_llrs[5]) 
+                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5]) 
                     elif self.pred_mat_value == "MR":
-                        llrs_id[aux].setCurrentText(class_names_llrs[5])
+                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5])
                     elif self.pred_mat_value == "INF":
-                        llrs_id[aux].setCurrentText(class_names_llrs[3])
+                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[3])
                     elif self.pred_mat_value == "CR":
-                        if llrs_pred in ("LDUAL", "LFM", "LFINF"):
+                        if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
                             pass
                         else:
-                            llrs_id[aux].setCurrentText(class_names_llrs[2])
+                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
                     elif self.pred_mat_value == "S":
-                        if llrs_pred in ("LFM", "LFBR"):
+                        if self.llrs_pred in ("LFM", "LFBR"):
                             pass
                         else:
-                            llrs_id[aux].setCurrentText(class_names_llrs[2])       
+                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])      
+                            
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
                     self.ui.method_progress.setText("Prediction complete!")
@@ -2467,42 +2310,29 @@ class GUIMethods:
     ############ Deep learning model for predict the Code level ################
     def code_level_prediction (self):
         """
-        Predict and assign a code level to a building based on its image.
-    
-        This method utilizes an AI model to predict the structural code level of a building 
-        from an image. It first ensures that the necessary project details (folder, country, 
-        and city) are set before execution. If AI-powered prediction is enabled, it processes 
-        the images and updates the corresponding UI elements with the predicted code level.
-    
-        Effects:
-            - Uses an AI model to predict the structural code level of the building.
-            - Updates the UI combo boxes (`age_cb_1`, `age_cb_2`, `age_cb_3`) with the predicted values.
-            - Displays progress updates via the UI progress bar.
-            - Handles both Google Street View (GSV) and local image-based inspections.
-    
-        Notes:
-            - AI-based prediction is performed only if the AI checkbox (`ai_check`) is enabled.
-            - In polygon-based and specific inspection modes (`insp_method != 2`), 
-              cropped images are used for prediction.
-            - For manual inspection mode (`insp_method == 2`), predictions are performed 
-              on local cropped images.
-            - The `predict_code_img` function is called to generate predictions.
+        Runs the AI-based code level classification model on the currently selected building image, 
+        updates the code level field with the predicted class, and refreshes the progress indicators 
+        for polygon, specific coordinates, or local image workflows.
         """
-        # Comboboxes for each image label
-        code_level_id = [self.ui.age_cb_1,self.ui.age_cb_1,self.ui.age_cb_1]
         # Checkbox for the AI powered activation
         if self.ui.ai_check.isChecked():
+            # ==============================================================
+            # Polygon and Specific coordinates
+            # ==============================================================
             if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                # for i in range (3):
+                # Image for prediction: central image by default, followed by the left image, and finally the right image
                 pred_img = False
                 for aux_img in range (3):
                     if self.predicted_img[1] == 1:
+                        # Central image
                         pred_img = True
                         j = 1
                     elif self.predicted_img[0] == 1:
+                        # Left image
                         pred_img = True
                         j = 0
                     elif self.predicted_img[2] == 1:
+                        # Right image
                         pred_img = True
                         j = 2
                 if pred_img == True:
@@ -2517,42 +2347,41 @@ class GUIMethods:
                     if code_level_index is None:
                         pass
                     else:
-                        i=1
-                        class_names_code = ['High-Code','Low-Code', 'Moderate-code', 'No-Code']
-                        code_level_id[i].setCurrentText(class_names_code[code_level_index])
-                        code_level_pred = self.ui.age_cb_1.currentData()
-                        # Code level 
+                        self.ui.age_cb_1.setCurrentText(self.class_code[code_level_index])
+                        self.code_level_pred = self.ui.age_cb_1.currentData()
+
+                        # Code level adjustment based on material
                         if self.pred_mat_value == "INF":
-                            code_level_id[i].setCurrentText(class_names_code[3])
+                            self.ui.age_cb_1.setCurrentText(self.class_code[3])
                         elif self.pred_mat_value == "MUR":
-                            if code_level_pred in ("CDL", "CDN"):
+                            if self.code_level_pred in ("CDL", "CDN"):
                                 pass
                             else: 
-                                code_level_id[i].setCurrentIndex(4)
+                                self.ui.age_cb_1.setCurrentText(self.class_code[3]) 
                         
                         # Progress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
             
             elif self.ui.insp_method == 2:
-                
+                # ==============================================================
+                # Local images
+                # ==============================================================
                 self.ui.method_progress.setText("Loading AI model ...")
                 for j in range (100):
                     time.sleep(0.0001)
                     self.ui.progress_bar_method.setValue(j)
                            
                 try:
-                    aux = 0
                     aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                                    +str(self.data_building.iloc[self.old_local, 0]))
                     cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
                 except:
-                    aux = 0
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                                    +str(self.data_building.iloc[self.old_local, 0]))
                     
                     cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
                 
@@ -2562,17 +2391,17 @@ class GUIMethods:
                 if code_level_index is None:
                     pass
                 else:
-                    class_names_code = ['High-Code','Low-Code', 'Moderate-code', 'No-Code']
-                    code_level_id[aux].setCurrentText(class_names_code[code_level_index])
-                    code_level_pred = self.ui.age_cb_1.currentData()
-                    # Code level 
+                    self.ui.age_cb_1.setCurrentText(self.class_code[code_level_index])
+                    self.code_level_pred = self.ui.age_cb_1.currentData()
+
+                    # Code level adjustment based on material
                     if self.pred_mat_value == "INF":
-                        code_level_id[aux].setCurrentText(class_names_code[3])
+                        self.ui.age_cb_1.setCurrentText(self.class_code[3])
                     elif self.pred_mat_value == "MUR":
-                        if code_level_pred in ("CDL", "CDN"):
+                        if self.code_level_pred in ("CDL", "CDN"):
                             pass
                         else: 
-                            code_level_id[aux].setCurrentIndex(4) 
+                            self.ui.age_cb_1.setCurrentText(self.class_code[3]) 
                         
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
@@ -2582,42 +2411,29 @@ class GUIMethods:
     ############ Deep learning model for predict the Number of Stories ################
     def n_stories_prediction (self):
         """
-        Predict the Lateral Load Resisting System (LLRS) of a building using a deep learning model.
-    
-        This method applies a deep learning model to predict the LLRS for three building images 
-        (e.g., from Google Street View). If the AI-powered checkbox is activated in the UI, the 
-        method processes each image, retrieves predictions, and updates the corresponding UI 
-        comboboxes with the predicted LLRS values.
-    
-        Returns:
-            None. The predicted LLRS values are set in the UI comboboxes.
-    
-        Effects:
-            - Loads and applies a deep learning model to predict LLRS for the images.
-            - Updates the comboboxes (`llrs_cb_1`, `llrs_cb_2`, `llrs_cb_3`) in the UI with predictions.
-            - Updates the progress bar and status message in the UI.
-    
-        Notes:
-            - The progress bar provides visual feedback during model loading and prediction.
-            - Handles exceptions silently if predictions or UI updates fail.
-            - Requires the AI-powered checkbox (`ai_check`) to be selected for predictions to proceed.
-            - Assumes a predefined function `predict_llrs_img` for making predictions.
+        Runs the AI-based number of stories classification model on the currently selected building image, 
+        updates the number of stories field with the predicted class, and refreshes the progress indicators 
+        for polygon, specific coordinates, or local image workflows.
         """
-        # Comboboxes for each image label
-        n_stories_id = [self.ui.n_stories_value_1,self.ui.n_stories_value_1,self.ui.n_stories_value_1]
         # Checkbox for the AI powered activation
         if self.ui.ai_check.isChecked():
+            # ==============================================================
+            # Polygon and Specific coordinates
+            # ==============================================================
             if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                # for i in range (3):
+                # Image for prediction: central image by default, followed by the left image, and finally the right image
                 pred_img = False
                 for aux_img in range (3):
                     if self.predicted_img[1] == 1:
+                        # Central image
                         pred_img = True
                         j = 1
                     elif self.predicted_img[0] == 1:
+                        # Left image
                         pred_img = True
                         j = 0
                     elif self.predicted_img[2] == 1:
+                        # Right image
                         pred_img = True
                         j = 2
                 if pred_img == True:
@@ -2628,50 +2444,46 @@ class GUIMethods:
                     box_aux = None
                     n_stories_index = predict_n_stories_img(image_file, self.ui.insp_method, box_aux, self.ui)
 
-                    # LLRS building image sets prediction
-                    class_names = ['10-12', '13+', '1', '2', '3', '4', '5', '6-7', '8-9']
                     if n_stories_index is None:
                         pass
                     else:
-                        i=1
-                        n_stories_id[i].setCurrentText(class_names[n_stories_index])    
+                        self.ui.n_stories_value_1.setCurrentText(self.class_ns[n_stories_index])    
                     
-                        # Peogress bar update
+                        # Progress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
             
             elif self.ui.insp_method == 2:
-                
+                # ==============================================================
+                # Local images
+                # ==============================================================
                 self.ui.method_progress.setText("Loading AI model ...")
                 for j in range (100):
                     time.sleep(0.0001)
                     self.ui.progress_bar_method.setValue(j)
                     
                 try:
-                    aux = 0
                     aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                                    +str(self.data_building.iloc[self.old_local, 0]))
                     cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
                 except:
-                    aux = 0
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                                    +str(self.data_building.iloc[self.old_local, 0]))
                     
                     cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
                 
                 # LLRS building image prediction
                 n_stories_index = predict_n_stories_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
                 # LLRS building image sets prediction
-                class_names = ['10-12', '13+', '1', '2', '3', '4', '5', '6-7', '8-9']
                 if n_stories_index is None:
                     pass
                 else:
-                    n_stories_id[aux].setCurrentText(class_names[n_stories_index])
+                    self.ui.n_stories_value_1.setCurrentText(self.class_ns[n_stories_index])
       
-                    # Peogress bar update
+                    # Progress bar update
                     self.ui.progress_bar_method.setValue(100)
                     self.ui.method_progress.setText("Prediction complete!")
                     
@@ -2679,43 +2491,29 @@ class GUIMethods:
     ############ Deep learning model for predict the Occupancy type ################
     def occupancy_prediction (self):
         """
-        Predict and assign an occupancy classification to a building based on its image.
-    
-        This method utilizes an AI model to predict the occupancy class of a building 
-        from an image. It ensures that necessary project details (folder, country, 
-        and city) are set before execution. If AI-powered prediction is enabled, it 
-        processes the images and updates the corresponding UI elements with the 
-        predicted occupancy class.
-    
-        Effects:
-            - Uses an AI model to predict the occupancy classification of the building.
-            - Updates the UI combo boxes (`occup_cb_1`, `occup_cb_2`, `occup_cb_3`) 
-              with the predicted occupancy class.
-            - Displays progress updates via the UI progress bar.
-            - Handles both Google Street View (GSV) and local image-based inspections.
-    
-        Notes:
-            - AI-based prediction is performed only if the AI checkbox (`ai_check`) is enabled.
-            - In polygon-based and specific inspection modes (`insp_method != 2`), 
-              cropped images are used for prediction.
-            - For manual inspection mode (`insp_method == 2`), predictions are performed 
-              on local cropped images.
+        Runs the AI-based occupancy classification model on the currently selected building image, 
+        updates the occupancy field with the predicted class, and refreshes the progress indicators 
+        for polygon, specific coordinates, or local image workflows.
         """
-        # Comboboxes for each image label
-        occupancy_id = [self.ui.occup_cb_1,self.ui.occup_cb_1,self.ui.occup_cb_1]
         # Checkbox for the AI powered activation
         if self.ui.ai_check.isChecked():
+            # ==============================================================
+            # Polygon and Specific coordinates
+            # ==============================================================
             if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                # for i in range (3):
+                # Image for prediction: central image by default, followed by the left image, and finally the right image
                 pred_img = False
                 for aux_img in range (3):
                     if self.predicted_img[1] == 1:
+                        # Central image
                         pred_img = True
                         j = 1
                     elif self.predicted_img[0] == 1:
+                        # Left image
                         pred_img = True
                         j = 0
                     elif self.predicted_img[2] == 1:
+                        # Right image
                         pred_img = True
                         j = 2
                 if pred_img == True:
@@ -2726,48 +2524,45 @@ class GUIMethods:
                     occupancy_index = predict_occupancy_img(image_file, self.ui.insp_method, box_aux, self.ui)
 
                     # LLRS building image sets prediction
-                    occupancy_class = [ 'Commercial' , 'Industrial' ,'Mixed (Residential + Commercial)', 'Residential']
                     if occupancy_index is None:
                         pass
                     else:
-                        i=1
-                        occupancy_id[i].setCurrentText(occupancy_class[occupancy_index])                      
+                        self.ui.occup_cb_1.setCurrentText(self.class_occ[occupancy_index])                      
                         # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
             
             elif self.ui.insp_method == 2:
-                
+                # ==============================================================
+                # Local images
+                # ==============================================================
                 self.ui.method_progress.setText("Loading AI model ...")
                 for j in range (100):
                     time.sleep(0.0001)
                     self.ui.progress_bar_method.setValue(j)
                     
                 try:
-                    aux = 0
                     aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                                    +str(self.data_building.iloc[self.old_local, 0]))
                     cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"  
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
                 except:
-                    aux = 0
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                                    +str(self.data_building.iloc[self.old_local, 0]))
                     
                     cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
                 
                 # LLRS building image prediction
                 occupancy_index = predict_occupancy_img(cropped_path, self.ui.insp_method, self.box_id, self.ui)
                 # LLRS building image sets prediction
-                occupancy_class = [ 'Commercial' , 'Industrial' ,'Mixed (Residential + Commercial)', 'Residential']
                 if occupancy_index is None:
                     pass
                 else:
-                    occupancy_id[aux].setCurrentText(occupancy_class[occupancy_index])     
+                    self.ui.occup_cb_1.setCurrentText(self.class_occ[occupancy_index])      
       
-                    # Peogress bar update
+                    # Progress bar update
                     self.ui.progress_bar_method.setValue(100)
                     self.ui.method_progress.setText("Prediction complete!")
                         
@@ -2775,46 +2570,29 @@ class GUIMethods:
     ############ Deep learning model for predict the block_position ################
     def block_position_prediction (self):
         """
-        Predict and assign a block position classification to a building based on its image.
-    
-        This method utilizes an AI model to predict the block position of a building 
-        from an image. It ensures that necessary project details (folder, country, 
-        and city) are set before execution. If AI-powered prediction is enabled, it 
-        processes the images and updates the corresponding UI elements with the 
-        predicted block position.
-    
-        Effects:
-            - Uses an AI model to predict the block position classification of the building.
-            - Updates the UI combo boxes (`bck_pos_cb_1`, `bck_pos_cb_2`, `bck_pos_cb_3`) 
-              with the predicted values.
-            - Displays progress updates via the UI progress bar.
-            - Handles both Google Street View (GSV) and local image-based inspections.
-    
-        Notes:
-            - AI-based prediction is performed only if the AI checkbox (`ai_check`) is enabled.
-            - In polygon-based and specific inspection modes (`insp_method != 2`), 
-              cropped images are used for prediction.
-            - For manual inspection mode (`insp_method == 2`), predictions are performed 
-              on local cropped images.
-            - The `predict_block_position_img` function is called to generate predictions.
-            - The predicted index is incremented by 1 before being assigned to the combo box.
+        Runs the AI-based block position classification model on the currently selected building image, 
+        updates the block position field with the predicted class, and refreshes the progress indicators 
+        for polygon, specific coordinates, or local image workflows.
         """
-
-        # Comboboxes for each image label
-        block_position_id = [self.ui.bck_pos_cb_1,self.ui.bck_pos_cb_1,self.ui.bck_pos_cb_1]
         # Checkbox for the AI powered activation
         if self.ui.ai_check.isChecked():
-            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                # for i in range (3):
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1:
+                # ==============================================================
+                # Polygon and Specific coordinates
+                # ==============================================================
+                # Image for prediction: central image by default, followed by the left image, and finally the right image
                 pred_img = False
                 for aux_img in range (3):
                     if self.predicted_img[1] == 1:
+                        # Central image
                         pred_img = True
                         j = 1
                     elif self.predicted_img[0] == 1:
+                        # Left image
                         pred_img = True
                         j = 0
                     elif self.predicted_img[2] == 1:
+                        # Right image
                         pred_img = True
                         j = 2
                 if pred_img == True:
@@ -2828,64 +2606,72 @@ class GUIMethods:
                     if block_position_index is None:
                         pass
                     else:
-                        i=1
-                        block_position_id[i].setCurrentIndex(block_position_index+1)                       
-                        # Peogress bar update
+                        self.ui.bck_pos_cb_1.setCurrentText(self.class_bp[block_position_index]) 
+                        # Progress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
             
             elif self.ui.insp_method == 2:
-                
+                # ==============================================================
+                # Local images
+                # ==============================================================
                 self.ui.method_progress.setText("Loading AI model ...")
                 for j in range (100):
                     time.sleep(0.0001)
                     self.ui.progress_bar_method.setValue(j)
                     
                 try:
-                    aux = 0
                     aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                                    +str(self.data_building.iloc[self.old_local, 0]))
                     cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
                 except:
-                    aux = 0
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                                    +str(self.data_building.iloc[self.old_local, 0]))
                     cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
                 
-                org_path = (self.ui.folder_path+"/" +str(self.data_building.iloc[self.old_local + aux, 0]))
+                org_path = (self.ui.folder_path+"/" +str(self.data_building.iloc[self.old_local, 0]))
                 # block_position building image prediction
                 block_position_index = predict_block_position_img(org_path, self.ui.insp_method, self.box_id, self.ui)
                 # block_position building image sets prediction
                 if block_position_index is None:
                     pass
                 else:
-                    block_position_id[aux].setCurrentIndex(block_position_index+1)
+                    self.ui.bck_pos_cb_1.setCurrentText(self.class_bp[block_position_index]) 
       
-                    # Peogress bar update
+                    # Progress bar update
                     self.ui.progress_bar_method.setValue(100)
                     self.ui.method_progress.setText("Prediction complete!")      
                 
             
     ############ Deep learning model for predict the Roof shape ################
     def roof_shape_prediction (self):
-        # Comboboxes for each image label
-        roof_shape_id = [self.ui.roof_shape_cb_1,self.ui.roof_shape_cb_1,self.ui.roof_shape_cb_1]
+        """
+        Runs the AI-based roof shape classification model on the currently selected building image, 
+        updates the roof shape field with the predicted class, and refreshes the progress indicators 
+        for polygon, specific coordinates, or local image workflows.
+        """
         # Checkbox for the AI powered activation
         if self.ui.ai_check.isChecked():
+            # ==============================================================
+            # Polygon and Specific coordinates
+            # ==============================================================
             if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                
+                # Image for prediction: central image by default, followed by the left image, and finally the right image
                 pred_img = False
                 for aux_img in range (3):
                     if self.predicted_img[1] == 1:
+                        # Central image
                         pred_img = True
                         j = 1
                     elif self.predicted_img[0] == 1:
+                        # Left image
                         pred_img = True
                         j = 0
                     elif self.predicted_img[2] == 1:
+                        # Right image
                         pred_img = True
                         j = 2
                         
@@ -2899,32 +2685,31 @@ class GUIMethods:
                     if roof_shape_index is None:
                         pass
                     else:
-                        i=1
-                        roof_shape_id[i].setCurrentIndex(roof_shape_index+1) 
+                        self.ui.roof_shape_cb_1.setCurrentText(self.class_r_shape[roof_shape_index])
                         self.pred_roof_shape = self.ui.roof_shape_cb_1.currentData()
-                        # Peogress bar update
+                        # Progress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
             
             elif self.ui.insp_method == 2:
-                
+                # ==============================================================
+                # Local images
+                # ==============================================================
                 self.ui.method_progress.setText("Loading AI model ...")
                 for j in range (100):
                     time.sleep(0.0001)
                     self.ui.progress_bar_method.setValue(j)
                     
                 try:
-                    aux = 0
                     aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                                    +str(self.data_building.iloc[self.old_local, 0]))
                     cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
                 except:
-                    aux = 0
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                                    +str(self.data_building.iloc[self.old_local, 0]))
                     
                     cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
                 
@@ -2935,7 +2720,7 @@ class GUIMethods:
                 if roof_shape_index is None:
                     pass
                 else:
-                    roof_shape_id[aux].setCurrentIndex(roof_shape_index+1)
+                    self.ui.roof_shape_cb_1.setCurrentText(self.class_r_shape[roof_shape_index])
                     self.pred_roof_shape = self.ui.roof_shape_cb_1.currentData()
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
@@ -2944,21 +2729,30 @@ class GUIMethods:
             
     ############ Deep learning model for predict the Roof shape ################
     def roof_material_prediction (self):
-        # Comboboxes for each image label
-        roof_material_id = [self.ui.roof_material_cb_1,self.ui.roof_material_cb_1,self.ui.roof_material_cb_1]
+        """
+        Runs the AI-based roof material classification model on the currently selected building image, 
+        updates the roof material field with the predicted class, and refreshes the progress indicators 
+        for polygon, specific coordinates, or local image workflows.
+        """
         # Checkbox for the AI powered activation
         if self.ui.ai_check.isChecked():
+            # ==============================================================
+            # Polygon and Specific coordinates
+            # ==============================================================
             if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                # for i in range (3):
+                # Image for prediction: central image by default, followed by the left image, and finally the right image
                 pred_img = False
                 for aux_img in range (3):
                     if self.predicted_img[1] == 1:
+                        # Central image
                         pred_img = True
                         j = 1
                     elif self.predicted_img[0] == 1:
+                        # Left image
                         pred_img = True
                         j = 0
                     elif self.predicted_img[2] == 1:
+                        # Right image
                         pred_img = True
                         j = 2
                 if pred_img == True:
@@ -2971,29 +2765,31 @@ class GUIMethods:
                     if roof_material_index is None:
                         pass
                     else:
-                        i=1
-                        roof_material_id[i].setCurrentIndex(roof_material_index+1)
-                        roof_mat_pred = self.ui.roof_material_cb_1.currentData()
+                        self.ui.roof_shape_cb_1.setCurrentText(self.class_r_mat[roof_material_index])
+                        self.roof_mat_pred = self.ui.roof_material_cb_1.currentData()
                         
-                        if self.pred_roof_shape == "RSH1":
-                            roof_material_id[i].setCurrentIndex(1) 
-                        elif self.pred_roof_shape == "RSH7":
-                            roof_material_id[i].setCurrentIndex(3)
-                        elif self.pred_roof_shape == "RSH2":
-                            if roof_mat_pred in ("RMT1", "RMT6"):
+                        # Roof material adjument based on roof shape    
+                        if  self.pred_roof_shape == "RSH1":
+                            self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[0])
+                        elif  self.pred_roof_shape == "RSH7":
+                            self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[2])
+                        elif  self.pred_roof_shape == "RSH2":
+                            if self.roof_mat_pred in ("RMT1", "RMT6"):
                                 pass
                             else:
-                                roof_material_id[i].setCurrentIndex(3)
-                        elif self.pred_roof_shape == "RSH3":
-                            if roof_mat_pred in ("RMT1", "RMT6"):
+                                # This depends on the country
+                                self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[2])
+                        elif  self.pred_roof_shape == "RSH3":
+                            if self.roof_mat_pred in ("RMT1", "RMT6"):
                                 pass
                             else:
-                                roof_material_id[i].setCurrentIndex(3)
-                        elif self.pred_roof_shape == "RSH5":
-                            if roof_mat_pred in ("RMT1", "RMT6"):
+                                self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[1])
+                        elif  self.pred_roof_shape == "RSH5":
+                            if self.roof_mat_pred in ("RMT1", "RMT6"):
                                 pass
                             else:
-                                roof_material_id[i].setCurrentIndex(3)
+                                # This depends on the country
+                                self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[2])  
                                           
                         # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
@@ -3007,17 +2803,15 @@ class GUIMethods:
                     self.ui.progress_bar_method.setValue(j)
                            
                 try:
-                    aux = 0
                     aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                                    +str(self.data_building.iloc[self.old_local, 0]))
                     cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
                 except:
-                    aux = 0
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local + aux, 0]))
+                                    +str(self.data_building.iloc[self.old_local, 0]))
                     
                     cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
                        
@@ -3027,48 +2821,42 @@ class GUIMethods:
                 if roof_material_index is None:
                     pass
                 else:
-                    roof_material_id[aux].setCurrentIndex(roof_material_index+1)
-                    roof_mat_pred = self.ui.roof_material_cb_1.currentData()
+                    self.ui.roof_shape_cb_1.setCurrentText(self.class_r_mat[roof_material_index])
+                    self.roof_mat_pred = self.ui.roof_material_cb_1.currentData()
                     
-                    if self.pred_roof_shape == "RSH1":
-                        roof_material_id[aux].setCurrentIndex(1) 
-                    elif self.pred_roof_shape == "RSH7":
-                        roof_material_id[aux].setCurrentIndex(3)
-                    elif self.pred_roof_shape == "RSH2":
-                        if roof_mat_pred in ("RMT1", "RMT6"):
+                    # Roof material adjument based on roof shape    
+                    if  self.pred_roof_shape == "RSH1":
+                        self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[0])
+                    elif  self.pred_roof_shape == "RSH7":
+                        self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[2])
+                    elif  self.pred_roof_shape == "RSH2":
+                        if self.roof_mat_pred in ("RMT1", "RMT6"):
                             pass
                         else:
-                            roof_material_id[aux].setCurrentIndex(3)
-                    elif self.pred_roof_shape == "RSH3":
-                        if roof_mat_pred in ("RMT1", "RMT6"):
+                            # This depends on the country
+                            self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[2])
+                    elif  self.pred_roof_shape == "RSH3":
+                        if self.roof_mat_pred in ("RMT1", "RMT6"):
                             pass
                         else:
-                            roof_material_id[aux].setCurrentIndex(3)
-                    elif self.pred_roof_shape == "RSH5":
-                        if roof_mat_pred in ("RMT1", "RMT6"):
+                            self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[1])
+                    elif  self.pred_roof_shape == "RSH5":
+                        if self.roof_mat_pred in ("RMT1", "RMT6"):
                             pass
                         else:
-                            roof_material_id[aux].setCurrentIndex(3)
+                            # This depends on the country
+                            self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[2])  
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
                     self.ui.method_progress.setText("Prediction complete!")                         
                 
                 
-    ############ Search and load existing inspections ################                  
+    ############ Search and load existing inspections ################              
     def search_inspection(self):
         """
-        Search for a specific building inspection record by its ID.
-    
-        This method retrieves a building inspection record from the dataset based on 
-        the ID entered in the UI search field. It ensures that a project folder, country, 
-        and city name are defined before execution. If the search value is empty, an 
-        error message is displayed. If the inspection database is not loaded, the user 
-        is prompted to upload it.
-    
-        Notes:
-            - The search is performed on the `data_ai` DataFrame using the column 'id'.
-            - If no valid ID is entered, a message is set in the UI field instead of executing a search.
-            - If the database is missing, the user is advised to upload it using the "Next Building" button.
+        Searches the inspection database for a given image ID, loads the corresponding saved 
+        inspection, updates the current inspection index, and refreshes the displayed building 
+        information in the interface.
         """
         # Get the value from the QLineEdit
         search_value = self.ui.search_img_value.text()
@@ -3104,10 +2892,9 @@ class GUIMethods:
                 #Remove auxiliar file
                 os.remove(self.ui.output_folder_value+"/"+"search_aux.csv")
                
-            
             n_building = result.iloc[0,0]
                 
-                
+            # Get image ID 
             try:
                 if self.ui.insp_method == 0:
                     self.click_count = int(n_building) - 1
@@ -3131,8 +2918,14 @@ class GUIMethods:
         except:
             QMessageBox.warning(self.ui,"Data Error", "There is no saved inspection for this Image ID.")
 
-
+    
+    ############ Extrapolation functions ################ 
     def neighbor_extrapolation(self):
+        """
+        Executes the extrapolation workflow for the selected method, supporting both KNN-based 
+        neighbor extrapolation and stratified sampling approaches, and saves the generated results 
+        and distributions to output files while updating the progress indicators.
+        """
         if self.ui.insp_method == 3:
             if self.ui.extrapolation_mode == 2:
                 #####################################
@@ -3140,7 +2933,6 @@ class GUIMethods:
                 #####################################
                 if self.ui.coord_reference is not True:
                     #######===========  Function results =========###########
-                    
                     self.create_database()
                     data_existing_dl = self.data_ai
                     self.inspection_database()
@@ -3240,7 +3032,14 @@ class GUIMethods:
                     self.ui.progress_bar_method.setValue(100)
                     self.ui.method_progress.setText("Successful extrapolation process")
                     
+    
+    ############ Epoch of construction loader ################      
     def epoch_construction(self):
+        """
+        Loads the available construction epoch values from file when possible, and if they do not 
+        exist, prompts the user to define the appropriate country-specific construction epochs and 
+        stores them for future use.
+        """
         if self.ui.insp_method != 3:
             path = self.ui.output_folder_value+"/epoch_value.csv"
           
@@ -3286,7 +3085,12 @@ class GUIMethods:
                 epoch.columns = ["Epochs"]
                 epoch.to_csv(path, index=False)
             
+            
+    ############ Help button ################   
     def help_block_position(self):
+        """
+        Opens a help dialog displaying a visual example of the available block position options.
+        """
         # Paths to your example images for each roof shape 
         self.images = {"Block position options": "help_img/block_position.png" }
         
@@ -3294,7 +3098,12 @@ class GUIMethods:
                                  img_width=640, img_height=480, parent=self.ui, main_window=self.ui)
         help_window.exec_()
         
+        
+    ############ Help button ################   
     def help_roof_shape(self):
+        """
+        Opens a help dialog displaying a visual example of the available roof shape options.
+        """
         # Paths to your example images for each roof shape 
         self.images = {
             "Flat": "help_img/flat_roof.png",
@@ -3312,7 +3121,12 @@ class GUIMethods:
                                  img_width=180, img_height=180, parent=self.ui, main_window=self.ui)
         help_window.exec_()
         
+        
+    ############ Help button ################  
     def help_roof_material(self):
+        """
+        Opens a help dialog displaying a visual example of the available roof material options.
+        """
         # Paths to your example images for each roof shape 
         self.images = {
             "Concrete": "help_img/concrete.jpg",
@@ -3327,8 +3141,26 @@ class GUIMethods:
                                  img_width=180, img_height=180, parent=self.ui, main_window=self.ui)
         help_window.exec_()
         
+    
+    ############ Help button ################   
+    def help_irregularity(self):
+        """
+        Opens a help dialog displaying a visual example of the available block position options.
+        """
+        # Paths to your example images for each roof shape 
+        self.images = {"Block position options": "help_img/block_position.png" }
         
+        help_window = HelpDialog(self.images, w_size_width=720, w_size_height=500, w_title= "Block position - visual example",
+                                 img_width=640, img_height=480, parent=self.ui, main_window=self.ui)
+        help_window.exec_()
+        
+        
+    ############ Vulnerability/Fragility plot ################  
     def vulnerability_curve(self):
+        """
+        Opens the vulnerability curve dialog when the required building attributes are available, 
+        allowing the user to visualize the corresponding vulnerability functions for the current building.
+        """
         # Conditional to avoid executing the method if there is no project folder
         if self.ui.output_folder_value == "-":
             QMessageBox.warning(self.ui, "File Error", "This option is only available once the building image is displayed.")

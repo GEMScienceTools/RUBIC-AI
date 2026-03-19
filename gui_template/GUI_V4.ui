@@ -827,7 +827,7 @@ background-color: rgb(102, 220, 255);</string>
     <property name="geometry">
      <rect>
       <x>1170</x>
-      <y>470</y>
+      <y>510</y>
       <width>241</width>
       <height>31</height>
      </rect>
@@ -1279,7 +1279,7 @@ background-color: rgb(209, 170, 255);</string>
     <property name="geometry">
      <rect>
       <x>1170</x>
-      <y>510</y>
+      <y>550</y>
       <width>241</width>
       <height>31</height>
      </rect>
@@ -1367,7 +1367,7 @@ background-color: rgb(209, 170, 255);</string>
     <property name="geometry">
      <rect>
       <x>960</x>
-      <y>510</y>
+      <y>550</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -1413,7 +1413,7 @@ background-color: rgb(209, 170, 255);</string>
     <property name="geometry">
      <rect>
       <x>960</x>
-      <y>470</y>
+      <y>510</y>
       <width>201</width>
       <height>31</height>
      </rect>
@@ -1451,6 +1451,49 @@ background-color: rgb(209, 170, 255);</string>
     <property name="text">
      <string>Vulnerability curve</string>
     </property>
+   </widget>
+   <widget class="QLabel" name="irregularity">
+    <property name="geometry">
+     <rect>
+      <x>960</x>
+      <y>470</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Vertical Irregularity:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="epc_const_cb_2">
+    <property name="geometry">
+     <rect>
+      <x>1170</x>
+      <y>470</y>
+      <width>241</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <item>
+     <property name="text">
+      <string>Select Vertical Irregularity</string>
+     </property>
+    </item>
    </widget>
    <zorder>label_2</zorder>
    <zorder>frame_location</zorder>
@@ -1501,6 +1544,8 @@ background-color: rgb(209, 170, 255);</string>
    <zorder>roof_shape_1</zorder>
    <zorder>epoch_1</zorder>
    <zorder>vulnerability_curve_button</zorder>
+   <zorder>irregularity</zorder>
+   <zorder>epc_const_cb_2</zorder>
   </widget>
  </widget>
  <resources/>
