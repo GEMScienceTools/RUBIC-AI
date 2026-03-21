@@ -19,10 +19,10 @@ import cv2
 #######===========  General functions ==========#########
 #########################################################
 
-rubicai = Path(__file__).parent.parent.parent.resolve()
-sys.path.append(str(rubicai))
+rubicai = Path(__file__).parent.resolve()
+sys.path.append(str(rubicai)) 
 
-from methods.taxonomy import check_taxonomy
+from taxonomy import check_taxonomy 
 
 gsv_api_file = rubicai / 'methods/gsv_api_key.txt'
 assert gsv_api_file.exists(), "`gsv_api_key.txt` not found in `methods` directory."

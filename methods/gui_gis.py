@@ -139,9 +139,9 @@ class GUI_geofiles:
                     buildings = buildings.to_crs("EPSG:3857")  # project to meters
                     buildings["area_m2"] = buildings.geometry.area
                     before = len(buildings)
-                    buildings = buildings[buildings["area_m2"] > 20]
+                    buildings = buildings[buildings["area_m2"] > 50]
                     after = len(buildings)
-                    print(f"Filtered buildings by area: {before} → {after} (>{20} m²)")
+                    print(f"Filtered buildings by area: {before} → {after} (>{50} m²)")
                     buildings = buildings.to_crs("EPSG:4326")  # revert to geographic
                     
                     # ----------------------------------------------------------
@@ -265,13 +265,13 @@ class GUI_geofiles:
                     self.footprint_progress.setValue(90)
                     
                     # ------------------------------------------------------------------
-                    # ✅ AREA FILTER (greater than 20 m²)
+                    # ✅ AREA FILTER (greater than 50 m²)
                     buildings = buildings.to_crs("EPSG:3857")  # project to meters
                     buildings["area_m2"] = buildings.geometry.area
                     before = len(buildings)
-                    buildings = buildings[buildings["area_m2"] > 20]
+                    buildings = buildings[buildings["area_m2"] > 50]
                     after = len(buildings)
-                    print(f"Filtered buildings by area: {before} → {after} (>{20} m²)")
+                    print(f"Filtered buildings by area: {before} → {after} (>{50} m²)")
                     buildings = buildings.to_crs("EPSG:4326")
                     
                     # ------------------------------------------------------------------
