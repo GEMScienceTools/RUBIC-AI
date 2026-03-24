@@ -1175,632 +1175,632 @@ id,latitude,longitude,country,city,material,llrs,code_level,n_stories,occupancy,
 1174.0,38.69308408289877,-9.218504298041177,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69308408,-9.2185043&heading=180.5258859021099&pitch=5&fov=120"
 1175.0,38.69982747406457,-9.205608084300774,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69982747,-9.20560808&heading=41.140228453894906&pitch=5&fov=120"
 1176.0,38.69448609437722,-9.216046468626764,Portugal,Lisbon,CR,LFINF,CDL,4,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69448609,-9.21604647&heading=228.47561074601452&pitch=5&fov=120"
-1177,38.697491448852304,-9.218650173100809,Portugal,Lisbon,MCF,LWAL,CDN,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDN/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69749145,-9.21865017&heading=101.27210270936041&pitch=5&fov=120"
-1178,38.69651221565796,-9.214458068583616,Portugal,Lisbon,CR,LFM,CDM,2,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDM/H:2/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69651222,-9.21445807&heading=69.73537954391793&pitch=5&fov=120"
-1179,38.700012985232966,-9.199583650680117,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70001299,-9.19958365&heading=56.895020171890906&pitch=5&fov=120"
-1180,38.70533003202428,-9.202522301789214,Portugal,Lisbon,CR,LFM,CDL,2,RES,BP1,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDL/H:2/BP1/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70533003,-9.2025223&heading=157.22624604934242&pitch=5&fov=120"
-1181,38.70062363886985,-9.222891861656796,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70062364,-9.22289186&heading=302.5020715275991&pitch=5&fov=120"
-1182,38.69931683854611,-9.220905889414585,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69931684,-9.22090589&heading=212.46498645762176&pitch=5&fov=120"
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
+1177.0,38.697491448852304,-9.218650173100809,Portugal,Lisbon,MCF,LWAL,CDN,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDN/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69749145,-9.21865017&heading=101.27210270936041&pitch=5&fov=120"
+1178.0,38.69651221565796,-9.214458068583616,Portugal,Lisbon,CR,LFM,CDM,2,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDM/H:2/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69651222,-9.21445807&heading=69.73537954391793&pitch=5&fov=120"
+1179.0,38.700012985232966,-9.199583650680117,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70001299,-9.19958365&heading=56.895020171890906&pitch=5&fov=120"
+1180.0,38.70533003202428,-9.202522301789214,Portugal,Lisbon,CR,LFM,CDL,2,RES,BP1,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDL/H:2/BP1/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70533003,-9.2025223&heading=157.22624604934242&pitch=5&fov=120"
+1181.0,38.70062363886985,-9.222891861656796,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70062364,-9.22289186&heading=302.5020715275991&pitch=5&fov=120"
+1182.0,38.69931683854611,-9.220905889414585,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69931684,-9.22090589&heading=212.46498645762176&pitch=5&fov=120"
+1183.0,38.69438542294813,-9.216821715445851,Portugal,Lisbon,MUR,LWAL,CDL,1,RES,BP1,Select Epoch of Construction,RSH5,RMT1,,MUR/LWAL/CDL/H:1/BP1/RSH5+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69438542,-9.21682172&heading=334.550969160186&pitch=5&fov=120"
+1184.0,38.693819000000005,-9.217663450000012,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.693819,-9.21766345&heading=128.509430200743&pitch=5&fov=120"
+1185.0,38.69569691511543,-9.22173722933701,Portugal,Lisbon,MUR,LWAL,CDL,1,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:1/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69569692,-9.22173723&heading=358.5010433753529&pitch=5&fov=120"
+1186.0,38.69695171022055,-9.224099582482,Portugal,Lisbon,MUR,LWAL,CDN,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,MUR/LWAL/CDN/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69695171,-9.22409958&heading=182.08303370677544&pitch=5&fov=120"
+1187.0,38.70278995,-9.2028669,Portugal,Lisbon,MCF,LWAL,CDL,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70278995,-9.2028669&heading=215.2433775407643&pitch=5&fov=120"
+1188.0,38.69987296683208,-9.216991564328088,Portugal,Lisbon,CR,LFM,CDL,2,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:2/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69987297,-9.21699156&heading=284.06252022343915&pitch=5&fov=120"
+1189.0,38.699099802123726,-9.199087780053324,Portugal,Lisbon,MUR,LWAL,CDN,1,COM,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP1/RSH2+RMT1/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6990998,-9.19908778&heading=230.2202464044932&pitch=5&fov=120"
+1190.0,38.697566462977846,-9.202668659497297,Portugal,Lisbon,MUR,LWAL,CDN,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69756646,-9.20266866&heading=333.19339500624903&pitch=5&fov=120"
+1191.0,38.70163896365323,-9.21891590895795,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70163896,-9.21891591&heading=29.534769240868286&pitch=5&fov=120"
+1192.0,38.70021634645868,-9.204439556523724,Portugal,Lisbon,MUR,LWAL,CDN,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70021635,-9.20443956&heading=122.42229129613281&pitch=5&fov=120"
+1193.0,38.6958162313936,-9.22103480748404,Portugal,Lisbon,CR,LFM,CDM,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFM/CDM/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69581623,-9.22103481&heading=3.4877845274259585&pitch=5&fov=120"
+1194.0,38.69936629519526,-9.218602866818724,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6993663,-9.21860287&heading=23.755395356260294&pitch=5&fov=120"
+1195.0,38.696284236681535,-9.215769468594056,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69628424,-9.21576947&heading=78.08488753721133&pitch=5&fov=120"
+1196.0,38.70189700000001,-9.2059068,Portugal,Lisbon,MUR,LWAL,CDN,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.701897,-9.2059068&heading=188.66626293633198&pitch=5&fov=120"
+1197.0,38.70158148140207,-9.20291616693279,Portugal,Lisbon,MUR,LWAL,CDN,2,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:2/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70158148,-9.20291617&heading=171.70234906247356&pitch=5&fov=120"
+1198.0,38.70142764367943,-9.204535740937228,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70142764,-9.20453574&heading=355.8970102753383&pitch=5&fov=120"
+1199.0,38.69935789154389,-9.194097673081464,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1200.0,38.70012115000001,-9.19936345,Portugal,Lisbon,MUR,LWAL,CDL,1,COM,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:1/BP1/RSH2+RMT1/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70012115,-9.19936345&heading=322.16586701328606&pitch=5&fov=120"
+1201.0,38.69583404296233,-9.211693115576798,Portugal,Lisbon,CR,LDUAL,CDH,10.0-12.0,RES,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LDUAL/CDH/H:10-12/BPD/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69583404,-9.21169312&heading=240.16556768964756&pitch=5&fov=120"
+1202.0,38.69852095111235,-9.219050653508951,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69852095,-9.21905065&heading=288.21485731275465&pitch=5&fov=120"
+1203.0,38.69566993044006,-9.218806544095925,Portugal,Lisbon,CR,LFINF,CDL,4,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDL/H:4/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69566993,-9.21880654&heading=171.32778331342496&pitch=5&fov=120"
+1204.0,38.69720780332126,-9.216444145693035,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6972078,-9.21644415&heading=85.41013521663638&pitch=5&fov=120"
+1205.0,38.696272,-9.220354149999997,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MUR/LWAL/CDN/H:1/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.696272,-9.22035415&heading=174.50435201424085&pitch=5&fov=120"
+1206.0,38.70090346134199,-9.203718991787005,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70090346,-9.20371899&heading=259.0203000769525&pitch=5&fov=120"
+1207.0,38.700386804607646,-9.202899433029714,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7003868,-9.20289943&heading=76.38931564615245&pitch=5&fov=120"
+1208.0,38.69976553480141,-9.211427089657438,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69976553,-9.21142709&heading=130.54465743054055&pitch=5&fov=120"
+1209.0,38.69993344807676,-9.204661693094632,Portugal,Lisbon,MUR,LWAL,CDN,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MUR/LWAL/CDN/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69993345,-9.20466169&heading=303.24030641536115&pitch=5&fov=120"
+1210.0,38.700816582615424,-9.204001690667296,Portugal,Lisbon,CR,LFM,CDM,3,RES,BP1,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDM/H:3/BP1/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70081658,-9.20400169&heading=315.09363833248665&pitch=5&fov=120"
+1211.0,38.695163088794665,-9.202064794300693,Portugal,Lisbon,,,,,,BP1,Select Epoch of Construction,,,,H:Select Number of Stories/BP1,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69516309,-9.20206479&heading=317.40046240083655&pitch=5&fov=120"
+1212.0,38.70360609930197,-9.207768845507896,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7036061,-9.20776885&heading=137.3355538543329&pitch=5&fov=120"
+1213.0,38.70133095,-9.20425815,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70133095,-9.20425815&heading=350.243028031308&pitch=5&fov=120"
+1214.0,38.69644323919336,-9.219044519877418,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69644324,-9.21904452&heading=166.0547791012337&pitch=5&fov=120"
+1215.0,38.70020547221937,-9.219671518339062,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70020547,-9.21967152&heading=31.958103793425835&pitch=5&fov=120"
+1216.0,38.69808257544044,-9.194532470823969,Portugal,Lisbon,MCF,LWAL,CDL,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69808258,-9.19453247&heading=226.1115003312509&pitch=5&fov=120"
+1217.0,38.70387064017593,-9.203633062294127,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70387064,-9.20363306&heading=163.40232989554357&pitch=5&fov=120"
+1218.0,38.69546336292162,-9.198071475854922,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69546336,-9.19807148&heading=317.81809850738796&pitch=5&fov=120"
+1219.0,38.69965853761156,-9.211835437279293,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69965854,-9.21183544&heading=36.06881999732843&pitch=5&fov=120"
+1220.0,38.69896124970332,-9.22026940453751,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69896125,-9.2202694&heading=116.54327738540383&pitch=5&fov=120"
+1221.0,38.699907602047,-9.2012016974189,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6999076,-9.2012017&heading=181.90887393950806&pitch=5&fov=120"
+1222.0,38.70084606760221,-9.220882960023191,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70084607,-9.22088296&heading=121.71060429134428&pitch=5&fov=120"
+1223.0,38.69709435,-9.21810685,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69709435,-9.21810685&heading=92.52240201637312&pitch=5&fov=120"
+1224.0,38.69845997901815,-9.208147023840189,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69845998,-9.20814702&heading=313.075043099725&pitch=5&fov=120"
+1225.0,38.694559625768505,-9.202436748545084,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1226.0,38.69744515006904,-9.202022740991344,Portugal,Lisbon,MCF,LWAL,CDL,2,COM,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69744515,-9.20202274&heading=335.49599847225824&pitch=5&fov=120"
+1227.0,38.70002034761118,-9.216766921638408,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70002035,-9.21676692&heading=284.06266067650256&pitch=5&fov=120"
+1228.0,38.695707025789694,-9.21692515775766,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69570703,-9.21692516&heading=172.0267738503694&pitch=5&fov=120"
+1229.0,38.699751395098666,-9.197885786647817,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1230.0,38.70123216920913,-9.20553448037014,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70123217,-9.20553448&heading=349.8570657867198&pitch=5&fov=120"
+1231.0,38.69968543212058,-9.199276703471453,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69968543,-9.1992767&heading=142.16592125288975&pitch=5&fov=120"
+1232.0,38.69766304194766,-9.202456178528491,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69766304,-9.20245618&heading=154.52651526276225&pitch=5&fov=120"
+1233.0,38.70356996318493,-9.203670621300168,Portugal,Lisbon,CR,LFINF,CDL,4,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70356996,-9.20367062&heading=168.77404062221717&pitch=5&fov=120"
+1234.0,38.70079895371514,-9.211193773462591,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70079895,-9.21119377&heading=139.68403598944167&pitch=5&fov=120"
+1235.0,38.69518979073597,-9.213872293976724,Portugal,Lisbon,CR,LFM,CDL,4,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:4/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69518979,-9.21387229&heading=323.89979952849933&pitch=5&fov=120"
+1236.0,38.69652558215425,-9.223640007877306,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69652558,-9.22364001&heading=3.7190289953362594&pitch=5&fov=120"
+1237.0,38.69766264773461,-9.194763058428656,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69766265,-9.19476306&heading=134.2438038666013&pitch=5&fov=120"
+1238.0,38.70452469901237,-9.202478746945888,Portugal,Lisbon,MUR,LWAL,CDL,1,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:1/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7045247,-9.20247875&heading=245.26080577316685&pitch=5&fov=120"
+1239.0,38.70018002784572,-9.20574990078218,Portugal,Lisbon,CR,LFINF,CDL,4,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70018003,-9.2057499&heading=223.86937571350165&pitch=5&fov=120"
+1240.0,38.696467924789566,-9.218096754618784,Portugal,Lisbon,MCF,LWAL,CDN,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDN/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69646792,-9.21809675&heading=181.5826438505107&pitch=5&fov=120"
+1241.0,38.69751572014072,-9.203006940620163,Portugal,Lisbon,CR,LFINF,CDL,4,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69751572,-9.20300694&heading=334.16775103564555&pitch=5&fov=120"
+1242.0,38.69486811745959,-9.19821410899779,Portugal,Lisbon,S,LFM,CDM,1,COM,BPD,Select Epoch of Construction,RSH2,RMT6,,S/LFM/CDM/H:1/BPD/RSH2+RMT6/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69486812,-9.19821411&heading=134.04853396021485&pitch=5&fov=120"
+1243.0,38.698407707665424,-9.192869124234656,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1244.0,38.69642734370844,-9.215713316324509,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69642734,-9.21571332&heading=78.08492264519475&pitch=5&fov=120"
+1245.0,38.6977489851026,-9.215973917119983,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69774899,-9.21597392&heading=355.37982692170925&pitch=5&fov=120"
+1246.0,38.70026464212203,-9.218874005215197,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70026464,-9.21887401&heading=212.15157355502276&pitch=5&fov=120"
+1247.0,38.69324165,-9.2135756,Portugal,Lisbon,CR,LFM,CDM,1,COM,BPD,Select Epoch of Construction,RSH2,RMT6,,CR/LFM/CDM/H:1/BPD/RSH2+RMT6/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69324165,-9.2135756&heading=140.78079560502908&pitch=5&fov=120"
+1248.0,38.69653455579003,-9.223359163278182,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69653456,-9.22335916&heading=181.77748714798946&pitch=5&fov=120"
+1249.0,38.7019994,-9.2060653,Portugal,Lisbon,MCF,LWAL,CDN,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDN/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7019994,-9.2060653&heading=22.35144250690439&pitch=5&fov=120"
+1250.0,38.69452153719909,-9.201845572383734,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1251.0,38.70021678275169,-9.21922285146116,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70021678,-9.21922285&heading=212.12463555703044&pitch=5&fov=120"
+1252.0,38.6982556,-9.19386275,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6982556,-9.19386275&heading=121.74480270166003&pitch=5&fov=120"
+1253.0,38.69698920295973,-9.2026503417527,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6969892,-9.20265034&heading=154.87504981549085&pitch=5&fov=120"
+1254.0,38.7005192027822,-9.202113747284129,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7005192,-9.20211375&heading=150&pitch=5&fov=120"
+1255.0,38.70092189285509,-9.203369916132754,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70092189,-9.20336992&heading=79.02051833286663&pitch=5&fov=120"
+1256.0,38.69892435843197,-9.207210195787416,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1257.0,38.6973569389118,-9.193602445426324,Portugal,Lisbon,MUR,LWAL,CDN,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69735694,-9.19360245&heading=136.5579418023391&pitch=5&fov=120"
+1258.0,38.698439800354215,-9.220345401007926,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6984398,-9.2203454&heading=22.77044906636263&pitch=5&fov=120"
+1259.0,38.700097089528576,-9.2033132700639,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70009709,-9.20331327&heading=259.2890918549709&pitch=5&fov=120"
+1260.0,38.69764140463786,-9.194649765642447,Portugal,Lisbon,CR,LFINF,CDL,4,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6976414,-9.19464977&heading=138.88422833538067&pitch=5&fov=120"
+1261.0,38.69661408994719,-9.216391507556684,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69661409,-9.21639151&heading=83.42186438891503&pitch=5&fov=120"
+1262.0,38.70148206918545,-9.204093426346102,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70148207,-9.20409343&heading=336.2380322812418&pitch=5&fov=120"
+1263.0,38.700082950901766,-9.20527043909141,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MUR/LWAL/CDN/H:1/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70008295,-9.20527044&heading=302.4217717858219&pitch=5&fov=120"
+1264.0,38.6997909599932,-9.225902616404984,Portugal,Lisbon,CR,LFINF,CDL,4,RES,BP2,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDL/H:4/BP2/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69979096,-9.22590262&heading=2.4695897986424598&pitch=5&fov=120"
+1265.0,38.70242683806048,-9.2195298052268,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70242684,-9.21952981&heading=32.07957429980587&pitch=5&fov=120"
+1266.0,38.695343060832215,-9.21765266344462,Portugal,Lisbon,CR,LFINF,CDL,4,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69534306,-9.21765266&heading=171.8959873069557&pitch=5&fov=120"
+1267.0,38.70218184086435,-9.204993385760297,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,MUR/LWAL/CDL/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70218184,-9.20499339&heading=317.8226572414767&pitch=5&fov=120"
+1268.0,38.69886939999999,-9.217323249999998,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6988694,-9.21732325&heading=305.85933052047733&pitch=5&fov=120"
+1269.0,38.70015217265891,-9.201666962550574,Portugal,Lisbon,MCF,LWAL,CDN,2,COM,BPD,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDN/H:2/BPD/RSH2+RMT1/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70015217,-9.20166696&heading=150&pitch=5&fov=120"
+1270.0,38.7008415658096,-9.203526468041414,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MUR/LWAL/CDN/H:1/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70084157,-9.20352647&heading=79.02042044904431&pitch=5&fov=120"
+1271.0,38.6992254,-9.212140799999998,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6992254,-9.2121408&heading=217.27629241176095&pitch=5&fov=120"
+1272.0,38.6992321,-9.212948749999995,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6992321,-9.21294875&heading=33.85806665097283&pitch=5&fov=120"
+1273.0,38.69715089369975,-9.202512167174334,Portugal,Lisbon,CR,LFINF,CDN,4,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDN/H:4/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69715089,-9.20251217&heading=154.87513619945423&pitch=5&fov=120"
+1274.0,38.69957730355559,-9.219425151861566,Portugal,Lisbon,MCF,LWAL,CDN,2,RES,BP2,Select Epoch of Construction,RSH2,RMT6,,MCF/LWAL/CDN/H:2/BP2/RSH2+RMT6/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6995773,-9.21942515&heading=298.29305483730957&pitch=5&fov=120"
+1275.0,38.70218215,-9.20328435,Portugal,Lisbon,CR,LFINF,CDL,4,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70218215,-9.20328435&heading=175.48532885610024&pitch=5&fov=120"
+1276.0,38.69527106145786,-9.2164070323885,Portugal,Lisbon,CR,LFM,CDL,4,MIX(RES;COM),BP1,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:4/BP1/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69527106,-9.21640703&heading=351.92348841014825&pitch=5&fov=120"
+1277.0,38.70176634463257,-9.21759214762923,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70176634,-9.21759215&heading=199.61751841680115&pitch=5&fov=120"
+1278.0,38.70421459497049,-9.204983743406174,Portugal,Lisbon,CR,LFM,CDM,2,GOV,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDM/H:2/BPD/RSH1+RMN/GOV,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70421459,-9.20498374&heading=197.5108722803588&pitch=5&fov=120"
+1279.0,38.6992104027982,-9.213564621506046,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6992104,-9.21356462&heading=260.17260472362517&pitch=5&fov=120"
+1280.0,38.69961462503356,-9.204507107612836,Portugal,Lisbon,MUR,LWAL,CDN,2,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:2/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69961463,-9.20450711&heading=304.8695116635754&pitch=5&fov=120"
+1281.0,38.69709925820355,-9.216133620521653,Portugal,Lisbon,MUR,LWAL,CDN,2,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:2/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69709926,-9.21613362&heading=83.65215102478737&pitch=5&fov=120"
+1282.0,38.7006998389612,-9.217647899134954,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70069984,-9.2176479&heading=110.93863742393421&pitch=5&fov=120"
+1283.0,38.696209783731696,-9.215797868647655,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69620978,-9.21579787&heading=78.08486978608227&pitch=5&fov=120"
+1284.0,38.70230739999999,-9.20489655,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7023074,-9.20489655&heading=156.19761210741513&pitch=5&fov=120"
+1285.0,38.7030420034202,-9.202739212997542,Portugal,Lisbon,CR,LFINF,CDL,5,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:5/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.703042,-9.20273921&heading=31.734677080214396&pitch=5&fov=120"
+1286.0,38.69509133144924,-9.220989952735874,Portugal,Lisbon,INF,LN,CDN,1,COM,BP1,Select Epoch of Construction,RSH5,RMT6,,INF/LN/CDN/H:1/BP1/RSH5+RMT6/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69509133,-9.22098995&heading=178.04867409146942&pitch=5&fov=120"
+1287.0,38.69802846547975,-9.21156297724185,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69802847,-9.21156298&heading=131.59867090903322&pitch=5&fov=120"
+1288.0,38.699934677044894,-9.219874743132962,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69993468,-9.21987474&heading=32.011445387126514&pitch=5&fov=120"
+1289.0,38.69823925,-9.21554035,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69823925,-9.21554035&heading=171.7766187517467&pitch=5&fov=120"
+1290.0,38.70448422919119,-9.203552719723518,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70448423,-9.20355272&heading=336.08643781098823&pitch=5&fov=120"
+1291.0,38.70407395747499,-9.20342050274977,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BP2,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDL/H:3/BP2/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70407396,-9.2034205&heading=342.31779784836687&pitch=5&fov=120"
+1292.0,38.699592509733726,-9.218502983271344,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69959251,-9.21850298&heading=23.755457811880092&pitch=5&fov=120"
+1293.0,38.70503928524672,-9.219497820480562,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70503929,-9.21949782&heading=120.62236179559812&pitch=5&fov=120"
+1294.0,38.69702975,-9.2161867,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69702975,-9.2161867&heading=83.65211782477184&pitch=5&fov=120"
+1295.0,38.69673818089802,-9.213840944234809,Portugal,Lisbon,CR,LFINF,CDM,3,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDM/H:3/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69673818,-9.21384094&heading=153.29498784631153&pitch=5&fov=120"
+1296.0,38.695662726492216,-9.217611603456747,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69566273,-9.2176116&heading=351.8960129773734&pitch=5&fov=120"
+1297.0,38.69889180644599,-9.218533813838466,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69889181,-9.21853381&heading=286.6819939108791&pitch=5&fov=120"
+1298.0,38.69842572281928,-9.209824451216626,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69842572,-9.20982445&heading=130.4725593851693&pitch=5&fov=120"
+1299.0,38.696455543431526,-9.216888605140328,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69645554,-9.21688861&heading=85.30218528120645&pitch=5&fov=120"
+1300.0,38.6981123909405,-9.215905020690409,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69811239,-9.21590502&heading=12.753595446419013&pitch=5&fov=120"
+1301.0,38.69988428109889,-9.211037484137233,Portugal,Lisbon,CR,LFINF,CDM,2,GOV,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDM/H:2/BPD/RSH3+RMT1/GOV,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69988428,-9.21103748&heading=130.54490103173896&pitch=5&fov=120"
+1302.0,38.69855582131184,-9.197864897628245,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69855582,-9.1978649&heading=326.8781994722833&pitch=5&fov=120"
+1303.0,38.70140169999999,-9.204210749999993,Portugal,Lisbon,MCF,LWAL,CDN,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDN/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7014017,-9.20421075&heading=169.80903493360665&pitch=5&fov=120"
+1304.0,38.70194084081136,-9.216284666462975,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70194084,-9.21628467&heading=21.794572319135284&pitch=5&fov=120"
+1305.0,38.69936497063702,-9.21618106883831,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69936497,-9.21618107&heading=286.1443329357901&pitch=5&fov=120"
+1306.0,38.69877335,-9.21134765,Portugal,Lisbon,CR,LFINF,CDM,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDM/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69877335,-9.21134765&heading=36.37038623802897&pitch=5&fov=120"
+1307.0,38.70125864303135,-9.22140480187128,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70125864,-9.2214048&heading=301.86398506400633&pitch=5&fov=120"
+1308.0,38.70193265,-9.202778750000002,Portugal,Lisbon,MCF,LWAL,CDL,3,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:3/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70193265,-9.20277875&heading=175.10687557541218&pitch=5&fov=120"
+1309.0,38.70011942906015,-9.206599810627225,Portugal,Lisbon,CR,LFINF,CDL,4,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70011943,-9.20659981&heading=326.11095468787096&pitch=5&fov=120"
+1310.0,38.70197143217497,-9.224258452356713,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70197143,-9.22425845&heading=219.17323465359652&pitch=5&fov=120"
+1311.0,38.69701836669289,-9.22430300422802,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69701837,-9.224303&heading=182.0829065276285&pitch=5&fov=120"
+1312.0,38.69984090444965,-9.195581819623984,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6998409,-9.19558182&heading=311.92143061503134&pitch=5&fov=120"
+1313.0,38.69761237538928,-9.213921760665505,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69761238,-9.21392176&heading=333.29493731753576&pitch=5&fov=120"
+1314.0,38.69915235221872,-9.197889929985315,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1315.0,38.69695399559384,-9.201836321625205,Portugal,Lisbon,CR,LFM,CDN,2,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDN/H:2/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.696954,-9.20183632&heading=226.9409316465837&pitch=5&fov=120"
+1316.0,38.69906112692058,-9.200813606390248,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1317.0,38.69821994190256,-9.219455947533836,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69821994,-9.21945595&heading=287.5723092488899&pitch=5&fov=120"
+1318.0,38.697931570193205,-9.212299861988416,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69793157,-9.21229986&heading=139.5294522204187&pitch=5&fov=120"
+1319.0,38.69854931211452,-9.216326799633563,Portugal,Lisbon,CR,LFINF,CDM,3,RES,BP1,Select Epoch of Construction,RSH1,RMN,,CR/LFINF/CDM/H:3/BP1/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69854931,-9.2163268&heading=180.34737581966436&pitch=5&fov=120"
+1320.0,38.69764319966314,-9.217617227186418,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6976432,-9.21761723&heading=96.23204130993344&pitch=5&fov=120"
+1321.0,38.6956129503396,-9.21857309641182,Portugal,Lisbon,CR,LFINF,CDL,4,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69561295,-9.2185731&heading=172.18545204953142&pitch=5&fov=120"
+1322.0,38.698262296340936,-9.219372177259627,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6982623,-9.21937218&heading=286.95468102537984&pitch=5&fov=120"
+1323.0,38.69793312217121,-9.215070642360466,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69793312,-9.21507064&heading=249.9760042148436&pitch=5&fov=120"
+1324.0,38.69831715,-9.2140195,Portugal,Lisbon,CR,LFM,CDH,3,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFM/CDH/H:3/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69831715,-9.2140195&heading=336.5674865864766&pitch=5&fov=120"
+1325.0,38.69891755,-9.204758949999992,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69891755,-9.20475895&heading=131.83365248023614&pitch=5&fov=120"
+1326.0,38.697523065314265,-9.220429851082825,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1327.0,38.70248005924879,-9.209996711625008,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1328.0,38.69856101376284,-9.192964024380212,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1329.0,38.69560945206786,-9.212094866509217,Portugal,Lisbon,CR,LFINF,CDM,3,RES,BP1,Select Epoch of Construction,RSH1,RMN,,CR/LFINF/CDM/H:3/BP1/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69560945,-9.21209487&heading=68.88873725588815&pitch=5&fov=120"
+1330.0,38.70303610963817,-9.20630744634864,Portugal,Lisbon,CR,LFM,CDH,6.0-7.0,MIX(RES;COM),BP1,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDH/H:6-7/BP1/RSH1+RMN/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70303611,-9.20630745&heading=49.36957066242343&pitch=5&fov=120"
+1331.0,38.69808264999999,-9.194027000000007,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69808265,-9.194027&heading=315.8446521817682&pitch=5&fov=120"
+1332.0,38.6969436,-9.222726049999997,Portugal,Lisbon,CR,LFINF,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6969436,-9.22272605&heading=185.54379666357607&pitch=5&fov=120"
+1333.0,38.694011323374255,-9.223226929427916,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1334.0,38.69728578693401,-9.217962152353865,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69728579,-9.21796215&heading=95.1053143102103&pitch=5&fov=120"
+1335.0,38.70446069390626,-9.202954175942352,Portugal,Lisbon,CR,LFM,CDN,3,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,CR/LFM/CDN/H:3/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70446069,-9.20295418&heading=66.96097695950442&pitch=5&fov=120"
+1336.0,38.70024983320619,-9.20056534449546,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1337.0,38.70014242372476,-9.19910372982554,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70014242,-9.19910373&heading=322.16602940074995&pitch=5&fov=120"
+1338.0,38.69680592346224,-9.219395140277468,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69680592,-9.21939514&heading=100.86632023130272&pitch=5&fov=120"
+1339.0,38.69651508607804,-9.224055469999607,Portugal,Lisbon,CR,LFM,CDH,4,RES,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDH/H:4/BPD/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69651509,-9.22405547&heading=183.71876924979313&pitch=5&fov=120"
+1340.0,38.69705932073894,-9.21770163869961,Portugal,Lisbon,MCF,LWAL,CDN,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDN/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69705932,-9.21770164&heading=92.78713697552962&pitch=5&fov=120"
+1341.0,38.6959414,-9.2107386,Portugal,Lisbon,CR,LFM,CDH,8.0-9.0,MIX(RES;COM),BP1,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDH/H:8-9/BP1/RSH1+RMN/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6959414,-9.2107386&heading=308.2502084519863&pitch=5&fov=120"
+1342.0,38.699650512179325,-9.225696607340762,Portugal,Lisbon,CR,LFINF,CDL,4,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69965051,-9.22569661&heading=10.249527901189367&pitch=5&fov=120"
+1343.0,38.698373399647714,-9.21596976629912,Portugal,Lisbon,CR,LFM,CDH,2,GOV,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDH/H:2/BPD/RSH1+RMN/GOV,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6983734,-9.21596977&heading=175.55315289050782&pitch=5&fov=120"
+1344.0,38.70134794087021,-9.205108866046782,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70134794,-9.20510887&heading=318.73584149350154&pitch=5&fov=120"
+1345.0,38.70328387937553,-9.206302981810255,Portugal,Lisbon,MCF,LWAL,CDL,1,IND,BPD,Select Epoch of Construction,RSH2,RMT6,,MCF/LWAL/CDL/H:1/BPD/RSH2+RMT6/IND,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70328388,-9.20630298&heading=322.0978685503803&pitch=5&fov=120"
+1346.0,38.70014978791518,-9.202615666865857,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70014979,-9.20261567&heading=77.02914661684349&pitch=5&fov=120"
+1347.0,38.69515198815653,-9.214301098835906,Portugal,Lisbon,CR,LFM,CDM,4,MIX(RES;COM),BP2,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDM/H:4/BP2/RSH1+RMN/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69515199,-9.2143011&heading=327.9598837324768&pitch=5&fov=120"
+1348.0,38.700639589753415,-9.225227718032585,Portugal,Lisbon,MCF,LWAL,CDL,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70063959,-9.22522772&heading=183.83545889672547&pitch=5&fov=120"
+1349.0,38.70052645663672,-9.205884541925975,Portugal,Lisbon,CR,LFM,CDL,4,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:4/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70052646,-9.20588454&heading=47.42554248638271&pitch=5&fov=120"
+1350.0,38.69737213133502,-9.223526384519973,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69737213,-9.22352638&heading=171.63824232337663&pitch=5&fov=120"
+1351.0,38.69777327991455,-9.205424285590274,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69777328,-9.20542429&heading=219.1331080875686&pitch=5&fov=120"
+1352.0,38.6989462980988,-9.200103097724536,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6989463,-9.2001031&heading=230.76899188569212&pitch=5&fov=120"
+1353.0,38.69698958588892,-9.201915823046988,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69698959,-9.20191582&heading=153.39975579042533&pitch=5&fov=120"
+1354.0,38.69613115451702,-9.212243033311053,Portugal,Lisbon,CR,LFINF,CDM,6.0-7.0,RES,BP2,Select Epoch of Construction,RSH1,RMN,,CR/LFINF/CDM/H:6-7/BP2/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69613115,-9.21224303&heading=216.61424638949495&pitch=5&fov=120"
+1355.0,38.69492304438912,-9.22584438073786,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1356.0,38.69704269862613,-9.216504060514206,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6970427,-9.21650406&heading=85.410097752838&pitch=5&fov=120"
+1357.0,38.70024155,-9.202289,Portugal,Lisbon,MUR,LWAL,CDN,1,COM,BPD,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BPD/RSH2+RMT1/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70024155,-9.202289&heading=76.38969731631107&pitch=5&fov=120"
+1358.0,38.69536890885875,-9.208932533550056,Portugal,Lisbon,CR,LWAL,CDH,2,COM,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LWAL/CDH/H:2/BPD/RSH1+RMN/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69536891,-9.20893253&heading=150&pitch=5&fov=120"
+1359.0,38.69544823938666,-9.216303166016,Portugal,Lisbon,CR,LFINF,CDL,4,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69544824,-9.21630317&heading=254.1677901874221&pitch=5&fov=120"
+1360.0,38.70121293509637,-9.209637852392518,Portugal,Lisbon,MUR,LWAL,CDN,1,COM,BPD,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BPD/RSH2+RMT1/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70121294,-9.20963785&heading=130.4838667232366&pitch=5&fov=120"
+1361.0,38.69694403097385,-9.208731767539412,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69694403,-9.20873177&heading=330.8294512508918&pitch=5&fov=120"
+1362.0,38.70210369999999,-9.226137649999998,Portugal,Oeiras,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7021037,-9.22613765&heading=244.52236196373144&pitch=5&fov=120"
+1363.0,38.69627060922595,-9.216572963125303,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69627061,-9.21657296&heading=78.99446134707011&pitch=5&fov=120"
+1364.0,38.70178891607024,-9.217287513109984,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70178892,-9.21728751&heading=224.79262257059855&pitch=5&fov=120"
+1365.0,38.6985924930456,-9.204617015020082,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69859249,-9.20461702&heading=189.58857291455683&pitch=5&fov=120"
+1366.0,38.697390657992166,-9.220113510285888,Portugal,Lisbon,CR,LFM,CDM,4,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFM/CDM/H:4/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69739066,-9.22011351&heading=276.8365917309368&pitch=5&fov=120"
+1367.0,38.69586707369092,-9.216737762875544,Portugal,Lisbon,MCF,LWAL,CDM,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDM/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69586707,-9.21673776&heading=352.0268910053179&pitch=5&fov=120"
+1368.0,38.69755871087085,-9.202584943151283,Portugal,Lisbon,MUR,LWAL,CDN,2,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:2/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69755871,-9.20258494&heading=333.1934473495491&pitch=5&fov=120"
+1369.0,38.69941593137504,-9.218092500943683,Portugal,Lisbon,CR,LFINF,CDL,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDL/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69941593,-9.2180925&heading=201.55118927808252&pitch=5&fov=120"
+1370.0,38.69968872131732,-9.220047892166049,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69968872,-9.22004789&heading=212.01133713369097&pitch=5&fov=120"
+1371.0,38.69730286481936,-9.215354129682822,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT6,,MUR/LWAL/CDL/H:2/BP1/RSH2+RMT6/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69730286,-9.21535413&heading=77.4062305119561&pitch=5&fov=120"
+1372.0,38.69799738322716,-9.215461793182612,Portugal,Lisbon,MCF,LWAL,CDL,1,RES,BP1,Select Epoch of Construction,RSH5,RMT1,,MCF/LWAL/CDL/H:1/BP1/RSH5+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69799738,-9.21546179&heading=169.07575021242627&pitch=5&fov=120"
+1373.0,38.701394298630646,-9.209082086066648,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7013943,-9.20908209&heading=129.03209088925797&pitch=5&fov=120"
+1374.0,38.69778211013243,-9.221534527281008,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1375.0,38.6951898890056,-9.220574668339246,Portugal,Lisbon,CR,LWAL,CDH,2,COM,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LWAL/CDH/H:2/BPD/RSH1+RMN/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69518989,-9.22057467&heading=0.506930500039914&pitch=5&fov=120"
+1376.0,38.696511029915165,-9.219426711963596,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69651103,-9.21942671&heading=164.94329275305978&pitch=5&fov=120"
+1377.0,38.6950495959418,-9.220810022320103,Portugal,Lisbon,MUR,LWAL,CDN,1,COM,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP1/RSH2+RMT1/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6950496,-9.22081002&heading=178.94238072672135&pitch=5&fov=120"
+1378.0,38.7011059,-9.219284149999998,Portugal,Lisbon,CR,LFINF,CDM,2,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDM/H:2/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7011059,-9.21928415&heading=301.0751376367988&pitch=5&fov=120"
+1379.0,38.695938244030536,-9.215701323090927,Portugal,Lisbon,CR,LFINF,CDM,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDM/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69593824,-9.21570132&heading=345.0331927329803&pitch=5&fov=120"
+1380.0,38.69285906751081,-9.213321298701688,Portugal,Lisbon,CR,LFINF,CDL,2,RES,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LFINF/CDL/H:2/BPD/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69285907,-9.2133213&heading=226.96606521748294&pitch=5&fov=120"
+1381.0,38.6971802824134,-9.216830218120723,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69718028,-9.21683022&heading=87.35995366945696&pitch=5&fov=120"
+1382.0,38.7011705,-9.219083049999998,Portugal,Lisbon,MUR,LWAL,CDL,1,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,MUR/LWAL/CDL/H:1/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7011705,-9.21908305&heading=211.40276693059445&pitch=5&fov=120"
+1383.0,38.694731550261935,-9.216061656836953,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69473155,-9.21606166&heading=232.94502030159248&pitch=5&fov=120"
+1384.0,38.7003002618733,-9.220096201848442,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70030026,-9.2200962&heading=211.95783827001026&pitch=5&fov=120"
+1385.0,38.69772935731706,-9.215885969171609,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69772936,-9.21588597&heading=351.5914674940928&pitch=5&fov=120"
+1386.0,38.69752606027362,-9.211674004525635,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69752606,-9.211674&heading=312.49231872645555&pitch=5&fov=120"
+1387.0,38.69895532202334,-9.204486825261732,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MUR/LWAL/CDL/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69895532,-9.20448683&heading=144.47004323327337&pitch=5&fov=120"
+1388.0,38.700363965310125,-9.224470576857602,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70036397,-9.22447058&heading=122.98766870042601&pitch=5&fov=120"
+1389.0,38.69788145283552,-9.193647493992357,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69788145,-9.19364749&heading=81.97928909400446&pitch=5&fov=120"
+1390.0,38.69737768956112,-9.21829932564464,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69737769,-9.21829933&heading=97.86846340200663&pitch=5&fov=120"
+1391.0,38.69757934108749,-9.194626867134396,Portugal,Lisbon,CR,LFINF,CDL,4,MIX(RES;COM),BP1,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP1/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69757934,-9.19462687&heading=333.2189252319263&pitch=5&fov=120"
+1392.0,38.70286410052751,-9.202904874453775,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7028641,-9.20290487&heading=211.73457350630838&pitch=5&fov=120"
+1393.0,38.70259520727413,-9.204962085306043,Portugal,Lisbon,CR,LFM,CDH,6.0-7.0,RES,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDH/H:6-7/BPD/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70259521,-9.20496209&heading=175.0250249334693&pitch=5&fov=120"
+1394.0,38.70015577360376,-9.198745425878998,Portugal,Lisbon,MUR,LWAL,CDN,1,COM,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP1/RSH2+RMT1/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70015577,-9.19874543&heading=244.02664557018522&pitch=5&fov=120"
+1395.0,38.70014203401018,-9.22255755265901,Portugal,Lisbon,CR,LFINF,CDM,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDM/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70014203,-9.22255755&heading=122.17643820714898&pitch=5&fov=120"
+1396.0,38.698958112708304,-9.218869941555484,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69895811,-9.21886994&heading=290.14345783676225&pitch=5&fov=120"
+1397.0,38.70011702911905,-9.218782246170356,Portugal,Lisbon,MCF,LWAL,CDN,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDN/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70011703,-9.21878225&heading=302.1647598226731&pitch=5&fov=120"
+1398.0,38.70066683347624,-9.21565017740634,Portugal,Lisbon,CR,LWAL,CDM,3,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LWAL/CDM/H:3/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70066683,-9.21565018&heading=20.785123514741485&pitch=5&fov=120"
+1399.0,38.69880013897956,-9.192894671811702,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1400.0,38.69809194917136,-9.217261316142867,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69809195,-9.21726132&heading=96.35158014495744&pitch=5&fov=120"
+1401.0,38.69682030622374,-9.212079844863618,Portugal,Lisbon,CR,LFINF,CDM,6.0-7.0,RES,BP1,Select Epoch of Construction,RSH1,RMN,,CR/LFINF/CDM/H:6-7/BP1/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69682031,-9.21207984&heading=128.4996804820949&pitch=5&fov=120"
+1402.0,38.69480828627596,-9.218783437736194,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69480829,-9.21878344&heading=196.02786266855475&pitch=5&fov=120"
+1403.0,38.69925439820382,-9.20771888184678,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1404.0,38.700758269209445,-9.205171830359491,Portugal,Lisbon,MCF,LWAL,CDM,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDM/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70075827,-9.20517183&heading=347.24337389672723&pitch=5&fov=120"
+1405.0,38.69887462634652,-9.21902569924337,Portugal,Lisbon,MCF,LWAL,CDN,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDN/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69887463,-9.2190257&heading=288.6329981882235&pitch=5&fov=120"
+1406.0,38.7006299810161,-9.226110632787336,Portugal,Lisbon,CR,LFM,CDL,3,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:3/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70062998,-9.22611063&heading=346.616754021862&pitch=5&fov=120"
+1407.0,38.69764736998257,-9.216481966448324,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69764737,-9.21648197&heading=87.36984885081017&pitch=5&fov=120"
+1408.0,38.69504497807132,-9.207249047914848,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69504498,-9.20724905&heading=317.4088245889793&pitch=5&fov=120"
+1409.0,38.70156206920914,-9.20545508037014,Portugal,Lisbon,MUR,LWAL,CDN,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70156207,-9.20545508&heading=167.2028387425873&pitch=5&fov=120"
+1410.0,38.69857553275947,-9.218950059620155,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69857553,-9.21895006&heading=286.45053971987824&pitch=5&fov=120"
+1411.0,38.697910403957984,-9.194782975772346,Portugal,Lisbon,CR,LFINF,CDL,4,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6979104,-9.19478298&heading=123.32675099535533&pitch=5&fov=120"
+1412.0,38.69707421732405,-9.215445857950094,Portugal,Lisbon,MCF,LWAL,CDN,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDN/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69707422,-9.21544586&heading=78.25894977277608&pitch=5&fov=120"
+1413.0,38.6988563,-9.20403915,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6988563,-9.20403915&heading=84.78648310218398&pitch=5&fov=120"
+1414.0,38.695002125504445,-9.19992891814962,Portugal,Lisbon,,LDUAL,,,,,Select Epoch of Construction,,,,LDUAL/H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69500213,-9.19992892&heading=316.4542466917586&pitch=5&fov=120"
+1415.0,38.6997082623128,-9.225082501979369,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69970826,-9.2250825&heading=202.28757004063664&pitch=5&fov=120"
+1416.0,38.700975464393785,-9.215227464857536,Portugal,Lisbon,CR,LFINF,CDM,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDM/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70097546,-9.21522746&heading=194.883732072528&pitch=5&fov=120"
+1417.0,38.69899185699455,-9.212985624958971,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69899186,-9.21298562&heading=52.43267519179233&pitch=5&fov=120"
+1418.0,38.69774623060943,-9.19636442449962,Portugal,Lisbon,MCF,LWAL,CDN,2,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDN/H:2/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69774623,-9.19636442&heading=147.70995759892963&pitch=5&fov=120"
+1419.0,38.69717005467075,-9.216099193130894,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69717005,-9.21609919&heading=83.03311722659885&pitch=5&fov=120"
+1420.0,38.700992362489046,-9.206000872577096,Portugal,Lisbon,CR,LFINF,CDL,4,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70099236,-9.20600087&heading=48.09801702969344&pitch=5&fov=120"
+1421.0,38.70113140021545,-9.219599683161112,Portugal,Lisbon,CR,LFINF,CDM,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDM/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7011314,-9.21959968&heading=302.03409361149636&pitch=5&fov=120"
+1422.0,38.69998878737356,-9.219068512198625,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69998879,-9.21906851&heading=302.381394261899&pitch=5&fov=120"
+1423.0,38.69418850832352,-9.21865736411628,Portugal,Lisbon,CR,LFM,CDH,4,MIX(RES;COM),BP1,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDH/H:4/BP1/RSH1+RMN/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69418851,-9.21865736&heading=182.43651576464288&pitch=5&fov=120"
+1424.0,38.69934191952516,-9.20633296655287,Portugal,Lisbon,CR,LFINF,CDL,3,MIX(RES;COM),BP1,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDL/H:3/BP1/RSH3+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69934192,-9.20633297&heading=310.1734157727776&pitch=5&fov=120"
+1425.0,38.694436772450416,-9.210684808585206,Portugal,Lisbon,MUR,LFM,CDN,1,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,MUR/LFM/CDN/H:1/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69443677,-9.21068481&heading=323.303740388719&pitch=5&fov=120"
+1426.0,38.69700578333501,-9.215832894733522,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69700578,-9.21583289&heading=80.41034035556788&pitch=5&fov=120"
+1427.0,38.69956550079142,-9.221200095338824,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6995655,-9.2212001&heading=31.856980647531316&pitch=5&fov=120"
+1428.0,38.6970018692919,-9.202721298724406,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69700187,-9.2027213&heading=154.87500545057424&pitch=5&fov=120"
+1429.0,38.6994775832757,-9.22319330939567,Portugal,Lisbon,CR,LFM,CDL,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFM/CDL/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69947758,-9.22319331&heading=301.4038907921124&pitch=5&fov=120"
+1430.0,38.69876072393551,-9.219751187043256,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69876072,-9.21975119&heading=292.31367281102507&pitch=5&fov=120"
+1431.0,38.69734358778365,-9.224152299375952,Portugal,Lisbon,CR,LFM,CDH,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFM/CDH/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69734359,-9.2241523&heading=2.0830007455437&pitch=5&fov=120"
+1432.0,38.69982031920462,-9.218092529465132,Portugal,Lisbon,CR,LFINF,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69982032,-9.21809253&heading=207.00036399334795&pitch=5&fov=120"
+1433.0,38.69772914029424,-9.223759854455036,Portugal,Lisbon,CR,LFINF,CDM,2,RES,BP1,Select Epoch of Construction,RSH1,RMN,,CR/LFINF/CDM/H:2/BP1/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69772914,-9.22375985&heading=169.37071571611943&pitch=5&fov=120"
+1434.0,38.69702892287212,-9.22349612809684,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69702892,-9.22349613&heading=2.26694399116559&pitch=5&fov=120"
+1435.0,38.69711969999999,-9.212185249999996,Portugal,Lisbon,CR,LFM,CDH,2,RES,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDH/H:2/BPD/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6971197,-9.21218525&heading=139.65811659051622&pitch=5&fov=120"
+1436.0,38.70122655,-9.20606115,Portugal,Lisbon,CR,LFM,CDL,4,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:4/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70122655,-9.20606115&heading=48.097979338098526&pitch=5&fov=120"
+1437.0,38.69785669999999,-9.21200205,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6978567,-9.21200205&heading=137.52132194636397&pitch=5&fov=120"
+1438.0,38.70187347318262,-9.204852272427791,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70187347,-9.20485227&heading=319.0426442124615&pitch=5&fov=120"
+1439.0,38.69764756539576,-9.1937149805109,Portugal,Lisbon,CR,LFINF,CDN,3,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDN/H:3/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69764757,-9.19371498&heading=316.5578714463452&pitch=5&fov=120"
+1440.0,38.70241996550316,-9.20431044283007,Portugal,Lisbon,CR,LFM,CDL,4,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:4/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70241997,-9.20431044&heading=335.72627279813634&pitch=5&fov=120"
+1441.0,38.7017238038282,-9.210763155672202,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1442.0,38.69869182304337,-9.201077220725406,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1443.0,38.69694366585385,-9.195106517787195,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69694367,-9.19510652&heading=342.0107374419642&pitch=5&fov=120"
+1444.0,38.6945978696789,-9.217210844119863,Portugal,Lisbon,MUR,LWAL,CDN,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69459787,-9.21721084&heading=177.46287172146697&pitch=5&fov=120"
+1445.0,38.69954047888784,-9.219499283092134,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69954048,-9.21949928&heading=298.293008490839&pitch=5&fov=120"
+1446.0,38.69892266715901,-9.204904500430088,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MUR/LWAL/CDL/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69892267,-9.2049045&heading=136.61548173363616&pitch=5&fov=120"
+1447.0,38.69967931153941,-9.204339090958138,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69967931,-9.20433909&heading=304.9874309034385&pitch=5&fov=120"
+1448.0,38.69795381113676,-9.217353181191784,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69795381,-9.21735318&heading=94.42349846055015&pitch=5&fov=120"
+1449.0,38.697642070666674,-9.201999294086614,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69764207,-9.20199929&heading=222.10738405582907&pitch=5&fov=120"
+1450.0,38.697558172764005,-9.223932456501482,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69755817,-9.22393246&heading=171.97804542241118&pitch=5&fov=120"
+1451.0,38.70224528810932,-9.203535116486387,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70224529,-9.20353512&heading=97.96872290465387&pitch=5&fov=120"
+1452.0,38.69868494733597,-9.21882106068031,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69868495,-9.21882106&heading=287.4768948134248&pitch=5&fov=120"
+1453.0,38.70045820866775,-9.19637442050482,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70045821,-9.19637442&heading=222.1017176934589&pitch=5&fov=120"
+1454.0,38.7000481458198,-9.217178466398364,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70004815,-9.21717847&heading=113.48934036651781&pitch=5&fov=120"
+1455.0,38.70041775979861,-9.224268192266525,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70041776,-9.22426819&heading=122.98779524406496&pitch=5&fov=120"
+1456.0,38.7000356944617,-9.220305429811942,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70003569,-9.22030543&heading=212.0111761072484&pitch=5&fov=120"
+1457.0,38.69635235027202,-9.215741554164811,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69635235,-9.21574155&heading=78.08490498645244&pitch=5&fov=120"
+1458.0,38.69900400351656,-9.217915244450868,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.699004,-9.21791524&heading=283.8417950657514&pitch=5&fov=120"
+1459.0,38.69865566458354,-9.193802341550327,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1460.0,38.69565049999999,-9.226490099999998,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1461.0,38.7000171,-9.2023391,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7000171,-9.2023391&heading=150&pitch=5&fov=120"
+1462.0,38.70214445739236,-9.2202454497866,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70214446,-9.22024545&heading=121.99048135361579&pitch=5&fov=120"
+1463.0,38.70016687556899,-9.22665162532336,Portugal,Lisbon,CR,LFM,CDL,5,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:5/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70016688,-9.22665163&heading=61.187705135336444&pitch=5&fov=120"
+1464.0,38.69826934629718,-9.19278921858204,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69826935,-9.19278922&heading=6.196404713342417&pitch=5&fov=120"
+1465.0,38.69948680732668,-9.193560178451932,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1466.0,38.700327481720585,-9.216774439583338,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70032748,-9.21677444&heading=66.75370848201015&pitch=5&fov=120"
+1467.0,38.70317244328398,-9.203554825525137,Portugal,Lisbon,CR,LFINF,CDL,4,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70317244,-9.20355483&heading=329.9604664658067&pitch=5&fov=120"
+1468.0,38.70054417424176,-9.220539161746904,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70054417,-9.22053916&heading=302.0345774367097&pitch=5&fov=120"
+1469.0,38.69885566885869,-9.224904669181804,Portugal,Lisbon,CR,LFINF,CDM,6.0-7.0,RES,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LFINF/CDM/H:6-7/BPD/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69885567,-9.22490467&heading=54.78673096738066&pitch=5&fov=120"
+1470.0,38.69711900481949,-9.195855714225894,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.697119,-9.19585571&heading=336.93043502106013&pitch=5&fov=120"
+1471.0,38.70291653003269,-9.204575694570911,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70291653,-9.20457569&heading=186.47616094316072&pitch=5&fov=120"
+1472.0,38.695835614991736,-9.220566932788914,Portugal,Lisbon,CR,LFINF,CDM,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDM/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69583561,-9.22056693&heading=3.4506546116159598&pitch=5&fov=120"
+1473.0,38.69732552962697,-9.19389681280086,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69732553,-9.19389681&heading=136.66755786073702&pitch=5&fov=120"
+1474.0,38.70029243820227,-9.22215012206642,Portugal,Lisbon,CR,LFINF,CDH,3,RES,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LFINF/CDH/H:3/BPD/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70029244,-9.22215012&heading=211.51533023571432&pitch=5&fov=120"
+1475.0,38.70058187365781,-9.205326408912692,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70058187,-9.20532641&heading=345.83115257042067&pitch=5&fov=120"
+1476.0,38.70000326377677,-9.218945321232397,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70000326,-9.21894532&heading=212.1248090687954&pitch=5&fov=120"
+1477.0,38.7003666,-9.202096150000006,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7003666,-9.20209615&heading=150&pitch=5&fov=120"
+1478.0,38.69471620417808,-9.216869213489302,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6947162,-9.21686921&heading=77.926118025709&pitch=5&fov=120"
+1479.0,38.701167486829725,-9.222294517485562,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70116749,-9.22229452&heading=31.86557821330689&pitch=5&fov=120"
+1480.0,38.69871934100112,-9.205687349824448,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69871934,-9.20568735&heading=215.09555774101142&pitch=5&fov=120"
+1481.0,38.70035755121816,-9.209080834722371,Portugal,Lisbon,CR,LFM,CDM,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFM/CDM/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70035755,-9.20908083&heading=130.31245080762335&pitch=5&fov=120"
+1482.0,38.69952463517119,-9.198800284644673,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69952464,-9.19880028&heading=50.22042616072201&pitch=5&fov=120"
+1483.0,38.70380604553828,-9.203040833816296,Portugal,Lisbon,MCF,LWAL,CDL,3,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:3/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70380605,-9.20304083&heading=161.56286320106557&pitch=5&fov=120"
+1484.0,38.696028023000686,-9.193632549086962,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69602802,-9.19363255&heading=142.29527409418165&pitch=5&fov=120"
+1485.0,38.69655018305908,-9.217465275176467,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69655018,-9.21746528&heading=269.3784531072581&pitch=5&fov=120"
+1486.0,38.69825399751036,-9.204385843863696,Portugal,Lisbon,CR,LFINF,CDM,3,EDU,BP1,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDM/H:3/BP1/RSH3+RMT1/EDU,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.698254,-9.20438584&heading=321.55987562647397&pitch=5&fov=120"
+1487.0,38.69824883997837,-9.192915333048822,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1488.0,38.6954526625121,-9.195546475946658,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69545266,-9.19554648&heading=150&pitch=5&fov=120"
+1489.0,38.69687078509434,-9.211717226318848,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69687079,-9.21171723&heading=308.0773359635125&pitch=5&fov=120"
+1490.0,38.69712209927094,-9.2019758307944,Portugal,Lisbon,CR,LFINF,CDL,3,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6971221,-9.20197583&heading=154.99856042770233&pitch=5&fov=120"
+1491.0,38.69481633303536,-9.20995924733334,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69481633,-9.20995925&heading=222.2347599212818&pitch=5&fov=120"
+1492.0,38.69704434483698,-9.202372263551766,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69704434,-9.20237226&heading=155.13922628761816&pitch=5&fov=120"
+1493.0,38.70266050259399,-9.204159727026145,Portugal,Lisbon,MCF,LWAL,CDL,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7026605,-9.20415973&heading=340.01377755201656&pitch=5&fov=120"
+1494.0,38.69544141468949,-9.221676795939915,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69544141,-9.2216768&heading=179.61002698138424&pitch=5&fov=120"
+1495.0,38.70416516125801,-9.203747311747836,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70416516,-9.20374731&heading=75.70114660546193&pitch=5&fov=120"
+1496.0,38.69902974305848,-9.217355912697563,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69902974,-9.21735591&heading=103.84214477346757&pitch=5&fov=120"
+1497.0,38.69586538052118,-9.212563509475803,Portugal,Lisbon,CR,LFINF,CDH,6.0-7.0,RES,BP1,Select Epoch of Construction,RSH1,RMN,,CR/LFINF/CDH/H:6-7/BP1/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69586538,-9.21256351&heading=217.37351245829853&pitch=5&fov=120"
+1498.0,38.70160045698208,-9.199560790353408,Portugal,Lisbon,CR,LFM,CDM,4,RES,BP1,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDM/H:4/BP1/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70160046,-9.19956079&heading=333.99634387849903&pitch=5&fov=120"
+1499.0,38.69743374167132,-9.193114415373016,Portugal,Lisbon,MUR,LWAL,CDL,1,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:1/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69743374,-9.19311442&heading=230.21732932055232&pitch=5&fov=120"
+1500.0,38.69810229277273,-9.198588279075445,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69810229,-9.19858828&heading=234.86742730281458&pitch=5&fov=120"
+1501.0,38.70178086994628,-9.204265415203292,Portugal,Lisbon,CR,LFINF,CDL,5,MIX(RES;COM),BP1,Select Epoch of Construction,RSH1,RMN,,CR/LFINF/CDL/H:5/BP1/RSH1+RMN/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70178087,-9.20426542&heading=313.05200546273966&pitch=5&fov=120"
+1502.0,38.70108534283855,-9.20393254684896,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70108534,-9.20393255&heading=334.90466147963593&pitch=5&fov=120"
+1503.0,38.69719167256867,-9.224660218061985,Portugal,Lisbon,CR,LFM,CDL,2,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:2/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69719167,-9.22466022&heading=182.27617103703426&pitch=5&fov=120"
+1504.0,38.69428456910514,-9.202431043850288,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1505.0,38.70155374999999,-9.2031067,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70155375,-9.2031067&heading=341.6170079161993&pitch=5&fov=120"
+1506.0,38.70065589044472,-9.22267041878214,Portugal,Lisbon,MUR,LWAL,CDN,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70065589,-9.22267042&heading=302.502209983497&pitch=5&fov=120"
+1507.0,38.69781838717528,-9.192717849346886,Portugal,Lisbon,CR,LFM,CDL,4,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:4/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69781839,-9.19271785&heading=317.2156540912131&pitch=5&fov=120"
+1508.0,38.69700046940021,-9.203212787174778,Portugal,Lisbon,CR,LFINF,CDL,4,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69700047,-9.20321279&heading=89.13363141643578&pitch=5&fov=120"
+1509.0,38.70130652181413,-9.2040748264071,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70130652,-9.20407483&heading=336.19366790125173&pitch=5&fov=120"
+1510.0,38.697666747332725,-9.195015663629272,Portugal,Lisbon,MCF,LWAL,CDN,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDN/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69766675,-9.19501566&heading=227.44138819406356&pitch=5&fov=120"
+1511.0,38.700401764739766,-9.210957124421942,Portugal,Lisbon,CR,LFM,CDH,3,RES,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDH/H:3/BPD/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70040176,-9.21095712&heading=310.54495127787254&pitch=5&fov=120"
+1512.0,38.69881505000001,-9.2205608,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69881505,-9.2205608&heading=118.4697757046577&pitch=5&fov=120"
+1513.0,38.69940472543436,-9.215458422568654,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69940473,-9.21545842&heading=358.00679923190205&pitch=5&fov=120"
+1514.0,38.6920282,-9.2168875,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6920282,-9.2168875&heading=150&pitch=5&fov=120"
+1515.0,38.70101113079055,-9.205465869640507,Portugal,Lisbon,MUR,LWAL,CDL,1,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:1/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70101113,-9.20546587&heading=347.1794195602489&pitch=5&fov=120"
+1516.0,38.69846359618755,-9.196711427689872,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1517.0,38.70108445503388,-9.206546663650617,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70108446,-9.20654666&heading=139.74345027369657&pitch=5&fov=120"
+1518.0,38.69866011395267,-9.214588069507208,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69866011,-9.21458807&heading=250.3472825646203&pitch=5&fov=120"
+1519.0,38.700281621315696,-9.200132714646909,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70028162,-9.20013271&heading=47.54055242402649&pitch=5&fov=120"
+1520.0,38.701521790874935,-9.221746706467036,Portugal,Lisbon,CR,LFINF,CDM,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDM/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70152179,-9.22174671&heading=121.90223073125821&pitch=5&fov=120"
+1521.0,38.69789587081265,-9.193258326136853,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69789587,-9.19325833&heading=316.5581569471573&pitch=5&fov=120"
+1522.0,38.70426211989776,-9.203244521845772,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70426212,-9.20324452&heading=158.9175225251202&pitch=5&fov=120"
+1523.0,38.69591826658344,-9.215586911903014,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69591827,-9.21558691&heading=345.0332642588663&pitch=5&fov=120"
+1524.0,38.70094916738113,-9.205210461150388,Portugal,Lisbon,MCF,LWAL,CDN,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDN/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70094917,-9.20521046&heading=348.1390102744191&pitch=5&fov=120"
+1525.0,38.69392328647527,-9.223189394024589,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1526.0,38.69560610741775,-9.21087455342338,Portugal,Lisbon,CR,LFM,CDL,3,RES,BP2,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDL/H:3/BP2/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69560611,-9.21087455&heading=127.13823835514785&pitch=5&fov=120"
+1527.0,38.69795762607264,-9.200620635824189,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP2,Select Epoch of Construction,RSH1,RMN,,MUR/LWAL/CDN/H:1/BP2/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69782897625437,-9.200594415869189&heading=231.44088633190108&pitch=5&fov=120"
+1528.0,38.69671845,-9.2178086,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69671845,-9.2178086&heading=270.5220568730898&pitch=5&fov=120"
+1529.0,38.69765220724853,-9.201492392691328,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69765221,-9.20149239&heading=253.70789796929523&pitch=5&fov=120"
+1530.0,38.69850568871916,-9.193474496706106,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1531.0,38.701344157659165,-9.20609217838244,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70134416,-9.20609218&heading=233.0099127421612&pitch=5&fov=120"
+1532.0,38.70334083249151,-9.21775259196031,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70334083,-9.21775259&heading=119.91992235487919&pitch=5&fov=120"
+1533.0,38.69688532346225,-9.219867940277473,Portugal,Lisbon,CR,LFINF,CDM,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDM/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69688532,-9.21986794&heading=345.23992308405286&pitch=5&fov=120"
+1534.0,38.69197194258667,-9.213814620314116,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69197194,-9.21381462&heading=187.30036235169825&pitch=5&fov=120"
+1535.0,38.69527505548414,-9.219006314918504,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69527506,-9.21900631&heading=15.625964542255701&pitch=5&fov=120"
+1536.0,38.700281609491086,-9.21928943180164,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70028161,-9.21928943&heading=32.0631086711644&pitch=5&fov=120"
+1537.0,38.69827129327112,-9.19802202592215,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69827129,-9.19802203&heading=146.8781012295765&pitch=5&fov=120"
+1538.0,38.69551495483455,-9.210674635615728,Portugal,Lisbon,CR,LFM,CDL,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69551495,-9.21067464&heading=117.65738483512825&pitch=5&fov=120"
+1539.0,38.69187724809384,-9.213882155507958,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69187725,-9.21388216&heading=184.9198595284226&pitch=5&fov=120"
+1540.0,38.69709878599519,-9.204614972689033,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69709879,-9.20461497&heading=128.94703083212602&pitch=5&fov=120"
+1541.0,38.70003247189238,-9.224385841553907,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70003247,-9.22438584&heading=302.3304992681269&pitch=5&fov=120"
+1542.0,38.69502105252951,-9.221395154595426,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69502105,-9.22139515&heading=272.31472614278215&pitch=5&fov=120"
+1543.0,38.70015384999999,-9.212637399999998,Portugal,Lisbon,CR,LFM,CDH,3,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFM/CDH/H:3/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70015385,-9.2126374&heading=317.20487773460354&pitch=5&fov=120"
+1544.0,38.69561435,-9.21916045,Portugal,Lisbon,MCF,LWAL,CDL,1,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:1/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69561435,-9.21916045&heading=8.161812245936346&pitch=5&fov=120"
+1545.0,38.695231100214144,-9.212259635772204,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,MUR/LWAL/CDN/H:1/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6952311,-9.21225964&heading=126.19603404217906&pitch=5&fov=120"
+1546.0,38.69969485,-9.21488195,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69969485,-9.21488195&heading=170.52688531859945&pitch=5&fov=120"
+1547.0,38.69896266031278,-9.2206418636525,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69896266,-9.22064186&heading=298.4697250196783&pitch=5&fov=120"
+1548.0,38.70494967447423,-9.202493796400846,Portugal,Lisbon,CR,LFINF,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70494967,-9.2024938&heading=240.75067904779212&pitch=5&fov=120"
+1549.0,38.70113175975023,-9.21545959063038,Portugal,Lisbon,MUR,LWAL,CDM,1,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,MUR/LWAL/CDM/H:1/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70113176,-9.21545959&heading=199.8810022084815&pitch=5&fov=120"
+1550.0,38.69590134797158,-9.220013221386264,Portugal,Lisbon,CR,LFM,CDL,2,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:2/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69590135,-9.22001322&heading=203.56012943664246&pitch=5&fov=120"
+1551.0,38.70203723340748,-9.219729507136904,Portugal,Lisbon,CR,LFINF,CDM,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDM/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70203723,-9.21972951&heading=213.62683753902928&pitch=5&fov=120"
+1552.0,38.70066402254128,-9.20346990682508,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70066402,-9.20346991&heading=79.6640967053703&pitch=5&fov=120"
+1553.0,38.69968103457648,-9.222661365766584,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69968103,-9.22266137&heading=301.9121036185981&pitch=5&fov=120"
+1554.0,38.69926312483394,-9.204305319599309,Portugal,Lisbon,CR,LFINF,CDM,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDM/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69926312,-9.20430532&heading=286.2321312586152&pitch=5&fov=120"
+1555.0,38.70083513503438,-9.205682938010272,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70083514,-9.20568294&heading=317.89911639508443&pitch=5&fov=120"
+1556.0,38.69781090817976,-9.20303974082264,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,MUR/LWAL/CDL/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69781091,-9.20303974&heading=155.81350066421618&pitch=5&fov=120"
+1557.0,38.69961663195208,-9.219342152591668,Portugal,Lisbon,MR,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MR/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69961663,-9.21934215&heading=298.293106734111&pitch=5&fov=120"
+1558.0,38.69838128615463,-9.21652078490088,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69838129,-9.21652078&heading=180.3472545375492&pitch=5&fov=120"
+1559.0,38.69998112627258,-9.219539231883552,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69998113,-9.21953923&heading=31.958186508660617&pitch=5&fov=120"
+1560.0,38.69694291967246,-9.194435677723344,Portugal,Lisbon,MCF,LWAL,CDL,2,COM,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH2+RMT1/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69694292,-9.19443568&heading=57.006937278223745&pitch=5&fov=120"
+1561.0,38.697384210278,-9.21669728756494,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69738421,-9.21669729&heading=88.0429060260351&pitch=5&fov=120"
+1562.0,38.697810064209385,-9.217891399245431,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69781006,-9.2178914&heading=99.02904935491131&pitch=5&fov=120"
+1563.0,38.69776184967094,-9.20242209766672,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69776185,-9.2024221&heading=154.5265365694031&pitch=5&fov=120"
+1564.0,38.69699801984765,-9.215268862261864,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69699802,-9.21526886&heading=78.25906042937288&pitch=5&fov=120"
+1565.0,38.69742689479981,-9.218704778324009,Portugal,Lisbon,MCF,LWAL,CDN,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDN/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69742689,-9.21870478&heading=101.27206856564413&pitch=5&fov=120"
+1566.0,38.70071030507345,-9.196987423638062,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70071031,-9.19698742&heading=313.576647047396&pitch=5&fov=120"
+1567.0,38.69716518201952,-9.20285722102892,Portugal,Lisbon,CR,LFM,CDL,4,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:4/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69716518,-9.20285722&heading=155.83401755162458&pitch=5&fov=120"
+1568.0,38.69982064222004,-9.204957599249983,Portugal,Lisbon,MUR,LWAL,CDL,1,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:1/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69982064,-9.2049576&heading=302.08436256313314&pitch=5&fov=120"
+1569.0,38.69899329599681,-9.193006253803212,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1570.0,38.700022597863416,-9.215830997206892,Portugal,Lisbon,CR,LFM,CDM,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFM/CDM/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7000226,-9.215831&heading=187.39464751445217&pitch=5&fov=120"
+1571.0,38.697279269283285,-9.219443506048558,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69727927,-9.21944351&heading=192.24081399589966&pitch=5&fov=120"
+1572.0,38.69801713907419,-9.215070651936136,Portugal,Lisbon,CR,LFM,CDL,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFM/CDL/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69801714,-9.21507065&heading=249.97600421093216&pitch=5&fov=120"
+1573.0,38.70431091849427,-9.202610037252912,Portugal,Lisbon,CR,LFINF,CDL,4,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70431092,-9.20261004&heading=148.94907321176413&pitch=5&fov=120"
+1574.0,38.69759400047882,-9.196318890627106,Portugal,Lisbon,CR,LFM,CDL,3,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:3/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.697594,-9.19631889&heading=325.25308428371113&pitch=5&fov=120"
+1575.0,38.70209873137327,-9.20305455679194,Portugal,Lisbon,CR,LFINF,CDL,4,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70209873,-9.20305456&heading=184.56383355024855&pitch=5&fov=120"
+1576.0,38.6990693695497,-9.19310386640344,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1577.0,38.697370197278126,-9.215665076307872,Portugal,Lisbon,CR,LFINF,CDM,3,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDM/H:3/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6973702,-9.21566508&heading=80.13026539340274&pitch=5&fov=120"
+1578.0,38.6989237,-9.2105715,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6989237,-9.2105715&heading=230.2483733159258&pitch=5&fov=120"
+1579.0,38.69551556817467,-9.2154832692461,Portugal,Lisbon,CR,LFM,CDM,4,COM,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDM/H:4/BPD/RSH1+RMN/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69551557,-9.21548327&heading=165.0333290513372&pitch=5&fov=120"
+1580.0,38.70351655015709,-9.221329882276631,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70351655,-9.22132988&heading=243.31268720728173&pitch=5&fov=120"
+1581.0,38.69886338071013,-9.213628279848384,Portugal,Lisbon,MCF,LWAL,CDL,3,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:3/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69886338,-9.21362828&heading=232.43227338090549&pitch=5&fov=120"
+1582.0,38.69967658908954,-9.200018590861658,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69967659,-9.20001859&heading=47.54062377747522&pitch=5&fov=120"
+1583.0,38.70054822377401,-9.203612970803702,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70054822,-9.20361297&heading=95.22591512786408&pitch=5&fov=120"
+1584.0,38.699191773674215,-9.217692888916664,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69919177,-9.21769289&heading=283.8419340834067&pitch=5&fov=120"
+1585.0,38.70288229999999,-9.203446449999998,Portugal,Lisbon,CR,LFM,CDL,4,MIX(RES;COM),BP1,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:4/BP1/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7028823,-9.20344645&heading=153.5406489956075&pitch=5&fov=120"
+1586.0,38.70180856013622,-9.205699364173494,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MUR/LWAL/CDL/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70180856,-9.20569936&heading=176.74684308665366&pitch=5&fov=120"
+1587.0,38.69570402016151,-9.217739822468552,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDL/H:3/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69570402,-9.21773982&heading=351.32819780373615&pitch=5&fov=120"
+1588.0,38.70102697611518,-9.20083243947358,Portugal,Lisbon,MUR,LWAL,CDL,1,GOV,BPD,Select Epoch of Construction,RSH3,RMT6,,MUR/LWAL/CDL/H:1/BPD/RSH3+RMT6/GOV,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70102698,-9.20083244&heading=167.47900755039666&pitch=5&fov=120"
+1589.0,38.69893620223174,-9.219485147852572,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6989362,-9.21948515&heading=294.5326518732745&pitch=5&fov=120"
+1590.0,38.69609982335202,-9.21132935196104,Portugal,Lisbon,CR,LFM,CDM,6.0-7.0,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFM/CDM/H:6-7/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69609982,-9.21132935&heading=128.68280831959459&pitch=5&fov=120"
+1591.0,38.6979868312935,-9.21770616530365,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69798683,-9.21770617&heading=99.44942869449892&pitch=5&fov=120"
+1592.0,38.69749965654392,-9.192839863763986,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69749966,-9.19283986&heading=137.215577808881&pitch=5&fov=120"
+1593.0,38.69644950505918,-9.221064719012356,Portugal,Lisbon,CR,LFM,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69644951,-9.22106472&heading=175.38841243885207&pitch=5&fov=120"
+1594.0,38.69987824917551,-9.220664278032864,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69987825,-9.22066428&heading=31.98013079875983&pitch=5&fov=120"
+1595.0,38.69703190698634,-9.2018285586141,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69703191,-9.20182856&heading=151.68602273707745&pitch=5&fov=120"
+1596.0,38.70153050999467,-9.220767367339104,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70153051,-9.22076737&heading=301.864383621673&pitch=5&fov=120"
+1597.0,38.69428560254251,-9.202594081213071,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1598.0,38.69838135867676,-9.225968788225568,Portugal,Lisbon,CR,LFM,CDM,4,MIX(RES;COM),BP1,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDM/H:4/BP1/RSH1+RMN/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69838136,-9.22596879&heading=1.180688107695687&pitch=5&fov=120"
+1599.0,38.69757975936839,-9.201983064423166,Portugal,Lisbon,MCF,LWAL,CDL,2,MIX(RES;COM),BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69757976,-9.20198306&heading=222.10739421743813&pitch=5&fov=120"
+1600.0,38.6980253620643,-9.218091224072262,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69802536,-9.21809122&heading=102.17956429602418&pitch=5&fov=120"
+1601.0,38.70185615015918,-9.203743613490351,Portugal,Lisbon,CR,LFM,CDM,4,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDM/H:4/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70185615,-9.20374361&heading=311.655793231336&pitch=5&fov=120"
+1602.0,38.696341948739445,-9.219842995938688,Portugal,Lisbon,CR,LFINF,CDL,4,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69634195,-9.219843&heading=353.9067388908918&pitch=5&fov=120"
+1603.0,38.70163727469609,-9.217580305785908,Portugal,Lisbon,MUR,LWAL,CDM,1,EDU,BPD,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDM/H:1/BPD/RSH2+RMT1/EDU,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70163727,-9.21758031&heading=21.355743340960203&pitch=5&fov=120"
+1604.0,38.697696797179006,-9.217187355730534,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6976968,-9.21718736&heading=92.72237727355741&pitch=5&fov=120"
+1605.0,38.6991643014802,-9.220234809465223,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6991643,-9.22023481&heading=296.52619774660883&pitch=5&fov=120"
+1606.0,38.70021292657739,-9.214921239329824,Portugal,Lisbon,CR,LFM,CDM,2,RES,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDM/H:2/BPD/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70021293,-9.21492124&heading=356.85065830244673&pitch=5&fov=120"
+1607.0,38.696745932600926,-9.194232853941404,Portugal,Lisbon,MCF,LWAL,CDL,2,MIX(RES;COM),BP3,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP3/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69674593,-9.19423285&heading=325.2554253712192&pitch=5&fov=120"
+1608.0,38.69935435,-9.21462665,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69935435,-9.21462665&heading=250.73418962682734&pitch=5&fov=120"
+1609.0,38.69721019999999,-9.2188423,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6972102,-9.2188423&heading=277.95708427209485&pitch=5&fov=120"
+1610.0,38.69805545261164,-9.19168471354037,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BP2,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDL/H:3/BP2/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69805545,-9.19168471&heading=318.85300303281986&pitch=5&fov=120"
+1611.0,38.69727356048483,-9.198221667308388,Portugal,Lisbon,CR,LDUAL,CDH,2,COM,BPD,Select Epoch of Construction,RSH1,RMT6,,CR/LDUAL/CDH/H:2/BPD/RSH1+RMT6/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69727356,-9.19822167&heading=148.47650885447717&pitch=5&fov=120"
+1612.0,38.70176895448786,-9.22074701102593,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70176895,-9.22074701&heading=121.99016774085732&pitch=5&fov=120"
+1613.0,38.701660671653016,-9.21719712501653,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70166067,-9.21719713&heading=221.757201329795&pitch=5&fov=120"
+1614.0,38.70019889951822,-9.211717829443923,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7001989,-9.21171783&heading=310.544475647417&pitch=5&fov=120"
+1615.0,38.7000441,-9.218633,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7000441,-9.218633&heading=40.06905420980621&pitch=5&fov=120"
+1616.0,38.70199639999999,-9.199517749999998,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7019964,-9.19951775&heading=66.19824092799149&pitch=5&fov=120"
+1617.0,38.696745233528745,-9.219477937045635,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69674523,-9.21947794&heading=345.78323173935394&pitch=5&fov=120"
+1618.0,38.69546485,-9.19536955,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69546485,-9.19536955&heading=150&pitch=5&fov=120"
+1619.0,38.7002121724214,-9.225064838667471,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70021217,-9.22506484&heading=119.63323286542749&pitch=5&fov=120"
+1620.0,38.69265863639478,-9.22179137872322,Portugal,Lisbon,,,CDN,,,BPD,Select Epoch of Construction,,RMT6,,CDN/H:Select Number of Stories/BPD/RMT6,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69265864,-9.22179138&heading=150&pitch=5&fov=120"
+1621.0,38.69844536644669,-9.198753695544417,Portugal,Lisbon,MCF,LWAL,CDN,1,IND,BP2,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDN/H:1/BP2/RSH3+RMT1/IND,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69844537,-9.1987537&heading=134.5385110131599&pitch=5&fov=120"
+1622.0,38.70168222743073,-9.220415553482033,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70168223,-9.22041555&heading=301.86460360211606&pitch=5&fov=120"
+1623.0,38.6993850963573,-9.20365170257991,Portugal,Lisbon,MCF,LWAL,CDL,3,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:3/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6993851,-9.2036517&heading=259.8267632463512&pitch=5&fov=120"
+1624.0,38.7008767007458,-9.210593558636283,Portugal,Lisbon,CR,LFINF,CDH,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDH/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7008767,-9.21059356&heading=146.85877492162297&pitch=5&fov=120"
+1625.0,38.69796059687911,-9.219816534097747,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6979606,-9.21981653&heading=287.572083801468&pitch=5&fov=120"
+1626.0,38.69626740525673,-9.197606269526736,Portugal,Lisbon,,,CDN,,,BPD,Select Epoch of Construction,RSH1,RMN,,CDN/H:Select Number of Stories/BPD/RSH1+RMN,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69626741,-9.19760627&heading=144.9726401267534&pitch=5&fov=120"
+1627.0,38.698943671410014,-9.2051615203987,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69894367,-9.20516152&heading=229.5893589272569&pitch=5&fov=120"
+1628.0,38.697190931029205,-9.21757693153625,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69719093,-9.21757693&heading=91.84523127684832&pitch=5&fov=120"
+1629.0,38.69861163817619,-9.21348459979135,Portugal,Lisbon,CR,LFINF,CDM,3,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDM/H:3/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69861164,-9.2134846&heading=250.24647313142668&pitch=5&fov=120"
+1630.0,38.69886440577608,-9.218063676705253,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69886441,-9.21806368&heading=16.235547240056917&pitch=5&fov=120"
+1631.0,38.6960685,-9.2158762,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6960685,-9.2158762&heading=78.08482080507974&pitch=5&fov=120"
+1632.0,38.70094565576549,-9.20495649617689,Portugal,Lisbon,MUR,LWAL,CDM,1,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,MUR/LWAL/CDM/H:1/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70094566,-9.2049565&heading=316.9723971908056&pitch=5&fov=120"
+1633.0,38.70048695638884,-9.22567426892565,Portugal,Lisbon,CR,LFINF,CDL,3,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70048696,-9.22567427&heading=359.0364413969042&pitch=5&fov=120"
+1634.0,38.69990971542999,-9.208585384362538,Portugal,Lisbon,CR,LFINF,CDH,2,RES,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LFINF/CDH/H:2/BPD/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69990972,-9.20858538&heading=229.90269865211758&pitch=5&fov=120"
+1635.0,38.69791751082639,-9.216400359298484,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69791751,-9.21640036&heading=356.4834567351702&pitch=5&fov=120"
+1636.0,38.69282745,-9.21351125,Portugal,Lisbon,CR,LFM,CDH,1,COM,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDH/H:1/BPD/RSH1+RMN/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69282745,-9.21351125&heading=47.823967416593916&pitch=5&fov=120"
+1637.0,38.70079048834189,-9.204989700884456,Portugal,Lisbon,MUR,LWAL,CDN,1,COM,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP1/RSH2+RMT1/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70079049,-9.2049897&heading=136.97237643187697&pitch=5&fov=120"
+1638.0,38.69951563709442,-9.224015927170024,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69951564,-9.22401593&heading=122.4314057162249&pitch=5&fov=120"
+1639.0,38.69695494854312,-9.21136477518044,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69695495,-9.21136478&heading=307.79992367979844&pitch=5&fov=120"
+1640.0,38.70071843086127,-9.201526221022814,Portugal,Lisbon,MCF,LWAL,CDN,2,COM,BPD,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDN/H:2/BPD/RSH3+RMT1/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70071843,-9.20152622&heading=193.79079361774757&pitch=5&fov=120"
+1641.0,38.69702362107918,-9.202928643983872,Portugal,Lisbon,,,CDN,,,BPD,Select Epoch of Construction,RSH1,RMN,,CDN/H:Select Number of Stories/BPD/RSH1+RMN,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69702362,-9.20292864&heading=155.83397289826894&pitch=5&fov=120"
+1642.0,38.69880329539868,-9.217637136978285,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6988033,-9.21763714&heading=103.84196894174647&pitch=5&fov=120"
+1643.0,38.69668131031779,-9.212853444741272,Portugal,Lisbon,CR,LFINF,CDL,5,MIX(RES;COM),BP1,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:5/BP1/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69668131,-9.21285344&heading=309.64018217834825&pitch=5&fov=120"
+1644.0,38.69503176134977,-9.217202762100646,Portugal,Lisbon,CR,LFINF,CDL,4,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMN,,CR/LFINF/CDL/H:4/BP2/RSH2+RMN/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69503176,-9.21720276&heading=250.47063257629497&pitch=5&fov=120"
+1645.0,38.69934629691407,-9.221050525532334,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6993463,-9.22105053&heading=32.78532844913548&pitch=5&fov=120"
+1646.0,38.69665362200677,-9.21759772546393,Portugal,Lisbon,MCF,LWAL,CDN,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDN/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69665362,-9.21759773&heading=90.52218871581061&pitch=5&fov=120"
+1647.0,38.69815689412002,-9.217529610431042,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69815689,-9.21752961&heading=99.44953907425787&pitch=5&fov=120"
+1648.0,38.69874675671545,-9.19894455120291,Portugal,Lisbon,MCF,LWAL,CDN,1,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDN/H:1/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69874676,-9.19894455&heading=230.51965094065713&pitch=5&fov=120"
+1649.0,38.69854344876019,-9.19930618992844,Portugal,Lisbon,MCF,LWAL,CDN,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDN/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69854345,-9.19930619&heading=316.95147413311895&pitch=5&fov=120"
+1650.0,38.69805273516951,-9.193707526016482,Portugal,Lisbon,MUR,LWAL,CDL,1,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:1/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69805274,-9.19370753&heading=81.67232799866235&pitch=5&fov=120"
+1651.0,38.69872490000001,-9.2136256,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6987249,-9.2136256&heading=250.24638497174402&pitch=5&fov=120"
+1652.0,38.70030865369795,-9.211312330189442,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70030865,-9.21131233&heading=310.54472918268084&pitch=5&fov=120"
+1653.0,38.6994013495336,-9.2137174341426,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69940135,-9.21371743&heading=155.80181999252335&pitch=5&fov=120"
+1654.0,38.69699736653129,-9.196731404450723,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69699737,-9.1967314&heading=163.63272299066807&pitch=5&fov=120"
+1655.0,38.69489021150725,-9.204192623476908,Portugal,Lisbon,S,LFM,CDH,1,COM,BPD,Select Epoch of Construction,RSH5,RMT6,,S/LFM/CDH/H:1/BPD/RSH5+RMT6/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69489021,-9.20419262&heading=135.9435318418976&pitch=5&fov=120"
+1656.0,38.69540457020196,-9.222022164368642,Portugal,Lisbon,,,CDN,,,BPD,Select Epoch of Construction,RSH1,RMN,,CDN/H:Select Number of Stories/BPD/RSH1+RMN,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69540457,-9.22202216&heading=4.326455451472668&pitch=5&fov=120"
+1657.0,38.69956860664403,-9.225258946029768,Portugal,Lisbon,CR,LFM,CDL,4,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:4/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69956861,-9.22525895&heading=301.4262498791158&pitch=5&fov=120"
+1658.0,38.69717535409077,-9.202933732140416,Portugal,Lisbon,CR,LFINF,CDL,3,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69717535,-9.20293373&heading=155.83396971606317&pitch=5&fov=120"
+1659.0,38.69460332478749,-9.219769948651134,Portugal,Lisbon,CR,LFM,CDH,4,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDH/H:4/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69460332,-9.21976995&heading=174.67003265590978&pitch=5&fov=120"
+1660.0,38.702269039843664,-9.216184493003986,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70226904,-9.21618449&heading=230.0957517688488&pitch=5&fov=120"
+1661.0,38.69668503793359,-9.216588511213274,Portugal,Lisbon,MUR,LWAL,CDL,1,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:1/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69668504,-9.21658851&heading=263.42174122124874&pitch=5&fov=120"
+1662.0,38.69684060994806,-9.214193271186394,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69684061,-9.21419327&heading=70.58380830029415&pitch=5&fov=120"
+1663.0,38.69715477360464,-9.21805276860887,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69715477,-9.21805277&heading=95.82157574108498&pitch=5&fov=120"
+1664.0,38.6959144213686,-9.214568237848905,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69591442,-9.21456824&heading=340.9817512050008&pitch=5&fov=120"
+1665.0,38.69883547819465,-9.204478538498511,Portugal,Lisbon,CR,LFINF,CDL,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDL/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69883548,-9.20447854&heading=304.263321344064&pitch=5&fov=120"
+1666.0,38.70410516145169,-9.203602132144834,Portugal,Lisbon,CR,LFINF,CDL,4,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDL/H:4/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70410516,-9.20360213&heading=343.4023492358606&pitch=5&fov=120"
+1667.0,38.69931185885488,-9.211629889537097,Portugal,Lisbon,CR,LFM,CDM,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFM/CDM/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69931186,-9.21162989&heading=37.27661184630938&pitch=5&fov=120"
+1668.0,38.69696846008996,-9.202529734393092,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69696846,-9.20252973&heading=154.87512522118794&pitch=5&fov=120"
+1669.0,38.69623300625133,-9.210902881325634,Portugal,Lisbon,CR,LFM,CDM,6.0-7.0,RES,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDM/H:6-7/BPD/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69623301,-9.21090288&heading=128.68307494557666&pitch=5&fov=120"
+1670.0,38.69897468579787,-9.211489582916116,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69897469,-9.21148958&heading=37.27669957361229&pitch=5&fov=120"
+1671.0,38.69698221151068,-9.20196805777761,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69698221,-9.20196806&heading=153.3997231297662&pitch=5&fov=120"
+1672.0,38.70120275075752,-9.203244711563666,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70120275,-9.20324471&heading=88.42482669222403&pitch=5&fov=120"
+1673.0,38.69740935683531,-9.213487587267585,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69740936,-9.21348759&heading=330.2951179380562&pitch=5&fov=120"
+1674.0,38.69602483666554,-9.215265117832615,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69602484,-9.21526512&heading=250.34467463478438&pitch=5&fov=120"
+1675.0,38.69715520943375,-9.20271452940447,Portugal,Lisbon,CR,LFINF,CDN,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDN/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69715521,-9.20271453&heading=154.87500968218586&pitch=5&fov=120"
+1676.0,38.69949711242409,-9.199357080300388,Portugal,Lisbon,CR,LFINF,CDL,4,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69949711,-9.19935708&heading=142.16587099638627&pitch=5&fov=120"
+1677.0,38.698913074426,-9.214538259044591,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69891307,-9.21453826&heading=250.34731370881855&pitch=5&fov=120"
+1678.0,38.70054848403645,-9.219067062630932,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70054848,-9.21906706&heading=212.1514528455237&pitch=5&fov=120"
+1679.0,38.70015361316295,-9.220008424909937,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70015361,-9.22000842&heading=32.01136181591363&pitch=5&fov=120"
+1680.0,38.7022832,-9.2055627,Portugal,Lisbon,,,CDN,,,BP1,Select Epoch of Construction,RSH1,RMN,,CDN/H:Select Number of Stories/BP1/RSH1+RMN,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7022832,-9.2055627&heading=226.2297616307942&pitch=5&fov=120"
+1681.0,38.69986933140258,-9.210400848523268,Portugal,Lisbon,CR,LFM,,1,,,Select Epoch of Construction,,,,CR/LFM/H:1,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69986933,-9.21040085&heading=130.1195155804112&pitch=5&fov=120"
+1682.0,38.70023215119754,-9.19792742814638,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1683.0,38.703675219587794,-9.203050493039752,Portugal,Lisbon,CR,LFM,CDL,4,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,CR/LFM/CDL/H:4/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70367522,-9.20305049&heading=68.3651308234513&pitch=5&fov=120"
+1684.0,38.70041411737716,-9.218962475506444,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70041412,-9.21896248&heading=212.15151823716195&pitch=5&fov=120"
+1685.0,38.69873043562832,-9.199174644588949,Portugal,Lisbon,MUR,LWAL,CDL,1,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:1/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69873044,-9.19917464&heading=317.9815398870114&pitch=5&fov=120"
+1686.0,38.70350380079892,-9.20336665810866,Portugal,Lisbon,CR,LFINF,CDL,4,RES,BP2,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDL/H:4/BP2/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7035038,-9.20336666&heading=167.26095816087303&pitch=5&fov=120"
+1687.0,38.69680134999999,-9.21532405,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69680135,-9.21532405&heading=345.22592751523587&pitch=5&fov=120"
+1688.0,38.69305570026373,-9.22091941798371,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6930557,-9.22091942&heading=149.12934685053045&pitch=5&fov=120"
+1689.0,38.69683323680168,-9.226842687396882,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1690.0,38.69585543616361,-9.21932157592912,Portugal,Lisbon,CR,LFM,CDL,4,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:4/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69585544,-9.21932158&heading=84.08373235249275&pitch=5&fov=120"
+1691.0,38.70082024223066,-9.223455816876394,Portugal,Lisbon,MCF,LWAL,CDM,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDM/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70082024,-9.22345582&heading=123.32066921856762&pitch=5&fov=120"
+1692.0,38.70064745,-9.211207299999998,Portugal,Lisbon,CR,LFINF,CDM,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDM/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70064745,-9.2112073&heading=137.07132690720204&pitch=5&fov=120"
+1693.0,38.69643656601004,-9.217311206042671,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69643657,-9.21731121&heading=89.37854943417835&pitch=5&fov=120"
+1694.0,38.697152896564376,-9.219590074976526,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6971529,-9.21959007&heading=104.43985690645388&pitch=5&fov=120"
+1695.0,38.697517788903234,-9.21660338684556,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69751779,-9.21660339&heading=87.36977293468175&pitch=5&fov=120"
+1696.0,38.70151811844677,-9.204221045464443,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70151812,-9.20422105&heading=353.76141232065925&pitch=5&fov=120"
+1697.0,38.69810648229301,-9.217599002050706,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69810648,-9.217599&heading=99.44949570381698&pitch=5&fov=120"
+1698.0,38.698885757597935,-9.220129640473624,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69888576,-9.22012964&heading=295.26436358672527&pitch=5&fov=120"
+1699.0,38.70243589684405,-9.216715627105115,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7024359,-9.21671563&heading=57.07902234859125&pitch=5&fov=120"
+1700.0,38.69819138614381,-9.21699227059301,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69819139,-9.21699227&heading=4.617270057076155&pitch=5&fov=120"
+1701.0,38.69971661864216,-9.20474367694979,Portugal,Lisbon,CR,LFINF,CDL,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDL/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69971662,-9.20474368&heading=123.24025515727374&pitch=5&fov=120"
+1702.0,38.70043473510793,-9.205388778528285,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70043474,-9.20538878&heading=165.83111358192554&pitch=5&fov=120"
+1703.0,38.69655957744482,-9.21763060400445,Portugal,Lisbon,MCF,LWAL,CDL,3,IND,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:3/BP1/RSH2+RMT1/IND,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69655958,-9.2176306&heading=90.52216816514834&pitch=5&fov=120"
+1704.0,38.70135504999999,-9.2156253,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70135505,-9.2156253&heading=206.51990864406872&pitch=5&fov=120"
+1705.0,38.697552846580834,-9.20360529033221,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69755285,-9.20360529&heading=247.8980779889165&pitch=5&fov=120"
+1706.0,38.69732016276637,-9.216727687972412,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69732016,-9.21672769&heading=88.0428870145513&pitch=5&fov=120"
+1707.0,38.70181875011944,-9.220480216545962,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70181875,-9.22048022&heading=301.86456316614147&pitch=5&fov=120"
+1708.0,38.69749677004652,-9.19276422168914,Portugal,Lisbon,MCF,LWAL,CDL,3,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:3/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69749677,-9.19276422&heading=227.06946756710545&pitch=5&fov=120"
+1709.0,38.70193929816443,-9.203779800027734,Portugal,Lisbon,CR,LFM,CDL,4,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:4/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7019393,-9.2037798&heading=220.74009569083205&pitch=5&fov=120"
+1710.0,38.69619496256353,-9.22009387004538,Portugal,Lisbon,CR,LFINF,CDL,4,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69619496,-9.22009387&heading=24.37441728788309&pitch=5&fov=120"
+1711.0,38.69825494682959,-9.198566836889311,Portugal,Lisbon,CR,LFINF,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69825495,-9.19856684&heading=289.67725063536244&pitch=5&fov=120"
+1712.0,38.69699293512915,-9.202189501588643,Portugal,Lisbon,CR,LFINF,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69699294,-9.2021895&heading=154.99842684020143&pitch=5&fov=120"
+1713.0,38.69921846239311,-9.220158580686691,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69921846,-9.22015858&heading=297.14067408468014&pitch=5&fov=120"
+1714.0,38.69781861825842,-9.202061410326856,Portugal,Lisbon,MCF,LWAL,CDN,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDN/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69781862,-9.20206141&heading=223.97862878547863&pitch=5&fov=120"
+1715.0,38.70136668022416,-9.199593135464845,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70136668,-9.19959314&heading=62.7410253975288&pitch=5&fov=120"
+1716.0,38.70125626375759,-9.203361417548882,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70125626,-9.20336142&heading=86.12514314044489&pitch=5&fov=120"
+1717.0,38.69853000289339,-9.206399528057208,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69853,-9.20639953&heading=47.81386852667049&pitch=5&fov=120"
+1718.0,38.70361256881289,-9.208135189848852,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70361257,-9.20813519&heading=137.84929351993242&pitch=5&fov=120"
+1719.0,38.697013517755735,-9.219728674586104,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69701352,-9.21972867&heading=101.9191007006201&pitch=5&fov=120"
+1720.0,38.69779582371965,-9.203152869719782,Portugal,Lisbon,,,CDL,,,BPD,Select Epoch of Construction,RSH2,RMT6,,CDL/H:Select Number of Stories/BPD/RSH2+RMT6,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69779582,-9.20315287&heading=155.05241448060144&pitch=5&fov=120"
+1721.0,38.70018994392424,-9.223968593469976,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70018994,-9.22396859&heading=302.3102609928785&pitch=5&fov=120"
+1722.0,38.69747281687501,-9.216270397285523,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69747282,-9.2162704&heading=85.15937254192511&pitch=5&fov=120"
+1723.0,38.69521915859469,-9.213628857881748,Portugal,Lisbon,MCF,LWAL,CDL,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69521916,-9.21362886&heading=146.0895068470843&pitch=5&fov=120"
+1724.0,38.70003180938952,-9.212402718942394,Portugal,Lisbon,CR,LFM,CDM,3,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFM/CDM/H:3/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70003181,-9.21240272&heading=312.8803624940267&pitch=5&fov=120"
+1725.0,38.698337269053695,-9.219835613104552,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69833727,-9.21983561&heading=290.7153577172809&pitch=5&fov=120"
+1726.0,38.69736691724783,-9.193446988836358,Portugal,Lisbon,CR,LFM,CDN,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFM/CDN/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69736692,-9.19344699&heading=136.55803899440252&pitch=5&fov=120"
+1727.0,38.70162486920945,-9.20568253035949,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70162487,-9.20568253&heading=167.20269652790637&pitch=5&fov=120"
+1728.0,38.69751425248558,-9.214212219463068,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69751425,-9.21421222&heading=70.32213698447669&pitch=5&fov=120"
+1729.0,38.69742066462994,-9.20143658766326,Portugal,Lisbon,MUR,LWAL,CDN,2,COM,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:2/BP1/RSH2+RMT1/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69742066,-9.20143659&heading=337.77466574803464&pitch=5&fov=120"
+1730.0,38.7015491,-9.20363835,Portugal,Lisbon,CR,LFM,CDN,4,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,CR/LFM/CDN/H:4/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7015491,-9.20363835&heading=220.31978956331824&pitch=5&fov=120"
+1731.0,38.6936487501624,-9.223589716695594,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1732.0,38.69490535,-9.21169935,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1733.0,38.698209619471264,-9.188132278290889,Portugal,Lisbon,MUR,LWAL,CDL,1,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:1/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69820962,-9.18813228&heading=228.82321109936964&pitch=5&fov=120"
+1734.0,38.70037099457209,-9.220142705474537,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70037099,-9.22014271&heading=212.36169260022103&pitch=5&fov=120"
+1735.0,38.6952459433868,-9.214804240705448,Portugal,Lisbon,CR,LFM,CDM,4,COM,BP1,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDM/H:4/BP1/RSH1+RMN/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69524594,-9.21480424&heading=72.11903523249714&pitch=5&fov=120"
+1736.0,38.701361305109465,-9.2187999929963,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70136131,-9.21879999&heading=31.402943909452006&pitch=5&fov=120"
+1737.0,38.70027495951976,-9.20551143888049,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70027496,-9.20551144&heading=43.86952481324124&pitch=5&fov=120"
+1738.0,38.700639497012496,-9.21870931177639,Portugal,Lisbon,MCF,LWAL,CDM,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDM/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7006395,-9.21870931&heading=212.36319148293444&pitch=5&fov=120"
+1739.0,38.6999220596656,-9.2033992180991,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69992206,-9.20339922&heading=260.14028302742696&pitch=5&fov=120"
+1740.0,38.69959336464928,-9.219990220913829,Portugal,Lisbon,CR,LFINF,CDM,2,RES,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LFINF/CDM/H:2/BPD/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69959336,-9.21999022&heading=302.5504704412059&pitch=5&fov=120"
+1741.0,38.70183901096787,-9.220063181376382,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70183901,-9.22006318&heading=301.6360722517113&pitch=5&fov=120"
+1742.0,38.70368376938984,-9.202564680832127,Portugal,Lisbon,CR,LFM,CDL,4,MIX(RES;COM),BP1,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:4/BP1/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70368377,-9.20256468&heading=241.20296908840857&pitch=5&fov=120"
+1743.0,38.69937271520059,-9.216848044600088,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69937272,-9.21684804&heading=105.45892780268514&pitch=5&fov=120"
+1744.0,38.69748192043856,-9.202276099625957,Portugal,Lisbon,CR,LFM,CDL,3,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDL/H:3/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69748192,-9.2022761&heading=333.43598607755666&pitch=5&fov=120"
+1745.0,38.69824126724163,-9.21998784035154,Portugal,Lisbon,MUR,LWAL,CDN,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69824127,-9.21998784&heading=289.88866387725636&pitch=5&fov=120"
+1746.0,38.69610522248798,-9.21901187399832,Portugal,Lisbon,CR,LFINF,CDL,5,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:5/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69610522,-9.21901187&heading=351.3276549420874&pitch=5&fov=120"
+1747.0,38.7044282,-9.2212481,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7044282,-9.2212481&heading=268.1038033943975&pitch=5&fov=120"
+1748.0,38.69872206783265,-9.220454093791652,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69872207,-9.22045409&heading=294.11106007655314&pitch=5&fov=120"
+1749.0,38.69305578711016,-9.213482766896243,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69305579,-9.21348277&heading=226.96596427331548&pitch=5&fov=120"
+1750.0,38.70273364999999,-9.2095717,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1751.0,38.6980167706168,-9.21936992970484,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69801677,-9.21936993&heading=107.57236302459705&pitch=5&fov=120"
+1752.0,38.70096865,-9.22269905,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70096865,-9.22269905&heading=211.8653252734519&pitch=5&fov=120"
+1753.0,38.69776851903753,-9.217517279017262,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69776852,-9.21751728&heading=95.0992412500359&pitch=5&fov=120"
+1754.0,38.694969273427375,-9.216451417765072,Portugal,Lisbon,CR,LFINF,CDL,4,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69496927,-9.21645142&heading=168.68697353128323&pitch=5&fov=120"
+1755.0,38.6977416774692,-9.20270670946168,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69774168,-9.20270671&heading=155.81370887923458&pitch=5&fov=120"
+1756.0,38.69725188906867,-9.21785128348634,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69725189,-9.21785128&heading=272.7870434241999&pitch=5&fov=120"
+1757.0,38.70020093147109,-9.193849082511912,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70020093,-9.19384908&heading=205.3135493182608&pitch=5&fov=120"
+1758.0,38.69839,-9.1936971,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1759.0,38.70433935006553,-9.20370694717938,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDL/H:3/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70433935,-9.20370695&heading=79.12062394474941&pitch=5&fov=120"
+1760.0,38.70146831951536,-9.207588970218476,Portugal,Lisbon,S,LFM,CDH,1,COM,BPD,Select Epoch of Construction,RSH1,RMT6,,S/LFM/CDH/H:1/BPD/RSH1+RMT6/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70146832,-9.20758897&heading=309.3885927245583&pitch=5&fov=120"
+1761.0,38.6978163,-9.202616849999998,Portugal,Lisbon,MUR,LWAL,CDN,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6978163,-9.20261685&heading=155.81376506112275&pitch=5&fov=120"
+1762.0,38.697696007529615,-9.198020444204182,Portugal,Lisbon,MCF,LWAL,CDL,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69769601,-9.19802044&heading=147.5456764987057&pitch=5&fov=120"
+1763.0,38.70076384692796,-9.219233009555312,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70076385,-9.21923301&heading=31.789591280796685&pitch=5&fov=120"
+1764.0,38.7001852960882,-9.205053177449033,Portugal,Lisbon,MCF,LWAL,CDL,3,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDL/H:3/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7001853,-9.20505318&heading=302.4219076255723&pitch=5&fov=120"
+1765.0,38.69661930244402,-9.219875947188358,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6966193,-9.21987595&heading=165.2399180769649&pitch=5&fov=120"
+1766.0,38.70138997150983,-9.22216497302051,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDL/H:3/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70138997,-9.22216497&heading=121.90196920976689&pitch=5&fov=120"
+1767.0,38.69774940809016,-9.218858488567976,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69774941,-9.21885849&heading=104.46607854756519&pitch=5&fov=120"
+1768.0,38.69993968106723,-9.199466390789864,Portugal,Lisbon,MCF,LWAL,CDL,2,COM,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH2+RMT1/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69993968,-9.19946639&heading=322.165802650703&pitch=5&fov=120"
+1769.0,38.69793889403529,-9.210622581502191,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69793889,-9.21062258&heading=219.26816222121556&pitch=5&fov=120"
+1770.0,38.69700163694275,-9.217752018754002,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69700164,-9.21775202&heading=92.78710548429638&pitch=5&fov=120"
+1771.0,38.696085461858736,-9.203645935377727,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69608546,-9.20364594&heading=150&pitch=5&fov=120"
+1772.0,38.69837982063461,-9.19255241730262,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1773.0,38.69795647189949,-9.201674336228928,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69795647,-9.20167434&heading=41.43695233432135&pitch=5&fov=120"
+1774.0,38.69865244873475,-9.201457890388888,Portugal,Lisbon,CR,LFM,CDN,1,COM,BPD,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDN/H:1/BPD/RSH2+RMT1/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69865245,-9.20145789&heading=150&pitch=5&fov=120"
+1775.0,38.6973569,-9.2111268,Portugal,Lisbon,CR,LFINF,CDM,2,RES,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LFINF/CDM/H:2/BPD/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6973569,-9.2111268&heading=130.59074398362486&pitch=5&fov=120"
+1776.0,38.69669079976562,-9.22199219446343,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6966908,-9.22199219&heading=261.7727413371146&pitch=5&fov=120"
+1777.0,38.69864209302395,-9.192813580092231,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1778.0,38.70182617209787,-9.22617424468777,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70182617,-9.22617424&heading=247.71585050283613&pitch=5&fov=120"
+1779.0,38.698136836291646,-9.20814780820534,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69813684,-9.20814781&heading=125.69137932636471&pitch=5&fov=120"
+1780.0,38.69749527845104,-9.216959991121737,Portugal,Lisbon,MCF,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69749528,-9.21695999&heading=90.32631386316632&pitch=5&fov=120"
+1781.0,38.69685451775574,-9.218797474586104,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MUR/LWAL/CDL/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69685452,-9.21879747&heading=97.69125974748908&pitch=5&fov=120"
+1782.0,38.69374434142634,-9.206970025525417,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69374434,-9.20697003&heading=150&pitch=5&fov=120"
+1783.0,38.699137519163976,-9.193160303768307,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,
+1784.0,38.69792580176272,-9.212697855464516,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.6979258,-9.21269786&heading=142.5301543661448&pitch=5&fov=120"
+1785.0,38.70234524652272,-9.205374221770478,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70234525,-9.20537422&heading=46.22987948834066&pitch=5&fov=120"
+1786.0,38.697927506734366,-9.194039505420182,Portugal,Lisbon,MUR,LWAL,CDN,1,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDN/H:1/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69792751,-9.19403951&heading=316.7152319420088&pitch=5&fov=120"
+1787.0,38.69765773477851,-9.202831126324662,Portugal,Lisbon,MCF,LWAL,CDN,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDN/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69765773,-9.20283113&heading=334.16786095288296&pitch=5&fov=120"
+1788.0,38.70074156967677,-9.203203041042476,Portugal,Lisbon,CR,LFINF,CDL,3,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:3/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70074157,-9.20320304&heading=256.38912581382544&pitch=5&fov=120"
+1789.0,38.7010098,-9.205033749999998,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7010098,-9.20503375&heading=135.96018606950656&pitch=5&fov=120"
+1790.0,38.698921127795785,-9.21812637691074,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69892113,-9.21812638&heading=16.235508036757437&pitch=5&fov=120"
+1791.0,38.70222803495643,-9.20340697620377,Portugal,Lisbon,CR,LFINF,CDL,4,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDL/H:4/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70222803,-9.20340698&heading=175.48525218212012&pitch=5&fov=120"
+1792.0,38.70154508233856,-9.204309968186424,Portugal,Lisbon,MCF,LWAL,CDM,2,RES,BP1,Select Epoch of Construction,RSH3,RMT1,,MCF/LWAL/CDM/H:2/BP1/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70154508,-9.20430997&heading=353.7613567235834&pitch=5&fov=120"
+1793.0,38.700711250000005,-9.211511199999997,Portugal,Lisbon,CR,LFINF,CDM,2,RES,BPD,Select Epoch of Construction,RSH3,RMT1,,CR/LFINF/CDM/H:2/BPD/RSH3+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.70071125,-9.2115112&heading=135.48394374095545&pitch=5&fov=120"
+1794.0,38.69752381780774,-9.224550537108168,Portugal,Lisbon,CR,LFINF,CDM,2,RES,BPD,Select Epoch of Construction,RSH3,RMN,,CR/LFINF/CDM/H:2/BPD/RSH3+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69752382,-9.22455054&heading=0.5827394991952133&pitch=5&fov=120"
+1795.0,38.69580795551105,-9.211164981220122,Portugal,Lisbon,CR,LFM,CDH,8.0-9.0,RES,BP1,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDH/H:8-9/BP1/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69580796,-9.21116498&heading=35.685708581136964&pitch=5&fov=120"
+1796.0,38.697465458567954,-9.215911488505862,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP1,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP1/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69746546,-9.21591149&heading=82.09254377969955&pitch=5&fov=120"
+1797.0,38.69687091308196,-9.219325545375805,Portugal,Lisbon,MUR,LWAL,CDL,2,RES,BP2,Select Epoch of Construction,RSH2,RMT1,,MUR/LWAL/CDL/H:2/BP2/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69687091,-9.21932555&heading=102.17213246986427&pitch=5&fov=120"
+1798.0,38.6981309131662,-9.199102163834096,Portugal,Lisbon,MCF,LWAL,CDM,1,COM,BP2,Select Epoch of Construction,RSH2,RMT1,,MCF/LWAL/CDM/H:1/BP2/RSH2+RMT1/COM,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69813091,-9.19910216&heading=50.96418592899681&pitch=5&fov=120"
+1799.0,38.696934520103696,-9.2248500571864,Portugal,Lisbon,CR,LFM,CDH,4,RES,BPD,Select Epoch of Construction,RSH1,RMN,,CR/LFM/CDH/H:4/BPD/RSH1+RMN/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69693452,-9.22485006&heading=182.97373747023272&pitch=5&fov=120"
+1800,38.69855118666428,-9.21127417194174,Portugal,Lisbon,CR,LFINF,CDM,2,RES,BPD,Select Epoch of Construction,RSH2,RMT1,,CR/LFINF/CDM/H:2/BPD/RSH2+RMT1/RES,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69855119,-9.21127417&heading=36.37043217789744&pitch=5&fov=120"
+1801,38.7037723990253,-9.22131300488597,Portugal,Lisbon,,,,,,,Select Epoch of Construction,,,,H:Select Number of Stories,"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.7037724,-9.221313&heading=243.31269775439972&pitch=5&fov=120"
+1802,38.696162682683614,-9.21830168194896,Portugal,Lisbon,CR,LFM,CDM,5,MIX(RES;COM),BP2,Select Epoch of Construction,RSH2,RMT1,,CR/LFM/CDM/H:5/BP2/RSH2+RMT1/MIX(RES;COM),"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=38.69616268,-9.21830168&heading=352.0142214387183&pitch=5&fov=120"
 ,,,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,
