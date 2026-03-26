@@ -250,8 +250,8 @@ class PolygonSetting(QtWidgets.QDialog):
         Opens a folder selection dialog, stores the selected output folder path, and displays 
         the folder name in the interface.
         """
-        self.method.output_folder_value, self.output_polygon = select_output_folder(self)
-        self.output_folder_value.setText(self.output_polygon)
+        self.method.output_folder_value, self.display_folder = select_output_folder(self)
+        self.output_folder_value.setText(self.display_folder)
             
         
     def upload_input (self):
@@ -270,7 +270,7 @@ class PolygonSetting(QtWidgets.QDialog):
         the interface with the selected file information.
         """
         try:
-            output_file_existing = os.path.join(self.method.output_folder_value, f"{self.output_polygon}_boundary.gpkg")
+            output_file_existing = os.path.join(self.method.output_folder_value, f"{self.output_polygon.text()}_boundary.gpkg")
             # Open file dialog restricted to .shp and .gpkg
             file_path, _ = QFileDialog.getOpenFileName(
                 None,
@@ -330,7 +330,7 @@ class PolygonSetting(QtWidgets.QDialog):
         try:
             GUI_geofiles.extract_random_subset(self, self.sample_size_polygon.text())
             GUI_geofiles.create_centroid_layer(self)
-            self.method.output_polygon = self.output_polygon
+            self.method.output_polygon = self.output_polygon.text()
             mode_use(self)
             
             if self.building_value_polygon.text()=="0000":

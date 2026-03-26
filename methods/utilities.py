@@ -140,10 +140,10 @@ def save_coordinates(self):
                 return
     
             try:
-                output_gpkg = build_output_path(output_folder, self.output_polygon, "_boundary")
+                output_gpkg = build_output_path(output_folder, self.output_polygon.text(), "_boundary")
                 self.boundary_path = output_gpkg
                 remove_if_exists(output_gpkg)
-    
+        
                 polygon = Polygon(zip(df["longitude"], df["latitude"]))
                 gdf = gpd.GeoDataFrame({'geometry': [polygon]}, crs="EPSG:4326")
                 save_gpkg(gdf, output_gpkg, layer="polygon_layer")

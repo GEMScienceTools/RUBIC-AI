@@ -32,7 +32,7 @@ class GUI_geofiles:
         """
         output_file = (
             self.method.output_folder_value + "/" +
-            self.output_polygon + "_buildings_footprint.gpkg"
+            self.output_polygon.text() + "_buildings_footprint.gpkg"
         )
     
         # Check for existing footprint file
@@ -307,9 +307,9 @@ class GUI_geofiles:
         saves the selected features as a new GeoPackage file.
         """
         # Load buildng footprints
-        footprint = self.method.output_folder_value+"/"+self.output_polygon+"_buildings_footprint.gpkg"
+        footprint = self.method.output_folder_value+"/"+self.output_polygon.text()+"_buildings_footprint.gpkg"
         # Create output file for building footprints
-        output_file= self.method.output_folder_value+"/"+self.output_polygon+"_subset_footprints.gpkg"
+        output_file= self.method.output_folder_value+"/"+self.output_polygon.text()+"_subset_footprints.gpkg"
         # Ensure sample size is not greater than the number of points in the dataset
         seed=10
         # Check if a subset file exists
@@ -344,9 +344,9 @@ class GUI_geofiles:
         centroid coordinates, and saves the result as a new GeoPackage file.
         """
         # Load selected subset building
-        subset_file=self.method.output_folder_value+"/"+self.output_polygon+"_subset_footprints.gpkg"
+        subset_file=self.method.output_folder_value+"/"+self.output_polygon.text()+"_subset_footprints.gpkg"
         # Create output file for building footprints
-        output_file=self.method.output_folder_value+"/"+self.output_polygon+"_subset_centroids.gpkg"
+        output_file=self.method.output_folder_value+"/"+self.output_polygon.text()+"_subset_centroids.gpkg"
         # Check if a centroid file exists
         if os.path.exists(output_file):
             pass

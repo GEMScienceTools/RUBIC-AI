@@ -436,9 +436,10 @@ class GUIMethods:
         # Polygon method database
         # ============================================================== 
         if self.ui.insp_method == 0:
-            # Input and output for the method
+            # Input and output for the method      
             centroid_file=self.ui.output_folder_value+"/"+self.ui.file_name+"_subset_centroids.gpkg"
             database_file=self.ui.output_folder_value+"/"+self.ui.file_name+"_building_info.csv"
+            
             # Check if a database file exists
             if os.path.exists(database_file):
                 pass
