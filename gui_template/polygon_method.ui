@@ -465,6 +465,26 @@
      <string>Footprint source:</string>
     </property>
    </widget>
+   <widget class="QCheckBox" name="checkBox">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>369</y>
+      <width>221</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Population inspection</string>
+    </property>
+   </widget>
    <zorder>backg_1</zorder>
    <zorder>input_button_polygon</zorder>
    <zorder>save_button</zorder>
@@ -488,6 +508,7 @@
    <zorder>collection_mode_value</zorder>
    <zorder>footprint_value</zorder>
    <zorder>footprint_label</zorder>
+   <zorder>checkBox</zorder>
   </widget>
  </widget>
  <resources/>
