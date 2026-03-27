@@ -89,7 +89,7 @@ Both are rounded to the nearest multiple of 10.
 3. `Wood` in high-cost contexts (`USA`, `CAN`, `AUS`, `NZL`, `JPN`, `TWN`, and Europe) → use `AVG_COST_PER_AREA`.
 4. Informal construction is constrained to the minimum group value when needed.
 
-For more information about how to use and how works this service (see [LLM Cost Service](llms/readme.md))
+For more information about how to use and how works this service (see [LLM Cost Service](llms/README.md))
 
 ### 2.3 Limitation
 
