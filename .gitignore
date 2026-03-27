@@ -79,3 +79,4 @@ venv.bak/
 gsv_api_key.txt
 roads_api_key.txt
 openai_api_key.txt
+api_key/
