@@ -1,4 +1,3 @@
-import os
 import torch
 import torch.nn as nn
 import numpy as np
@@ -89,7 +88,7 @@ def main():
 
     # ---- Minimal "input files" ----
     # 1) One image file
-    image_path = r"test\LFINF\705099166_1671_0.jpg"
+    image_path = r"C:\Users\daniel.gomez\Documents\GitHub\RUBIC-AI\demos\local_images\images_ex1\20250605_105407.jpg"
 
     # 2) Minimal metadata CSV (ONE row)
     #    (Must contain country, city for the SAME image filename)
@@ -130,8 +129,8 @@ def main():
         probs = torch.softmax(logits, dim=1).cpu().numpy()[0]
         pred_idx = int(np.argmax(probs))
 
-    print("Prediction:", CLASS_NAMES[pred_idx])
-    print("Probabilities:", {CLASS_NAMES[i]: float(probs[i]) for i in range(len(CLASS_NAMES))})
+    # print("Prediction:", CLASS_NAMES[pred_idx])
+    # print("Probabilities:", {CLASS_NAMES[i]: float(probs[i]) for i in range(len(CLASS_NAMES))})
 
 if __name__ == "__main__":
     main()
