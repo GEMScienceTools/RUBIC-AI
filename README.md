@@ -35,7 +35,13 @@ Before you begin, make sure the following are installed on your system:
   ```bash
   git --version
   ```
-- **Python 3.11.13**
+- **Python 3.11**
+	which can be download is not native supported in some operative system version, in those cases you can install it from python website:
+	- Python 3.11[macOS](https://www.python.org/ftp/python/3.11.9/python-3.11.9-macos11.pkg)
+	
+	For windows one recommend option is to use Anaconda which makes the process easier, otherwise you can install directly python from this link 
+	- Python 3.11[windows](https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe)
+		
 - **Anaconda**   
   📥 Download: [Anaconda.com](https://www.anaconda.com/download/success)  
   📖 Installation guide: [Anaconda Installation Instructions](https://www.anaconda.com/docs/getting-started/anaconda/install#macos-linux-installation)
@@ -46,15 +52,19 @@ Before you begin, make sure the following are installed on your system:
 
    **Windows (Anaconda):**
    ```bash
-   conda create -n RUBIC-AI python=3.11.13
+   conda create -n RUBIC-AI python=3.11
    conda activate RUBIC-AI
    ```
 
-   **macOS/Linux:**
+   **macOS:**
    ```bash
    python3.11 -m venv RUBIC-AI
    source RUBIC-AI/bin/activate  # macOS/Linux
    ```
+   
+   ```bash
+  RUBIC-AI is not available on Linux due to some issue related to the graphical user interface.
+  ```
 2. **Clone the repository**
 
    Choose your preferred folder to clone the repository by opening the terminal and navigating to the desired location.

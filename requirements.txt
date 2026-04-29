@@ -18,3 +18,4 @@ openai==1.77.0
 mercantile==1.2.1
 overturemaps==0.17.0
 openquake.gem-taxonomy @ git+https://github.com/gem/oq-gem-taxonomy.git@taxonomy_v4.x
+setuptools==80.9.0
