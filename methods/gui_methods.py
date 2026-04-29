@@ -1729,10 +1729,10 @@ class GUIMethods:
                     self.data_ai.iloc[self.old_local, 9]  = self.ui.occup_cb_1.currentData()                   # Occupancy
                     self.data_ai.iloc[self.old_local, 10] = self.ui.bck_pos_cb_1.currentData()                 # Block Position
                     self.data_ai.iloc[self.old_local, 11] = self.ui.epc_const_cb_1.currentText()               # Epoch of construction
-                    self.data_ai.iloc[self.old_local, 12] = self.ui.roof_shape_cb_1.currentData()             # Roof shape
-                    self.data_ai.iloc[self.old_local, 13] = self.ui.roof_material_cb_1.currentData()          # Roof material
-                    self.data_ai.iloc[self.old_local, 14] = self.ui.irregularity_cb.currentData()                  # Verical irregularity
-                    self.data_ai.iloc[self.old_local, 15] = self.ui.img_q_cb_1.currentData()                  # Image Quality
+                    self.data_ai.iloc[self.old_local, 12] = self.ui.roof_shape_cb_1.currentData()              # Roof shape
+                    self.data_ai.iloc[self.old_local, 13] = self.ui.roof_material_cb_1.currentData()           # Roof material
+                    self.data_ai.iloc[self.old_local, 14] = self.ui.irregularity_cb.currentData()              # Vertical irregularity
+                    self.data_ai.iloc[self.old_local, 15] = self.ui.img_q_cb_1.currentData()                   # Image Quality
                     
                     # Taxonomy (works with missing fields)
                     def _s(v): return "" if v is None else str(v).strip()
@@ -2001,7 +2001,7 @@ class GUIMethods:
             else:
                 self.setComboBoxByData(self.ui.roof_material_cb_1 , self.data_ai.iloc[self.click_count , 13])
     
-            # Verical irregularity
+            # Vertical irregularity
             if self.data_ai.iloc[self.click_count , 14] is None :
                 self.ui.irregularity_cb.setCurrentText("Select Irregularity")
             elif pd.isna(self.data_ai.iloc[self.click_count , 14]) == True:
@@ -3173,10 +3173,16 @@ class GUIMethods:
         Opens a help dialog displaying a visual example of the available block position options.
         """
         # Paths to your example images for each roof shape 
-        self.images = {"Block position options": "help_img/block_position.png" }
+        self.images = {
+            "Soft story": "help_img/sos.jpg",
+            "Short column": "help_img/SHC.png",
+            "Pounding": "help_img/POP.jpg",
+            "Setback": "help_img/set.jpg",
+            "Change in vertical": "help_img/cvh.jpg"
+        }
         
-        help_window = HelpDialog(self.images, w_size_width=720, w_size_height=500, w_title= "Block position - visual example",
-                                 img_width=640, img_height=480, parent=self.ui, main_window=self.ui)
+        help_window = HelpDialog(self.images, w_size_width=720, w_size_height=500, w_title= "Vertical Irregularity - visual example",
+                                 img_width=180, img_height=180, parent=self.ui, main_window=self.ui)
         help_window.exec_()
         
         

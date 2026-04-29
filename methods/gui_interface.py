@@ -729,7 +729,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.irregularity.setFont(font)
         self.irregularity.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.irregularity.setObjectName("irregularity")
-        self.irregularity.setText("Verical Irregularity:")
+        self.irregularity.setText("Vertical Irregularity:")
         
         self.irregularity_cb = QtWidgets.QComboBox(self.centralwidget)
         self.irregularity_cb.setGeometry(QtCore.QRect(int(1220 * sf_x), int(470 * sf_y), int(241 * sf_x), int(31 * sf_y)))
