@@ -139,8 +139,12 @@ class GUIMethods:
                 limit_insp = self.data_building.shape[0] - 1
             else:
                 limit_insp = len(self.index_id)-1
+        elif self.ui.insp_method == 3:
+            # Local images
+            limit_insp = 1
+            
         self.limit_local = False
-        
+
         # Warning about last inspection
         if self.click_count >= limit_insp:
             QMessageBox.warning(self.ui, "Database Error", "No further inspections are available")
@@ -216,10 +220,11 @@ class GUIMethods:
                 
             # Check the size of inspection available    
             if self.start_click == True:
-                if self.click_count >= self.data_building.shape[0] - 1:
-                    self.click_count = self.data_building.shape[0] - 1
-                    QMessageBox.information(self.ui, "Inspections available", "The next building displayed is the final one in the database")
-                    self.start_click = False
+                if self.ui.insp_method != 3:
+                    if self.click_count >= self.data_building.shape[0] - 1:
+                        self.click_count = self.data_building.shape[0] - 1
+                        QMessageBox.information(self.ui, "Inspections available", "The next building displayed is the final one in the database")
+                        self.start_click = False
                 
         
     ############ Counts the number of clicks made on the previous button ################ 
