@@ -62,9 +62,8 @@ Before you begin, make sure the following are installed on your system:
    source RUBIC-AI/bin/activate  # macOS/Linux
    ```
    
-   ```bash
   RUBIC-AI is not available on Linux due to some issue related to the graphical user interface.
-  ```
+
 2. **Clone the repository**
 
    Choose your preferred folder to clone the repository by opening the terminal and navigating to the desired location.
