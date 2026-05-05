@@ -1283,43 +1283,81 @@ class GUIMethods:
         
     
     ############ Opacity function ################   
-    def add_not_detected_overlay(self, image_bgr, opacity=0.5, text="BUILDING NOT DETECTED"):
+    def add_not_detected_overlay(
+        self,
+        image_bgr,
+        opacity=0.5,
+        text="BUILDING NOT DETECTED",
+        output_size=(490, 310),
+    ):
         """
-        Takes a BGR image and returns a new image with:
-        - 50% opacity (white background)
-        - centered 'BUILDING NOT DETECTED' in red over white box
+        Resize image to a fixed display size and draw a consistent
+        'BUILDING NOT DETECTED' overlay on top.
+    
+        Parameters
+        ----------
+        image_bgr : np.ndarray
+            Input image in BGR format.
+        opacity : float
+            Opacity of the original image over the white background.
+        text : str
+            Message to display.
+        output_size : tuple
+            Fixed output size as (width, height). Default: (490, 310).
+    
+        Returns
+        -------
+        blended : np.ndarray
+            Output image with fixed size and consistent overlay.
         """
         if image_bgr is None:
             raise ValueError("Image is None in add_not_detected_overlay")
     
-        # White background (same size)
-        background = np.ones_like(image_bgr) * 255
+        # Fixed display size
+        out_w, out_h = output_size
     
-        # Blend for opacity
-        blended = cv2.addWeighted(image_bgr, opacity, background, 1 - opacity, 0)
+        # Resize image FIRST so all overlay elements are drawn
+        # in the same coordinate system
+        resized = cv2.resize(image_bgr, (out_w, out_h), interpolation=cv2.INTER_AREA)
     
-        # Text settings
+        # White background
+        background = np.full_like(resized, 255)
+    
+        # Blend original image with white background
+        blended = cv2.addWeighted(resized, opacity, background, 1 - opacity, 0)
+    
+        # Fixed text settings for the fixed display size
         font = cv2.FONT_HERSHEY_SIMPLEX
-        font_scale = 1
+        font_scale = 0.85
         thickness = 2
-        text = text
+        padding_x = 12
+        padding_y = 10
     
-        # Text size
+        # Measure text
         (text_w, text_h), baseline = cv2.getTextSize(text, font, font_scale, thickness)
     
-        # Center position
-        x = (blended.shape[1] - text_w) // 2
-        y = (blended.shape[0] + text_h) // 2
+        # Center text
+        x = (out_w - text_w) // 2
+        y = (out_h + text_h) // 2
     
-        # White rectangle behind text
-        padding = 10
-        top_left = (x - padding, y - text_h - padding)
-        bottom_right = (x + text_w + padding, y + baseline + padding)
+        # Rectangle coordinates
+        top_left = (x - padding_x, y - text_h - padding_y)
+        bottom_right = (x + text_w + padding_x, y + baseline + padding_y)
+    
+        # Draw white rectangle
         cv2.rectangle(blended, top_left, bottom_right, (255, 255, 255), -1)
     
-        # Red text
-        cv2.putText(blended, text, (x, y), font, font_scale, (0, 0, 255),
-                    thickness, cv2.LINE_AA)
+        # Draw red text
+        cv2.putText(
+            blended,
+            text,
+            (x, y),
+            font,
+            font_scale,
+            (0, 0, 255),
+            thickness,
+            cv2.LINE_AA,
+        )
     
         return blended
     
