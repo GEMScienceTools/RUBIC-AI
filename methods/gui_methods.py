@@ -1925,6 +1925,120 @@ class GUIMethods:
                 QMessageBox.warning(self.ui, "File Error", "The file is open or the folder is inaccessible. "
                                     +"Please close the file or check folder permissions.")
 
+           # Replicate inspections
+            classification_df = filtered_def
+            coordinates_df = self.data_building
+            
+            LAT_COL = "latitude"
+            LON_COL = "longitude"
+            FILENAME_COL = "image filename or link"
+            DATA_IMAGE_ID_COL = "id"
+            
+            # Check required columns
+            required_classification_cols = {LAT_COL, LON_COL, FILENAME_COL}
+            required_coordinates_cols = {DATA_IMAGE_ID_COL, LAT_COL, LON_COL}
+            
+            missing_classification = required_classification_cols - set(classification_df.columns)
+            missing_coordinates = required_coordinates_cols - set(coordinates_df.columns)
+            
+            if missing_classification:
+                raise ValueError(
+                    f"Missing columns in classification dataframe: {sorted(missing_classification)}"
+                )
+            
+            if missing_coordinates:
+                raise ValueError(
+                    f"Missing columns in coordinates dataframe: {sorted(missing_coordinates)}"
+                )
+            
+            # Keep original order so the output follows the input classification order
+            # and, within each classification row, the order in data_ex2.csv.
+            classification_df = classification_df.copy()
+            coordinates_df = coordinates_df.copy()
+            
+            classification_df["__classification_order"] = range(len(classification_df))
+            coordinates_df["__coordinates_order"] = range(len(coordinates_df))
+            
+            # ------------------------------------------------------------
+            # Convert coordinate columns to numeric before rounding.
+            # This prevents: TypeError: Expected numeric dtype, got object instead.
+            # ------------------------------------------------------------
+            for df_name, df in {
+                "classification_df": classification_df,
+                "coordinates_df": coordinates_df,
+            }.items():
+            
+                for col in [LAT_COL, LON_COL]:
+            
+                    # Convert possible string coordinates to numeric values.
+                    df[col] = pd.to_numeric(df[col], errors="coerce")
+            
+                    # Check if any coordinate could not be converted.
+                    if df[col].isna().any():
+                        invalid_rows = df[df[col].isna()]
+            
+                        raise ValueError(
+                            f"Invalid or missing numeric values found in column '{col}' "
+                            f"of {df_name}. Please check these rows:\n{invalid_rows}"
+                        )
+            
+            # Create rounded coordinate keys for robust matching.
+            classification_df["__lat_key"] = classification_df[LAT_COL].round(8)
+            classification_df["__lon_key"] = classification_df[LON_COL].round(8)
+            
+            coordinates_df["__lat_key"] = coordinates_df[LAT_COL].round(8)
+            coordinates_df["__lon_key"] = coordinates_df[LON_COL].round(8)
+            
+            # Rename data_ex2.csv id column to avoid conflict with the classification id.
+            coordinates_df = coordinates_df.rename(
+                columns={DATA_IMAGE_ID_COL: "__matched_filename"}
+            )
+            
+            # Merge: one classification row is repeated for every coordinate match.
+            expanded_df = classification_df.merge(
+                coordinates_df[
+                    [
+                        "__matched_filename",
+                        "__lat_key",
+                        "__lon_key",
+                        "__coordinates_order",
+                    ]
+                ],
+                on=["__lat_key", "__lon_key"],
+                how="inner",
+            )
+            
+            # Replace the image filename/link with the matching filename from data_ex2.csv.
+            expanded_df[FILENAME_COL] = expanded_df["__matched_filename"]
+            
+            # Restore stable order.
+            expanded_df = expanded_df.sort_values(
+                by=["__classification_order", "__coordinates_order"],
+                kind="stable",
+            )
+            
+            # Remove helper columns and preserve the original classification CSV columns.
+            original_classification_cols = classification_df.drop(
+                columns=[
+                    "__classification_order",
+                    "__lat_key",
+                    "__lon_key",
+                ]
+            ).columns
+            
+            expanded_df = expanded_df[original_classification_cols]
+            
+            # Save result.
+            output_csv = (
+                self.ui.output_folder_value
+                + "/"
+                + self.ui.file_name_local.text()
+                + "_All_images.csv"
+            )
+            
+            expanded_df.to_csv(output_csv, index=False)
+        
+        
         # restart varibles
         self.data_old = "OK" # TO BE SAVED THERE IS EXISTING DATA
         self.sw_insp = True
