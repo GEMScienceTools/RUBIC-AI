@@ -223,7 +223,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         """Set up the user interface components."""
         # Configure main window properties
         GUIInterface.setObjectName("GUIInterface")
-        GUIInterface.resize(int(1570*sf_x), int(715*sf_y))  # Size of the GUI (Display resolution)
+        GUIInterface.resize(int(1570*sf_x), int(740*sf_y))  # Size of the GUI (Display resolution)
         
         # Create a central widget where other widgets will be added
         self.centralwidget = QtWidgets.QWidget(GUIInterface)
@@ -339,7 +339,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         """ Button for next and previous building image """
         # Button to get the next building images
         self.next_button = QtWidgets.QPushButton(self.centralwidget)
-        self.next_button.setGeometry(QtCore.QRect(int(210 * sf_x), int(650 * sf_y), int(151 * sf_x), int(41 * sf_y)))
+        self.next_button.setGeometry(QtCore.QRect(int(210 * sf_x), int(670 * sf_y), int(151 * sf_x), int(41 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -349,7 +349,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Button to get the previous building images
         self.previous_button = QtWidgets.QPushButton(self.centralwidget)
-        self.previous_button.setGeometry(QtCore.QRect(int(20 * sf_x), int(650 * sf_y), int(171 * sf_x), int(41 * sf_y)))
+        self.previous_button.setGeometry(QtCore.QRect(int(20 * sf_x), int(670 * sf_y), int(171 * sf_x), int(41 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -359,7 +359,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Colored area for next and previous button
         self.img_area = QtWidgets.QLabel(self.centralwidget)
-        self.img_area.setGeometry(QtCore.QRect(int(10 * sf_x), int(640 * sf_y), int(371 * sf_x), int(61 * sf_y)))
+        self.img_area.setGeometry(QtCore.QRect(int(10 * sf_x), int(660 * sf_y), int(371 * sf_x), int(61 * sf_y)))
         self.img_area.setStyleSheet("background-color: rgb(209, 170, 255);")
         self.img_area.setText("")
         self.img_area.setObjectName("img_area")
@@ -745,9 +745,36 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.irregularity_cb.addItem("Change in vertical structure", "CHV")
         self.irregularity_cb.addItem("Other vertical irregularity", "IRVO")
         
+        self.n_bay_label = QtWidgets.QLabel(self.centralwidget)
+        self.n_bay_label.setGeometry(QtCore.QRect(int(1010 * sf_x), int(510 * sf_y), int(201 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_font))
+        font.setBold(True)
+        font.setWeight(75)
+        self.n_bay_label.setFont(font)
+        self.n_bay_label.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.n_bay_label.setObjectName("n_bay_label")
+        
+        self.n_bay_cb = QtWidgets.QComboBox(self.centralwidget)
+        self.n_bay_cb.setGeometry(QtCore.QRect(int(1220 * sf_x), int(510 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_font))
+        self.n_bay_cb.setFont(font)
+        self.n_bay_cb.setObjectName("n_bay_cb")
+        self.n_bay_cb.addItem("Select Number of Bays")
+        self.n_bay_cb.addItem("1", "1")
+        self.n_bay_cb.addItem("2", "2")
+        self.n_bay_cb.addItem("3", "3")
+        self.n_bay_cb.addItem("4", "4")
+        self.n_bay_cb.addItem("5", "5")
+        self.n_bay_cb.addItem("6", "6")
+        self.n_bay_cb.addItem("7+", "7+")
+        self.n_bay_cb.setCurrentIndex(0)
+        self.n_bay_cb.view().setFixedWidth(int(250 * sf_x)) 
+        
         # Epoch of construction for left image label
         self.epc_const_label_1 = QtWidgets.QLabel(self.centralwidget)
-        self.epc_const_label_1.setGeometry(QtCore.QRect(int(1010 * sf_x), int(510 * sf_y), int(201 * sf_x), int(31 * sf_y)))
+        self.epc_const_label_1.setGeometry(QtCore.QRect(int(1010 * sf_x), int(550 * sf_y), int(201 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -758,7 +785,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.epc_const_label_1.setText("Epoch of construction:")
         
         self.epc_const_cb_1 = QtWidgets.QComboBox(self.centralwidget)
-        self.epc_const_cb_1.setGeometry(QtCore.QRect(int(1220 * sf_x), int(510 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.epc_const_cb_1.setGeometry(QtCore.QRect(int(1220 * sf_x), int(550 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.epc_const_cb_1.setFont(font)
@@ -768,7 +795,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Image quality for left image label
         self.img_quality = QtWidgets.QLabel(self.centralwidget)
-        self.img_quality.setGeometry(QtCore.QRect(int(1010 * sf_x), int(550 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        self.img_quality.setGeometry(QtCore.QRect(int(1010 * sf_x), int(590 * sf_y), int(131 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -779,7 +806,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Image quality Combobox elements
         self.img_q_cb_1 = QtWidgets.QComboBox(self.centralwidget)
-        self.img_q_cb_1.setGeometry(QtCore.QRect(int(1220 * sf_x), int(550 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.img_q_cb_1.setGeometry(QtCore.QRect(int(1220 * sf_x), int(590 * sf_y), int(241 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.img_q_cb_1.setFont(font)
@@ -970,7 +997,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         """ Search button elements """
         self.search_img_button = QtWidgets.QPushButton(self.centralwidget)
-        self.search_img_button.setGeometry(QtCore.QRect(int(1400 * sf_x), int(630 * sf_y), int(151 * sf_x), int(31 * sf_y)))
+        self.search_img_button.setGeometry(QtCore.QRect(int(1400 * sf_x), int(650 * sf_y), int(151 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -980,14 +1007,14 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         self.search_img_value = QtWidgets.QLineEdit(self.centralwidget)
         self.search_img_value.setPlaceholderText("Enter image ID to search")
-        self.search_img_value.setGeometry(QtCore.QRect(int(1250 * sf_x), int(630 * sf_y), int(141 * sf_x), int(31 * sf_y)))
+        self.search_img_value.setGeometry(QtCore.QRect(int(1250 * sf_x), int(650 * sf_y), int(141 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.search_img_value.setFont(font)
         self.search_img_value.setObjectName("search_img_value")
         
         self.search_img_label = QtWidgets.QLabel(self.centralwidget)
-        self.search_img_label.setGeometry(QtCore.QRect(int(1130 * sf_x), int(630 * sf_y), int(101 * sf_x), int(31 * sf_y)))
+        self.search_img_label.setGeometry(QtCore.QRect(int(1130 * sf_x), int(650 * sf_y), int(101 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -1020,7 +1047,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         """ Progress Bar elements """
         # Progress bar widget
         self.progress_bar_method = QtWidgets.QProgressBar(self.centralwidget)
-        self.progress_bar_method.setGeometry(QtCore.QRect(int(620 * sf_x), int(660 * sf_y), int(161 * sf_x), int(23 * sf_y)))
+        self.progress_bar_method.setGeometry(QtCore.QRect(int(620 * sf_x), int(680 * sf_y), int(161 * sf_x), int(23 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.progress_bar_method.setFont(font)
@@ -1029,7 +1056,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         
         # Progress bar label value
         self.method_progress = QtWidgets.QLabel(self.centralwidget)
-        self.method_progress.setGeometry(QtCore.QRect(int(800 * sf_x), int(650 * sf_y), int(291 * sf_x), int(41 * sf_y)))
+        self.method_progress.setGeometry(QtCore.QRect(int(800 * sf_x), int(670 * sf_y), int(291 * sf_x), int(41 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.method_progress.setFont(font)
@@ -1038,7 +1065,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         """ AI Powered activation elements """
         # AI checkbox activation
         self.ai_check = QtWidgets.QCheckBox(self.centralwidget)
-        self.ai_check.setGeometry(QtCore.QRect(int(400 * sf_x), int(660 * sf_y), int(131 * sf_x), int(21 * sf_y)))
+        self.ai_check.setGeometry(QtCore.QRect(int(400 * sf_x), int(680 * sf_y), int(131 * sf_x), int(21 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -1049,7 +1076,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         """ Save data button elements """ 
         # Save data button
         self.save_data_button = QtWidgets.QPushButton(self.centralwidget)
-        self.save_data_button.setGeometry(QtCore.QRect(int(1400 * sf_x), int(670 * sf_y), int(111 * sf_x), int(31 * sf_y)))
+        self.save_data_button.setGeometry(QtCore.QRect(int(1400 * sf_x), int(690 * sf_y), int(111 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -1061,7 +1088,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         """ Vulnerability curve button""" 
         # Save data button
         self.vulnerability_curve_button = QtWidgets.QPushButton(self.centralwidget)
-        self.vulnerability_curve_button.setGeometry(QtCore.QRect(int(1130 * sf_x), int(670 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.vulnerability_curve_button.setGeometry(QtCore.QRect(int(1130 * sf_x), int(690 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -1069,6 +1096,13 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.vulnerability_curve_button.setFont(font)
         self.vulnerability_curve_button.setObjectName("vulnerability_curve_button")
         self.vulnerability_curve_button.setText("Vulnerability curve")
+        
+        """ Saved frame""" 
+        self.saved_frame = QtWidgets.QLabel(self.centralwidget)
+        self.saved_frame.setGeometry(QtCore.QRect(int(1120 * sf_x), int(640 * sf_y), int(441 * sf_x), int(91 * sf_y)))
+        self.saved_frame.setStyleSheet("background-color: rgb(255, 255, 170);")
+        self.saved_frame.setText("")
+        self.saved_frame.setObjectName("saved_frame")
         
         icon_size = QtCore.QSize(int(31 * sf_x), int(31 * sf_x))  # Icon is square
         self.bloc_pos_help = QtWidgets.QPushButton(self.centralwidget)
@@ -1177,6 +1211,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         ################################################################################
         """ Raise all elements """
         self.frame_location.raise_()
+        self.saved_frame.raise_()
         self.country_label_input.raise_()
         self.city_label.raise_()
         self.title.raise_()
@@ -1227,7 +1262,10 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.roof_shape_help.raise_()
         self.roof_material_help.raise_()
         self.irregularity_help.raise_()
-        self.vulnerability_curve_button.raise_() 
+        self.vulnerability_curve_button.raise_()
+        self.n_bay_label.raise_()
+        self.n_bay_cb.raise_()
+        
         
         GUIInterface.setCentralWidget(self.centralwidget)
 
@@ -1277,7 +1315,8 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.bounding_box_1.setText(_translate("search_img_value", "Manual box"))
         self.bounding_box_2.setText(_translate("search_img_value", "Manual box"))
         self.bounding_box_3.setText(_translate("search_img_value", "Manual box"))
-        
+        self.n_bay_label.setText(_translate("search_img_value", "Number of bays:"))
+        self.n_bay_cb.setItemText(0, _translate("search_img_value", "Select Number of Bays"))
         
 
         

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1574</width>
-    <height>715</height>
+    <height>741</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -105,7 +105,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>650</y>
+      <y>670</y>
       <width>171</width>
       <height>41</height>
      </rect>
@@ -707,7 +707,7 @@ background-color: rgb(102, 220, 255);</string>
     <property name="geometry">
      <rect>
       <x>210</x>
-      <y>650</y>
+      <y>670</y>
       <width>151</width>
       <height>41</height>
      </rect>
@@ -827,7 +827,7 @@ background-color: rgb(102, 220, 255);</string>
     <property name="geometry">
      <rect>
       <x>1170</x>
-      <y>510</y>
+      <y>550</y>
       <width>241</width>
       <height>31</height>
      </rect>
@@ -847,7 +847,7 @@ background-color: rgb(102, 220, 255);</string>
     <property name="geometry">
      <rect>
       <x>1400</x>
-      <y>630</y>
+      <y>650</y>
       <width>151</width>
       <height>31</height>
      </rect>
@@ -867,7 +867,7 @@ background-color: rgb(102, 220, 255);</string>
     <property name="geometry">
      <rect>
       <x>1250</x>
-      <y>630</y>
+      <y>650</y>
       <width>141</width>
       <height>31</height>
      </rect>
@@ -882,7 +882,7 @@ background-color: rgb(102, 220, 255);</string>
     <property name="geometry">
      <rect>
       <x>1130</x>
-      <y>630</y>
+      <y>650</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -964,7 +964,7 @@ background-color: rgb(254, 255, 174);</string>
     <property name="geometry">
      <rect>
       <x>620</x>
-      <y>660</y>
+      <y>680</y>
       <width>141</width>
       <height>23</height>
      </rect>
@@ -982,7 +982,7 @@ background-color: rgb(254, 255, 174);</string>
     <property name="geometry">
      <rect>
       <x>770</x>
-      <y>660</y>
+      <y>670</y>
       <width>261</width>
       <height>41</height>
      </rect>
@@ -1000,7 +1000,7 @@ background-color: rgb(254, 255, 174);</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>640</y>
+      <y>660</y>
       <width>371</width>
       <height>61</height>
      </rect>
@@ -1017,7 +1017,7 @@ background-color: rgb(209, 170, 255);</string>
     <property name="geometry">
      <rect>
       <x>1400</x>
-      <y>670</y>
+      <y>690</y>
       <width>111</width>
       <height>31</height>
      </rect>
@@ -1040,7 +1040,7 @@ background-color: rgb(209, 170, 255);</string>
     <property name="geometry">
      <rect>
       <x>400</x>
-      <y>660</y>
+      <y>680</y>
       <width>141</width>
       <height>31</height>
      </rect>
@@ -1279,7 +1279,7 @@ background-color: rgb(209, 170, 255);</string>
     <property name="geometry">
      <rect>
       <x>1170</x>
-      <y>550</y>
+      <y>590</y>
       <width>241</width>
       <height>31</height>
      </rect>
@@ -1321,25 +1321,6 @@ background-color: rgb(209, 170, 255);</string>
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QFrame" name="frame">
-    <property name="geometry">
-     <rect>
-      <x>390</x>
-      <y>650</y>
-      <width>151</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(241, 241, 241);</string>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
-    </property>
-   </widget>
    <widget class="QLabel" name="roof_material_1">
     <property name="geometry">
      <rect>
@@ -1367,7 +1348,7 @@ background-color: rgb(209, 170, 255);</string>
     <property name="geometry">
      <rect>
       <x>960</x>
-      <y>550</y>
+      <y>590</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -1413,7 +1394,7 @@ background-color: rgb(209, 170, 255);</string>
     <property name="geometry">
      <rect>
       <x>960</x>
-      <y>510</y>
+      <y>550</y>
       <width>201</width>
       <height>31</height>
      </rect>
@@ -1436,7 +1417,7 @@ background-color: rgb(209, 170, 255);</string>
     <property name="geometry">
      <rect>
       <x>1130</x>
-      <y>670</y>
+      <y>690</y>
       <width>191</width>
       <height>31</height>
      </rect>
@@ -1475,7 +1456,7 @@ background-color: rgb(209, 170, 255);</string>
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QComboBox" name="epc_const_cb_2">
+   <widget class="QComboBox" name="vertical_irr_cb">
     <property name="geometry">
      <rect>
       <x>1170</x>
@@ -1495,6 +1476,66 @@ background-color: rgb(209, 170, 255);</string>
      </property>
     </item>
    </widget>
+   <widget class="QLabel" name="n_bay_label">
+    <property name="geometry">
+     <rect>
+      <x>960</x>
+      <y>510</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Number of bays:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="n_bay_cb">
+    <property name="geometry">
+     <rect>
+      <x>1170</x>
+      <y>510</y>
+      <width>241</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <item>
+     <property name="text">
+      <string>Select Number of Bays</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>1120</x>
+      <y>640</y>
+      <width>441</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 255, 170);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <zorder>label_3</zorder>
    <zorder>label_2</zorder>
    <zorder>frame_location</zorder>
    <zorder>country_label_input</zorder>
@@ -1538,14 +1579,15 @@ background-color: rgb(209, 170, 255);</string>
    <zorder>roof_material_cb_1</zorder>
    <zorder>img_q_cb_1</zorder>
    <zorder>lat_label</zorder>
-   <zorder>frame</zorder>
    <zorder>roof_material_1</zorder>
    <zorder>img_quality</zorder>
    <zorder>roof_shape_1</zorder>
    <zorder>epoch_1</zorder>
    <zorder>vulnerability_curve_button</zorder>
    <zorder>irregularity</zorder>
-   <zorder>epc_const_cb_2</zorder>
+   <zorder>vertical_irr_cb</zorder>
+   <zorder>n_bay_label</zorder>
+   <zorder>n_bay_cb</zorder>
   </widget>
  </widget>
  <resources/>

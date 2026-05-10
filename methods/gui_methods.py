@@ -336,7 +336,12 @@ class GUIMethods:
                         self.cont_local = self.n_insp
                         self.data_old_local = False
                     
-                    self.cont_local = int(self.index_id[self.click_count])
+                    if len(self.index_id) > self.click_count:
+                        self.cont_local = int(self.index_id[self.click_count])
+                    else:     
+                        self.cont_local = int(self.index_id[-1])
+                        self.click_count = self.click_count - 1
+                    
                     if 'latitude' in self.ui.data_method.columns:
                         lat = float(self.ui.data_method.loc[self.cont_local, 'latitude'])
                     else:
@@ -510,6 +515,7 @@ class GUIMethods:
                             "roof_shape",
                             "roof_material",
                             "v_irregularity",
+                            "n_bays",
                             "image_quality",
                             "taxonomy",
                             "image filename or link"]
@@ -1712,7 +1718,8 @@ class GUIMethods:
                     self.data_ai.iloc[self.click_count, 12] = self.ui.roof_shape_cb_1.currentData()
                     self.data_ai.iloc[self.click_count, 13] = self.ui.roof_material_cb_1.currentData()
                     self.data_ai.iloc[self.click_count, 14] = self.ui.irregularity_cb.currentData()
-                    self.data_ai.iloc[self.click_count, 15] = self.ui.img_q_cb_1.currentData()
+                    self.data_ai.iloc[self.click_count, 15] = self.ui.n_bay_cb.currentData()
+                    self.data_ai.iloc[self.click_count, 16] = self.ui.img_q_cb_1.currentData()
                 
                     # Taxonomy (safe + partial)
                     def _s(v): return "" if v is None else str(v).strip()
@@ -1740,15 +1747,15 @@ class GUIMethods:
                     _add(parts, self.ui.occup_cb_1.currentData())
                 
                     tax = "/".join(parts)
-                    self.data_ai.iloc[self.click_count, 16] = tax
+                    self.data_ai.iloc[self.click_count, 17] = tax
                     if tax:
                         self.tax_check(tax)
                 
                     if self.img_url[0] != "":
-                        self.data_ai.iloc[self.click_count, 17] = self.img_url[0]
+                        self.data_ai.iloc[self.click_count, 18] = self.img_url[0]
                     else:
                         if isinstance(heading, int):
-                            self.data_ai.iloc[self.click_count, 17] = base_url + coord + "&heading=" + str((heading + 180) % 360) + "&pitch=5&fov=120"
+                            self.data_ai.iloc[self.click_count, 18] = base_url + coord + "&heading=" + str((heading + 180) % 360) + "&pitch=5&fov=120"
     
                 # ==============================================================
                 # Local images
@@ -1770,7 +1777,8 @@ class GUIMethods:
                     self.data_ai.iloc[self.old_local, 12] = self.ui.roof_shape_cb_1.currentData()              # Roof shape
                     self.data_ai.iloc[self.old_local, 13] = self.ui.roof_material_cb_1.currentData()           # Roof material
                     self.data_ai.iloc[self.old_local, 14] = self.ui.irregularity_cb.currentData()              # Vertical irregularity
-                    self.data_ai.iloc[self.old_local, 15] = self.ui.img_q_cb_1.currentData()                   # Image Quality
+                    self.data_ai.iloc[self.old_local, 15] = self.ui.n_bay_cb.currentData()              # Vertical irregularity
+                    self.data_ai.iloc[self.old_local, 16] = self.ui.img_q_cb_1.currentData()                   # Image Quality
                     
                     # Taxonomy (works with missing fields)
                     def _s(v): return "" if v is None else str(v).strip()
@@ -1798,11 +1806,11 @@ class GUIMethods:
                         parts.append(occup)
                     
                     tax = "/".join(parts)
-                    self.data_ai.iloc[self.old_local, 16] = tax  # Taxonomy
+                    self.data_ai.iloc[self.old_local, 17] = tax  # Taxonomy
                     if tax:
                         self.tax_check(tax)
                         
-                    self.data_ai.iloc[self.old_local, 17] = self.data_building.iloc[self.old_local, 0]
+                    self.data_ai.iloc[self.old_local, 18] = self.data_building.iloc[self.old_local, 0]
                
         #####################################################################################################    
         ########################## --------------- Extrapolation -----------------###########################
@@ -1838,7 +1846,7 @@ class GUIMethods:
                         self.data_ai.iloc[i, 12] = roof_shape_classes[predict_roof_shape_img (image_file, self.ui.insp_method, None, self.ui)   ]                      # Roof shape
                         self.data_ai.iloc[i, 13] = roof_material_classes[predict_roof_material_img (image_file, self.ui.insp_method, None, self.ui)  ]   
                         
-                        self.data_ai.iloc[i, 15] = (self.data_ai.iloc[i, 5]+"/"+
+                        self.data_ai.iloc[i, 16] = (self.data_ai.iloc[i, 5]+"/"+
                                                 self.data_ai.iloc[i, 6]+"+"+
                                                 self.data_ai.iloc[i, 7]+"/H:"+
                                                 str(self.data_ai.iloc[i, 8])+"/"+
@@ -1847,7 +1855,7 @@ class GUIMethods:
                                                 self.data_ai.iloc[i, 12]+"+"+
                                                 self.data_ai.iloc[i, 13])                       # Taxonomy
                         
-                        self.data_ai.iloc[i, 16] = url_gsv
+                        self.data_ai.iloc[i, 17] = url_gsv
                 except:
                     pass
                 
@@ -2161,13 +2169,21 @@ class GUIMethods:
             else:
                 self.setComboBoxByData(self.ui.irregularity_cb , self.data_ai.iloc[self.click_count , 14])
                 
-            # Image quality
+            # Number of bays 
             if self.data_ai.iloc[self.click_count , 15] is None :
-                self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
+                self.ui.n_bay_cb.setCurrentText("Select Number of Bays")
             elif pd.isna(self.data_ai.iloc[self.click_count , 15]) == True:
+                self.ui.n_bay_cb.setCurrentText("Select Number of Bays")
+            else:
+                self.setComboBoxByData(self.ui.n_bay_cb , self.data_ai.iloc[self.click_count , 15])
+                
+            # Image quality
+            if self.data_ai.iloc[self.click_count , 16] is None :
+                self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
+            elif pd.isna(self.data_ai.iloc[self.click_count , 16]) == True:
                 self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
             else:
-                self.setComboBoxByData(self.ui.img_q_cb_1 , self.data_ai.iloc[self.click_count , 15])
+                self.setComboBoxByData(self.ui.img_q_cb_1 , self.data_ai.iloc[self.click_count , 16])
                 
         
         elif self.ui.insp_method == 2: 
@@ -2267,11 +2283,19 @@ class GUIMethods:
                     
                 # Image quality
                 if self.data_ai.iloc[self.old_local , 15] is None :
-                    self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
+                    self.ui.n_bay_cb.setCurrentText("Select Number of Bays")
                 elif pd.isna(self.data_ai.iloc[self.old_local , 15]) == True:
+                    self.ui.n_bay_cb.setCurrentText("Select Number of Bays")
+                else:
+                    self.setComboBoxByData(self.ui.n_bay_cb , self.data_ai.iloc[self.old_local , 15])
+                    
+                # Image quality
+                if self.data_ai.iloc[self.old_local , 16] is None :
+                    self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
+                elif pd.isna(self.data_ai.iloc[self.old_local , 16]) == True:
                     self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
                 else:
-                    self.setComboBoxByData(self.ui.img_q_cb_1 , self.data_ai.iloc[self.old_local , 15])
+                    self.setComboBoxByData(self.ui.img_q_cb_1 , self.data_ai.iloc[self.old_local , 16])
 
         
     ############ Deep learning model for predict the LLRS Material ################
