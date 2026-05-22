@@ -12,8 +12,9 @@ import sys
 import numpy as np
 
 class HelpDialog(QDialog):
-
-    def __init__(self, image_paths, w_size_width, w_size_height, w_title, img_width, img_height, parent=None, main_window=None):
+    
+    def __init__(self, image_paths, w_size_width, w_size_height, w_title, img_width, img_height, description=None, parent=None, main_window=None):
+    # def __init__(self, image_paths, w_size_width, w_size_height, w_title, img_width, img_height, parent=None, main_window=None):
         super().__init__(parent)
         self.main_window = main_window  # Reference to the main window (GUIInterface)
         
@@ -58,31 +59,82 @@ class HelpDialog(QDialog):
         
         layout = QVBoxLayout()
         
+        if description:
+            description_label = QLabel(description)
+            description_label.setWordWrap(True)
+            description_label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        
+            font = QFont()
+            font.setPointSize(10)
+            description_label.setFont(font)
+        
+            description_label.setStyleSheet(
+                "padding: 6px; "
+                "margin-bottom: 8px;"
+            )
+        
+            layout.addWidget(description_label)
+        
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         content = QWidget()
         grid = QGridLayout()
 
         row, col = 0, 0
-        for i, (label, path) in enumerate(image_paths.items()):
+        for i, (label, item) in enumerate(image_paths.items()):
+            # Accept both formats:
+            # 1) "Concrete": "help_img/concrete.jpg"
+            # 2) "Concrete": {"path": "help_img/concrete.jpg", "description": "..."}
+            if isinstance(item, dict):
+                path = item.get("path", "")
+                description = item.get("description", "")
+            else:
+                path = item
+                description = ""
+        
             # Image
-            pixmap = QPixmap(path).scaled(img_width, img_height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            pixmap = QPixmap(path).scaled(
+                img_width,
+                img_height,
+                Qt.KeepAspectRatio,
+                Qt.SmoothTransformation
+            )
+        
             img_label = QLabel()
             img_label.setPixmap(pixmap)
             img_label.setAlignment(Qt.AlignCenter)
-
-            # Label (bold dark red)
+        
+            # Class label
             text_label = QLabel(label)
             text_label.setAlignment(Qt.AlignCenter)
+        
             font = QFont()
             font.setBold(True)
             text_label.setFont(font)
             text_label.setStyleSheet("color: darkred;")
-
-            # Layout for image + label
+        
+            # Class description
+            description_label = QLabel(description)
+            description_label.setWordWrap(True)
+            description_label.setAlignment(Qt.AlignCenter)
+        
+            description_font = QFont()
+            description_font.setPointSize(9)
+            description_label.setFont(description_font)
+        
+            description_label.setStyleSheet(
+                "color: black; "
+                "padding-left: 4px; "
+                "padding-right: 4px;"
+            )
+        
+            # Layout for image + label + description
             cell_layout = QVBoxLayout()
             cell_layout.addWidget(img_label)
             cell_layout.addWidget(text_label)
+        
+            if description:
+                cell_layout.addWidget(description_label)
 
             cell = QWidget()
             cell.setLayout(cell_layout)

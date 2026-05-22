@@ -53,13 +53,13 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         self.sf_font = sf_font
         self.setWindowTitle("Specific Coordinates Method Input")
         self.setWindowIcon(QtGui.QIcon("help_img/RUBIC_logo.png"))
-        self.resize(int(643 * sf_x), int(483 * sf_y))
+        self.resize(int(643 * sf_x), int(533 * sf_y))
 
         self.coord_frame = QtWidgets.QWidget(self)
 
         # Background
         self.backg_4 = QtWidgets.QLabel(self.coord_frame)
-        self.backg_4.setGeometry(QtCore.QRect(int(10 * sf_x), int(9 * sf_y), int(621 * sf_x), int(411 * sf_y)))
+        self.backg_4.setGeometry(QtCore.QRect(int(10 * sf_x), int(9 * sf_y), int(621 * sf_x), int(471 * sf_y)))
         self.backg_4.setStyleSheet("background-color: rgb(212, 206, 255);")
 
         font = QtGui.QFont()
@@ -120,7 +120,7 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         bold_font.setBold(True)
 
         self.save_button = QtWidgets.QPushButton(self.coord_frame)
-        self.save_button.setGeometry(QtCore.QRect(int(220 * sf_x), int(430 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.save_button.setGeometry(QtCore.QRect(int(220 * sf_x), int(490 * sf_y), int(191 * sf_x), int(31 * sf_y)))
         self.save_button.setFont(bold_font)
         self.save_button.setText("Save and continue")
         self.save_button.clicked.connect(self._on_save_coordinates)
@@ -146,9 +146,30 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         self.collection_mode.addItem("Manual")
         self.collection_mode.addItem("AI Powered")
         
+        # Label for Image Source
+        self.img_source_label = QtWidgets.QLabel(self.coord_frame)
+        self.img_source_label.setGeometry(QtCore.QRect(int(20 * sf_x), int(220 * sf_y), int(131 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_font))
+        font.setBold(True)
+        font.setWeight(75)
+        self.img_source_label.setFont(font)
+        self.img_source_label.setObjectName("img_source_label")
+        self.img_source_label.setText("Image source:")
+        
+        # ComboBox for Image Source Mode
+        self.img_source_mode = QtWidgets.QComboBox(self.coord_frame)
+        self.img_source_mode.setGeometry(QtCore.QRect(int(150 * sf_x), int(220 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        font = QtGui.QFont()
+        font.setPointSize(int(10 * sf_font))
+        self.img_source_mode.setFont(font)
+        self.img_source_mode.setObjectName("img_source_mode")
+        self.img_source_mode.addItem("Google Street View")
+        self.img_source_mode.addItem("Mapillary")
+        
         # TableWidget
         self.tableWidget = QtWidgets.QTableWidget(self.coord_frame)
-        self.tableWidget.setGeometry(QtCore.QRect(int(20 * sf_x), int(210 * sf_y), int(601 * sf_x), int(192 * sf_y)))
+        self.tableWidget.setGeometry(QtCore.QRect(int(20 * sf_x), int(270 * sf_y), int(601 * sf_x), int(192 * sf_y)))
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
@@ -166,6 +187,8 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         self.tableWidget.raise_()
         self.collection_mode.raise_()
         self.feature_collection_label.raise_()
+        self.img_source_label.raise_()
+        self.img_source_mode.raise_()
  
         # ==============================================================
         # Specific coordinates method functions

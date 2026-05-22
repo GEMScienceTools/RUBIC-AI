@@ -76,7 +76,7 @@ class GUIMethods:
         sf_x = screen_width / DESIGN_WIDTH
         sf_y = screen_height / DESIGN_HEIGHT
         sf_factor = np.sqrt(sf_x * sf_y)
-
+        self.sf_factor = sf_factor
         # DPI-based scale
         # Get a reliable DPI value
         if sys.platform.startswith("win"):
@@ -3324,22 +3324,74 @@ class GUIMethods:
         
         
     ############ Help button ################  
+    # def help_roof_material(self):
+    #     """
+    #     Opens a help dialog displaying a visual example of the available roof material options.
+    #     """
+    #     # Paths to your example images for each roof shape 
+    #     self.images = {
+    #         "Concrete": "help_img/concrete.jpg",
+    #         "Clay or concrete tile": "help_img/clay_tile.jpg",
+    #         "Metal or asbestos sheets": "help_img/asbesto.png",
+    #         "Wooden and asphalt shingles": "help_img/asphalt_shingles.jpg",
+    #         "Slate": "help_img/Slate.png",
+    #         "Solar panelled roofs": "help_img/solar_panel.png"
+    #     }
+        
+    #     help_window = HelpDialog(self.images, w_size_width=700, w_size_height=500, w_title= "Roof Material - visual example",
+    #                              img_width=180, img_height=180, parent=self.ui, main_window=self.ui)
+    #     help_window.exec_()
+    
     def help_roof_material(self):
         """
         Opens a help dialog displaying a visual example of the available roof material options.
         """
-        # Paths to your example images for each roof shape 
+    
+        description = (
+            "Use these examples as a visual reference to identify the dominant roof covering material. "
+            "When multiple materials are visible, select the material that occupies the largest roof area."
+        )
+    
+        # Paths to your example images for each roof material
         self.images = {
-            "Concrete": "help_img/concrete.jpg",
-            "Clay or concrete tile": "help_img/clay_tile.jpg",
-            "Metal or asbestos sheets": "help_img/asbesto.png",
-            "Wooden and asphalt shingles": "help_img/asphalt_shingles.jpg",
-            "Slate": "help_img/Slate.png",
-            "Solar panelled roofs": "help_img/solar_panel.png"
+            "Concrete": {
+                "path": "help_img/concrete.jpg",
+                "description": "Plain concrete slab, commonly used in high-rise buildings."
+            },
+            "Clay or concrete tile": {
+                "path": "help_img/clay_tile.jpg",
+                "description": "Roof covering made of clay or concrete tiles, commonly used in pitched roofs."
+            },
+            "Metal or asbestos sheets": {
+                "path": "help_img/asbesto.png",
+                "description": "Lightweight sheet roofing, often used in industrial, rural, or older buildings."
+            },
+            "Wooden and asphalt shingles": {
+                "path": "help_img/asphalt_shingles.jpg",
+                "description": "Small overlapping roof units made of wood or asphalt, commonly used in residential buildings."
+            },
+            "Slate": {
+                "path": "help_img/Slate.png",
+                "description": "Natural stone roofing material, usually dark-colored and arranged in thin overlapping pieces."
+            },
+            "Solar panelled roofs": {
+                "path": "help_img/solar_panel.png",
+                "description": "Roofs where solar panels are the dominant visible element or cover a large portion of the roof."
+            }
         }
-        
-        help_window = HelpDialog(self.images, w_size_width=700, w_size_height=500, w_title= "Roof Material - visual example",
-                                 img_width=180, img_height=180, parent=self.ui, main_window=self.ui)
+    
+        help_window = HelpDialog(
+            self.images,
+            description=description,
+            w_size_width=700*self.sf_factor,
+            w_size_height=750*self.sf_factor,
+            w_title="Roof Material - visual example",
+            img_width=180*self.sf_factor,
+            img_height=180*self.sf_factor,
+            parent=self.ui,
+            main_window=self.ui
+        )
+    
         help_window.exec_()
         
     
@@ -3357,7 +3409,8 @@ class GUIMethods:
             "Change in vertical": "help_img/cvh.jpg"
         }
         
-        help_window = HelpDialog(self.images, w_size_width=720, w_size_height=500, w_title= "Vertical Irregularity - visual example",
+        help_window = HelpDialog(self.images, description=None, w_size_width=720, w_size_height=500, 
+                                 w_title= "Vertical Irregularity - visual example",
                                  img_width=180, img_height=180, parent=self.ui, main_window=self.ui)
         help_window.exec_()
         
