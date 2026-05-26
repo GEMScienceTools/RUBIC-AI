@@ -26,6 +26,7 @@ class HelpDialog(QDialog):
 
         DESIGN_WIDTH = 1920
         DESIGN_HEIGHT = 1080
+        DESIGN_DPI = 96 * 1.25  # 125% Windows baseline -> 120 DPI
         
         # Scale the GUI based on resolution
         sf_x = screen_width / DESIGN_WIDTH
@@ -52,7 +53,12 @@ class HelpDialog(QDialog):
         sf_x = sf_factor
         sf_y = sf_factor
 
-
+        # Normalize to your design environment (Windows @ 125% = 120 DPI)
+        # If dpi == 120 => scale_dpi = 1 (your original machine)
+        scale_dpi = DESIGN_DPI / dpi
+        # Scale the GUI based on resolution
+        sf_font = sf_factor * scale_dpi
+        
         # Window Title
         self.setWindowTitle(w_title)
         self.resize(int(400*sf_x), int(300*sf_y))
@@ -65,7 +71,7 @@ class HelpDialog(QDialog):
             description_label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         
             font = QFont()
-            font.setPointSize(10)
+            font.setPointSize(int(10*sf_font))
             description_label.setFont(font)
         
             description_label.setStyleSheet(
@@ -119,7 +125,7 @@ class HelpDialog(QDialog):
             description_label.setAlignment(Qt.AlignCenter)
         
             description_font = QFont()
-            description_font.setPointSize(9)
+            description_font.setPointSize(int(9*sf_font))
             description_label.setFont(description_font)
         
             description_label.setStyleSheet(

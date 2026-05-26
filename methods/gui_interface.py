@@ -145,6 +145,12 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.roof_shape_help.clicked.connect(self.methods.help_roof_shape)
         self.roof_material_help.clicked.connect(self.methods.help_roof_material)
         self.irregularity_help.clicked.connect(self.methods.help_irregularity)
+        self.llrs_material_help.clicked.connect(self.methods.help_llrs_material)
+        self.llrs_help.clicked.connect(self.methods.help_llrs)
+        self.occupancy_help.clicked.connect(self.methods.help_occupancy)
+        self.code_help.clicked.connect(self.methods.help_code)
+        self.n_bay_help.clicked.connect(self.methods.help_n_bay)
+        self.img_quality_help.clicked.connect(self.methods.help_image_quality)
         
     # Method which close the GUI in the console     
     def closeEvent(self, event):
@@ -1207,6 +1213,150 @@ class GUIInterface(QtWidgets.QMainWindow):
             }
         """)
         
+        # ===========================
+        # LLRS Material Help Button
+        # ===========================
+        self.llrs_material_help = QtWidgets.QPushButton(self.centralwidget)
+        self.llrs_material_help.setIcon(icon)
+        self.llrs_material_help.setIconSize(icon_size)
+        self.llrs_material_help.setGeometry(QtCore.QRect(
+            int(420 * sf_x), int(470 * sf_y),
+            int(31 * sf_x), int(31 * sf_y)
+        ))
+        self.llrs_material_help.setObjectName("llrs_material_help")
+        
+        # Flat, transparent style
+        self.llrs_material_help.setFlat(True)
+        self.llrs_material_help.setStyleSheet("""
+            QPushButton {
+                border: none;
+                background-color: transparent;
+            }
+            QPushButton:hover {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+        """)
+        
+        # ===========================
+        # LLRS Help Button
+        # ===========================
+        self.llrs_help = QtWidgets.QPushButton(self.centralwidget)
+        self.llrs_help.setIcon(icon)
+        self.llrs_help.setIconSize(icon_size)
+        self.llrs_help.setGeometry(QtCore.QRect(
+            int(420 * sf_x), int(510 * sf_y),
+            int(31 * sf_x), int(31 * sf_y)
+        ))
+        self.llrs_help.setObjectName("llrs_help")
+        
+        # Flat, transparent style
+        self.llrs_help.setFlat(True)
+        self.llrs_help.setStyleSheet("""
+            QPushButton {
+                border: none;
+                background-color: transparent;
+            }
+            QPushButton:hover {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+        """)
+        
+        # ===========================
+        # Occupancy Help Button
+        # ===========================
+        self.occupancy_help = QtWidgets.QPushButton(self.centralwidget)
+        self.occupancy_help.setIcon(icon)
+        self.occupancy_help.setIconSize(icon_size)
+        self.occupancy_help.setGeometry(QtCore.QRect(
+            int(420 * sf_x), int(590 * sf_y),
+            int(31 * sf_x), int(31 * sf_y)
+        ))
+        self.occupancy_help.setObjectName("occupancy_help")
+        
+        # Flat, transparent style
+        self.occupancy_help.setFlat(True)
+        self.occupancy_help.setStyleSheet("""
+            QPushButton {
+                border: none;
+                background-color: transparent;
+            }
+            QPushButton:hover {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+        """)
+        
+        # ===========================
+        # Code Level Help Button
+        # ===========================
+        self.code_help = QtWidgets.QPushButton(self.centralwidget)
+        self.code_help.setIcon(icon)
+        self.code_help.setIconSize(icon_size)
+        self.code_help.setGeometry(QtCore.QRect(
+            int(900 * sf_x), int(550 * sf_y),
+            int(31 * sf_x), int(31 * sf_y)
+        ))
+        self.code_help.setObjectName("code_help")
+        
+        # Flat, transparent style
+        self.code_help.setFlat(True)
+        self.code_help.setStyleSheet("""
+            QPushButton {
+                border: none;
+                background-color: transparent;
+            }
+            QPushButton:hover {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+        """)
+        
+        # ===========================
+        # Number of bays Help Button
+        # ===========================
+        self.n_bay_help = QtWidgets.QPushButton(self.centralwidget)
+        self.n_bay_help.setIcon(icon)
+        self.n_bay_help.setIconSize(icon_size)
+        self.n_bay_help.setGeometry(QtCore.QRect(
+            int(1480 * sf_x), int(510 * sf_y),
+            int(31 * sf_x), int(31 * sf_y)
+        ))
+        self.n_bay_help.setObjectName("n_bay_help")
+        
+        # Flat, transparent style
+        self.n_bay_help.setFlat(True)
+        self.n_bay_help.setStyleSheet("""
+            QPushButton {
+                border: none;
+                background-color: transparent;
+            }
+            QPushButton:hover {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+        """)
+        
+        # ===========================
+        # Image quality Help Button
+        # ===========================
+        self.img_quality_help = QtWidgets.QPushButton(self.centralwidget)
+        self.img_quality_help.setIcon(icon)
+        self.img_quality_help.setIconSize(icon_size)
+        self.img_quality_help.setGeometry(QtCore.QRect(
+            int(1480 * sf_x), int(590 * sf_y),
+            int(31 * sf_x), int(31 * sf_y)
+        ))
+        self.img_quality_help.setObjectName("img_quality_help")
+        
+        # Flat, transparent style
+        self.img_quality_help.setFlat(True)
+        self.img_quality_help.setStyleSheet("""
+            QPushButton {
+                border: none;
+                background-color: transparent;
+            }
+            QPushButton:hover {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+        """)
+        
         ################################################################################
         ################################################################################
         """ Raise all elements """
@@ -1262,9 +1412,16 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.roof_shape_help.raise_()
         self.roof_material_help.raise_()
         self.irregularity_help.raise_()
+        self.llrs_material_help.raise_()
+        self.llrs_help.raise_()
+        self.occupancy_help.raise_()
+        self.code_help.raise_()
+        self.n_bay_help.raise_()
+        self.img_quality_help.raise_()
         self.vulnerability_curve_button.raise_()
         self.n_bay_label.raise_()
         self.n_bay_cb.raise_()
+        
         
         
         GUIInterface.setCentralWidget(self.centralwidget)

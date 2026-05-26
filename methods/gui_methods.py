@@ -3286,17 +3286,455 @@ class GUIMethods:
                 epoch.columns = ["Epochs"]
                 epoch.to_csv(path, index=False)
             
-            
+      
+    ############ Help button ################    
+    def help_llrs_material(self):
+        """
+        Opens a help dialog displaying visual examples of the available LLRS material options.
+        """
+    
+        description = (
+            "Use these examples as a visual reference to identify the dominant material of the "
+            "lateral load-resisting system (LLRS). When more than one material is visible, select "
+            "the material that best represents the main structural system of the building."
+        )
+    
+        # Paths to your example images for each LLRS material
+        self.images = {
+            "Concrete": {
+                "path": "help_img/concrete_llrs.jpg",
+                "description": (
+                    "Building whose main lateral load-resisting system is made of reinforced concrete, "
+                    "such as concrete frames, shear walls, or concrete structural elements."
+                )
+            },
+            "Masonry - Confined": {
+                "path": "help_img/mcf.jpg",
+                "description": (
+                    "Masonry building where walls are confined by reinforced concrete elements, "
+                    "typically vertical tie-columns and horizontal bond beams."
+                )
+            },
+            "Masonry - Reinforced": {
+                "path": "help_img/mr.jpg",
+                "description": (
+                    "Masonry building with walls strengthened using reinforcement, such as steel bars "
+                    "to improve structural resistance."
+                )
+            },
+            "Masonry - Unreinforced": {
+                "path": "help_img/mur.jpg",
+                "description": (
+                    "Masonry building made of brick, block, or stone walls without visible or expected "
+                    "reinforced concrete confinement or internal reinforcement."
+                )
+            },
+            "Steel": {
+                "path": "help_img/steel.jpg",
+                "description": (
+                    "Building whose main structural system is made of steel elements, such as steel "
+                    "frames, columns, beams, or bracing systems."
+                )
+            },
+            "Hybrid - MCF/MUR": {
+                "path": "help_img/hby.jpg",
+                "description": (
+                    "Building that combines confined masonry and unreinforced masonry characteristics, "
+                    "or where different parts of the building appear to use different masonry systems."
+                )
+            },
+            "Informal materials": {
+                "path": "help_img/inf_mat.jpg",
+                "description": (
+                    "Building constructed with informal, temporary, lightweight, or low-quality materials, "
+                    "often showing irregular construction practices or non-engineered solutions."
+                )
+            },
+            "Wood": {
+                "path": "help_img/wood.jpg",
+                "description": (
+                    "Building whose main structural system is made primarily of timber or wooden elements, "
+                    "such as wood frames, posts, beams, or panels."
+                )
+            },
+            "Adobe": {
+                "path": "help_img/adobe.jpg",
+                "description": (
+                    "Building constructed mainly with adobe or earthen masonry units, commonly identified "
+                    "by thick walls and traditional construction techniques."
+                )
+            }
+        }
+    
+        help_window = HelpDialog(
+            self.images,
+            description=description,
+            w_size_width=int(800 * self.sf_factor),
+            w_size_height=int(750 * self.sf_factor),
+            w_title="LLRS Material - visual example",
+            img_width=int(180 * self.sf_factor),
+            img_height=int(180 * self.sf_factor),
+            parent=self.ui,
+            main_window=self.ui
+        )
+    
+        help_window.exec_()
+        
+    ############ Help button ################    
+    def help_llrs(self):
+        """
+        Opens a help dialog displaying visual examples of the available LLRS options.
+        """
+    
+        description = (
+            "Use these examples as a visual reference to identify the dominant "
+            "lateral load-resisting system (LLRS). When more than one system is visible, select "
+            "the system that best represents the main structural behavior of the building."
+        )
+    
+        # Paths to your example images for each LLRS type
+        self.images = {
+            "Dual System": {
+                "path": "help_img/LDUAL.jpg",
+                "description": (
+                    "Structural system that combines moment frames with shear walls or braced frames. "
+                    "Both systems contribute to resisting lateral loads such as earthquake or wind forces."
+                )
+            },
+            "Infilled frames": {
+                "path": "help_img/LFINF.jpg",
+                "description": (
+                    "Frame structure, usually concrete or steel, where the spaces between columns and beams "
+                    "are filled with masonry walls. The infill walls may influence the lateral behavior."
+                )
+            },
+            "Moment frames": {
+                "path": "help_img/LFM.jpg",
+                "description": (
+                    "Structural system composed of beams and columns connected with rigid or semi-rigid joints, "
+                    "allowing the frame to resist lateral loads through bending action."
+                )
+            },
+            "Walls": {
+                "path": "help_img/LWAL.jpg",
+                "description": (
+                    "Structural system where walls are the main elements resisting lateral loads. "
+                    "These may include masonry walls, reinforced concrete shear walls, or load-bearing walls."
+                )
+            },
+            "Braced frames": {
+                "path": "help_img/LFBR.jpg",
+                "description": (
+                    "Frame system with diagonal bracing elements that provide lateral stiffness and strength. "
+                    "This system is commonly found in steel structures."
+                )
+            },
+            "No lateral load-resisting system": {
+                "path": "help_img/inf_mat.jpg",
+                "description": (
+                    "Building with no clear or identifiable lateral load-resisting system. "
+                    "This may apply to very weak, informal, temporary, or highly irregular structures."
+                )
+            },
+            "Flat slab/plate or waffle slab": {
+                "path": "help_img/WAFFLE.jpg",
+                "description": (
+                    "Structural system where floor slabs are directly supported by columns, without deep beams. "
+                    "This includes flat plates, flat slabs, or waffle slabs."
+                )
+            }
+        }
+    
+        help_window = HelpDialog(
+            self.images,
+            description=description,
+            w_size_width=int(700 * self.sf_factor),
+            w_size_height=int(750 * self.sf_factor),
+            w_title="LLRS - visual example",
+            img_width=int(180 * self.sf_factor),
+            img_height=int(180 * self.sf_factor),
+            parent=self.ui,
+            main_window=self.ui
+        )
+        help_window.exec_()
+        
+        
+    ############ Help button ################    
+    def help_occupancy(self):
+        """
+        Opens a help dialog displaying visual examples of the available occupancy type options.
+        """
+    
+        description = (
+            "Use these examples as a visual reference to identify the dominant building occupancy. "
+            "When more than one use is visible, select the option that best represents the main use of the building."
+        )
+    
+        # Paths to your example images for each occupancy type
+        self.images = {
+            "Residential": {
+                "path": "help_img/mur.jpg",
+                "description": (
+                    "Building mainly used for housing, such as houses, apartment buildings, or residential towers. "
+                    "Typical visual cues include balconies, repeated windows, private entrances, and domestic-scale façades."
+                )
+            },
+            "Commercial": {
+                "path": "help_img/LFBR.jpg",
+                "description": (
+                    "Building mainly used for business, retail, offices, restaurants, or services. "
+                    "Typical visual cues include storefronts, large display windows, signs, offices, or public entrances."
+                )
+            },
+            "Industrial": {
+                "path": "help_img/steel.jpg",
+                "description": (
+                    "Building mainly used for manufacturing, storage, logistics, or industrial activities. "
+                    "Typical visual cues include large volumes, wide doors, loading bays, metal cladding, few windows, or warehouse-like forms."
+                )
+            },
+            "Mixed (Residential + Commercial)": {
+                "path": "help_img/res_com.jpg",
+                "description": (
+                    "Building combining residential and commercial uses, commonly with shops or services on the ground floor "
+                    "and apartments or housing units on the upper floors."
+                )
+            },
+            "Educational": {
+                "path": "help_img/edu.jpg",
+                "description": (
+                    "Building mainly used for education, such as schools, universities, or training centers. "
+                    "Typical visual cues include large institutional layouts, classrooms, playgrounds, campus areas, or school signage."
+                )
+            },
+            "Healthcare": {
+                "path": "help_img/healthcare.jpg",
+                "description": (
+                    "Building mainly used for medical or health services, such as hospitals, clinics, or health centers. "
+                    "Typical visual cues include emergency entrances, medical signs, large institutional façades, or ambulance access."
+                )
+            },
+            "Government": {
+                "path": "help_img/government.jpg",
+                "description": (
+                    "Building mainly used for public administration or government services, such as municipal offices, courts, "
+                    "police stations, or other official public institutions."
+                )
+            }
+        }
+    
+        help_window = HelpDialog(
+            self.images,
+            description=description,
+            w_size_width=int(700 * self.sf_factor),
+            w_size_height=int(750 * self.sf_factor),
+            w_title="Occupancy type - visual example",
+            img_width=int(180 * self.sf_factor),
+            img_height=int(180 * self.sf_factor),
+            parent=self.ui,
+            main_window=self.ui
+        )
+    
+        help_window.exec_()
+    
+    ############ Help button ################    
+    def help_code(self):
+        """
+        Opens a help dialog displaying visual examples of the available building code level options.
+        """
+    
+        description = (
+            "Use these examples as a visual reference to identify the likely building code level. "
+            "The code level should be selected based on visible construction quality, structural regularity, "
+            "materials, detailing, and the apparent level of engineering design."
+        )
+    
+        # Paths to your example images for each building code level
+        self.images = {
+            "High-code": {
+                "path": "help_img/healthcare.jpg",
+                "description": (
+                    "Building that appears to follow modern seismic or structural design provisions. "
+                    "Typical visual cues include regular geometry, good construction quality, engineered materials, "
+                    "and well-defined structural elements."
+                )
+            },
+            "Moderate-code": {
+                "path": "help_img/sos.jpg",
+                "description": (
+                    "Building that appears to have been designed or constructed under earlier engineering standards, which "
+                    "may increase vulnerability in specific aspects, typically with acceptable material quality."
+                )
+            },
+            "Low-code": {
+                "path": "help_img/POP.jpg",
+                "description": (
+                    "Building that appears to have been designed or constructed under early engineering standards, where "
+                    "structural provisions are limited and some details now prohibited in complex buildings may still be present, "
+                    "although they may remain acceptable for simple structures."
+                )
+            },
+            "No-code": {
+                "path": "help_img/inf_mat.jpg",
+                "description": (
+                    "Building that appears to be non-engineered or informal, with little or no evidence of code-based "
+                    "construction. Typical visual cues include improvised materials, poor workmanship, high irregularity, "
+                    "or temporary construction features."
+                )
+            }
+        }
+    
+        help_window = HelpDialog(
+            self.images,
+            description=description,
+            w_size_width=int(700 * self.sf_factor),
+            w_size_height=int(750 * self.sf_factor),
+            w_title="Building code level - visual example",
+            img_width=int(180 * self.sf_factor),
+            img_height=int(180 * self.sf_factor),
+            parent=self.ui,
+            main_window=self.ui
+        )
+    
+        help_window.exec_()
+        
+    ############ Help button ################   
+    def help_image_quality(self):
+        """
+        Opens a help dialog displaying visual examples of the available image quality options.
+        """
+    
+        description = (
+            "Use these examples as a visual reference to assess the quality of the image for building "
+            "attribute identification. Select the option that best represents how clearly the relevant "
+            "visual cues can be observed."
+        )
+    
+        # Paths to your example images for each image quality level
+        self.images = {
+            "Excellent": {
+                "path": "help_img/res_com.jpg",
+                "description": (
+                    "Image with a clear and unobstructed view of the building, where most or all visual cues "
+                    "needed to identify the building attributes are clearly visible."
+                )
+            },
+            "Good": {
+                "path": "help_img/good.jpg",
+                "description": (
+                    "Image with a good view of the building, with only minor obstacles, noise, or perspective "
+                    "issues that do not significantly affect the identification of building attributes."
+                )
+            },
+            "Intermediate": {
+                "path": "help_img/LFBR.jpg",
+                "description": (
+                    "Image where some building attributes can be identified clearly, but others are uncertain "
+                    "due to partial obstruction, limited resolution, shadows, angle, or image noise."
+                )
+            },
+            "Bad": {
+                "path": "help_img/bad_quality.jpg",
+                "description": (
+                    "Image where it is difficult to identify building attributes because of strong obstruction, "
+                    "poor resolution, excessive noise, bad angle, blur, or very limited visibility of the building."
+                )
+            }
+        }
+    
+        help_window = HelpDialog(
+            self.images,
+            description=description,
+            w_size_width=int(950 * self.sf_factor),
+            w_size_height=int(800 * self.sf_factor),
+            w_title="Image quality - visual example",
+            img_width=int(180 * self.sf_factor),
+            img_height=int(180 * self.sf_factor),
+            parent=self.ui,
+            main_window=self.ui
+        )
+    
+        help_window.exec_()
+        
+    ############ Help button ################   
+    def help_n_bay(self):
+        """
+        Opens a help dialog displaying a visual example of how assign image quality.
+        """
+    
+        description = (
+            "Use this example as a visual reference to assign the image quality."
+        )
+    
+        # Path to the example image for counting the number of bays
+        self.images = {
+            "Number of bays": {
+                "path": "help_img/n_bay.png",
+                "description": (
+                    "Visual reference showing how to identify and count façade bays. "
+                    "Count the repeated horizontal divisions between main vertical elements, such as columns, "
+                    "structural walls, or clearly visible façade modules."
+                )
+            }
+        }
+    
+        help_window = HelpDialog(
+            self.images,
+            description=description,
+            w_size_width=int(850 * self.sf_factor),
+            w_size_height=int(750 * self.sf_factor),
+            w_title="Number of bays - visual example",
+            img_width=int(640 * self.sf_factor),
+            img_height=int(480 * self.sf_factor),
+            parent=self.ui,
+            main_window=self.ui
+        )
+    
+        help_window.exec_()
+        
     ############ Help button ################   
     def help_block_position(self):
         """
         Opens a help dialog displaying a visual example of the available block position options.
         """
-        # Paths to your example images for each roof shape 
-        self.images = {"Block position options": "help_img/block_position.png" }
-        
-        help_window = HelpDialog(self.images, w_size_width=720, w_size_height=500, w_title= "Block position - visual example",
-                                 img_width=640, img_height=480, parent=self.ui, main_window=self.ui)
+    
+        description = (
+            "Use this example as a visual reference to identify the position of the building within the block. "
+            "Select the option that best represents how the building is connected to neighboring buildings."
+        )
+    
+        # Path to the example image for block position options
+        self.images = {
+            "Detached building": {
+                "path": "help_img/isolated.jpg",
+                "description": "The building is detached, with no adjoining or attached buildings; all exterior walls are exposed"
+            },
+            "Adjoining building(s) one side": {
+                "path": "help_img/bp1.jpg",
+                "description": "The building has adjoining or attached building(s) on one side"
+            },
+            "Adjoining building(s) two side": {
+                "path": "help_img/bp2.jpg",
+                "description": "The building has adjoining or attached building(s) on two sides"
+            },
+            "Adjoining building(s) three side": {
+                "path": "help_img/bp3.jpg",
+                "description": "The building has adjoining or attached building(s) on three sides"
+            }
+        }
+    
+        help_window = HelpDialog(
+            self.images,
+            description=description,
+            w_size_width=int(1200 * self.sf_factor),
+            w_size_height=int(800 * self.sf_factor),
+            w_title="Block position - visual example",
+            img_width=int(350 * self.sf_factor),
+            img_height=int(350 * self.sf_factor),
+            parent=self.ui,
+            main_window=self.ui
+        )
+    
         help_window.exec_()
         
         
@@ -3305,43 +3743,68 @@ class GUIMethods:
         """
         Opens a help dialog displaying a visual example of the available roof shape options.
         """
-        # Paths to your example images for each roof shape 
+    
+        description = (
+            "Use these examples as a visual reference to identify the dominant roof shape. "
+            "When the roof has multiple visible shapes, select the option that best represents the main roof configuration."
+        )
+    
+        # Paths to your example images for each roof shape
         self.images = {
-            "Flat": "help_img/flat_roof.png",
-            "Pitched with gable ends": "help_img/gable_roof.png",
-            "Pitched and hipped": "help_img/hipped_roof.png",
-            "Pitched with dormers": "help_img/dormes_roof.png",
-            "Monopitch": "help_img/monoslope_roof.png",
-            "Sawtooth": "help_img/Sawtooth_roof.png",
-            "Curved": "help_img/curved.png",
-            "Complex regular": "help_img/complex_regular.png",
-            "Complex irregular": "help_img/complex_irregular.png"
+            "Flat": {
+                "path": "help_img/flat_roof.png",
+                "description": "Roof with little or no visible slope, commonly found in modern, commercial, or high-rise buildings."
+            },
+            "Pitched with gable ends": {
+                "path": "help_img/gable_roof.png",
+                "description": "Roof with two sloping sides that meet at a ridge, forming triangular gable ends."
+            },
+            "Pitched and hipped": {
+                "path": "help_img/hipped_roof.png",
+                "description": "Pitched roof where all sides slope downward toward the walls, without vertical gable ends."
+            },
+            "Pitched with dormers": {
+                "path": "help_img/dormes_roof.png",
+                "description": "Pitched roof containing dormer windows or small roof projections emerging from the main roof surface."
+            },
+            "Monopitch": {
+                "path": "help_img/monoslope_roof.png",
+                "description": "Single-sloped roof surface, also known as a shed or mono-slope roof."
+            },
+            "Sawtooth": {
+                "path": "help_img/Sawtooth_roof.png",
+                "description": "Roof composed of a series of repeated slopes, often resembling saw teeth and commonly used in industrial buildings."
+            },
+            "Curved": {
+                "path": "help_img/curved.png",
+                "description": "Roof with a rounded or arched shape instead of straight sloping planes."
+            },
+            "Complex regular": {
+                "path": "help_img/complex_regular.png",
+                "description": "Roof formed by several repeated or organized roof planes, with a regular and systematic geometry."
+            },
+            "Complex irregular": {
+                "path": "help_img/complex_irregular.png",
+                "description": "Roof formed by multiple roof planes with an irregular, asymmetric, or non-repetitive geometry."
+            }
         }
-        
-        help_window = HelpDialog(self.images, w_size_width=700, w_size_height=700, w_title= "Roof Shape - visual example",
-                                 img_width=180, img_height=180, parent=self.ui, main_window=self.ui)
+    
+        help_window = HelpDialog(
+            self.images,
+            description=description,
+            w_size_width=int(700 * self.sf_factor),
+            w_size_height=int(900 * self.sf_factor),
+            w_title="Roof Shape - visual example",
+            img_width=int(180 * self.sf_factor),
+            img_height=int(180 * self.sf_factor),
+            parent=self.ui,
+            main_window=self.ui
+        )
+    
         help_window.exec_()
         
         
-    ############ Help button ################  
-    # def help_roof_material(self):
-    #     """
-    #     Opens a help dialog displaying a visual example of the available roof material options.
-    #     """
-    #     # Paths to your example images for each roof shape 
-    #     self.images = {
-    #         "Concrete": "help_img/concrete.jpg",
-    #         "Clay or concrete tile": "help_img/clay_tile.jpg",
-    #         "Metal or asbestos sheets": "help_img/asbesto.png",
-    #         "Wooden and asphalt shingles": "help_img/asphalt_shingles.jpg",
-    #         "Slate": "help_img/Slate.png",
-    #         "Solar panelled roofs": "help_img/solar_panel.png"
-    #     }
-        
-    #     help_window = HelpDialog(self.images, w_size_width=700, w_size_height=500, w_title= "Roof Material - visual example",
-    #                              img_width=180, img_height=180, parent=self.ui, main_window=self.ui)
-    #     help_window.exec_()
-    
+    ############ Help button ################    
     def help_roof_material(self):
         """
         Opens a help dialog displaying a visual example of the available roof material options.
@@ -3383,11 +3846,11 @@ class GUIMethods:
         help_window = HelpDialog(
             self.images,
             description=description,
-            w_size_width=700*self.sf_factor,
-            w_size_height=750*self.sf_factor,
+            w_size_width=int(700*self.sf_factor),
+            w_size_height=int(750*self.sf_factor),
             w_title="Roof Material - visual example",
-            img_width=180*self.sf_factor,
-            img_height=180*self.sf_factor,
+            img_width=int(180*self.sf_factor),
+            img_height=int(180*self.sf_factor),
             parent=self.ui,
             main_window=self.ui
         )
@@ -3398,20 +3861,65 @@ class GUIMethods:
     ############ Help button ################   
     def help_irregularity(self):
         """
-        Opens a help dialog displaying a visual example of the available block position options.
+        Opens a help dialog displaying visual examples of the available vertical irregularity options.
         """
-        # Paths to your example images for each roof shape 
+    
+        description = (
+            "Use these examples as a visual reference to identify common vertical irregularities. "
+            "Select the option that best represents the irregularity observed in the building."
+        )
+    
+        # Paths to your example images for each vertical irregularity type
         self.images = {
-            "Soft story": "help_img/sos.jpg",
-            "Short column": "help_img/SHC.png",
-            "Pounding": "help_img/POP.jpg",
-            "Setback": "help_img/set.jpg",
-            "Change in vertical": "help_img/cvh.jpg"
+            "Soft story": {
+                "path": "help_img/sos.jpg",
+                "description": (
+                    "A story, usually the ground floor, with significantly lower stiffness or strength "
+                    "than the stories above, often due to open parking areas, large openings, or fewer walls."
+                )
+            },
+            "Short column": {
+                "path": "help_img/SHC.png",
+                "description": (
+                    "A column whose effective height is reduced by partial-height walls or openings, "
+                    "making it more vulnerable to concentrated seismic forces."
+                )
+            },
+            "Pounding": {
+                "path": "help_img/POP.jpg",
+                "description": (
+                    "A condition where adjacent buildings are very close to each other, allowing them "
+                    "to collide during lateral movement such as earthquake shaking."
+                )
+            },
+            "Setback": {
+                "path": "help_img/set.jpg",
+                "description": (
+                    "A sudden reduction in the building plan area or width at upper stories, creating "
+                    "a step-like vertical profile."
+                )
+            },
+            "Change in vertical": {
+                "path": "help_img/cvh.jpg",
+                "description": (
+                    "A noticeable change in the vertical structural configuration, such as changes in "
+                    "wall alignment, column layout, stiffness, or mass distribution along the height."
+                )
+            }
         }
-        
-        help_window = HelpDialog(self.images, description=None, w_size_width=720, w_size_height=500, 
-                                 w_title= "Vertical Irregularity - visual example",
-                                 img_width=180, img_height=180, parent=self.ui, main_window=self.ui)
+    
+        help_window = HelpDialog(
+            self.images,
+            description=description,
+            w_size_width=int(720 * self.sf_factor),
+            w_size_height=int(850 * self.sf_factor),
+            w_title="Vertical Irregularity - visual example",
+            img_width=int(180 * self.sf_factor),
+            img_height=int(180 * self.sf_factor),
+            parent=self.ui,
+            main_window=self.ui
+        )
+    
         help_window.exec_()
         
         
