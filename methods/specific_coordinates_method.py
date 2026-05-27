@@ -164,8 +164,8 @@ class SpecificLocationSetting(QtWidgets.QDialog):
         font.setPointSize(int(10 * sf_font))
         self.img_source_mode.setFont(font)
         self.img_source_mode.setObjectName("img_source_mode")
-        self.img_source_mode.addItem("Google Street View")
-        self.img_source_mode.addItem("Mapillary")
+        self.img_source_mode.addItem("Google Street View", 1)
+        self.img_source_mode.addItem("Mapillary", 2)
         
         # TableWidget
         self.tableWidget = QtWidgets.QTableWidget(self.coord_frame)

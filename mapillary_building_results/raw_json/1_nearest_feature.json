@@ -1,0 +1,20 @@
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [
+      -8.658143877983093,
+      40.64297683677171
+    ]
+  },
+  "properties": {
+    "captured_at": 1778590532147,
+    "compass_angle": 51.152612157995975,
+    "creator_id": 26560763586926271,
+    "foot": false,
+    "id": 962994436651520,
+    "is_pano": true,
+    "quality_score": 0.852,
+    "sequence_id": "3f6sWNupTZB8wqxzGEe7ib"
+  }
+}

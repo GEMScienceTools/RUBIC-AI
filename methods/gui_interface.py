@@ -20,16 +20,20 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.method_dialog.exec_()  # This will show the method window as a modal dialog    
         self.insp_method = self.method_dialog.insp_method
         
+        # Polygon method
         if self.insp_method == 0:
             self.output_folder_value = self.method_dialog.output_folder_value
             self.file_name = self.method_dialog.output_polygon.text()
             self.ai_value = self.method_dialog.ai_value
-            
+        
+        # Specific coordinates
         elif self.insp_method == 1:
             self.output_folder_value = self.method_dialog.output_folder_value
             self.file_name = self.method_dialog.specific_output_name.text()
             self.ai_value = self.method_dialog.ai_value 
+            self.img_source = self.method_dialog.img_source
             
+        # Local images
         elif self.insp_method == 2:
             self.data_method = self.method_dialog.data_local
             self.folder_path = self.method_dialog.folder_path
@@ -37,7 +41,8 @@ class GUIInterface(QtWidgets.QMainWindow):
             self.output_folder_value = self.method_dialog.output_folder_value
             self.file_name_local = self.method_dialog.local_output_name
             self.ai_value = self.method_dialog.ai_value 
-            
+           
+        # Extrapolation
         elif self.insp_method == 3:
             # Variable which define the extrapolation mode
             self.extrapolation_mode = self.method_dialog.extrapolation_mode

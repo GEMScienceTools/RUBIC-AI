@@ -1,0 +1,32 @@
+{
+  "type": "FeatureCollection",
+  "features": {
+    "type": "Feature",
+    "geometry": {},
+    "properties": {
+      "captured_at": 1778590532147,
+      "compass_angle": 51.152612157996,
+      "computed_compass_angle": 133.34941850931,
+      "camera_type": "spherical",
+      "computed_rotation": [
+        0.74095581599747,
+        -1.7290781342836,
+        1.7472115190317
+      ],
+      "computed_geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.658281949666,
+          40.642968398018
+        ]
+      },
+      "width": 5376,
+      "height": 2688,
+      "thumb_256_url": "https:\\/\\/scontent.flis7-1.fna.fbcdn.net\\/m1\\/v\\/t6\\/An94CPHsFfAKoHKNieYiODLKTtSDH6TQkRdtnPNelUi27cq42iOG-Fr71dW9iPjsj6vxQMxWRTUNnJL83YSGz7le3Xk_2q-pH81Y03hCExlIEaDdJMdemv0lPYTGO-o5Snu98oTaMk776G4Fw_Uq7Q?stp=s256x128&edm=ALXxkZ8EAAAA&_nc_gid=5nWcWLqcs1OgkjyKWm19gQ&_nc_oc=Adpfdx_kOVDfUTcF3TYEIWpvSHLUU1rfr1rAQEr2AWpyYz1FY0w9hFqLIpicB8IU138&ccb=10-5&oh=00_Af6PaVR0A1Y8oZ0USYX1oMJ1dF5F1EaukskPBAwaEMFULg&oe=6A3E68B7&_nc_sid=201bca",
+      "thumb_1024_url": "https:\\/\\/scontent.flis7-1.fna.fbcdn.net\\/m1\\/v\\/t6\\/An94CPHsFfAKoHKNieYiODLKTtSDH6TQkRdtnPNelUi27cq42iOG-Fr71dW9iPjsj6vxQMxWRTUNnJL83YSGz7le3Xk_2q-pH81Y03hCExlIEaDdJMdemv0lPYTGO-o5Snu98oTaMk776G4Fw_Uq7Q?stp=s1024x512&edm=ALXxkZ8EAAAA&_nc_gid=5nWcWLqcs1OgkjyKWm19gQ&_nc_oc=Adpfdx_kOVDfUTcF3TYEIWpvSHLUU1rfr1rAQEr2AWpyYz1FY0w9hFqLIpicB8IU138&ccb=10-5&oh=00_Af7l8hFgwDIMSqb0OgtwDMg4V1-3zBcdnx7WY2c4JQelbw&oe=6A3E68B7&_nc_sid=201bca",
+      "thumb_2048_url": "https:\\/\\/scontent.flis7-1.fna.fbcdn.net\\/m1\\/v\\/t6\\/An94CPHsFfAKoHKNieYiODLKTtSDH6TQkRdtnPNelUi27cq42iOG-Fr71dW9iPjsj6vxQMxWRTUNnJL83YSGz7le3Xk_2q-pH81Y03hCExlIEaDdJMdemv0lPYTGO-o5Snu98oTaMk776G4Fw_Uq7Q?stp=s2048x1024&edm=ALXxkZ8EAAAA&_nc_gid=5nWcWLqcs1OgkjyKWm19gQ&_nc_oc=Adpfdx_kOVDfUTcF3TYEIWpvSHLUU1rfr1rAQEr2AWpyYz1FY0w9hFqLIpicB8IU138&ccb=10-5&oh=00_Af4jbjj34dpSUbE9G2kjIHbNza7D9nxazB-EeFVb0Yu-og&oe=6A3E68B7&_nc_sid=201bca",
+      "thumb_original_url": "https:\\/\\/scontent.flis7-1.fna.fbcdn.net\\/m1\\/v\\/t6\\/An94CPHsFfAKoHKNieYiODLKTtSDH6TQkRdtnPNelUi27cq42iOG-Fr71dW9iPjsj6vxQMxWRTUNnJL83YSGz7le3Xk_2q-pH81Y03hCExlIEaDdJMdemv0lPYTGO-o5Snu98oTaMk776G4Fw_Uq7Q?edm=ALXxkZ8EAAAA&_nc_gid=5nWcWLqcs1OgkjyKWm19gQ&_nc_oc=Adpfdx_kOVDfUTcF3TYEIWpvSHLUU1rfr1rAQEr2AWpyYz1FY0w9hFqLIpicB8IU138&ccb=10-5&oh=00_Af7Asv3lTzfXKx2Gg8ikwIryEths1n7Vhwsx1Lx9m9O-gw&oe=6A3E68B7&_nc_sid=201bca",
+      "id": "962994436651520"
+    }
+  }
+}

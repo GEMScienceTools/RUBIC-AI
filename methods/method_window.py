@@ -350,6 +350,7 @@ class InspectionSetting(QDialog):
                 self.specific_dialog.exec_()
                 self.data_specific = self.specific_dialog.df 
                 self.ai_value = self.specific_dialog.ai_value
+                self.img_source = self.specific_dialog.img_source_mode.currentData() 
                 
             # ==============================================================
             # Local images method
