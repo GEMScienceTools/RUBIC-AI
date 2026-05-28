@@ -595,43 +595,25 @@ class GUIMethods:
             # Polygon method or Specific coordinates
             # ============================================================== 
             # Input parameters
-            with open("methods/gsv_api_key.txt", "r") as f:
-                api_key = f.read().strip()
-    
-            lat= self.ui.lat_value.text()
-            lon= self.ui.lon_value.text() 
-            url = "https://maps.googleapis.com/maps/api/streetview/metadata"
-            params = {
-                "location": f"{lat},{lon}",
-                "key": api_key
-            }
-            response = requests.get(url, params=params)
-            data = response.json()
-            # Check status
-            if data.get("status") == "OK":
-                return True  # Street View is available
-            else:
-                return False  # No Street View coverage
+            # 1: Google Street View (Paid API needed)
+            if self.ui.img_source == 1:
+                with open("methods/gsv_api_key.txt", "r") as f:
+                    api_key = f.read().strip()
         
-        else:
-            # ==============================================================
-            # Local images 
-            # ============================================================== 
-            # Input parameters
-            with open("methods/gsv_api_key.txt", "r") as f:
-                api_key = f.read().strip()
-            url = "https://maps.googleapis.com/maps/api/streetview/metadata"
-            params = {
-                "location": f"{self.lat_extrapolation},{self.lon_extrapolation}",
-                "key": api_key
-            }
-            response = requests.get(url, params=params)
-            data = response.json()
-            # Check status
-            if data.get("status") == "OK":
-                return True  # Street View is available
-            else:
-                return False  # No Street View coverage
+                lat= self.ui.lat_value.text()
+                lon= self.ui.lon_value.text() 
+                url = "https://maps.googleapis.com/maps/api/streetview/metadata"
+                params = {
+                    "location": f"{lat},{lon}",
+                    "key": api_key
+                }
+                response = requests.get(url, params=params)
+                data = response.json()
+                # Check status
+                if data.get("status") == "OK":
+                    return True  # Street View is available
+                else:
+                    return False  # No Street View coverage
         
         
     ############# Retrieve GSV building images ################   
@@ -691,23 +673,29 @@ class GUIMethods:
             else:
                 with open("methods/mapillary_api_key.txt", "r") as f:
                     MAPILLARY_ACCESS_TOKEN = f.read().strip()
-
-                CSV_COORDINATES_PATH = self.ui.output_folder_value+"/"+self.ui.file_name+"_building_info.csv"
-
-                mapillary_image_source(
+                
+                # ==============================================================
+                # Get Images From Mapillary
+                orthophoto_matrix, info = mapillary_image_source(
                     access_token=MAPILLARY_ACCESS_TOKEN,
-                    csv_coordinates_path=CSV_COORDINATES_PATH,
+                    latitude=self.data_building.loc[self.click_count, "latitude"],
+                    longitude=self.data_building.loc[self.click_count, "longitude"],
+                    point_id=self.data_building.loc[self.click_count, "id"],
+                    image_number=self.click_count + 1,
+                    output_dir=self.ui.output_folder_value+"/Mapillary",
+                    return_info=True,
+                    return_color_order="BGR",
                 )
                 
                 angle = (-30,0,30)
                 self.img_url = ["","",""]
                 for aux in range (3):
                     if aux == 0:
-                        self.img_url[aux] , self.img_original_1, self.year_left = get_street_view_image(location, api_key, angle[aux], 5, 120)
+                        self.img_original_1 = orthophoto_matrix
                     elif aux == 1:
-                        self.img_url[aux] , self.img_original_2, self.year_center = get_street_view_image(location, api_key, angle[aux], 5, 120)
+                        self.img_original_2 = orthophoto_matrix
                     else:
-                        self.img_url[aux] , self.img_original_3, self.year_right = get_street_view_image(location, api_key, angle[aux], 5, 120)
+                        self.img_original_3 = orthophoto_matrix
 
                 
         # ==============================================================
@@ -740,50 +728,56 @@ class GUIMethods:
     def img_angle_left (self):
         """Open the image angle setting pop-up window."""
         if self.ui.insp_method == 0 or self.ui.insp_method == 1:
-            try:
-                # Building coordinates
-                location = (float(self.ui.lat_value.text()), float(self.ui.lon_value.text()))
-                # API key is required; without it, access to GSV is not possible
-                with open("methods/gsv_api_key.txt", "r") as f:
-                    api_key = f.read().strip() 
-           
-                app = QApplication.instance()  # Ensure PyQt instance exists
-                if app is None:
-                    app = QApplication([])
+            # Image Source
+            # 1: Google Street View (Paid API needed)
+            # 2: Mapillary (Free API is needed, but it provides less coverage and, in some cases, lower image quality)
+            if self.ui.img_source == 1:
+                try:
+                    # Building coordinates
+                    location = (float(self.ui.lat_value.text()), float(self.ui.lon_value.text()))
+                    # API key is required; without it, access to GSV is not possible
+                    with open("methods/gsv_api_key.txt", "r") as f:
+                        api_key = f.read().strip() 
+               
+                    app = QApplication.instance()  # Ensure PyQt instance exists
+                    if app is None:
+                        app = QApplication([])
+                        
+                    # Called function where the user creates a manual bounding box by clicking four points, which is then displayed in the UI frame.
+                    gsv_dialog = gsv_angle_setting(parent=self.ui, main_window=self.ui, gui_methods=self)
+                    gsv_dialog.exec_()  # Open the pop-up
                     
-                # Called function where the user creates a manual bounding box by clicking four points, which is then displayed in the UI frame.
-                gsv_dialog = gsv_angle_setting(parent=self.ui, main_window=self.ui, gui_methods=self)
-                gsv_dialog.exec_()  # Open the pop-up
-                
-                # Get the feature values provide by the user
-                self.pitch_left = gsv_dialog.pitch_value.value()
-                self.heading_left = gsv_dialog.heading_value.value()
-                self.fov_left = gsv_dialog.fov_value.value()
-                
-                # Left image identifier
-                self.img_original_1 = get_street_view_image(location, api_key, self.heading_left, self.pitch_left, self.fov_left)[1]
+                    # Get the feature values provide by the user
+                    self.pitch_left = gsv_dialog.pitch_value.value()
+                    self.heading_left = gsv_dialog.heading_value.value()
+                    self.fov_left = gsv_dialog.fov_value.value()
+                    
+                    # Left image identifier
+                    self.img_original_1 = get_street_view_image(location, api_key, self.heading_left, self.pitch_left, self.fov_left)[1]
+                    self.sw_angle = 0
+                    
+                    # Prepare new image
+                    display_image_rgb = cv2.cvtColor(self.img_original_1, cv2.COLOR_BGR2RGB)
+                    h, w, ch = display_image_rgb.shape
+                    bytes_per_line = w * 3
+                    qimg = QtGui.QImage(display_image_rgb.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+                    
+                    #Plot new img in the GUI
+                    pixmap = QtGui.QPixmap.fromImage(qimg)
+                    img_frames = [self.ui.left_gsv_img,self.ui.central_gsv_img,self.ui.right_gsv_img]
+                    img_frames[0].setPixmap(
+                        pixmap.scaled(img_frames[0].width(), img_frames[0].height(),
+                                      QtCore.Qt.IgnoreAspectRatio,
+                                      QtCore.Qt.SmoothTransformation))
+                    
+                    # Building detector function
+                    self.object_detector_building(None)
+                    
+                except:
+                    QMessageBox.warning(self.ui, "Image Error",
+                                    "No image is currently displayed. Please click *Next Building* to load an image first.")
+            else:
                 self.sw_angle = 0
-                
-                # Prepare new image
-                display_image_rgb = cv2.cvtColor(self.img_original_1, cv2.COLOR_BGR2RGB)
-                h, w, ch = display_image_rgb.shape
-                bytes_per_line = w * 3
-                qimg = QtGui.QImage(display_image_rgb.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
-                
-                #Plot new img in the GUI
-                pixmap = QtGui.QPixmap.fromImage(qimg)
-                img_frames = [self.ui.left_gsv_img,self.ui.central_gsv_img,self.ui.right_gsv_img]
-                img_frames[0].setPixmap(
-                    pixmap.scaled(img_frames[0].width(), img_frames[0].height(),
-                                  QtCore.Qt.IgnoreAspectRatio,
-                                  QtCore.Qt.SmoothTransformation))
-                
-                # Building detector function
-                self.object_detector_building(None)
-                
-            except:
-                QMessageBox.warning(self.ui, "Image Error",
-                                "No image is currently displayed. Please click *Next Building* to load an image first.")
         else:
             QMessageBox.warning(self.ui, "Method Error",
                                 "This option is not available for local images.")
@@ -793,46 +787,49 @@ class GUIMethods:
     def img_angle_central (self):
         """Open the image angle setting pop-up window."""
         if self.ui.insp_method == 0 or self.ui.insp_method == 1:
-            try:
-                # Building coordinates
-                location = (float(self.ui.lat_value.text()), float(self.ui.lon_value.text()))
-                # API key is required; without it, access to GSV is not possible
-                with open("methods/gsv_api_key.txt", "r") as f:
-                    api_key = f.read().strip() 
-           
-                app = QApplication.instance()  # Ensure PyQt instance exists
-                if app is None:
-                    app = QApplication([])
-                    
-                # Called function where the user creates a manual bounding box by clicking four points, which is then displayed in the UI frame.
-                gsv_dialog = gsv_angle_setting(parent=self.ui, main_window=self.ui, gui_methods=self)
-                gsv_dialog.exec_()  # Open the pop-up
-                
-                # Get the feature values provide by the user
-                self.pitch_central = gsv_dialog.pitch_value.value()
-                self.heading_central = gsv_dialog.heading_value.value()
-                self.fov_central = gsv_dialog.fov_value.value()
+            if self.ui.img_source == 1:
+                try:
+                    # Building coordinates
+                    location = (float(self.ui.lat_value.text()), float(self.ui.lon_value.text()))
+                    # API key is required; without it, access to GSV is not possible
+                    with open("methods/gsv_api_key.txt", "r") as f:
+                        api_key = f.read().strip() 
+               
+                    app = QApplication.instance()  # Ensure PyQt instance exists
+                    if app is None:
+                        app = QApplication([])
                         
-                self.img_original_2 = get_street_view_image(location, api_key, self.heading_central, self.pitch_central, self.fov_central)[1]
+                    # Called function where the user creates a manual bounding box by clicking four points, which is then displayed in the UI frame.
+                    gsv_dialog = gsv_angle_setting(parent=self.ui, main_window=self.ui, gui_methods=self)
+                    gsv_dialog.exec_()  # Open the pop-up
+                    
+                    # Get the feature values provide by the user
+                    self.pitch_central = gsv_dialog.pitch_value.value()
+                    self.heading_central = gsv_dialog.heading_value.value()
+                    self.fov_central = gsv_dialog.fov_value.value()
+                            
+                    self.img_original_2 = get_street_view_image(location, api_key, self.heading_central, self.pitch_central, self.fov_central)[1]
+                    self.sw_angle = 1
+                    display_image_rgb = cv2.cvtColor(self.img_original_2, cv2.COLOR_BGR2RGB)
+                    h, w, ch = display_image_rgb.shape
+                    bytes_per_line = w * 3
+                    qimg = QtGui.QImage(display_image_rgb.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+                
+                    pixmap = QtGui.QPixmap.fromImage(qimg)
+                    img_frames = [self.ui.left_gsv_img,self.ui.central_gsv_img,self.ui.right_gsv_img]
+                    img_frames[1].setPixmap(
+                        pixmap.scaled(img_frames[1].width(), img_frames[1].height(),
+                                      QtCore.Qt.IgnoreAspectRatio,
+                                      QtCore.Qt.SmoothTransformation))
+                    
+                    # Building detector function
+                    self.object_detector_building(None)
+                    
+                except:
+                    QMessageBox.warning(self.ui, "Image Error",
+                                    "No image is currently displayed. Please click *Next Building* to load an image first.")
+            else:
                 self.sw_angle = 1
-                display_image_rgb = cv2.cvtColor(self.img_original_2, cv2.COLOR_BGR2RGB)
-                h, w, ch = display_image_rgb.shape
-                bytes_per_line = w * 3
-                qimg = QtGui.QImage(display_image_rgb.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
-            
-                pixmap = QtGui.QPixmap.fromImage(qimg)
-                img_frames = [self.ui.left_gsv_img,self.ui.central_gsv_img,self.ui.right_gsv_img]
-                img_frames[1].setPixmap(
-                    pixmap.scaled(img_frames[1].width(), img_frames[1].height(),
-                                  QtCore.Qt.IgnoreAspectRatio,
-                                  QtCore.Qt.SmoothTransformation))
-                
-                # Building detector function
-                self.object_detector_building(None)
-                
-            except:
-                QMessageBox.warning(self.ui, "Image Error",
-                                "No image is currently displayed. Please click *Next Building* to load an image first.")
         else:
             QMessageBox.warning(self.ui, "Method Error",
                                 "This option is not available for local images.")
@@ -842,45 +839,48 @@ class GUIMethods:
     def img_angle_right (self):
         """Open the image angle setting pop-up window."""
         if self.ui.insp_method == 0 or self.ui.insp_method == 1:
-            try:
-                # Building coordinates
-                location = (float(self.ui.lat_value.text()), float(self.ui.lon_value.text()))
-                # API key is required; without it, access to GSV is not possible
-                with open("methods/gsv_api_key.txt", "r") as f:
-                    api_key = f.read().strip() 
-           
-                app = QApplication.instance()  # Ensure PyQt instance exists
-                if app is None:
-                    app = QApplication([])
-                    
-                # Called function where the user creates a manual bounding box by clicking four points, which is then displayed in the UI frame.
-                gsv_dialog = gsv_angle_setting(parent=self.ui, main_window=self.ui, gui_methods=self)
-                gsv_dialog.exec_()  # Open the pop-up
-                
-                self.pitch_right = gsv_dialog.pitch_value.value()
-                self.heading_right = gsv_dialog.heading_value.value()
-                self.fov_right = gsv_dialog.fov_value.value()
+            if self.ui.img_source == 1:
+                try:
+                    # Building coordinates
+                    location = (float(self.ui.lat_value.text()), float(self.ui.lon_value.text()))
+                    # API key is required; without it, access to GSV is not possible
+                    with open("methods/gsv_api_key.txt", "r") as f:
+                        api_key = f.read().strip() 
+               
+                    app = QApplication.instance()  # Ensure PyQt instance exists
+                    if app is None:
+                        app = QApplication([])
                         
-                self.img_original_3 = get_street_view_image(location, api_key, self.heading_right, self.pitch_right, self.fov_right)[1]
+                    # Called function where the user creates a manual bounding box by clicking four points, which is then displayed in the UI frame.
+                    gsv_dialog = gsv_angle_setting(parent=self.ui, main_window=self.ui, gui_methods=self)
+                    gsv_dialog.exec_()  # Open the pop-up
+                    
+                    self.pitch_right = gsv_dialog.pitch_value.value()
+                    self.heading_right = gsv_dialog.heading_value.value()
+                    self.fov_right = gsv_dialog.fov_value.value()
+                            
+                    self.img_original_3 = get_street_view_image(location, api_key, self.heading_right, self.pitch_right, self.fov_right)[1]
+                    self.sw_angle = 2
+                    display_image_rgb = cv2.cvtColor(self.img_original_3, cv2.COLOR_BGR2RGB)
+                    h, w, ch = display_image_rgb.shape
+                    bytes_per_line = w * 3
+                    qimg = QtGui.QImage(display_image_rgb.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+                
+                    pixmap = QtGui.QPixmap.fromImage(qimg)
+                    img_frames = [self.ui.left_gsv_img,self.ui.right_gsv_img,self.ui.right_gsv_img]
+                    img_frames[2].setPixmap(
+                        pixmap.scaled(img_frames[2].width(), img_frames[2].height(),
+                                      QtCore.Qt.IgnoreAspectRatio,
+                                      QtCore.Qt.SmoothTransformation))
+                    
+                    # Building detector function
+                    self.object_detector_building(None)
+                    
+                except:
+                    QMessageBox.warning(self.ui, "Image Error",
+                                    "No image is currently displayed. Please click *Next Building* to load an image first.")
+            else:
                 self.sw_angle = 2
-                display_image_rgb = cv2.cvtColor(self.img_original_3, cv2.COLOR_BGR2RGB)
-                h, w, ch = display_image_rgb.shape
-                bytes_per_line = w * 3
-                qimg = QtGui.QImage(display_image_rgb.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
-            
-                pixmap = QtGui.QPixmap.fromImage(qimg)
-                img_frames = [self.ui.left_gsv_img,self.ui.right_gsv_img,self.ui.right_gsv_img]
-                img_frames[2].setPixmap(
-                    pixmap.scaled(img_frames[2].width(), img_frames[2].height(),
-                                  QtCore.Qt.IgnoreAspectRatio,
-                                  QtCore.Qt.SmoothTransformation))
-                
-                # Building detector function
-                self.object_detector_building(None)
-                
-            except:
-                QMessageBox.warning(self.ui, "Image Error",
-                                "No image is currently displayed. Please click *Next Building* to load an image first.")
         else:
             QMessageBox.warning(self.ui, "Method Error",
                                 "This option is not available for local images.")
@@ -1122,16 +1122,163 @@ class GUIMethods:
                     # ==============================================================
                     # Mapillary
                     # ==============================================================
-                    # with open("methods/mapillary_api_key.txt", "r") as f:
-                    #     MAPILLARY_ACCESS_TOKEN = f.read().strip()
+                    # Getting the images from Mapillary
+                    org_img = [self.img_original_1,self.img_original_2,self.img_original_3]
+                    # Vector for check if the building is detected
+                    self.predicted_img = [0,0,0]
+                    
+                    # Ensure the image is in RGB format
+                    if self.sw_angle == 0:
+                        image_rgb = self.img_original_1
+                        self.sw_angle = None
+                        aux = 0
+                    elif self.sw_angle == 1:
+                        image_rgb = self.img_original_2
+                        self.sw_angle = None
+                        aux = 1
+                    elif self.sw_angle == 2:
+                        image_rgb = self.img_original_3
+                        self.sw_angle = None
+                        aux = 2
+                    else:
+                        image_rgb = org_img[aux]
+                    
+                    # Getting the images from Mapillary
+                    org_img = [self.img_original_1,self.img_original_2,self.img_original_3]
+                    # Vector for check if the building is detected
+                    self.predicted_img = [0,0,0]
+                    # Load the image for drawing
 
-                    # CSV_COORDINATES_PATH = self.ui.output_folder_value+"/"+self.ui.file_name+"_building_info.csv"
+                    img_path = self.ui.output_folder_value + "/Mapillary/orthophotos/"+str(self.click_count+1)+".jpg"
+                    
+                    cropped_path = self.ui.output_folder_value + "/Mapillary/Cropped_images/"+str(self.click_count+1)+".jpg"
+                    displayed_path = self.ui.output_folder_value + "/Mapillary/displayed_images/"+str(self.click_count+1)+".jpg"
 
-                    # mapillary_image_source(
-                    #     access_token=MAPILLARY_ACCESS_TOKEN,
-                    #     csv_coordinates_path=CSV_COORDINATES_PATH,
-                    # )
-                    pass
+                    # Display building image
+                    if os.path.exists(displayed_path):
+                        # Display an already isolated image
+                        building_pixmap = QtGui.QPixmap(displayed_path)
+                        # Selection of image frame using "aux" variable
+                        img_frames[aux].setPixmap(
+                            building_pixmap.scaled(
+                                img_frames[aux].width(),
+                                img_frames[aux].height(),
+                                QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
+                                QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
+                    else:
+                        # Display a new image
+                        if sw == True:
+                            # Star progress bar until 99%
+                            for i in range (100):
+                                time.sleep(0.0001)
+                                self.ui.progress_bar_method.setValue(i)
+                                self.ui.method_progress.setText("Isolating building ....")
+                            sw = False  
+                        # Check and/or create cropped folder
+                        if not os.path.exists(self.ui.output_folder_value + "/Mapillary/Cropped_images"):
+                            os.makedirs(self.ui.output_folder_value + "/Mapillary/Cropped_images")
+                        
+                        self.gap = None
+                        try:
+                            # Run inference
+                            results = model.predict(img_path, device=device)
+
+                            img_bgr = cv2.imread(img_path)
+                            if img_bgr is None:
+                                raise RuntimeError(f"Could not read image: {img_path}")
+                        
+                            h0, w0 = img_bgr.shape[:2]
+
+                            best_box = None
+                            best_score = 0.0
+                        
+                            for box in results[0].boxes:
+                                cls_id = int(box.cls)
+                                cls_name = class_names[cls_id]
+                                score = float(box.conf)
+                        
+                                if cls_name == TARGET_CLASS and score > best_score and score > 0.5:
+                                    best_score = score
+                                    best_box = box
+                        
+                            # If no building detected, trigger your "overlay" logic
+                            if best_box is None:
+                                self.gap = 1  # used later in your except block for "not detected"
+                                raise RuntimeError("No building detected with confidence > 0.5")
+
+                            x1, y1, x2, y2 = map(int, best_box.xyxy[0])
+
+                            cropped_image = img_bgr[y1:y2, x1:x2]
+                            cv2.imwrite(cropped_path, cropped_image)
+
+                            label_w = img_frames[aux].width()
+                            label_h = img_frames[aux].height()
+                        
+                            disp_bgr = self._prepare_display_with_bbox(
+                                img_bgr, (x1, y1, x2, y2), label_w, label_h)
+
+                            if not os.path.exists(self.ui.output_folder_value + "/Mapillary/displayed_images"):
+                                os.makedirs(self.ui.output_folder_value + "/Mapillary/displayed_images")
+                        
+                            cv2.imwrite(displayed_path, disp_bgr)
+                        
+                            disp_rgb = cv2.cvtColor(disp_bgr, cv2.COLOR_BGR2RGB)
+                            h, w, ch = disp_rgb.shape
+                            bytes_per_line = ch * w
+                            qimage = QtGui.QImage(disp_rgb.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+                            self.predicted_img[aux] = 1
+                            building_pixmap = QtGui.QPixmap.fromImage(qimage)
+                        
+                        except:
+                            self.no_image = f"""
+                                            <b><u>No image found</u></b><br><br>
+                                            Please check that the image file exists at the specified path:<br>
+                                            <code>{img_path}</code>
+                                            """
+                            font = QtGui.QFont()
+                            font.setPointSize(int(12 * self.sf_font))
+                            font.setBold(True)
+                            font.setWeight(75)
+                        
+                            img_frames[aux].setFont(font)
+                            img_frames[aux].setTextFormat(QtCore.Qt.RichText)  # Enable rich text (HTML)
+                            img_frames[aux].setText(self.no_image)
+                            img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)
+                            img_frames[aux].setWordWrap(True)
+
+                            
+                        try:
+                            # Displayed image in corresponding frames
+                            img_frames[aux].setPixmap(
+                                building_pixmap.scaled(
+                                    img_frames[aux].width(),
+                                    img_frames[aux].height(),
+                                    QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
+                                    QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
+                        except:
+                            if self.gap == None:
+                                pass
+                            else:
+                                # Displayed image in corresponding frames
+                                image_rgb = self.add_not_detected_overlay(img_bgr, opacity=0.5)
+                                
+                                # Convert BGR image (OpenCV) to RGB format
+                                display_image_rgb = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2RGB)
+                                # display_image_rgb = image_rgb.copy()
+                                # Convert the RGB image to QImage
+                                height, width, channel = display_image_rgb.shape
+                                bytes_per_line = 3 * width
+                                qimage = QtGui.QImage(display_image_rgb.data, width, height, bytes_per_line, QtGui.QImage.Format_RGB888)
+                                
+                                # Convert QImage to QPixmap
+                                building_pixmap = QtGui.QPixmap.fromImage(qimage)
+                
+                                img_frames[aux].setPixmap(
+                                    building_pixmap.scaled(
+                                        img_frames[aux].width(),
+                                        img_frames[aux].height(),
+                                        QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
+                                        QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
                     
                     
             # ==============================================================
@@ -2363,41 +2510,62 @@ class GUIMethods:
             # ==============================================================
             # Polygon and Specific coordinates
             # ==============================================================
-            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                self.ui.method_progress.setText("Loading AI model ...")
-                for j in range (100):
-                    time.sleep(0.0001)
-                    self.ui.progress_bar_method.setValue(j)
-                # Image for prediction: central image by default, followed by the left image, and finally the right image
-                pred_img = False
-                for aux_img in range (3):
-                    if self.predicted_img[1] == 1:
-                        # Central image
-                        pred_img = True
-                        j = 1
-                    elif self.predicted_img[0] == 1:
-                        # Left image
-                        pred_img = True
-                        j = 0
-                    elif self.predicted_img[2] == 1:
-                        # Right image
-                        pred_img = True
-                        j = 2
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1:
+                if self.ui.img_source == 1:
+                    self.ui.method_progress.setText("Loading AI model ...")
+                    for j in range (100):
+                        time.sleep(0.0001)
+                        self.ui.progress_bar_method.setValue(j)
+                    # Image for prediction: central image by default, followed by the left image, and finally the right image
+                    pred_img = False
+                    for aux_img in range (3):
+                        if self.predicted_img[1] == 1:
+                            # Central image
+                            pred_img = True
+                            j = 1
+                        elif self.predicted_img[0] == 1:
+                            # Left image
+                            pred_img = True
+                            j = 0
+                        elif self.predicted_img[2] == 1:
+                            # Right image
+                            pred_img = True
+                            j = 2
+                            
+                    if pred_img == True:
+                        image_file = self.cropped_image[j]
+                        box_aux = None
+                        material_index = predict_material_img(image_file, self.ui.insp_method, box_aux, self.ui)
+                  
+                        # Set DL model prediction
+                        if material_index is None:
+                            pass
+                        else:                       
+                            self.ui.material_cb_1.setCurrentText(self.class_mat[material_index])
+                            self.pred_mat_value = self.ui.material_cb_1.currentData()
+    
+                            # Progress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")
+                else:
+                    self.ui.method_progress.setText("Loading AI model ...")
+                    for j in range (100):
+                        time.sleep(0.0001)
+                        self.ui.progress_bar_method.setValue(j)
                         
-                if pred_img == True:
-                    
-                    image_file = self.cropped_image[j]
-                    box_aux = None
-                    material_index = predict_material_img(image_file, self.ui.insp_method, box_aux, self.ui)
-              
-                    # Set DL model prediction
+                    cropped_path = self.ui.output_folder_value + "/Mapillary/Cropped_images/"+str(self.click_count+1)+".jpg"
+                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    if image is None:
+                        raise FileNotFoundError("Unable to read iamge")
+ 
+                    material_index = predict_material_img(image, self.ui.insp_method, self.box_id, self.ui)
+                    # LLRS building image sets prediction
                     if material_index is None:
                         pass
-                    else:                       
+                    else:                      
                         self.ui.material_cb_1.setCurrentText(self.class_mat[material_index])
                         self.pred_mat_value = self.ui.material_cb_1.currentData()
-
-                        # Progress bar update
+                        # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
             
