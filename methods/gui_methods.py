@@ -60,6 +60,7 @@ class GUIMethods:
         self.search_count = False
         self.sw_angle = None
         self.sw_extrapolation = False
+        self.color_control = False
         """Get screen resolution to adapt to different screen sizes"""
         # Get screen resolution
         screen = QApplication.primaryScreen()
@@ -674,28 +675,48 @@ class GUIMethods:
                 with open("methods/mapillary_api_key.txt", "r") as f:
                     MAPILLARY_ACCESS_TOKEN = f.read().strip()
                 
-                # ==============================================================
-                # Get Images From Mapillary
-                orthophoto_matrix, info = mapillary_image_source(
-                    access_token=MAPILLARY_ACCESS_TOKEN,
-                    latitude=self.data_building.loc[self.click_count, "latitude"],
-                    longitude=self.data_building.loc[self.click_count, "longitude"],
-                    point_id=self.data_building.loc[self.click_count, "id"],
-                    image_number=self.click_count + 1,
-                    output_dir=self.ui.output_folder_value+"/Mapillary",
-                    return_info=True,
-                    return_color_order="BGR",
-                )
-                
-                angle = (-30,0,30)
-                self.img_url = ["","",""]
-                for aux in range (3):
-                    if aux == 0:
-                        self.img_original_1 = orthophoto_matrix
-                    elif aux == 1:
-                        self.img_original_2 = orthophoto_matrix
-                    else:
-                        self.img_original_3 = orthophoto_matrix
+                try:
+                    img_name = str(self.click_count+1)+".jpg"
+                    self.img_url = [img_name,img_name,img_name]
+                    
+                    img_path = self.ui.output_folder_value + "/Mapillary/orthophotos/"+str(self.click_count+1)+".jpg"
+                    orthophoto_matrix = cv2.imread(img_path, cv2.IMREAD_COLOR)
+                        
+                    for aux in range (3):
+                        if aux == 0:
+                            self.img_original_1 = orthophoto_matrix
+                        elif aux == 1:
+                            self.img_original_2 = orthophoto_matrix
+                        else:
+                            self.img_original_3 = orthophoto_matrix
+                except:
+                    # ==============================================================
+                    # Get Images From Mapillary
+                    try:
+                        orthophoto_matrix, info = mapillary_image_source(
+                            access_token=MAPILLARY_ACCESS_TOKEN,
+                            latitude=self.data_building.loc[self.click_count, "latitude"],
+                            longitude=self.data_building.loc[self.click_count, "longitude"],
+                            point_id=self.data_building.loc[self.click_count, "id"],
+                            image_number=self.click_count + 1,
+                            output_dir=self.ui.output_folder_value+"/Mapillary",
+                            return_info=True,
+                            return_color_order="BGR",
+                        )
+                    except:
+                        img_path = "help_img/mapillary_error.jpg"
+                        orthophoto_matrix = cv2.imread(img_path, cv2.IMREAD_COLOR)
+                        
+                    angle = (-30,0,30)
+                    img_name = str(self.click_count+1)+".jpg"
+                    self.img_url = [img_name,img_name,img_name]
+                    for aux in range (3):
+                        if aux == 0:
+                            self.img_original_1 = orthophoto_matrix
+                        elif aux == 1:
+                            self.img_original_2 = orthophoto_matrix
+                        else:
+                            self.img_original_3 = orthophoto_matrix
 
                 
         # ==============================================================
@@ -743,7 +764,7 @@ class GUIMethods:
                     if app is None:
                         app = QApplication([])
                         
-                    # Called function where the user creates a manual bounding box by clicking four points, which is then displayed in the UI frame.
+                    # Called function where the GSV image can be adjusted
                     gsv_dialog = gsv_angle_setting(parent=self.ui, main_window=self.ui, gui_methods=self)
                     gsv_dialog.exec_()  # Open the pop-up
                     
@@ -777,7 +798,60 @@ class GUIMethods:
                     QMessageBox.warning(self.ui, "Image Error",
                                     "No image is currently displayed. Please click *Next Building* to load an image first.")
             else:
+                app = QApplication.instance()  # Ensure PyQt instance exists
+                if app is None:
+                    app = QApplication([])
+                    
+                with open("methods/mapillary_api_key.txt", "r") as f:
+                    MAPILLARY_ACCESS_TOKEN = f.read().strip()
+                    
+                # Called function where the GSV image can be adjusted
+                gsv_dialog = gsv_angle_setting(parent=self.ui, main_window=self.ui, gui_methods=self)
+                gsv_dialog.exec_()  # Open the pop-up
+                
+                # Get the feature values provide by the user
+                self.pitch_left = gsv_dialog.pitch_value.value()
+                self.heading_left = gsv_dialog.heading_value.value()
+                self.fov_left = gsv_dialog.fov_value.value()
+                self.color_control = True
+                
+                # Left image identifier
+                orthophoto_matrix, info = mapillary_image_source(
+                                        access_token=MAPILLARY_ACCESS_TOKEN,
+                                        latitude=self.data_building.loc[self.click_count, "latitude"],
+                                        longitude=self.data_building.loc[self.click_count, "longitude"],
+                                        point_id=self.data_building.loc[self.click_count, "id"],
+                                        image_number=self.click_count + 1,
+                                        output_dir=self.ui.output_folder_value + "/Mapillary",
+                                        return_info=True,
+                                        #return_color_order="RGB",
+                                        ortho_fov_deg=self.fov_left,
+                                        ortho_pitch_deg=-self.pitch_left,
+                                        ortho_base_yaw_deg=180+self.heading_left
+                                    )
+
+                self.img_original_1 = orthophoto_matrix
                 self.sw_angle = 0
+                
+                # Prepare new image
+                display_image_rgb = cv2.cvtColor(self.img_original_1, cv2.COLOR_BGR2RGB)
+                
+                img_path = self.ui.output_folder_value + "/Mapillary/displayed_images/"+str(self.click_count+1)+".jpg"
+                cv2.imwrite(img_path, display_image_rgb)
+                h, w, ch = display_image_rgb.shape
+                bytes_per_line = w * 3
+                qimg = QtGui.QImage(display_image_rgb.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+                
+                #Plot new img in the GUI
+                pixmap = QtGui.QPixmap.fromImage(qimg)
+                img_frames = [self.ui.left_gsv_img,self.ui.central_gsv_img,self.ui.right_gsv_img]
+                img_frames[0].setPixmap(
+                    pixmap.scaled(img_frames[0].width(), img_frames[0].height(),
+                                  QtCore.Qt.IgnoreAspectRatio,
+                                  QtCore.Qt.SmoothTransformation))
+                
+                # Building detector function
+                self.object_detector_building(None)
         else:
             QMessageBox.warning(self.ui, "Method Error",
                                 "This option is not available for local images.")
@@ -1153,7 +1227,7 @@ class GUIMethods:
                     
                     cropped_path = self.ui.output_folder_value + "/Mapillary/Cropped_images/"+str(self.click_count+1)+".jpg"
                     displayed_path = self.ui.output_folder_value + "/Mapillary/displayed_images/"+str(self.click_count+1)+".jpg"
-
+                    
                     # Display building image
                     if os.path.exists(displayed_path):
                         # Display an already isolated image
@@ -1896,9 +1970,10 @@ class GUIMethods:
                 # Polygon and Specific coordinates method
                 # ==============================================================
                 if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                    base_url = "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint="
-                    coord = str(self.ui.lat_value.text()) + "," + str(self.ui.lon_value.text())
-                    heading = get_road_orientation((float(self.ui.lat_value.text()), float(self.ui.lon_value.text())))
+                    if self.ui.img_source == 1:
+                        base_url = "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint="
+                        coord = str(self.ui.lat_value.text()) + "," + str(self.ui.lon_value.text())
+                        heading = get_road_orientation((float(self.ui.lat_value.text()), float(self.ui.lon_value.text())))
                     
                 if self.ui.insp_method == 0 or self.ui.insp_method == 1:
                     self.data_ai.iloc[self.click_count, 0]  = self.ui.img_id_value_1.text()[:-2]
@@ -2620,31 +2695,74 @@ class GUIMethods:
             # Polygon and Specific coordinates
             # ==============================================================
             if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                # Image for prediction: central image by default, followed by the left image, and finally the right image
-                pred_img = False
-                for aux_img in range (3):
-                    if self.predicted_img[1] == 1:
-                        # Central image
-                        pred_img = True
-                        j = 1
-                    elif self.predicted_img[0] == 1:
-                        # Left image
-                        pred_img = True
-                        j = 0
-                    elif self.predicted_img[2] == 1:
-                        # Right image
-                        pred_img = True
-                        j = 2
-                if pred_img == True:
-                    # Image path
-                    image_file = self.cropped_image[j]       
-                    # LLRS building image prediction
-                    box_aux = None
-                    llrs_index = predict_llrs_img(image_file, self.ui.insp_method, box_aux, self.ui)
+                if self.ui.img_source == 1:
+                    # Image for prediction: central image by default, followed by the left image, and finally the right image
+                    pred_img = False
+                    for aux_img in range (3):
+                        if self.predicted_img[1] == 1:
+                            # Central image
+                            pred_img = True
+                            j = 1
+                        elif self.predicted_img[0] == 1:
+                            # Left image
+                            pred_img = True
+                            j = 0
+                        elif self.predicted_img[2] == 1:
+                            # Right image
+                            pred_img = True
+                            j = 2
+                    if pred_img == True:
+                        # Image path
+                        image_file = self.cropped_image[j]       
+                        # LLRS building image prediction
+                        box_aux = None
+                        llrs_index = predict_llrs_img(image_file, self.ui.insp_method, box_aux, self.ui)
+                        # LLRS building image sets prediction
+                        if llrs_index is None:
+                            pass
+                        else:                    
+                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[llrs_index])
+                            self.llrs_pred = self.ui.llrs_cb_1.currentData()
+                            
+                            # LLRS adjusments based on material
+                            if self.pred_mat_value == "MCF":
+                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5]) 
+                            elif self.pred_mat_value == "MUR":
+                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5]) 
+                            elif self.pred_mat_value == "MR":
+                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5])
+                            elif self.pred_mat_value == "INF":
+                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[3])
+                            elif self.pred_mat_value == "CR":
+                                if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
+                                    pass
+                                else:
+                                    self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
+                            elif self.pred_mat_value == "S":
+                                if self.llrs_pred in ("LFM", "LFBR"):
+                                    pass
+                                else:
+                                    self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2]) 
+                                    
+                            # Progress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")
+                else:
+                    self.ui.method_progress.setText("Loading AI model ...")
+                    for j in range (100):
+                        time.sleep(0.0001)
+                        self.ui.progress_bar_method.setValue(j)
+                        
+                    cropped_path = self.ui.output_folder_value + "/Mapillary/Cropped_images/"+str(self.click_count+1)+".jpg"
+                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    if image is None:
+                        raise FileNotFoundError("Unable to read iamge")
+
+                    llrs_index = predict_llrs_img(image, self.ui.insp_method, self.box_id, self.ui)
                     # LLRS building image sets prediction
                     if llrs_index is None:
                         pass
-                    else:                    
+                    else:
                         self.ui.llrs_cb_1.setCurrentText(self.class_llrs[llrs_index])
                         self.llrs_pred = self.ui.llrs_cb_1.currentData()
                         
@@ -2666,9 +2784,9 @@ class GUIMethods:
                             if self.llrs_pred in ("LFM", "LFBR"):
                                 pass
                             else:
-                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2]) 
+                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])      
                                 
-                        # Progress bar update
+                        # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
             
@@ -2739,30 +2857,62 @@ class GUIMethods:
             # ==============================================================
             # Polygon and Specific coordinates
             # ==============================================================
-            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                # Image for prediction: central image by default, followed by the left image, and finally the right image
-                pred_img = False
-                for aux_img in range (3):
-                    if self.predicted_img[1] == 1:
-                        # Central image
-                        pred_img = True
-                        j = 1
-                    elif self.predicted_img[0] == 1:
-                        # Left image
-                        pred_img = True
-                        j = 0
-                    elif self.predicted_img[2] == 1:
-                        # Right image
-                        pred_img = True
-                        j = 2
-                if pred_img == True:
-                    # Image path
-                    image_file = self.cropped_image[j]
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1:
+                if self.ui.img_source == 1:
+                    # Image for prediction: central image by default, followed by the left image, and finally the right image
+                    pred_img = False
+                    for aux_img in range (3):
+                        if self.predicted_img[1] == 1:
+                            # Central image
+                            pred_img = True
+                            j = 1
+                        elif self.predicted_img[0] == 1:
+                            # Left image
+                            pred_img = True
+                            j = 0
+                        elif self.predicted_img[2] == 1:
+                            # Right image
+                            pred_img = True
+                            j = 2
+                    if pred_img == True:
+                        # Image path
+                        image_file = self.cropped_image[j]
+    
+                        # LLRS building image prediction
+                        box_aux = None
+                        code_level_index = predict_code_img(image_file, self.ui.insp_method, box_aux, self.ui)
+    
+                        # LLRS building image sets prediction
+                        if code_level_index is None:
+                            pass
+                        else:
+                            self.ui.age_cb_1.setCurrentText(self.class_code[code_level_index])
+                            self.code_level_pred = self.ui.age_cb_1.currentData()
+    
+                            # Code level adjustment based on material
+                            if self.pred_mat_value == "INF":
+                                self.ui.age_cb_1.setCurrentText(self.class_code[3])
+                            elif self.pred_mat_value == "MUR":
+                                if self.code_level_pred in ("CDL", "CDN"):
+                                    pass
+                                else: 
+                                    self.ui.age_cb_1.setCurrentText(self.class_code[3]) 
+                            
+                            # Progress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")
+                else:
+                    self.ui.method_progress.setText("Loading AI model ...")
+                    for j in range (100):
+                        time.sleep(0.0001)
+                        self.ui.progress_bar_method.setValue(j)
+                        
+                    cropped_path = self.ui.output_folder_value + "/Mapillary/Cropped_images/"+str(self.click_count+1)+".jpg"
+                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    if image is None:
+                        raise FileNotFoundError("Unable to read iamge")
 
-                    # LLRS building image prediction
-                    box_aux = None
-                    code_level_index = predict_code_img(image_file, self.ui.insp_method, box_aux, self.ui)
-
+                    code_level_index = predict_code_img(image, self.ui.insp_method, self.box_id, self.ui)
                     # LLRS building image sets prediction
                     if code_level_index is None:
                         pass
@@ -2778,11 +2928,11 @@ class GUIMethods:
                                 pass
                             else: 
                                 self.ui.age_cb_1.setCurrentText(self.class_code[3]) 
-                        
-                        # Progress bar update
+                            
+                        # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
-            
+                        
             elif self.ui.insp_method == 2:
                 # ==============================================================
                 # Local images
@@ -2840,39 +2990,62 @@ class GUIMethods:
             # ==============================================================
             # Polygon and Specific coordinates
             # ==============================================================
-            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                # Image for prediction: central image by default, followed by the left image, and finally the right image
-                pred_img = False
-                for aux_img in range (3):
-                    if self.predicted_img[1] == 1:
-                        # Central image
-                        pred_img = True
-                        j = 1
-                    elif self.predicted_img[0] == 1:
-                        # Left image
-                        pred_img = True
-                        j = 0
-                    elif self.predicted_img[2] == 1:
-                        # Right image
-                        pred_img = True
-                        j = 2
-                if pred_img == True:
-                    # Image path
-                    image_file = self.cropped_image[j]
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1:
+                if self.ui.img_source == 1:
+                    # Image for prediction: central image by default, followed by the left image, and finally the right image
+                    pred_img = False
+                    for aux_img in range (3):
+                        if self.predicted_img[1] == 1:
+                            # Central image
+                            pred_img = True
+                            j = 1
+                        elif self.predicted_img[0] == 1:
+                            # Left image
+                            pred_img = True
+                            j = 0
+                        elif self.predicted_img[2] == 1:
+                            # Right image
+                            pred_img = True
+                            j = 2
+                    if pred_img == True:
+                        # Image path
+                        image_file = self.cropped_image[j]
+    
+                        # LLRS building image prediction
+                        box_aux = None
+                        n_stories_index = predict_n_stories_img(image_file, self.ui.insp_method, box_aux, self.ui)
+    
+                        if n_stories_index is None:
+                            pass
+                        else:
+                            self.ui.n_stories_value_1.setCurrentText(self.class_ns[n_stories_index])    
+                        
+                            # Progress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")
+                else:
+                    self.ui.method_progress.setText("Loading AI model ...")
+                    for j in range (100):
+                        time.sleep(0.0001)
+                        self.ui.progress_bar_method.setValue(j)
+                        
+                    cropped_path = self.ui.output_folder_value + "/Mapillary/Cropped_images/"+str(self.click_count+1)+".jpg"
+                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    if image is None:
+                        raise FileNotFoundError("Unable to read iamge")
 
                     # LLRS building image prediction
-                    box_aux = None
-                    n_stories_index = predict_n_stories_img(image_file, self.ui.insp_method, box_aux, self.ui)
-
+                    n_stories_index = predict_n_stories_img(image, self.ui.insp_method, self.box_id, self.ui)
+                    # LLRS building image sets prediction
                     if n_stories_index is None:
                         pass
                     else:
-                        self.ui.n_stories_value_1.setCurrentText(self.class_ns[n_stories_index])    
-                    
+                        self.ui.n_stories_value_1.setCurrentText(self.class_ns[n_stories_index])
+          
                         # Progress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
-            
+                        
             elif self.ui.insp_method == 2:
                 # ==============================================================
                 # Local images
@@ -2920,38 +3093,60 @@ class GUIMethods:
             # ==============================================================
             # Polygon and Specific coordinates
             # ==============================================================
-            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                # Image for prediction: central image by default, followed by the left image, and finally the right image
-                pred_img = False
-                for aux_img in range (3):
-                    if self.predicted_img[1] == 1:
-                        # Central image
-                        pred_img = True
-                        j = 1
-                    elif self.predicted_img[0] == 1:
-                        # Left image
-                        pred_img = True
-                        j = 0
-                    elif self.predicted_img[2] == 1:
-                        # Right image
-                        pred_img = True
-                        j = 2
-                if pred_img == True:
-                    # Image path
-                    image_file = self.cropped_image[j]
-                    # LLRS building image prediction
-                    box_aux = None
-                    occupancy_index = predict_occupancy_img(image_file, self.ui.insp_method, box_aux, self.ui)
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1:
+                if self.ui.img_source == 1:
+                    # Image for prediction: central image by default, followed by the left image, and finally the right image
+                    pred_img = False
+                    for aux_img in range (3):
+                        if self.predicted_img[1] == 1:
+                            # Central image
+                            pred_img = True
+                            j = 1
+                        elif self.predicted_img[0] == 1:
+                            # Left image
+                            pred_img = True
+                            j = 0
+                        elif self.predicted_img[2] == 1:
+                            # Right image
+                            pred_img = True
+                            j = 2
+                    if pred_img == True:
+                        # Image path
+                        image_file = self.cropped_image[j]
+                        # LLRS building image prediction
+                        box_aux = None
+                        occupancy_index = predict_occupancy_img(image_file, self.ui.insp_method, box_aux, self.ui)
+    
+                        # LLRS building image sets prediction
+                        if occupancy_index is None:
+                            pass
+                        else:
+                            self.ui.occup_cb_1.setCurrentText(self.class_occ[occupancy_index])                      
+                            # Peogress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")
+                else:
+                    self.ui.method_progress.setText("Loading AI model ...")
+                    for j in range (100):
+                        time.sleep(0.0001)
+                        self.ui.progress_bar_method.setValue(j)
+                        
+                    cropped_path = self.ui.output_folder_value + "/Mapillary/Cropped_images/"+str(self.click_count+1)+".jpg"
+                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    if image is None:
+                        raise FileNotFoundError("Unable to read iamge")
 
+                    occupancy_index = predict_occupancy_img(image, self.ui.insp_method, self.box_id, self.ui)
                     # LLRS building image sets prediction
                     if occupancy_index is None:
                         pass
                     else:
-                        self.ui.occup_cb_1.setCurrentText(self.class_occ[occupancy_index])                      
-                        # Peogress bar update
+                        self.ui.occup_cb_1.setCurrentText(self.class_occ[occupancy_index])      
+          
+                        # Progress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
-            
+                        
             elif self.ui.insp_method == 2:
                 # ==============================================================
                 # Local images
@@ -2997,40 +3192,62 @@ class GUIMethods:
         # Checkbox for the AI powered activation
         if self.ui.ai_check.isChecked():
             if self.ui.insp_method == 0 or self.ui.insp_method == 1:
-                # ==============================================================
-                # Polygon and Specific coordinates
-                # ==============================================================
-                # Image for prediction: central image by default, followed by the left image, and finally the right image
-                pred_img = False
-                for aux_img in range (3):
-                    if self.predicted_img[1] == 1:
-                        # Central image
-                        pred_img = True
-                        j = 1
-                    elif self.predicted_img[0] == 1:
-                        # Left image
-                        pred_img = True
-                        j = 0
-                    elif self.predicted_img[2] == 1:
-                        # Right image
-                        pred_img = True
-                        j = 2
-                if pred_img == True:
-                    # Image path
-                    # image_file = self.cropped_image[i]  
-                    image_file = self.org_img_bp
-                    # block_position building image prediction
-                    box_aux = None
-                    block_position_index = predict_block_position_img(image_file, self.ui.insp_method, box_aux, self.ui)
+                if self.ui.img_source == 1:
+                    # ==============================================================
+                    # Polygon and Specific coordinates
+                    # ==============================================================
+                    # Image for prediction: central image by default, followed by the left image, and finally the right image
+                    pred_img = False
+                    for aux_img in range (3):
+                        if self.predicted_img[1] == 1:
+                            # Central image
+                            pred_img = True
+                            j = 1
+                        elif self.predicted_img[0] == 1:
+                            # Left image
+                            pred_img = True
+                            j = 0
+                        elif self.predicted_img[2] == 1:
+                            # Right image
+                            pred_img = True
+                            j = 2
+                    if pred_img == True:
+                        # Image path
+                        # image_file = self.cropped_image[i]  
+                        image_file = self.org_img_bp
+                        # block_position building image prediction
+                        box_aux = None
+                        block_position_index = predict_block_position_img(image_file, self.ui.insp_method, box_aux, self.ui)
+                        # block_position building image sets prediction
+                        if block_position_index is None:
+                            pass
+                        else:
+                            self.ui.bck_pos_cb_1.setCurrentText(self.class_bp[block_position_index]) 
+                            # Progress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")
+                else:
+                    self.ui.method_progress.setText("Loading AI model ...")
+                    for j in range (100):
+                        time.sleep(0.0001)
+                        self.ui.progress_bar_method.setValue(j)
+                        
+                    cropped_path = self.ui.output_folder_value + "/Mapillary/orthophotos/"+str(self.click_count+1)+".jpg"
+                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    if image is None:
+                        raise FileNotFoundError("Unable to read iamge")
+
+                    block_position_index = predict_block_position_img(image, self.ui.insp_method, self.box_id, self.ui)
                     # block_position building image sets prediction
                     if block_position_index is None:
                         pass
                     else:
                         self.ui.bck_pos_cb_1.setCurrentText(self.class_bp[block_position_index]) 
+          
                         # Progress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
-            
+                        
             elif self.ui.insp_method == 2:
                 # ==============================================================
                 # Local images
@@ -3078,39 +3295,61 @@ class GUIMethods:
             # ==============================================================
             # Polygon and Specific coordinates
             # ==============================================================
-            if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                # Image for prediction: central image by default, followed by the left image, and finally the right image
-                pred_img = False
-                for aux_img in range (3):
-                    if self.predicted_img[1] == 1:
-                        # Central image
-                        pred_img = True
-                        j = 1
-                    elif self.predicted_img[0] == 1:
-                        # Left image
-                        pred_img = True
-                        j = 0
-                    elif self.predicted_img[2] == 1:
-                        # Right image
-                        pred_img = True
-                        j = 2
+            if self.ui.insp_method == 0 or self.ui.insp_method == 1:
+                if self.ui.img_source == 1:
+                    # Image for prediction: central image by default, followed by the left image, and finally the right image
+                    pred_img = False
+                    for aux_img in range (3):
+                        if self.predicted_img[1] == 1:
+                            # Central image
+                            pred_img = True
+                            j = 1
+                        elif self.predicted_img[0] == 1:
+                            # Left image
+                            pred_img = True
+                            j = 0
+                        elif self.predicted_img[2] == 1:
+                            # Right image
+                            pred_img = True
+                            j = 2
+                            
+                    if pred_img == True:
+                        # Image path
+                        image_file = self.cropped_image[j]      
+                        # roof_shape building image prediction
+                        box_aux = None
+                        roof_shape_index = predict_roof_shape_img(image_file, self.ui.insp_method, box_aux, self.ui)
+                        # roof_shape building image sets prediction
+                        if roof_shape_index is None:
+                            pass
+                        else:
+                            self.ui.roof_shape_cb_1.setCurrentText(self.class_r_shape[roof_shape_index])
+                            self.pred_roof_shape = self.ui.roof_shape_cb_1.currentData()
+                            # Progress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")
+                else:
+                    self.ui.method_progress.setText("Loading AI model ...")
+                    for j in range (100):
+                        time.sleep(0.0001)
+                        self.ui.progress_bar_method.setValue(j)
                         
-                if pred_img == True:
-                    # Image path
-                    image_file = self.cropped_image[j]      
-                    # roof_shape building image prediction
-                    box_aux = None
-                    roof_shape_index = predict_roof_shape_img(image_file, self.ui.insp_method, box_aux, self.ui)
+                    cropped_path = self.ui.output_folder_value + "/Mapillary/Cropped_images/"+str(self.click_count+1)+".jpg"
+                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    if image is None:
+                        raise FileNotFoundError("Unable to read iamge")
+
+                    roof_shape_index = predict_roof_shape_img(image, self.ui.insp_method, self.box_id, self.ui)
                     # roof_shape building image sets prediction
                     if roof_shape_index is None:
                         pass
                     else:
                         self.ui.roof_shape_cb_1.setCurrentText(self.class_r_shape[roof_shape_index])
                         self.pred_roof_shape = self.ui.roof_shape_cb_1.currentData()
-                        # Progress bar update
+                        # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
-            
+                        
             elif self.ui.insp_method == 2:
                 # ==============================================================
                 # Local images
@@ -3160,27 +3399,73 @@ class GUIMethods:
             # Polygon and Specific coordinates
             # ==============================================================
             if self.ui.insp_method == 0 or self.ui.insp_method == 1: 
-                # Image for prediction: central image by default, followed by the left image, and finally the right image
-                pred_img = False
-                for aux_img in range (3):
-                    if self.predicted_img[1] == 1:
-                        # Central image
-                        pred_img = True
-                        j = 1
-                    elif self.predicted_img[0] == 1:
-                        # Left image
-                        pred_img = True
-                        j = 0
-                    elif self.predicted_img[2] == 1:
-                        # Right image
-                        pred_img = True
-                        j = 2
-                if pred_img == True:
-                    # Image path
-                    image_file = self.cropped_image[j]      
-                    # roof_material building image prediction
-                    box_aux = None
-                    roof_material_index = predict_roof_material_img(image_file, self.ui.insp_method, box_aux, self.ui)
+                if self.ui.img_source == 1:
+                    # Image for prediction: central image by default, followed by the left image, and finally the right image
+                    pred_img = False
+                    for aux_img in range (3):
+                        if self.predicted_img[1] == 1:
+                            # Central image
+                            pred_img = True
+                            j = 1
+                        elif self.predicted_img[0] == 1:
+                            # Left image
+                            pred_img = True
+                            j = 0
+                        elif self.predicted_img[2] == 1:
+                            # Right image
+                            pred_img = True
+                            j = 2
+                    if pred_img == True:
+                        # Image path
+                        image_file = self.cropped_image[j]      
+                        # roof_material building image prediction
+                        box_aux = None
+                        roof_material_index = predict_roof_material_img(image_file, self.ui.insp_method, box_aux, self.ui)
+                        # roof_material building image sets prediction
+                        if roof_material_index is None:
+                            pass
+                        else:
+                            self.ui.roof_shape_cb_1.setCurrentText(self.class_r_mat[roof_material_index])
+                            self.roof_mat_pred = self.ui.roof_material_cb_1.currentData()
+                            
+                            # Roof material adjument based on roof shape    
+                            if  self.pred_roof_shape == "RSH1":
+                                self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[0])
+                            elif  self.pred_roof_shape == "RSH7":
+                                self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[2])
+                            elif  self.pred_roof_shape == "RSH2":
+                                if self.roof_mat_pred in ("RMT1", "RMT6"):
+                                    pass
+                                else:
+                                    # This depends on the country
+                                    self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[2])
+                            elif  self.pred_roof_shape == "RSH3":
+                                if self.roof_mat_pred in ("RMT1", "RMT6"):
+                                    pass
+                                else:
+                                    self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[1])
+                            elif  self.pred_roof_shape == "RSH5":
+                                if self.roof_mat_pred in ("RMT1", "RMT6"):
+                                    pass
+                                else:
+                                    # This depends on the country
+                                    self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[2])  
+                                              
+                            # Peogress bar update
+                            self.ui.progress_bar_method.setValue(100)
+                            self.ui.method_progress.setText("Prediction complete!")
+                else:
+                    self.ui.method_progress.setText("Loading AI model ...")
+                    for j in range (100):
+                        time.sleep(0.0001)
+                        self.ui.progress_bar_method.setValue(j)
+                        
+                    cropped_path = self.ui.output_folder_value + "/Mapillary/Cropped_images/"+str(self.click_count+1)+".jpg"
+                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    if image is None:
+                        raise FileNotFoundError("Unable to read iamge")
+
+                    roof_material_index = predict_roof_material_img(image, self.ui.insp_method, self.box_id, self.ui)
                     # roof_material building image sets prediction
                     if roof_material_index is None:
                         pass
@@ -3210,11 +3495,10 @@ class GUIMethods:
                             else:
                                 # This depends on the country
                                 self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[2])  
-                                          
                         # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
-                        self.ui.method_progress.setText("Prediction complete!")
-            
+                        self.ui.method_progress.setText("Prediction complete!") 
+                        
             elif self.ui.insp_method == 2:
                 
                 self.ui.method_progress.setText("Loading AI model ...")

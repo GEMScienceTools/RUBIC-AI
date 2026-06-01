@@ -5,6 +5,7 @@ This module provides a PyQt5-based interactive dialog for manually selecting a b
 region on an image through a four-point perspective crop workflow.
 """
 import cv2
+from PIL import Image
 import numpy as np
 import sys
 from PyQt5.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QApplication, QMessageBox
@@ -89,11 +90,21 @@ class BoundingBoxWindow(QDialog):
         Loads the input image according to the inspection method, converts it to RGB format, 
         resizes it for display, stores backup copies, and updates the image viewer in the interface.
         """
+        # if self.insp_method != 2:
+        #     self.image = cv2.cvtColor(self.image_path, cv2.COLOR_BGR2RGB)
+        # else:
+        #     self.image = cv2.imread(self.image_path)
+        #     self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
+        
         if self.insp_method != 2:
-            self.image = cv2.cvtColor(self.image_path, cv2.COLOR_BGR2RGB)
+            if self.gui_methods.color_control:
+                # self.image = cv2.cvtColor(self.image_path)
+                self.image = self.image_path.copy()
+            else:
+                self.image = cv2.cvtColor(self.image_path, cv2.COLOR_RGB2BGR)
         else:
             self.image = cv2.imread(self.image_path)
-            self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
+            self.image = cv2.cvtColor(self.image)
 
         if self.image is None:
             print("Error: Unable to load image.")
@@ -147,6 +158,10 @@ class BoundingBoxWindow(QDialog):
             self.draw_dashed_line(self.points[1], self.points[3])
             self.draw_dashed_line(self.points[3], self.points[2])
             self.draw_dashed_line(self.points[2], self.points[0])
+            
+            displayed_path = self.main_window.output_folder_value + "/Mapillary/displayed_images/"+str(self.gui_methods.click_count+1)+".jpg"
+            cv2.imwrite(displayed_path, cv2.cvtColor(self.image, cv2.COLOR_RGB2BGR))
+            
             self.update_display()
 
     # ================= SORT POINTS =================
@@ -254,6 +269,11 @@ class BoundingBoxWindow(QDialog):
         if self.insp_method != 2:
             # Store the cropped image for further processing
             self.prediction_img = cropped_image
+            
+            # Mapillary images
+            if self.main_window.img_source == 2:
+                save_path = self.main_window.output_folder_value + "/Mapillary/Cropped_images/"+str(self.gui_methods.click_count+1)+".jpg"
+                cv2.imwrite(save_path, cv2.cvtColor(cropped_image, cv2.COLOR_RGB2BGR))  
         else:
             if self.gui_methods.box_id == None:
                 # Save the cropped image to the specified path

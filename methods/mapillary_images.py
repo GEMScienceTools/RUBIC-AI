@@ -17,7 +17,7 @@ from PIL import Image
 # ============================================================
 
 DEFAULT_OUTPUT_DIR = Path("mapillary_single_result")
-DEFAULT_MAX_OFFSET_METERS = 20.0
+DEFAULT_MAX_OFFSET_METERS = 50.0
 DEFAULT_IMAGE_TYPE = "pano"
 DEFAULT_THUMBNAIL_RESOLUTION = 2048
 DEFAULT_REQUEST_TIMEOUT = 30
@@ -533,6 +533,7 @@ def mapillary_image_source(
     return_color_order: Literal["RGB", "BGR"] = "RGB",
     ortho_fov_deg: float = DEFAULT_ORTHO_FOV_DEG,
     ortho_pitch_deg: float = DEFAULT_ORTHO_PITCH_DEG,
+    ortho_base_yaw_deg: float = DEFAULT_ORTHO_BASE_YAW_DEG,
     ortho_out_h: int = DEFAULT_ORTHO_OUT_H,
     ortho_out_w: int = DEFAULT_ORTHO_OUT_W,
     ortho_vertical_flip: bool = DEFAULT_ORTHO_VERTICAL_FLIP,
@@ -541,6 +542,7 @@ def mapillary_image_source(
     Retrieve one Mapillary 360 image for one coordinate, generate an orthophoto,
     save the orthophoto locally, and return the orthophoto as a 3D RGB matrix.
     """
+
     if not access_token or "YOUR_ACCESS_TOKEN_HERE" in access_token:
         raise ValueError("Please provide a valid Mapillary access token.")
 
@@ -564,6 +566,9 @@ def mapillary_image_source(
         "color_order": return_color_order,
         "matrix_shape": None,
         "error": None,
+        "ortho_fov_deg": ortho_fov_deg,
+        "ortho_pitch_deg": ortho_pitch_deg,
+        "ortho_base_yaw_deg": ortho_base_yaw_deg,
     }
 
     try:
@@ -582,16 +587,24 @@ def mapillary_image_source(
 
         image_id = nearest["image_id"]
         info["image_id"] = image_id
-        info["building_to_preview_distance_m"] = nearest.get("building_to_preview_distance_m")
+        info["building_to_preview_distance_m"] = nearest.get(
+            "building_to_preview_distance_m"
+        )
 
         if save_json_files:
-            save_json(nearest["raw_feature"], folders["raw"] / f"{point_id}_nearest_feature.json")
+            save_json(
+                nearest["raw_feature"],
+                folders["raw"] / f"{point_id}_nearest_feature.json",
+            )
 
         metadata = get_image_metadata(image_id)
         props = metadata.get("properties", metadata)
 
         if save_json_files:
-            save_json(metadata, folders["raw"] / f"{point_id}_{image_id}_metadata.json")
+            save_json(
+                metadata,
+                folders["raw"] / f"{point_id}_{image_id}_metadata.json",
+            )
 
         image_url = get_thumbnail_url(
             image_id=image_id,
@@ -629,7 +642,13 @@ def mapillary_image_source(
             info.update(side_result)
 
         yaw_offset = select_yaw_offset(side_result)
-        yaw_deg = (DEFAULT_ORTHO_BASE_YAW_DEG + yaw_offset) % 360
+
+        # Updated line:
+        # The base yaw can now be controlled from the function input.
+        yaw_deg = (ortho_base_yaw_deg + yaw_offset) % 360
+
+        info["yaw_offset"] = yaw_offset
+        info["yaw_deg"] = yaw_deg
 
         if image_number is not None:
             orthophoto_filename = f"{image_number}.jpg"
