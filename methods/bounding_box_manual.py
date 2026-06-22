@@ -5,7 +5,6 @@ This module provides a PyQt5-based interactive dialog for manually selecting a b
 region on an image through a four-point perspective crop workflow.
 """
 import cv2
-from PIL import Image
 import numpy as np
 import sys
 from PyQt5.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout, QApplication, QMessageBox
@@ -90,21 +89,16 @@ class BoundingBoxWindow(QDialog):
         Loads the input image according to the inspection method, converts it to RGB format, 
         resizes it for display, stores backup copies, and updates the image viewer in the interface.
         """
-        # if self.insp_method != 2:
-        #     self.image = cv2.cvtColor(self.image_path, cv2.COLOR_BGR2RGB)
-        # else:
-        #     self.image = cv2.imread(self.image_path)
-        #     self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
         
         if self.insp_method != 2:
             if self.gui_methods.color_control:
-                # self.image = cv2.cvtColor(self.image_path)
+                self.gui_methods.color_control = False
                 self.image = self.image_path.copy()
             else:
                 self.image = cv2.cvtColor(self.image_path, cv2.COLOR_RGB2BGR)
         else:
             self.image = cv2.imread(self.image_path)
-            self.image = cv2.cvtColor(self.image)
+            self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
 
         if self.image is None:
             print("Error: Unable to load image.")
@@ -257,14 +251,6 @@ class BoundingBoxWindow(QDialog):
         # Apply the perspective warp to the original image to get the rectified and cropped region
         cropped_image_original = cv2.warpPerspective(self.image_original, matrix_org, (crop_width_original, crop_height_original))
         
-        # Save the cropped image as an RGB JPEG file (convert to BGR format first for OpenCV compatibility)
-        try:
-            # Local images method
-            cv2.imwrite(self.cropped_img_path, cv2.cvtColor(cropped_image_original, cv2.COLOR_RGB2BGR))
-        except:
-            # Polygon and specific coordinates methods
-            pass
-        
         # Check the inspection method condition to determine whether to save or assign the image
         if self.insp_method != 2:
             # Store the cropped image for further processing
@@ -275,10 +261,10 @@ class BoundingBoxWindow(QDialog):
                 save_path = self.main_window.output_folder_value + "/Mapillary/Cropped_images/"+str(self.gui_methods.click_count+1)+".jpg"
                 cv2.imwrite(save_path, cv2.cvtColor(cropped_image, cv2.COLOR_RGB2BGR))  
         else:
-            if self.gui_methods.box_id == None:
+            if self.gui_methods.box_id is None:
                 # Save the cropped image to the specified path
                 save_path = self.cropped_img_path
-                cv2.imwrite(save_path, cv2.cvtColor(cropped_image, cv2.COLOR_RGB2BGR))  # Convert RGB to BGR before saving
+                cv2.imwrite(save_path, cv2.cvtColor(cropped_image_original, cv2.COLOR_RGB2BGR))  # Convert RGB to BGR before saving
             else:
                 self.prediction_img = cropped_image
         

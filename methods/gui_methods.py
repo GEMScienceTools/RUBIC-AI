@@ -1753,11 +1753,9 @@ class GUIMethods:
     ############ Lists of features ################  
     def feature_comboboxes_values(self):
         # Material
-        self.class_mat = ['Concrete', 'Hybrid - Confined and Unreinforced masonry', 'Informal materials', 
-                       'Masonry - Confined', 'Masonry - Reinforced', 'Masonry - Unreinforced', 'Steel','Wood'] 
+        self.class_mat = ['Concrete', 'Masonry - Confined', 'Masonry - Unreinforced'] 
         # LLRS
-        self.class_llrs = ['Dual System', 'Infilled Frames', 'Moment Frames', 
-                           'No lateral load-resisting system', 'Walls', 'Walls'] 
+        self.class_llrs = ['Dual System', 'Infilled Frames', 'Moment Frames', 'Walls', 'Walls'] 
         # Code level
         self.class_code = ['High-Code','Low-Code', 'Moderate-code', 'No-Code']
         # Number of stories
@@ -1768,7 +1766,7 @@ class GUIMethods:
         self.class_bp= ["Adjoining building(s) one side","Adjoining building(s) two side", 
                         "Adjoining building(s) three side", "Detached building"]     
         # Roof Shape
-        self.class_r_shape = ['Flat','Pitched with gable ends', 'Pitched and hipped', 'Monopitch', 'Curved']    
+        self.class_r_shape = ['Flat','Pitched with gable ends', 'Pitched and hipped', 'Curved']    
         # Roof material
         self.class_r_mat = ['Concrete','Clay or concrete tile', 'Metal or asbestos sheets']
         
@@ -1851,24 +1849,14 @@ class GUIMethods:
                     
                     # LLRS adjusments based on material
                     if self.pred_mat_value == "MCF":
-                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5]) 
+                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4]) 
                     elif self.pred_mat_value == "MUR":
-                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5]) 
-                    elif self.pred_mat_value == "MR":
-                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5])
-                    elif self.pred_mat_value == "INF":
-                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[3])
-                    elif self.pred_mat_value == "CR":
-                        if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
-                            pass
-                        else:
-                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
-                    elif self.pred_mat_value == "S":
-                        if self.llrs_pred in ("LFM", "LFBR"):
-                            pass
-                        else:
-                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2]) 
-                     
+                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4]) 
+                    
+                    # # LLRS Material adjusments based on LLRS
+                    # if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
+                    #     self.ui.material_cb_1.setCurrentText(self.class_mat[0])
+
                     # Roof material adjument based on roof shape    
                     if  self.pred_roof_shape == "RSH1":
                         self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[0])
@@ -1885,16 +1873,8 @@ class GUIMethods:
                             pass
                         else:
                             self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[1])
-                    elif  self.pred_roof_shape == "RSH5":
-                        if self.roof_mat_pred in ("RMT1", "RMT6"):
-                            pass
-                        else:
-                            # This depends on the country
-                            self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[2])       
                             
                     # Code level adjustment based on material
-                    if self.pred_mat_value == "INF":
-                        self.ui.age_cb_1.setCurrentText(self.class_code[3])
                     elif self.pred_mat_value == "MUR":
                         if self.code_level_pred in ("CDL", "CDN"):
                             pass
@@ -2100,13 +2080,13 @@ class GUIMethods:
                     else:
                         city, country = self.get_city_name()
                         
-                        material_classes = ['CR', 'HYB(MCF;MUR)', 'INF','MCF', 'MR', 'MUR','S','W']
-                        llrs_classes = ['LDUAL', 'LFBR', 'LFINF', 'LFM', 'LN', 'LWAL', 'LWAL']
+                        material_classes = ['CR','MCF','MUR']
+                        llrs_classes = ['LDUAL', 'LFINF', 'LFM', 'LWAL', 'LWAL']
                         code_level_classes = ['CDH','CDL', 'CDM', 'CDN']
                         ns_classes = ['10-12', '13+', '1', '2', '3', '4', '5', '6-7', '8-9']
                         occupancy_class = ['COM' , 'IND' ,'MIX(RES;COM)', 'RES']
                         block_position_classes = ['BP1', 'BP2', 'BP3', 'BPD']
-                        roof_shape_classes = ['RSH1', 'RSH2', 'RSH3', 'RSH5', 'RSH7']
+                        roof_shape_classes = ['RSH1', 'RSH2', 'RSH3', 'RSH7']
                         roof_material_classes = ['RMN', 'RMT1', 'RMT6']
                         
                         self.data_ai.iloc[i, 3], self.data_ai.iloc[i, 4] = country , city
@@ -2726,24 +2706,14 @@ class GUIMethods:
                             
                             # LLRS adjusments based on material
                             if self.pred_mat_value == "MCF":
-                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5]) 
+                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4]) 
                             elif self.pred_mat_value == "MUR":
-                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5]) 
-                            elif self.pred_mat_value == "MR":
-                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5])
-                            elif self.pred_mat_value == "INF":
-                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[3])
-                            elif self.pred_mat_value == "CR":
-                                if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
-                                    pass
-                                else:
-                                    self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
-                            elif self.pred_mat_value == "S":
-                                if self.llrs_pred in ("LFM", "LFBR"):
-                                    pass
-                                else:
-                                    self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2]) 
-                                    
+                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4]) 
+
+                            # LLRS Material adjusments based on LLRS
+                            # if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
+                            #     self.ui.material_cb_1.setCurrentText(self.class_mat[0])
+                            
                             # Progress bar update
                             self.ui.progress_bar_method.setValue(100)
                             self.ui.method_progress.setText("Prediction complete!")
@@ -2768,23 +2738,13 @@ class GUIMethods:
                         
                         # LLRS adjusments based on material
                         if self.pred_mat_value == "MCF":
-                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5]) 
+                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4]) 
                         elif self.pred_mat_value == "MUR":
-                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5]) 
-                        elif self.pred_mat_value == "MR":
-                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5])
-                        elif self.pred_mat_value == "INF":
-                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[3])
-                        elif self.pred_mat_value == "CR":
-                            if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
-                                pass
-                            else:
-                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
-                        elif self.pred_mat_value == "S":
-                            if self.llrs_pred in ("LFM", "LFBR"):
-                                pass
-                            else:
-                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])      
+                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4]) 
+
+                        # LLRS Material adjusments based on LLRS
+                        # if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
+                        #     self.ui.material_cb_1.setCurrentText(self.class_mat[0])
                                 
                         # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
@@ -2822,23 +2782,13 @@ class GUIMethods:
                     
                     # LLRS adjusments based on material
                     if self.pred_mat_value == "MCF":
-                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5]) 
+                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4]) 
                     elif self.pred_mat_value == "MUR":
-                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5]) 
-                    elif self.pred_mat_value == "MR":
-                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[5])
-                    elif self.pred_mat_value == "INF":
-                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[3])
-                    elif self.pred_mat_value == "CR":
-                        if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
-                            pass
-                        else:
-                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
-                    elif self.pred_mat_value == "S":
-                        if self.llrs_pred in ("LFM", "LFBR"):
-                            pass
-                        else:
-                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])      
+                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4]) 
+
+                    # LLRS Material adjusments based on LLRS
+                    # if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
+                    #     self.ui.material_cb_1.setCurrentText(self.class_mat[0])  
                             
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
@@ -2888,11 +2838,9 @@ class GUIMethods:
                         else:
                             self.ui.age_cb_1.setCurrentText(self.class_code[code_level_index])
                             self.code_level_pred = self.ui.age_cb_1.currentData()
-    
+                            
                             # Code level adjustment based on material
-                            if self.pred_mat_value == "INF":
-                                self.ui.age_cb_1.setCurrentText(self.class_code[3])
-                            elif self.pred_mat_value == "MUR":
+                            if self.pred_mat_value == "MUR":
                                 if self.code_level_pred in ("CDL", "CDN"):
                                     pass
                                 else: 
@@ -2919,11 +2867,9 @@ class GUIMethods:
                     else:
                         self.ui.age_cb_1.setCurrentText(self.class_code[code_level_index])
                         self.code_level_pred = self.ui.age_cb_1.currentData()
-
+                        
                         # Code level adjustment based on material
-                        if self.pred_mat_value == "INF":
-                            self.ui.age_cb_1.setCurrentText(self.class_code[3])
-                        elif self.pred_mat_value == "MUR":
+                        if self.pred_mat_value == "MUR":
                             if self.code_level_pred in ("CDL", "CDN"):
                                 pass
                             else: 
@@ -2965,13 +2911,11 @@ class GUIMethods:
                     self.code_level_pred = self.ui.age_cb_1.currentData()
 
                     # Code level adjustment based on material
-                    if self.pred_mat_value == "INF":
-                        self.ui.age_cb_1.setCurrentText(self.class_code[3])
-                    elif self.pred_mat_value == "MUR":
+                    if self.pred_mat_value == "MUR":
                         if self.code_level_pred in ("CDL", "CDN"):
                             pass
                         else: 
-                            self.ui.age_cb_1.setCurrentText(self.class_code[3]) 
+                            self.ui.age_cb_1.setCurrentText(self.class_code[3])  
                         
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
@@ -3443,14 +3387,7 @@ class GUIMethods:
                                 if self.roof_mat_pred in ("RMT1", "RMT6"):
                                     pass
                                 else:
-                                    self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[1])
-                            elif  self.pred_roof_shape == "RSH5":
-                                if self.roof_mat_pred in ("RMT1", "RMT6"):
-                                    pass
-                                else:
-                                    # This depends on the country
-                                    self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[2])  
-                                              
+                                    self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[1])                 
                             # Peogress bar update
                             self.ui.progress_bar_method.setValue(100)
                             self.ui.method_progress.setText("Prediction complete!")
@@ -3489,12 +3426,7 @@ class GUIMethods:
                                 pass
                             else:
                                 self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[1])
-                        elif  self.pred_roof_shape == "RSH5":
-                            if self.roof_mat_pred in ("RMT1", "RMT6"):
-                                pass
-                            else:
-                                # This depends on the country
-                                self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[2])  
+
                         # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!") 
@@ -3544,12 +3476,7 @@ class GUIMethods:
                             pass
                         else:
                             self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[1])
-                    elif  self.pred_roof_shape == "RSH5":
-                        if self.roof_mat_pred in ("RMT1", "RMT6"):
-                            pass
-                        else:
-                            # This depends on the country
-                            self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[2])  
+ 
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
                     self.ui.method_progress.setText("Prediction complete!")                         

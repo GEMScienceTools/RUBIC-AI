@@ -25,6 +25,7 @@ class GUIInterface(QtWidgets.QMainWindow):
             self.output_folder_value = self.method_dialog.output_folder_value
             self.file_name = self.method_dialog.output_polygon.text()
             self.ai_value = self.method_dialog.ai_value
+            self.img_source = 1
         
         # Specific coordinates
         elif self.insp_method == 1:
