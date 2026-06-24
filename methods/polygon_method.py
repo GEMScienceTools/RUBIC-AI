@@ -269,35 +269,32 @@ class PolygonSetting(QtWidgets.QDialog):
         Opens a dialog to select a polygon file, loads and saves the boundary layer, and updates 
         the interface with the selected file information.
         """
-        try:
-            output_file_existing = os.path.join(self.method.output_folder_value, f"{self.output_polygon.text()}_boundary.gpkg")
-            # Open file dialog restricted to .shp and .gpkg
-            file_path, _ = QFileDialog.getOpenFileName(
-                None,
-                "Select Polygon File",
-                "",
-                "Vector files (*.shp *.gpkg)"
+        output_file_existing = os.path.join(self.method.output_folder_value, f"{self.output_polygon.text()}_boundary.gpkg")
+        # Open file dialog restricted to .shp and .gpkg
+        file_path, _ = QFileDialog.getOpenFileName(
+            None,
+            "Select Polygon File",
+            "",
+            "Vector files (*.shp *.gpkg)"
+        )
+        if file_path:
+            # Show only file name (not full path) in the GUI element
+            file_display = os.path.basename(file_path)
+            self.polygon_path_value.setText(file_display)
+            gdf = self.load_polygon_layer(
+                path = file_path,
+                expected_crs = "EPSG:4326",
+                fix_invalid=True
             )
-            if file_path:
-                # Show only file name (not full path) in the GUI element
-                file_display = os.path.basename(file_path)
-                self.polygon_path_value.setText(file_display)
-                gdf = self.load_polygon_layer(
-                    path = file_path,
-                    expected_crs = "EPSG:4326",
-                    fix_invalid=True
-                )
-                self.save_polygon_layer(
-                                gdf,  
-                                output_path=output_file_existing,
-                                layer="boundary",
-                                overwrite=True
-                            )
-                self.boundary_path = output_file_existing
-            self.df = pd.DataFrame({"Polygon": ["OK"]})
-            preview_data(self)
-        except:
-            QMessageBox.warning(self, "Input Error", "Please select the output folder first")
+            self.save_polygon_layer(
+                            gdf,  
+                            output_path=output_file_existing,
+                            layer="boundary",
+                            overwrite=True
+                        )
+            self.boundary_path = output_file_existing
+        self.df = pd.DataFrame({"Polygon": ["OK"]})
+        preview_data(self)
             
 
     def _on_save_coordinates(self):
@@ -317,10 +314,16 @@ class PolygonSetting(QtWidgets.QDialog):
         try:
             self.population = GUI_geofiles.download_building_footprints(self)
             self.building_value_polygon.setText(str(self.population))
-        except:
-            QMessageBox.warning(self, "Input Error",
-                    "Some required inputs are missing or invalid. Please review all fields and check the coordinates file for inconsistencies.")
-
+        except (AttributeError, TypeError):
+            QMessageBox.warning(
+                self,
+                "Input Error",
+                (
+                    "Some required inputs are missing or invalid. "
+                    "Please review all fields and check the coordinates "
+                    "file for inconsistencies."
+                ),
+            )
 
     def building_sample(self):
         """
@@ -340,10 +343,16 @@ class PolygonSetting(QtWidgets.QDialog):
                                     "Please click *Get footprints available* before saving and continuing.")
             else:
                 self.accept()
-        except:
-            QMessageBox.warning(self, "Input Error",
-                    "Some required inputs are missing or invalid. Please review all fields and check the coordinates file for inconsistencies.")
-
+        except (AttributeError, TypeError):
+            QMessageBox.warning(
+                self,
+                "Input Error",
+                (
+                    "Some required inputs are missing or invalid. "
+                    "Please review all fields and check the coordinates "
+                    "file for inconsistencies."
+                ),
+            )
 
     def to_crs_safe(self, gdf, expected_crs):
         """

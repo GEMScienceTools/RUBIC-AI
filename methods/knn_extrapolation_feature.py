@@ -11,6 +11,8 @@ class knn_options_window(QtWidgets.QDialog):
     def __init__(self, parent=None, main_window=None):
         super().__init__(parent)
         self.method = parent
+        self.info_existing = None
+        self.info_pending = None
 
         # Get screen resolution
         screen = QtWidgets.QApplication.primaryScreen()
@@ -385,21 +387,21 @@ class knn_options_window(QtWidgets.QDialog):
             QtWidgets.QMessageBox.warning(self, "Input Error", "Please select one method")
         else:
             if self.manual_op.isChecked():
-                try:
-                    self.info_existing
-                    self.info_pending
-                    self.accept()
-                except:
+                if self.info_existing is not None:
+                    if self.info_pending is not None:
+                        self.accept()
+                else:
                     QtWidgets.QMessageBox.warning(self, "Input Error", "There are missing the inputs files")
             elif self.dl_op.isChecked():
                 #######===========  Input parameters =========###########
-                try:
-                    self.coord_reference = self.info_existing
-                    self.coord_reference_building_feature_path = self.output_dl_value.text()+"_reference_results.csv"
-                    self. data_extrapolation = self.info_pending
-                    self.knn_dl_saved_path = self.output_dl_value.text()+".csv"
-                    self.accept()
-                except:
+                if self.info_existing is not None:
+                    if self.info_pending is not None:
+                        self.coord_reference = self.info_existing
+                        self.coord_reference_building_feature_path = self.output_dl_value.text()+"_reference_results.csv"
+                        self. data_extrapolation = self.info_pending
+                        self.knn_dl_saved_path = self.output_dl_value.text()+".csv"
+                        self.accept()
+                else:
                     QtWidgets.QMessageBox.warning(self, "Input Error", "There are missing the inputs files")
  
             

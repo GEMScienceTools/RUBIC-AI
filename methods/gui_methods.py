@@ -136,7 +136,7 @@ class GUIMethods:
             limit_insp = self.data_building.shape[0] - 1
         elif self.ui.insp_method == 2:
             # Local images
-            if self.limit_local == True:
+            if self.limit_local is True:
                 limit_insp = self.data_building.shape[0] - 1
             else:
                 limit_insp = len(self.index_id)-1
@@ -160,7 +160,7 @@ class GUIMethods:
             # Local images existing inspection counter
             # ==============================================================
             if self.ui.insp_method == 2:
-                if self.sw_local_previous == True:
+                if self.sw_local_previous is True:
                     valid_coords = self.ui.data_method[['latitude', 'longitude']].dropna()
                     # Drop duplicates to get unique coordinate pairs
                     unique_coords = valid_coords.drop_duplicates()
@@ -186,10 +186,10 @@ class GUIMethods:
             
             
             # Calculates the number of inspections saved
-            if self.search_count == False:
+            if self.search_count is False:
                 try:
                     # Conditional for only update the number of click and the ID cont one time
-                    if self.n_insp > 0 and self.sw_insp == True:
+                    if self.n_insp > 0 and self.sw_insp is True:
                         if self.ui.insp_method != 2:
                             # self.click_count = int(self.n_insp/3 - 1)
                             self.click_count = self.n_insp - 1
@@ -203,24 +203,22 @@ class GUIMethods:
                             num_unique_coords = len(unique_coords)
                             self.click_count = num_unique_coords - 1
                             self.sw_insp = False
-                except:
+                except (AttributeError, KeyError, TypeError, ValueError):
                     pass
-            else:
-                pass
             
             # ID increaser
             self.click_count += 1
             
             # Turn AI-powered mode on or off
-            if self.aux_ai_check == True:
+            if self.aux_ai_check is True:
                 try:
                     self.ui.ai_check.setChecked(self.ui.ai_value)
-                except:
+                except (AttributeError, TypeError):
                     pass
                 self.aux_ai_check = False
                 
             # Check the size of inspection available    
-            if self.start_click == True:
+            if self.start_click is True:
                 if self.ui.insp_method != 3:
                     if self.click_count >= self.data_building.shape[0] - 1:
                         self.click_count = self.data_building.shape[0] - 1
@@ -333,7 +331,7 @@ class GUIMethods:
             # ==============================================================
             if self.ui.insp_method == 2:
                 try:
-                    if self.data_old_local == True:
+                    if self.data_old_local is True:
                         self.cont_local = self.n_insp
                         self.data_old_local = False
                     
@@ -376,7 +374,7 @@ class GUIMethods:
                         else:
                             raise Exception("All geocoding providers failed")
                             
-                    except:
+                    except (AttributeError, ValueError, ConnectionError, TimeoutError):
                         QMessageBox.warning(self.ui, "Geocoding Error", 
                                           "The city and country could not be retrieved. Please try again.")
                         self.city = "Unknown"
@@ -385,10 +383,22 @@ class GUIMethods:
                         self.ui.country_value.setText(self.country)
                         return self.city, self.country
                     
-                except:
-                     QMessageBox.warning(self.ui, "Input Error",
-                             "Some required inputs are missing or invalid. Please review all fields and check the coordinates file for inconsistencies.")
-          
+                except (
+                    AttributeError,
+                    IndexError,
+                    KeyError,
+                    TypeError,
+                    ValueError,
+                ):
+                    QMessageBox.warning(
+                        self.ui,
+                        "Input Error",
+                        (
+                            "Some required inputs are missing or invalid. "
+                            "Please review all fields and check the coordinates "
+                            "file for inconsistencies."
+                        ),
+                    )
             # ==============================================================
             # Poligon and Specific Coordinates city name
             # ==============================================================
@@ -413,7 +423,7 @@ class GUIMethods:
                     else:
                         raise Exception("All geocoding providers failed")
                         
-                except:
+                except (AttributeError, ValueError, ConnectionError, TimeoutError):
                     QMessageBox.warning(self.ui, "Geocoding Error", 
                                       "The city and country could not be retrieved. Please try again.")
                     self.city = "Unknown"
@@ -428,7 +438,7 @@ class GUIMethods:
             elif self.ui.insp_method == 3:
                 try:
                     city, country = self.get_location_with_fallback(self.lat_extrapolation, self.lon_extrapolation)
-                except:
+                except (AttributeError, ValueError, ConnectionError, TimeoutError):
                     city = "Unknown"
                     country = "Unknown"
                 return city , country
@@ -523,9 +533,17 @@ class GUIMethods:
             
             # Create an empty DataFrame for number of footprint available
             try:
-                if  self.data_ai == None:
+                if  self.data_ai is None:
                     self.data_ai = pd.DataFrame(np.full((footprint_data.shape[0], len(column_names)), None), columns=column_names)
-            except:
+            except (
+                FileNotFoundError,
+                PermissionError,
+                TypeError,
+                ValueError,
+                pd.errors.EmptyDataError,
+                pd.errors.ParserError,
+                AttributeError,
+            ):
                 pass
         
             
@@ -537,7 +555,7 @@ class GUIMethods:
         for polygon, specific coordinates, or local image workflows.
         """
         # Upload existing inspections when the GUI is started for first time
-        if self.start == True:
+        if self.start is True:
             try:
                 if self.ui.insp_method == 0:
                     # ==============================================================
@@ -581,7 +599,15 @@ class GUIMethods:
                     self.data_old = "OK"  # THERE IS EXISTING DATA
                     self.data_old_local = True
                     self.start = False
-            except:
+            except (
+                FileNotFoundError,
+                PermissionError,
+                AttributeError,
+                TypeError,
+                ValueError,
+                pd.errors.EmptyDataError,
+                pd.errors.ParserError,
+            ):
                 pass
 
  
@@ -651,7 +677,7 @@ class GUIMethods:
                 angle = (-30,0,30)
                 self.img_url = ["","",""]
                 for aux in range (3):
-                    if self.check_street_view() == True:
+                    if self.check_street_view() is True:
                         # Get image from GSV
                         if aux == 0:
                             self.img_url[aux] , self.img_original_1, self.year_left = get_street_view_image(location, api_key, angle[aux], 5, 120)
@@ -689,7 +715,7 @@ class GUIMethods:
                             self.img_original_2 = orthophoto_matrix
                         else:
                             self.img_original_3 = orthophoto_matrix
-                except:
+                except (FileNotFoundError, AttributeError, TypeError):
                     # ==============================================================
                     # Get Images From Mapillary
                     try:
@@ -703,9 +729,22 @@ class GUIMethods:
                             return_info=True,
                             return_color_order="BGR",
                         )
-                    except:
+                    except (
+                        AttributeError,
+                        ConnectionError,
+                        IndexError,
+                        KeyError,
+                        TimeoutError,
+                        TypeError,
+                        ValueError,
+                    ) as error:
+                        print(f"Could not retrieve the Mapillary image: {error}")
+                
                         img_path = "help_img/mapillary_error.jpg"
-                        orthophoto_matrix = cv2.imread(img_path, cv2.IMREAD_COLOR)
+                        orthophoto_matrix = cv2.imread(
+                            img_path,
+                            cv2.IMREAD_COLOR,
+                        )
                         
                     angle = (-30,0,30)
                     img_name = str(self.click_count+1)+".jpg"
@@ -723,7 +762,7 @@ class GUIMethods:
         # Extrapolation
         # ============================================================== 
         elif self.ui.insp_method == 3:
-            if self.sw_extrapolation == False:
+            if self.sw_extrapolation is False:
                 pass
             else:
                 # Building coordinates
@@ -733,12 +772,17 @@ class GUIMethods:
                 with open("methods/gsv_api_key.txt", "r") as f:
                     api_key = f.read().strip()  
                 
-                if self.check_street_view() == True:
-                    # Get image from GSV
+                try:
                     angle = 0
                     url_gsv, img_gsv, year = get_street_view_image(location, api_key, angle, 5, 120)
-                else:
-                    print("Street View not available")
+                except (
+                    AttributeError,
+                    ConnectionError,
+                    TimeoutError,
+                    TypeError,
+                    ValueError,
+                ) as error:
+                    print(f"Street View is not available: {error}")
                     url_gsv = "Street View not available"
                     img_gsv = []
                     
@@ -794,7 +838,15 @@ class GUIMethods:
                     # Building detector function
                     self.object_detector_building(None)
                     
-                except:
+                except (
+                    AttributeError,
+                    FileNotFoundError,
+                    IndexError,
+                    OSError,
+                    TypeError,
+                    ValueError,
+                    cv2.error,
+                ):
                     QMessageBox.warning(self.ui, "Image Error",
                                     "No image is currently displayed. Please click *Next Building* to load an image first.")
             else:
@@ -899,7 +951,15 @@ class GUIMethods:
                     # Building detector function
                     self.object_detector_building(None)
                     
-                except:
+                except (
+                    AttributeError,
+                    FileNotFoundError,
+                    IndexError,
+                    OSError,
+                    TypeError,
+                    ValueError,
+                    cv2.error,
+                ):
                     QMessageBox.warning(self.ui, "Image Error",
                                     "No image is currently displayed. Please click *Next Building* to load an image first.")
             else:
@@ -950,7 +1010,15 @@ class GUIMethods:
                     # Building detector function
                     self.object_detector_building(None)
                     
-                except:
+                except (
+                    AttributeError,
+                    FileNotFoundError,
+                    IndexError,
+                    OSError,
+                    TypeError,
+                    ValueError,
+                    cv2.error,
+                ):
                     QMessageBox.warning(self.ui, "Image Error",
                                     "No image is currently displayed. Please click *Next Building* to load an image first.")
             else:
@@ -1088,7 +1156,7 @@ class GUIMethods:
                         # Check GSV availability
                         
                         for aux in range (n_img):
-                            if sw == True:
+                            if sw is True:
                                 for i in range(100):
                                     self.ui.progress_bar_method.setValue(i)
                                     QApplication.processEvents()
@@ -1181,7 +1249,15 @@ class GUIMethods:
                                               QtCore.Qt.SmoothTransformation))
                             
                     # There is not GSV image coverage
-                    except:
+                    except(
+                        AttributeError,
+                        IndexError,
+                        KeyError,
+                        RuntimeError,
+                        TypeError,
+                        ValueError,
+                        cv2.error,
+                    ):
                         self.no_image = "Street View not available" 
                         for aux in range (3):
                             font = QtGui.QFont()
@@ -1241,7 +1317,7 @@ class GUIMethods:
                                 QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
                     else:
                         # Display a new image
-                        if sw == True:
+                        if sw is True:
                             # Star progress bar until 99%
                             for i in range (100):
                                 time.sleep(0.0001)
@@ -1303,7 +1379,17 @@ class GUIMethods:
                             self.predicted_img[aux] = 1
                             building_pixmap = QtGui.QPixmap.fromImage(qimage)
                         
-                        except:
+                        except (
+                            AttributeError,
+                            FileNotFoundError,
+                            IndexError,
+                            KeyError,
+                            OSError,
+                            RuntimeError,
+                            TypeError,
+                            ValueError,
+                            cv2.error,
+                        ):
                             self.no_image = f"""
                                             <b><u>No image found</u></b><br><br>
                                             Please check that the image file exists at the specified path:<br>
@@ -1329,10 +1415,8 @@ class GUIMethods:
                                     img_frames[aux].height(),
                                     QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
                                     QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
-                        except:
-                            if self.gap == None:
-                                pass
-                            else:
+                        except (AttributeError, IndexError, TypeError):
+                            if self.gap is not None:
                                 # Displayed image in corresponding frames
                                 image_rgb = self.add_not_detected_overlay(img_bgr, opacity=0.5)
                                 
@@ -1367,7 +1451,7 @@ class GUIMethods:
                     # Load the image for drawing
                     try:
                         img_path = self.ui.folder_path+"/"+str(self.data_building.iloc[self.old_local + aux, 0])
-                    except:
+                    except (AttributeError, IndexError, TypeError):
                         QMessageBox.warning(self.ui, "Input Error", "No further inspections are available")
                 
                     aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
@@ -1391,7 +1475,7 @@ class GUIMethods:
                                 QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
                     else:
                         # Display a new image
-                        if sw == True:
+                        if sw is True:
                             # Star progress bar until 99%
                             for i in range (100):
                                 time.sleep(0.0001)
@@ -1453,7 +1537,17 @@ class GUIMethods:
                         
                             building_pixmap = QtGui.QPixmap.fromImage(qimage)
                         
-                        except:
+                        except (
+                            AttributeError,
+                            FileNotFoundError,
+                            IndexError,
+                            KeyError,
+                            OSError,
+                            RuntimeError,
+                            TypeError,
+                            ValueError,
+                            cv2.error,
+                        ):
                             self.no_image = f"""
                                             <b><u>No image found</u></b><br><br>
                                             Please check that the image file exists at the specified path:<br>
@@ -1479,10 +1573,8 @@ class GUIMethods:
                                     img_frames[aux].height(),
                                     QtCore.Qt.IgnoreAspectRatio,  # Adjust scaling mode as needed
                                     QtCore.Qt.SmoothTransformation))  # Ensure high-quality scaling
-                        except:
-                            if self.gap == None:
-                                pass
-                            else:
+                        except (AttributeError, IndexError, TypeError):
+                            if self.gap is not None:
                                 # Displayed image in corresponding frames
                                 image_rgb = self.add_not_detected_overlay(img_bgr, opacity=0.5)
                                 
@@ -1513,7 +1605,7 @@ class GUIMethods:
             #####################################################################################################    
             ########################## --------- Extrapolation method ---------------############################ 
             ##################################################################################################### 
-            if self.sw_extrapolation == False:
+            if self.sw_extrapolation is False:
                 self.sw_extrapolation = True
             else:
                 CONF_THRESHOLD = 0.5
@@ -1556,7 +1648,14 @@ class GUIMethods:
                     # ✅ Crop image
                     cropped_image = img_gsv[y1:y2, x1:x2]
                     return cropped_image, url_gsv
-                except:
+                except  (
+                    AttributeError,
+                    IndexError,
+                    KeyError,
+                    RuntimeError,
+                    TypeError,
+                    ValueError,
+                ):
                     cropped_image = []
         
     
@@ -1662,20 +1761,40 @@ class GUIMethods:
             
             # Getting the path for image prediction
             if self.ui.insp_method == 2:
-                try:   
-                    # auxiliar cropped image
-                    aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
-                                    +str(self.data_building.iloc[self.old_local, 0]))
+                try:
+                    # Auxiliary cropped-image path
+                    aux_cropped_path = (
+                        self.ui.folder_path
+                        + "/Cropped_images/"
+                        + str(self.data_building.iloc[self.old_local, 0])
+                    )
+                
                     # Left cropped image
-                    self.cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg" 
-                except:
-                    QMessageBox.warning(self.ui, "File Error", "This option is only available if there is a previous building detection.")
+                    self.cropped_path = (
+                        os.path.splitext(aux_cropped_path)[0]
+                        + "_cropped.jpg"
+                    )
+                
+                except (AttributeError, IndexError, TypeError):
+                    QMessageBox.warning(
+                        self.ui,
+                        "File Error",
+                        (
+                            "This option is only available when a previous "
+                            "building detection exists."
+                        ),
+                    )
             else:
                 self.cropped_path = None
         
             # Bounding box ID for prediction models
             self.box_id = 0
-        except:
+        except(
+            AttributeError,
+            IndexError,
+            TypeError,
+            ValueError,
+        ):
             pass
     
     ############ Central Bounding Box Manual Selection ################       
@@ -1705,14 +1824,19 @@ class GUIMethods:
                     aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
                                     +str(self.data_building.iloc[self.old_local + 1, 0]))
                     self.cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
-                except:
+                except (AttributeError, IndexError, TypeError):
                     QMessageBox.warning(self.ui, "File Error", "This option is only available if there is a previous building detection.")
             else:
                 self.cropped_path = None
         
             # Bounding box ID for prediction models
             self.box_id = 1
-        except:
+        except (
+            AttributeError,
+            IndexError,
+            TypeError,
+            ValueError,
+        ):
             pass
             
     ############ Right Bounding Box Manual Selection ################
@@ -1741,13 +1865,18 @@ class GUIMethods:
                     aux_cropped_path = (self.ui.folder_path+"/Cropped_images/"
                                     +str(self.data_building.iloc[self.old_local + 2, 0]))
                     self.cropped_path = os.path.splitext(aux_cropped_path)[0]+"_cropped.jpg"
-                except:
+                except (AttributeError, IndexError, TypeError):
                     QMessageBox.warning(self.ui, "File Error", "This option is only available if there is a previous building detection.")
             else:
                 self.cropped_path = None
             # Bounding box ID for prediction models
             self.box_id = 2
-        except:
+        except (
+            AttributeError,
+            IndexError,
+            TypeError,
+            ValueError,
+        ):
             pass  
         
     ############ Lists of features ################  
@@ -1852,10 +1981,6 @@ class GUIMethods:
                         self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4]) 
                     elif self.pred_mat_value == "MUR":
                         self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4]) 
-                    
-                    # # LLRS Material adjusments based on LLRS
-                    # if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
-                    #     self.ui.material_cb_1.setCurrentText(self.class_mat[0])
 
                     # Roof material adjument based on roof shape    
                     if  self.pred_roof_shape == "RSH1":
@@ -1875,7 +2000,7 @@ class GUIMethods:
                             self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[1])
                             
                     # Code level adjustment based on material
-                    elif self.pred_mat_value == "MUR":
+                    if self.pred_mat_value == "MUR":
                         if self.code_level_pred in ("CDL", "CDN"):
                             pass
                         else: 
@@ -1900,7 +2025,15 @@ class GUIMethods:
                 # Show the message box
                 msg_box.exec_()
             
-            except:
+            except (
+                AttributeError,
+                FileNotFoundError,
+                IndexError,
+                KeyError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+            ):
                 pass
             
     ############ Taxonomy check ################  
@@ -1912,7 +2045,7 @@ class GUIMethods:
         # 1) Create a small DataFrame with taxonomy strings
         df = pd.DataFrame({"TAXONOMY": [tax_value]})
         try:
-            tax = check_taxonomy(df, taxo_col="TAXONOMY")
+            check_taxonomy(df, taxo_col="TAXONOMY")
         except ValueError as e:
             print("There are invalid taxonomies ❌")
             # Convert the error to string
@@ -1978,14 +2111,16 @@ class GUIMethods:
                     def _s(v): return "" if v is None else str(v).strip()
                     def _add(out, v): 
                         v = _s(v)
-                        if v: out.append(v)
+                        if v: 
+                            out.append(v)
                 
                     parts = []
                     _add(parts, self.ui.material_cb_1.currentData())
                     _add(parts, self.ui.llrs_cb_1.currentData())
                     _add(parts, self.ui.age_cb_1.currentData())
                     st = _s(self.ui.n_stories_value_1.currentText())
-                    if st: parts.append(f"H:{st}")
+                    if st: 
+                        parts.append(f"H:{st}")
                     _add(parts, self.ui.bck_pos_cb_1.currentData())
                 
                     roof_shape = _s(self.ui.roof_shape_cb_1.currentData())
@@ -2109,8 +2244,15 @@ class GUIMethods:
                                                 self.data_ai.iloc[i, 13])                       # Taxonomy
                         
                         self.data_ai.iloc[i, 17] = url_gsv
-                except:
-                    pass
+                except (
+                    AttributeError,
+                    IndexError,
+                    KeyError,
+                    RuntimeError,
+                    TypeError,
+                    ValueError,
+                ):
+                    print(f"Could not process building {i}")
                 
                 print("Inspection: " + str(i+1)+"/"+str(self.data_ai.shape[0]) +" -------------------------------------")
                     
@@ -2147,7 +2289,7 @@ class GUIMethods:
                 filtered_df.to_csv(img_prefix + "_AI_classification.csv", index=False)
                 # Update the progress message in the GUI
                 self.ui.method_progress.setText("Inspections exported successfully!")
-            except:
+            except (OSError, KeyError, AttributeError, TypeError, ValueError):
                 # Show a warning message box if there's a permission error
                 QMessageBox.warning(self.ui, "File Error", "The file is open or the folder is inaccessible."
                                     +" Please close the file or check folder permissions.")
@@ -2163,7 +2305,7 @@ class GUIMethods:
                 filtered_df.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name+ "_AI_classification.csv", index=False)
                 # Update the progress message in the GUI
                 self.ui.method_progress.setText("Inspections exported successfully!")
-            except:
+            except (OSError, KeyError, AttributeError, TypeError, ValueError):
                 # Show a warning message box if there's a permission error
                 QMessageBox.warning(self.ui, "File Error", "The file is open or the folder is inaccessible."
                                     +"Please close the file or check folder permissions.")
@@ -2181,7 +2323,7 @@ class GUIMethods:
                 filtered_def.to_csv(self.ui.output_folder_value+"/"+self.ui.file_name_local.text()+ "_AI_classification.csv", index=False)
                 # Update the progress message in the GUI
                 self.ui.method_progress.setText("Inspections exported successfully!")
-            except:
+            except (OSError, KeyError, AttributeError, TypeError, ValueError):
                 # Show a warning message box if there's a permission error
                 QMessageBox.warning(self.ui, "File Error", "The file is open or the folder is inaccessible. "
                                     +"Please close the file or check folder permissions.")
@@ -2334,7 +2476,7 @@ class GUIMethods:
             # Material
             if self.data_ai.iloc[self.click_count , 5] is None:
                 self.ui.material_cb_1.setCurrentText("Select Material")
-            elif pd.isna(self.data_ai.iloc[self.click_count , 5]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 5]) is True:
                 self.ui.material_cb_1.setCurrentText("Select Material")
             else:
                 self.setComboBoxByData(self.ui.material_cb_1 , self.data_ai.iloc[self.click_count , 5])
@@ -2342,7 +2484,7 @@ class GUIMethods:
             # LLRS
             if self.data_ai.iloc[self.click_count , 6] is None :
                 self.ui.llrs_cb_1.setCurrentText("Select LLRS")
-            elif pd.isna(self.data_ai.iloc[self.click_count , 6]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 6]) is True:
                 self.ui.llrs_cb_1.setCurrentText("Select LLRS")
             else:
                 self.setComboBoxByData(self.ui.llrs_cb_1 , self.data_ai.iloc[self.click_count , 6])
@@ -2350,7 +2492,7 @@ class GUIMethods:
             # Code level
             if self.data_ai.iloc[self.click_count , 7] is None :
                 self.ui.age_cb_1.setCurrentText("Select Code Level")
-            elif pd.isna(self.data_ai.iloc[self.click_count , 7]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 7]) is True:
                 self.ui.age_cb_1.setCurrentText("Select Code Level")
             else:
                 self.setComboBoxByData(self.ui.age_cb_1 , self.data_ai.iloc[self.click_count , 7])
@@ -2358,7 +2500,7 @@ class GUIMethods:
             # Number of stories
             if self.data_ai.iloc[self.click_count , 8] is None :
                 self.ui.n_stories_value_1.setCurrentText("Select Number of Stories")
-            elif pd.isna(self.data_ai.iloc[self.click_count , 8]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 8]) is True:
                 self.ui.n_stories_value_1.setCurrentText("Select Number of Stories")
             else:
                 n_value = self.data_ai.iloc[self.click_count , 8]
@@ -2377,7 +2519,7 @@ class GUIMethods:
             # Occupancy
             if self.data_ai.iloc[self.click_count , 9] is None :
                 self.ui.occup_cb_1.setCurrentText("Select Occupancy Type")
-            elif pd.isna(self.data_ai.iloc[self.click_count , 9]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 9]) is True:
                 self.ui.occup_cb_1.setCurrentText("Select Occupancy Type")
             else:
                 self.setComboBoxByData(self.ui.occup_cb_1 , self.data_ai.iloc[self.click_count , 9])
@@ -2385,7 +2527,7 @@ class GUIMethods:
             # Block Position
             if self.data_ai.iloc[self.click_count , 10] is None :
                 self.ui.bck_pos_cb_1.setCurrentText("Select Block Position")
-            elif pd.isna(self.data_ai.iloc[self.click_count , 10]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 10]) is True:
                 self.ui.bck_pos_cb_1.setCurrentText("Select Block Position")
             else:
                 self.setComboBoxByData(self.ui.bck_pos_cb_1 , self.data_ai.iloc[self.click_count , 10])
@@ -2393,7 +2535,7 @@ class GUIMethods:
             # Epoch of construction
             if self.data_ai.iloc[self.click_count , 11] is None :
                 self.ui.epc_const_cb_1.setCurrentIndex(0)
-            elif pd.isna(self.data_ai.iloc[self.click_count , 11]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 11]) is True:
                 self.ui.epc_const_cb_1.setCurrentIndex(0)
             else:
                 self.setComboBoxByData(self.ui.epc_const_cb_1 , self.data_ai.iloc[self.click_count , 11])
@@ -2401,7 +2543,7 @@ class GUIMethods:
             # Roof Shape
             if self.data_ai.iloc[self.click_count , 12] is None :
                 self.ui.roof_shape_cb_1.setCurrentText("Select Roof Shape")
-            elif pd.isna(self.data_ai.iloc[self.click_count , 12]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 12]) is True:
                 self.ui.roof_shape_cb_1.setCurrentText("Select Roof Shape")
             else:
                 self.setComboBoxByData(self.ui.roof_shape_cb_1 , self.data_ai.iloc[self.click_count , 12])
@@ -2409,7 +2551,7 @@ class GUIMethods:
             # Roof Material
             if self.data_ai.iloc[self.click_count , 13] is None :
                 self.ui.roof_material_cb_1.setCurrentText("Select Roof Material")
-            elif pd.isna(self.data_ai.iloc[self.click_count , 13]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 13]) is True:
                 self.ui.roof_material_cb_1.setCurrentText("Select Roof Material")
             else:
                 self.setComboBoxByData(self.ui.roof_material_cb_1 , self.data_ai.iloc[self.click_count , 13])
@@ -2417,7 +2559,7 @@ class GUIMethods:
             # Vertical irregularity
             if self.data_ai.iloc[self.click_count , 14] is None :
                 self.ui.irregularity_cb.setCurrentText("Select Irregularity")
-            elif pd.isna(self.data_ai.iloc[self.click_count , 14]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 14]) is True:
                 self.ui.irregularity_cb.setCurrentText("Select Irregularity")
             else:
                 self.setComboBoxByData(self.ui.irregularity_cb , self.data_ai.iloc[self.click_count , 14])
@@ -2425,7 +2567,7 @@ class GUIMethods:
             # Number of bays 
             if self.data_ai.iloc[self.click_count , 15] is None :
                 self.ui.n_bay_cb.setCurrentText("Select Number of Bays")
-            elif pd.isna(self.data_ai.iloc[self.click_count , 15]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 15]) is True:
                 self.ui.n_bay_cb.setCurrentText("Select Number of Bays")
             else:
                 self.setComboBoxByData(self.ui.n_bay_cb , self.data_ai.iloc[self.click_count , 15])
@@ -2433,7 +2575,7 @@ class GUIMethods:
             # Image quality
             if self.data_ai.iloc[self.click_count , 16] is None :
                 self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
-            elif pd.isna(self.data_ai.iloc[self.click_count , 16]) == True:
+            elif pd.isna(self.data_ai.iloc[self.click_count , 16]) is True:
                 self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
             else:
                 self.setComboBoxByData(self.ui.img_q_cb_1 , self.data_ai.iloc[self.click_count , 16])
@@ -2446,7 +2588,7 @@ class GUIMethods:
             # Material
                 if self.data_ai.iloc[self.old_local , 5] is None:
                     self.ui.material_cb_1.setCurrentText("Select Material")
-                elif pd.isna(self.data_ai.iloc[self.old_local , 5]) == True:
+                elif pd.isna(self.data_ai.iloc[self.old_local , 5]) is True:
                     self.ui.material_cb_1.setCurrentText("Select Material")
                 else:
                     self.setComboBoxByData(self.ui.material_cb_1 , self.data_ai.iloc[self.old_local , 5])
@@ -2454,7 +2596,7 @@ class GUIMethods:
                 # LLRS
                 if self.data_ai.iloc[self.old_local , 6] is None :
                     self.ui.llrs_cb_1.setCurrentText("Select LLRS")
-                elif pd.isna(self.data_ai.iloc[self.old_local , 6]) == True:
+                elif pd.isna(self.data_ai.iloc[self.old_local , 6]) is True:
                     self.ui.llrs_cb_1.setCurrentText("Select LLRS")
                 else:
                     self.setComboBoxByData(self.ui.llrs_cb_1 , self.data_ai.iloc[self.old_local , 6])
@@ -2462,7 +2604,7 @@ class GUIMethods:
                 # Code level
                 if self.data_ai.iloc[self.old_local , 7] is None :
                     self.ui.age_cb_1.setCurrentText("Select Code Level")
-                elif pd.isna(self.data_ai.iloc[self.old_local , 7]) == True:
+                elif pd.isna(self.data_ai.iloc[self.old_local , 7]) is True:
                     self.ui.age_cb_1.setCurrentText("Select Code Level")
                 else:
                     self.setComboBoxByData(self.ui.age_cb_1 , self.data_ai.iloc[self.old_local , 7])
@@ -2470,7 +2612,7 @@ class GUIMethods:
                 # Number of stories
                 if self.data_ai.iloc[self.old_local , 8] is None :
                     self.ui.n_stories_value_1.setCurrentText("Select Number of Stories")
-                elif pd.isna(self.data_ai.iloc[self.old_local , 8]) == True:
+                elif pd.isna(self.data_ai.iloc[self.old_local , 8]) is True:
                     self.ui.n_stories_value_1.setCurrentText("Select Number of Stories")
                 else:
                     n_value = str(self.data_ai.iloc[self.old_local , 8])
@@ -2489,7 +2631,7 @@ class GUIMethods:
                 # Occupancy
                 if self.data_ai.iloc[self.old_local , 9] is None :
                     self.ui.occup_cb_1.setCurrentText("Select Occupancy Type")
-                elif pd.isna(self.data_ai.iloc[self.old_local , 9]) == True:
+                elif pd.isna(self.data_ai.iloc[self.old_local , 9]) is True:
                     self.ui.occup_cb_1.setCurrentText("Select Occupancy Type")
                 else:
                     self.setComboBoxByData(self.ui.occup_cb_1 , self.data_ai.iloc[self.old_local , 9])
@@ -2497,7 +2639,7 @@ class GUIMethods:
                 # Block Position
                 if self.data_ai.iloc[self.old_local , 10] is None :
                     self.ui.bck_pos_cb_1.setCurrentText("Select Block Position")
-                elif pd.isna(self.data_ai.iloc[self.old_local , 10]) == True:
+                elif pd.isna(self.data_ai.iloc[self.old_local , 10]) is True:
                     self.ui.bck_pos_cb_1.setCurrentText("Select Block Position")
                 else:
                     self.setComboBoxByData(self.ui.bck_pos_cb_1 , self.data_ai.iloc[self.old_local , 10])
@@ -2505,7 +2647,7 @@ class GUIMethods:
                 # Epoch of construction
                 if self.data_ai.iloc[self.old_local , 11] is None :
                     self.ui.epc_const_cb_1.setCurrentIndex(0)
-                elif pd.isna(self.data_ai.iloc[self.old_local , 11]) == True:
+                elif pd.isna(self.data_ai.iloc[self.old_local , 11]) is True:
                     self.ui.epc_const_cb_1.setCurrentIndex(0)
                 else:
                     self.setComboBoxByData(self.ui.epc_const_cb_1 , str(self.data_ai.iloc[self.old_local , 11]))
@@ -2513,7 +2655,7 @@ class GUIMethods:
                 # Roof Shape
                 if self.data_ai.iloc[self.old_local , 12] is None :
                     self.ui.roof_shape_cb_1.setCurrentText("Select Roof Shape")
-                elif pd.isna(self.data_ai.iloc[self.old_local , 12]) == True:
+                elif pd.isna(self.data_ai.iloc[self.old_local , 12]) is True:
                     self.ui.roof_shape_cb_1.setCurrentText("Select Roof Shape")
                 else:
                     self.setComboBoxByData(self.ui.roof_shape_cb_1 , self.data_ai.iloc[self.old_local , 12])
@@ -2521,7 +2663,7 @@ class GUIMethods:
                 # Roof Material
                 if self.data_ai.iloc[self.old_local , 13] is None :
                     self.ui.roof_material_cb_1.setCurrentText("Select Roof Material")
-                elif pd.isna(self.data_ai.iloc[self.old_local , 13]) == True:
+                elif pd.isna(self.data_ai.iloc[self.old_local , 13]) is True:
                     self.ui.roof_material_cb_1.setCurrentText("Select Roof Material")
                 else:
                     self.setComboBoxByData(self.ui.roof_material_cb_1 , self.data_ai.iloc[self.old_local , 13])
@@ -2529,7 +2671,7 @@ class GUIMethods:
                 # Image quality
                 if self.data_ai.iloc[self.old_local , 14] is None :
                     self.ui.irregularity_cb.setCurrentText("Select Irregularity")
-                elif pd.isna(self.data_ai.iloc[self.old_local , 14]) == True:
+                elif pd.isna(self.data_ai.iloc[self.old_local , 14]) is True:
                     self.ui.irregularity_cb.setCurrentText("Select Irregularity")
                 else:
                     self.setComboBoxByData(self.ui.irregularity_cb , self.data_ai.iloc[self.old_local , 14])
@@ -2537,7 +2679,7 @@ class GUIMethods:
                 # Image quality
                 if self.data_ai.iloc[self.old_local , 15] is None :
                     self.ui.n_bay_cb.setCurrentText("Select Number of Bays")
-                elif pd.isna(self.data_ai.iloc[self.old_local , 15]) == True:
+                elif pd.isna(self.data_ai.iloc[self.old_local , 15]) is True:
                     self.ui.n_bay_cb.setCurrentText("Select Number of Bays")
                 else:
                     self.setComboBoxByData(self.ui.n_bay_cb , self.data_ai.iloc[self.old_local , 15])
@@ -2545,7 +2687,7 @@ class GUIMethods:
                 # Image quality
                 if self.data_ai.iloc[self.old_local , 16] is None :
                     self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
-                elif pd.isna(self.data_ai.iloc[self.old_local , 16]) == True:
+                elif pd.isna(self.data_ai.iloc[self.old_local , 16]) is True:
                     self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
                 else:
                     self.setComboBoxByData(self.ui.img_q_cb_1 , self.data_ai.iloc[self.old_local , 16])
@@ -2587,7 +2729,7 @@ class GUIMethods:
                             pred_img = True
                             j = 2
                             
-                    if pred_img == True:
+                    if pred_img is True:
                         image_file = self.cropped_image[j]
                         box_aux = None
                         material_index = predict_material_img(image_file, self.ui.insp_method, box_aux, self.ui)
@@ -2641,7 +2783,7 @@ class GUIMethods:
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
-                except:
+                except (OSError, KeyError, AttributeError, TypeError, ValueError):
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
                                     +str(self.data_building.iloc[self.old_local, 0]))
                     
@@ -2691,7 +2833,7 @@ class GUIMethods:
                             # Right image
                             pred_img = True
                             j = 2
-                    if pred_img == True:
+                    if pred_img is True:
                         # Image path
                         image_file = self.cropped_image[j]       
                         # LLRS building image prediction
@@ -2766,7 +2908,7 @@ class GUIMethods:
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
-                except:
+                except (OSError, KeyError, AttributeError, TypeError, ValueError):
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
                                     +str(self.data_building.iloc[self.old_local, 0]))
                     
@@ -2824,7 +2966,7 @@ class GUIMethods:
                             # Right image
                             pred_img = True
                             j = 2
-                    if pred_img == True:
+                    if pred_img is True:
                         # Image path
                         image_file = self.cropped_image[j]
     
@@ -2895,7 +3037,7 @@ class GUIMethods:
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
-                except:
+                except (OSError, KeyError, AttributeError, TypeError, ValueError):
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
                                     +str(self.data_building.iloc[self.old_local, 0]))
                     
@@ -2951,7 +3093,7 @@ class GUIMethods:
                             # Right image
                             pred_img = True
                             j = 2
-                    if pred_img == True:
+                    if pred_img is True:
                         # Image path
                         image_file = self.cropped_image[j]
     
@@ -3006,7 +3148,7 @@ class GUIMethods:
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
-                except:
+                except (OSError, KeyError, AttributeError, TypeError, ValueError):
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
                                     +str(self.data_building.iloc[self.old_local, 0]))
                     
@@ -3054,7 +3196,7 @@ class GUIMethods:
                             # Right image
                             pred_img = True
                             j = 2
-                    if pred_img == True:
+                    if pred_img is True:
                         # Image path
                         image_file = self.cropped_image[j]
                         # LLRS building image prediction
@@ -3107,7 +3249,7 @@ class GUIMethods:
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
-                except:
+                except (OSError, KeyError, AttributeError, TypeError, ValueError):
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
                                     +str(self.data_building.iloc[self.old_local, 0]))
                     
@@ -3155,7 +3297,7 @@ class GUIMethods:
                             # Right image
                             pred_img = True
                             j = 2
-                    if pred_img == True:
+                    if pred_img is True:
                         # Image path
                         # image_file = self.cropped_image[i]  
                         image_file = self.org_img_bp
@@ -3208,7 +3350,7 @@ class GUIMethods:
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
-                except:
+                except (OSError, KeyError, AttributeError, TypeError, ValueError):
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
                                     +str(self.data_building.iloc[self.old_local, 0]))
                     cropped_path = os.path.splitext(aux_path)[0]+"_cropped.jpg"
@@ -3257,7 +3399,7 @@ class GUIMethods:
                             pred_img = True
                             j = 2
                             
-                    if pred_img == True:
+                    if pred_img is True:
                         # Image path
                         image_file = self.cropped_image[j]      
                         # roof_shape building image prediction
@@ -3310,7 +3452,7 @@ class GUIMethods:
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
-                except:
+                except (OSError, KeyError, AttributeError, TypeError, ValueError):
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
                                     +str(self.data_building.iloc[self.old_local, 0]))
                     
@@ -3359,7 +3501,7 @@ class GUIMethods:
                             # Right image
                             pred_img = True
                             j = 2
-                    if pred_img == True:
+                    if pred_img is True:
                         # Image path
                         image_file = self.cropped_image[j]      
                         # roof_material building image prediction
@@ -3445,7 +3587,7 @@ class GUIMethods:
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
                         raise FileNotFoundError("Unable to read iamge")
-                except:
+                except (OSError, KeyError, AttributeError, TypeError, ValueError):
                     aux_path = (self.ui.folder_path+"/Cropped_images/"
                                     +str(self.data_building.iloc[self.old_local, 0]))
                     
@@ -3500,25 +3642,25 @@ class GUIMethods:
         try:
             try:
                 result = self.data_ai[self.data_ai['id'] == int(search_value)]
-                if result.shape[0]<0:
+                if result.empty:
                     result = self.data_ai[self.data_ai['id'] == search_value]
-            except:
+            except (ValueError, TypeError):
                 result = self.data_ai[self.data_ai['id'] == search_value]
-                if result.shape[0]<0:
+                if result.empty:
                     result = self.data_ai[self.data_ai['id'] == int(search_value)]
     
             try:
                 n_building = result.iloc[0,0]
-            except:
+            except IndexError:
                 self.data_ai.to_csv(self.ui.output_folder_value+"/"+"search_aux.csv",index=False)
                 self.data_ai = pd.read_csv(self.ui.output_folder_value+"/"+"search_aux.csv")
                 try:
                     result = self.data_ai[self.data_ai['id'] == int(search_value)]
-                    if result.shape[0]<0:
+                    if result.empty:
                         result = self.data_ai[self.data_ai['id'] == search_value]
-                except:
+                except (ValueError, TypeError):
                     result = self.data_ai[self.data_ai['id'] == search_value]
-                    if result.shape[0]<0:
+                    if result.empty:
                         result = self.data_ai[self.data_ai['id'] == int(search_value)]
                 #Remove auxiliar file
                 os.remove(self.ui.output_folder_value+"/"+"search_aux.csv")
@@ -3527,13 +3669,10 @@ class GUIMethods:
                 
             # Get image ID 
             try:
-                if self.ui.insp_method == 0:
+                if self.ui.insp_method in (0, 1, 2):
                     self.click_count = int(n_building) - 1
-                if self.ui.insp_method == 1:
-                    self.click_count = int(n_building) - 1
-                if self.ui.insp_method == 2:
-                    self.click_count = int(n_building) - 1
-            except:
+            
+            except (TypeError, ValueError):
                 pass
             
             try:
@@ -3541,12 +3680,30 @@ class GUIMethods:
                 self.fetch_three_step_views()
                 self.object_detector_building(None)
                 self.clean_database()
-            except:
+            except(
+                AttributeError,
+                ConnectionError,
+                IndexError,
+                KeyError,
+                RuntimeError,
+                TimeoutError,
+                TypeError,
+                ValueError,
+            ):
                 pass
             
             self.search_count = True
             
-        except:
+        except (
+            AttributeError,
+            IndexError,
+            KeyError,
+            LookupError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ):
             QMessageBox.warning(self.ui,"Data Error", "There is no saved inspection for this Image ID.")
 
     
@@ -3562,7 +3719,7 @@ class GUIMethods:
                 #####################################
                 ######## KNN mode ###################
                 #####################################
-                if self.ui.coord_reference is not True:
+                if self.ui.use_coord_reference is True:
                     #######===========  Function results =========###########
                     self.create_database()
                     data_existing_dl = self.data_ai
@@ -3676,12 +3833,18 @@ class GUIMethods:
           
             try:
                 epoch = pd.read_csv(path)
-                if self.epoch_const == True:
+                if self.epoch_const is True:
                     self.epoch_const = False
                     for i in range(len(epoch)):
                         self.ui.epc_const_cb_1.addItem(str(epoch.iloc[i,0]))
 
-            except:
+            except (
+                AttributeError,
+                FileNotFoundError,
+                OSError,
+                pd.errors.EmptyDataError,
+                pd.errors.ParserError,
+            ):
                 self.epoch_const = False
                 
                 # Message with special format

@@ -54,13 +54,12 @@ class GUIInterface(QtWidgets.QMainWindow):
                 self.example_building_path = self.method_dialog.info_existing
                 self.extrapolation_name = self.method_dialog.extrapolation_name
                 self.coord_reference = self.method_dialog.coord_reference
+                self.use_coord_reference = self.method_dialog.use_coord_reference
                 self.output_path = self.method_dialog.output_path
                 self.k_value = self.method_dialog.k_value
-                try:
+                if self.use_coord_reference is True:
                     self.knn_dl_saved_path = self.method_dialog.knn_dl_saved_path
                     self.coord_reference_building_feature_path = self.method_dialog.coord_reference_building_feature_path
-                except:
-                    pass
             else:
                 #Stratified method
                 self.data_population = self.method_dialog.data_population

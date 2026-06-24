@@ -253,8 +253,10 @@ p, li {{ white-space: pre-wrap; }}
                         self.knn_dl_saved_path = dialog.knn_dl_saved_path
                         self.coord_reference_building_feature_path = dialog.coord_reference_building_feature_path
                         self.k_value = dialog.k_value_dl.value()
-                    except:
-                        self.coord_reference = True
+                        self.use_coord_reference = True
+                    except (AttributeError, FileNotFoundError):
+                        self.coord_reference = None
+                        self.use_coord_reference = False
                         
                     QtWidgets.QMessageBox.information(
                         self,

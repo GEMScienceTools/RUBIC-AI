@@ -378,6 +378,7 @@ class InspectionSetting(QDialog):
                     self.info_pending = self.extra_dialog.info_pending
                     self.extrapolation_name = self.extra_dialog.extrapolation_name
                     self.coord_reference = self.extra_dialog.coord_reference
+                    self.use_coord_reference = self.extra_dialog.use_coord_reference
                     self.output_path = self.extra_dialog.output_path
                     self.k_value = self.extra_dialog.k_value
                 else:
@@ -391,12 +392,7 @@ class InspectionSetting(QDialog):
                     self.stability_threshold = self.extra_dialog.stability_threshold
                     self.feature_strata = self.extra_dialog.feature_strata
                 
-                try:
+                if self.use_coord_reference is True:
                     self.knn_dl_saved_path = self.extra_dialog.knn_dl_saved_path
                     self.coord_reference_building_feature_path = self.extra_dialog.coord_reference_building_feature_path
-                except:
-                    pass
                 
-        
-        
- 

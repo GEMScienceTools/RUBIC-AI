@@ -82,7 +82,7 @@ def get_street_view_image(location, api_key, angle, pitch, fov):
         img_url = "https://maps.googleapis.com/maps/api/streetview"
 
         pano_id = None
-        pano_lat, pano_lon, used_radius, year = None, None, None, None
+        pano_lat, pano_lon, year = None, None, None
 
         for radius in range(step, max_radius + step, step):
             meta_params = {
@@ -102,7 +102,7 @@ def get_street_view_image(location, api_key, angle, pitch, fov):
                 pano_id = meta.get("pano_id") or meta.get("panoId")
                 pano_loc = meta.get("location", {})
                 pano_lat, pano_lon = pano_loc.get("lat"), pano_loc.get("lng")
-                found_close, used_radius = True, radius
+                found_close = True
                 if "date" in meta:
                     year = meta["date"].split("-")[0]
                 if show_debug:
@@ -127,7 +127,9 @@ def get_street_view_image(location, api_key, angle, pitch, fov):
 
             # Compute road orientation
             road_orientation = get_road_orientation(location)
-            heading = ((road_orientation or 0) + angle + 180) % 360
+            if road_orientation is None:
+                road_orientation = 0
+            heading = (road_orientation + angle + 180) % 360
 
             if show_debug:
                 print(f"Road orientation: {road_orientation}")
@@ -171,10 +173,9 @@ def get_street_view_image(location, api_key, angle, pitch, fov):
     
         # --- Compute road orientation ---
         road_orientation = get_road_orientation(location)
-        try:
-            heading = (road_orientation + angle + 180) % 360
-        except:
-            heading = (0 + angle + 180) % 360
+        if road_orientation is None:
+            road_orientation = 0
+        heading = (road_orientation + angle + 180) % 360
     
         # --- Secure API key load ---
         with open("methods/gsv_api_key.txt", "r") as f:

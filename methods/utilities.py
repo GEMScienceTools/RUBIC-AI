@@ -82,7 +82,7 @@ def upload_csv(self):
             else:
                 # Stratified Manually
                 display_path = self.population_new_path
-        except:
+        except AttributeError:
             # KNN
             display_path = self.label_path
         
