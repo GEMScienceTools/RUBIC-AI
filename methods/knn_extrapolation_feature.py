@@ -1,13 +1,27 @@
-from geopy.distance import geodesic
-from collections import defaultdict
 import sys
-import numpy as np 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from collections import defaultdict
+
+import numpy as np
 import pandas as pd
+from geopy.distance import geodesic
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 from methods.utilities import select_output_folder, upload_csv
 
-class knn_options_window(QtWidgets.QDialog):
+DESIGN_WIDTH = 1920
+DESIGN_HEIGHT = 1080
+DESIGN_DPI = 120.0
+LOGPIXELSX = 88
+
+
+class KNNOptionsWindow(QtWidgets.QDialog):
+    """Configure inputs for K-nearest-neighbor extrapolation.
+
+    The dialog supports manual reference data and a deep-learning-assisted
+    workflow, including selection of input files, output folders, and the
+    number of neighbors used during extrapolation.
+    """
+
     def __init__(self, parent=None, main_window=None):
         super().__init__(parent)
         self.method = parent
@@ -20,11 +34,6 @@ class knn_options_window(QtWidgets.QDialog):
         screen_width = screen_geometry.width()
         screen_height = screen_geometry.height()
 
-        #
-        DESIGN_WIDTH = 1920
-        DESIGN_HEIGHT = 1080
-        DESIGN_DPI = 96 * 1.25  # 125% Windows baseline -> 120 DPI
-        
         # Scale the GUI based on resolution
         sf_x = screen_width / DESIGN_WIDTH
         sf_y = screen_height / DESIGN_HEIGHT
@@ -35,7 +44,7 @@ class knn_options_window(QtWidgets.QDialog):
         if sys.platform.startswith("win"):
             # Windows: use ctypes to get real DPI
             import ctypes
-            LOGPIXELSX = 88
+
             hdc = ctypes.windll.user32.GetDC(0)
             dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
             ctypes.windll.user32.ReleaseDC(0, hdc)
@@ -49,7 +58,7 @@ class knn_options_window(QtWidgets.QDialog):
         # Normalize to your design environment (Windows @ 125% = 120 DPI)
         # If dpi == 120 => scale_dpi = 1 (your original machine)
         scale_dpi = DESIGN_DPI / dpi
-        
+
         # For geometry: mainly resolution-based
         sf_x = sf_factor
         sf_y = sf_factor
@@ -67,7 +76,9 @@ class knn_options_window(QtWidgets.QDialog):
         layout.addWidget(self.data_frame)
 
         self.w_title = QtWidgets.QLabel("Setting input files", self.data_frame)
-        self.w_title.setGeometry(QtCore.QRect(int(510 * sf_x), int(0), int(191 * sf_x), int(41 * sf_y)))
+        self.w_title.setGeometry(
+            QtCore.QRect(int(510 * sf_x), 0, int(191 * sf_x), int(41 * sf_y))
+        )
         font = QtGui.QFont()
         font.setPointSize(int(12 * sf_font))
         font.setBold(True)
@@ -75,7 +86,11 @@ class knn_options_window(QtWidgets.QDialog):
         self.w_title.setFont(font)
 
         self.save_button = QtWidgets.QPushButton(self.data_frame)
-        self.save_button.setGeometry(QtCore.QRect(int(510 * sf_x), int(530 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.save_button.setGeometry(
+            QtCore.QRect(
+                int(510 * sf_x), int(530 * sf_y), int(191 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -83,22 +98,34 @@ class knn_options_window(QtWidgets.QDialog):
         self.save_button.setFont(font)
         self.save_button.setObjectName("save_button")
         self.save_button.clicked.connect(self.select_method)
-        
+
         self.backg_1 = QtWidgets.QLabel(self.data_frame)
-        self.backg_1.setGeometry(QtCore.QRect(int(10 * sf_x), int(39 * sf_y), int(591 * sf_x), int(271 * sf_y)))
+        self.backg_1.setGeometry(
+            QtCore.QRect(
+                int(10 * sf_x), int(39 * sf_y), int(591 * sf_x), int(271 * sf_y)
+            )
+        )
         self.backg_1.setStyleSheet("background-color: rgb(209, 255, 165);")
         self.backg_1.setText("")
         self.backg_1.setObjectName("backg_1")
-        
+
         self.unclassfied_path = QtWidgets.QLabel(self.data_frame)
-        self.unclassfied_path.setGeometry(QtCore.QRect(int(280 * sf_x), int(220 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        self.unclassfied_path.setGeometry(
+            QtCore.QRect(
+                int(280 * sf_x), int(220 * sf_y), int(291 * sf_x), int(21 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.unclassfied_path.setFont(font)
         self.unclassfied_path.setObjectName("unclassfied_path")
-        
+
         self.unclassified_button = QtWidgets.QPushButton(self.data_frame)
-        self.unclassified_button.setGeometry(QtCore.QRect(int(30 * sf_x), int(215 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        self.unclassified_button.setGeometry(
+            QtCore.QRect(
+                int(30 * sf_x), int(215 * sf_y), int(231 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(False)
@@ -106,32 +133,48 @@ class knn_options_window(QtWidgets.QDialog):
         self.unclassified_button.setFont(font)
         self.unclassified_button.setObjectName("unclassified_button")
         self.unclassified_button.clicked.connect(self.data_extrapolation)
-        
+
         self.output_label_manual = QtWidgets.QLabel(self.data_frame)
-        self.output_label_manual.setGeometry(QtCore.QRect(int(30 * sf_x), int(90 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.output_label_manual.setGeometry(
+            QtCore.QRect(
+                int(30 * sf_x), int(90 * sf_y), int(121 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.output_label_manual.setFont(font)
         self.output_label_manual.setObjectName("output_label_manual")
-        
+
         self.output_manual_value = QtWidgets.QLineEdit(self.data_frame)
-        self.output_manual_value.setGeometry(QtCore.QRect(int(170 * sf_x), int(90 * sf_y), int(111 * sf_x), int(31 * sf_y)))
+        self.output_manual_value.setGeometry(
+            QtCore.QRect(
+                int(170 * sf_x), int(90 * sf_y), int(111 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.output_manual_value.setFont(font)
         self.output_manual_value.setObjectName("output_manual_value")
-        
+
         self.manual_info_path = QtWidgets.QLabel(self.data_frame)
-        self.manual_info_path.setGeometry(QtCore.QRect(int(280 * sf_x), int(180 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        self.manual_info_path.setGeometry(
+            QtCore.QRect(
+                int(280 * sf_x), int(180 * sf_y), int(291 * sf_x), int(21 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.manual_info_path.setFont(font)
         self.manual_info_path.setObjectName("manual_info_path")
-        
+
         self.b_info_button = QtWidgets.QPushButton(self.data_frame)
-        self.b_info_button.setGeometry(QtCore.QRect(int(30 * sf_x), int(175 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        self.b_info_button.setGeometry(
+            QtCore.QRect(
+                int(30 * sf_x), int(175 * sf_y), int(231 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(False)
@@ -139,56 +182,84 @@ class knn_options_window(QtWidgets.QDialog):
         self.b_info_button.setFont(font)
         self.b_info_button.setObjectName("b_info_button")
         self.b_info_button.clicked.connect(self.data_existing)
-        
+
         self.manual_op = QtWidgets.QCheckBox(self.data_frame)
-        self.manual_op.setGeometry(QtCore.QRect(int(30 * sf_x), int(50 * sf_y), int(221 * sf_x), int(31 * sf_y)))
+        self.manual_op.setGeometry(
+            QtCore.QRect(
+                int(30 * sf_x), int(50 * sf_y), int(221 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.manual_op.setFont(font)
         self.manual_op.setObjectName("manual_op")
-        
+
         self.backg_2 = QtWidgets.QLabel(self.data_frame)
-        self.backg_2.setGeometry(QtCore.QRect(int(610 * sf_x), int(40 * sf_y), int(591 * sf_x), int(271 * sf_y)))
+        self.backg_2.setGeometry(
+            QtCore.QRect(
+                int(610 * sf_x), int(40 * sf_y), int(591 * sf_x), int(271 * sf_y)
+            )
+        )
         self.backg_2.setStyleSheet("background-color: rgb(255, 233, 167);")
         self.backg_2.setText("")
         self.backg_2.setObjectName("backg_2")
-        
+
         self.dl_op = QtWidgets.QCheckBox(self.data_frame)
-        self.dl_op.setGeometry(QtCore.QRect(int(640 * sf_x), int(45 * sf_y), int(221 * sf_x), int(31 * sf_y)))
+        self.dl_op.setGeometry(
+            QtCore.QRect(
+                int(640 * sf_x), int(45 * sf_y), int(221 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.dl_op.setFont(font)
         self.dl_op.setObjectName("dl_op")
-        
+
         self.output_label_dl = QtWidgets.QLabel(self.data_frame)
-        self.output_label_dl.setGeometry(QtCore.QRect(int(640 * sf_x), int(85 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.output_label_dl.setGeometry(
+            QtCore.QRect(
+                int(640 * sf_x), int(85 * sf_y), int(121 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.output_label_dl.setFont(font)
         self.output_label_dl.setObjectName("output_label_dl")
-        
+
         self.output_dl_value = QtWidgets.QLineEdit(self.data_frame)
-        self.output_dl_value.setGeometry(QtCore.QRect(int(780 * sf_x), int(85 * sf_y), int(111 * sf_x), int(31 * sf_y)))
+        self.output_dl_value.setGeometry(
+            QtCore.QRect(
+                int(780 * sf_x), int(85 * sf_y), int(111 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.output_dl_value.setFont(font)
         self.output_dl_value.setObjectName("output_dl_value")
-        
+
         self.unclassfied_dl_path = QtWidgets.QLabel(self.data_frame)
-        self.unclassfied_dl_path.setGeometry(QtCore.QRect(int(890 * sf_x), int(210 * sf_y), int(291 * sf_x), int(31 * sf_y)))
+        self.unclassfied_dl_path.setGeometry(
+            QtCore.QRect(
+                int(890 * sf_x), int(210 * sf_y), int(291 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.unclassfied_dl_path.setFont(font)
         self.unclassfied_dl_path.setObjectName("unclassfied_dl_path")
-        
+
         self.unclassified_dl_button = QtWidgets.QPushButton(self.data_frame)
-        self.unclassified_dl_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(210 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        self.unclassified_dl_button.setGeometry(
+            QtCore.QRect(
+                int(640 * sf_x), int(210 * sf_y), int(231 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(False)
@@ -196,10 +267,14 @@ class knn_options_window(QtWidgets.QDialog):
         self.unclassified_dl_button.setFont(font)
         self.unclassified_dl_button.setObjectName("unclassified_dl_button")
         self.unclassified_dl_button.clicked.connect(self.data_extrapolation_dl)
-        
+
         # KNN Coordinate Button
         self.coord_knn_button = QtWidgets.QPushButton(self.data_frame)
-        self.coord_knn_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(170 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        self.coord_knn_button.setGeometry(
+            QtCore.QRect(
+                int(640 * sf_x), int(170 * sf_y), int(231 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(False)
@@ -207,70 +282,102 @@ class knn_options_window(QtWidgets.QDialog):
         self.coord_knn_button.setFont(font)
         self.coord_knn_button.setObjectName("coord_knn_button")
         self.coord_knn_button.clicked.connect(self.data_existing_dl)
-                                           
+
         # KNN Coordinate Value Label
         self.coord_value_knn = QtWidgets.QLabel(self.data_frame)
-        self.coord_value_knn.setGeometry(QtCore.QRect(int(890 * sf_x), int(170 * sf_y), int(291 * sf_x), int(31 * sf_y)))
+        self.coord_value_knn.setGeometry(
+            QtCore.QRect(
+                int(890 * sf_x), int(170 * sf_y), int(291 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.coord_value_knn.setFont(font)
         self.coord_value_knn.setObjectName("coord_value_knn")
-        
+
         self.tableWidget = QtWidgets.QTableWidget(self.data_frame)
-        self.tableWidget.setGeometry(QtCore.QRect(int(10 * sf_x), int(320 * sf_y), int(1170 * sf_x), int(201 * sf_y)))
+        self.tableWidget.setGeometry(
+            QtCore.QRect(
+                int(10 * sf_x), int(320 * sf_y), int(1170 * sf_x), int(201 * sf_y)
+            )
+        )
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
-        
+
         # K Value Label (Manual)
         self.k_value_label = QtWidgets.QLabel(self.data_frame)
-        self.k_value_label.setGeometry(QtCore.QRect(int(30 * sf_x), int(259 * sf_y), int(81 * sf_x), int(31 * sf_y)))
+        self.k_value_label.setGeometry(
+            QtCore.QRect(
+                int(30 * sf_x), int(259 * sf_y), int(81 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.k_value_label.setFont(font)
         self.k_value_label.setObjectName("k_value_label")
-        
+
         # K Value SpinBox (Manual)
         self.k_value_manual = QtWidgets.QSpinBox(self.data_frame)
-        self.k_value_manual.setGeometry(QtCore.QRect(int(110 * sf_x), int(260 * sf_y), int(51 * sf_x), int(31 * sf_y)))
+        self.k_value_manual.setGeometry(
+            QtCore.QRect(
+                int(110 * sf_x), int(260 * sf_y), int(51 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.k_value_manual.setFont(font)
         self.k_value_manual.setProperty("value", 10)
         self.k_value_manual.setObjectName("k_value_manual")
-        
+
         # K Value Label (Deep Learning)
         self.k_value_label_dl = QtWidgets.QLabel(self.data_frame)
-        self.k_value_label_dl.setGeometry(QtCore.QRect(int(640 * sf_x), int(260 * sf_y), int(81 * sf_x), int(31 * sf_y)))
+        self.k_value_label_dl.setGeometry(
+            QtCore.QRect(
+                int(640 * sf_x), int(260 * sf_y), int(81 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.k_value_label_dl.setFont(font)
         self.k_value_label_dl.setObjectName("k_value_label_dl")
-        
+
         # K Value SpinBox (Deep Learning)
         self.k_value_dl = QtWidgets.QSpinBox(self.data_frame)
-        self.k_value_dl.setGeometry(QtCore.QRect(int(720 * sf_x), int(260 * sf_y), int(51 * sf_x), int(31 * sf_y)))
+        self.k_value_dl.setGeometry(
+            QtCore.QRect(
+                int(720 * sf_x), int(260 * sf_y), int(51 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.k_value_dl.setFont(font)
         self.k_value_dl.setProperty("value", 10)
         self.k_value_dl.setObjectName("k_value_dl")
-        
+
         # Saved Path Label (Manual)
         self.saved_path_manual = QtWidgets.QLabel(self.data_frame)
-        self.saved_path_manual.setGeometry(QtCore.QRect(int(280 * sf_x), int(140 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        self.saved_path_manual.setGeometry(
+            QtCore.QRect(
+                int(280 * sf_x), int(140 * sf_y), int(291 * sf_x), int(21 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.saved_path_manual.setFont(font)
         self.saved_path_manual.setObjectName("saved_path_manual")
-        
+
         # Output Path Button (Manual)
         self.output_path_button = QtWidgets.QPushButton(self.data_frame)
-        self.output_path_button.setGeometry(QtCore.QRect(int(30 * sf_x), int(135 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        self.output_path_button.setGeometry(
+            QtCore.QRect(
+                int(30 * sf_x), int(135 * sf_y), int(231 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(False)
@@ -278,19 +385,26 @@ class knn_options_window(QtWidgets.QDialog):
         self.output_path_button.setFont(font)
         self.output_path_button.setObjectName("output_path_button")
         self.output_path_button.clicked.connect(self._on_select_output_folder)
-        
-          
+
         # Saved Path Label (DL)
         self.saved_path_dl = QtWidgets.QLabel(self.data_frame)
-        self.saved_path_dl.setGeometry(QtCore.QRect(int(890 * sf_x), int(130 * sf_y), int(291 * sf_x), int(31 * sf_y)))
+        self.saved_path_dl.setGeometry(
+            QtCore.QRect(
+                int(890 * sf_x), int(130 * sf_y), int(291 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.saved_path_dl.setFont(font)
         self.saved_path_dl.setObjectName("saved_path_dl")
-        
+
         # Output Path Button (DL)
         self.output_path_dl_button = QtWidgets.QPushButton(self.data_frame)
-        self.output_path_dl_button.setGeometry(QtCore.QRect(int(640 * sf_x), int(130 * sf_y), int(231 * sf_x), int(31 * sf_y)))
+        self.output_path_dl_button.setGeometry(
+            QtCore.QRect(
+                int(640 * sf_x), int(130 * sf_y), int(231 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(False)
@@ -298,7 +412,7 @@ class knn_options_window(QtWidgets.QDialog):
         self.output_path_dl_button.setFont(font)
         self.output_path_dl_button.setObjectName("output_path_dl_button")
         self.output_path_dl_button.clicked.connect(self._on_select_output_folder)
-        
+
         # Set default values manually
         self.output_manual_value.setText("KNN_manual")
         self.output_dl_value.setText("KNN_dl")
@@ -307,10 +421,10 @@ class knn_options_window(QtWidgets.QDialog):
         self.save_button.setText("Save and continue")
         self.unclassified_button.setText("Unclassified building coords")
         self.unclassfied_path.setText("filename.csv")
-        self.output_label_manual.setText( "Output name:")
+        self.output_label_manual.setText("Output name:")
         self.b_info_button.setText("Buildings with information")
         self.manual_op.setText("Upload data manually")
-        self.manual_info_path.setText("filename.csv")       
+        self.manual_info_path.setText("filename.csv")
         self.output_label_dl.setText("Output name:")
         self.unclassfied_dl_path.setText("filename.csv")
         self.unclassified_dl_button.setText("Unclassified building coords")
@@ -322,99 +436,95 @@ class knn_options_window(QtWidgets.QDialog):
         self.output_path_dl_button.setText("Select output folder")
         self.output_path_button.setText("Select output folder")
         self.saved_path_manual.setText("path/where/save/the/results")
-           
-        
+
         # ==============================================================
         # KNN method functions
         # ==============================================================
-        
+
     def _on_select_output_folder(self):
-        """
-        Opens a folder selection dialog, stores the selected output folder path, and displays 
-        the folder name in the interface.
+        """Open a folder-selection dialog.
+
+        Store the selected output folder and display its name in the interface.
         """
         self.folder_path, self.display_folder = select_output_folder(self)
         if self.manual_op.isChecked():
             self.saved_path_manual.setText(self.display_folder)
         elif self.dl_op.isChecked():
             self.saved_path_dl.setText(self.display_folder)
-            
+
     def data_existing(self):
-        """
-        Loads the reference dataset from the selected manual input file and stores its path.
-        """
+        """Load the reference dataset selected for the manual workflow."""
         self.sf_font = self.method.sf_font
         self.label_path = self.manual_info_path
         self.info_existing = upload_csv(self)
-        
+
     def data_extrapolation(self):
-        """
-        Loads the reference dataset from the selected manual input file and stores its path.
-        """
+        """Load the unclassified dataset selected for the manual workflow."""
         self.sf_font = self.method.sf_font
         self.label_path = self.unclassfied_path
         self.info_pending = upload_csv(self)
-        
+
     def data_existing_dl(self):
-        """
-        Loads the reference dataset from the selected manual input file and stores its path.
-        """
+        """Load building coordinates for the deep-learning workflow."""
         self.sf_font = self.method.sf_font
         self.label_path = self.coord_value_knn
         self.info_existing = upload_csv(self)
-        
+
     def data_extrapolation_dl(self):
-        """
-        Loads the reference dataset from the selected manual input file and stores its path.
-        """
+        """Load unclassified data for the deep-learning workflow."""
         self.sf_font = self.method.sf_font
         self.label_path = self.unclassfied_dl_path
         self.info_pending = upload_csv(self)
-        
-        
+
     def select_method(self):
-        """
-        Validates the selected method, ensures that only one option is chosen, and saves the 
-        corresponding input settings before continuing.
+        """Validate and save the selected KNN input method.
+
+        Ensure that exactly one workflow is selected and that all required
+        datasets are available before closing the dialog.
         """
         # Check how many checkboxes are checked
-        checked_count = sum([self.manual_op.isChecked(), 
-                              self.dl_op.isChecked()])
+        checked_count = sum([self.manual_op.isChecked(), self.dl_op.isChecked()])
         # Check proper setting
         if checked_count > 1:
-            QtWidgets.QMessageBox.warning(self, "Selection Warning", "You can only select one method at a time")
+            QtWidgets.QMessageBox.warning(
+                self, "Selection Warning", "You can only select one method at a time"
+            )
         elif checked_count == 0:
-            QtWidgets.QMessageBox.warning(self, "Input Error", "Please select one method")
+            QtWidgets.QMessageBox.warning(
+                self, "Input Error", "Please select one method"
+            )
         else:
             if self.manual_op.isChecked():
                 if self.info_existing is not None:
                     if self.info_pending is not None:
                         self.accept()
                 else:
-                    QtWidgets.QMessageBox.warning(self, "Input Error", "There are missing the inputs files")
+                    QtWidgets.QMessageBox.warning(
+                        self, "Input Error", "There are missing the inputs files"
+                    )
             elif self.dl_op.isChecked():
                 #######===========  Input parameters =========###########
                 if self.info_existing is not None:
                     if self.info_pending is not None:
                         self.coord_reference = self.info_existing
-                        self.coord_reference_building_feature_path = self.output_dl_value.text()+"_reference_results.csv"
-                        self. data_extrapolation = self.info_pending
-                        self.knn_dl_saved_path = self.output_dl_value.text()+".csv"
+                        self.coord_reference_building_feature_path = (
+                            self.output_dl_value.text() + "_reference_results.csv"
+                        )
+                        self.data_extrapolation = self.info_pending
+                        self.knn_dl_saved_path = self.output_dl_value.text() + ".csv"
                         self.accept()
                 else:
-                    QtWidgets.QMessageBox.warning(self, "Input Error", "There are missing the inputs files")
- 
-            
-#####################################################################################################    
-############## --------- KNN function for calling gui_methods.py ---------------#####################
-##################################################################################################### 
+                    QtWidgets.QMessageBox.warning(
+                        self, "Input Error", "There are missing the inputs files"
+                    )
+
+
+# KNN functions used by gui_methods.py
 
 
 # Function to calculate Geodesic distance (in km)
 def geodesic_distance(lat1, lon1, lat2, lon2):
-    """
-    Calculates the geodesic distance in kilometers between two geographic coordinates.
-    """
+    """Calculate the geodesic distance between two geographic coordinates."""
     coords_1 = (lat1, lon1)
     coords_2 = (lat2, lon2)
     return geodesic(coords_1, coords_2).km
@@ -422,43 +532,46 @@ def geodesic_distance(lat1, lon1, lat2, lon2):
 
 # Function to find 3 nearest neighbors using geodesic distance
 def find_nearest_neighbors_geodesic(input_row, info_df, n_neighbors):
-    """
-    Finds the nearest neighbors to an input location using geodesic distance and returns 
-    their data along with the computed distances in kilometers.
+    """Find the nearest neighbors using geodesic distance.
+
+    Return the selected reference rows with their distances in kilometers.
     """
     # Apply geodesic distance for each row in reference dataframe
     distances = info_df.apply(
         lambda row: geodesic_distance(
-            input_row['latitude'],
-            input_row['longitude'],
-            row['latitude'],
-            row['longitude']
-        ), axis=1)
+            input_row["latitude"],
+            input_row["longitude"],
+            row["latitude"],
+            row["longitude"],
+        ),
+        axis=1,
+    )
 
     nearest_indices = distances.nsmallest(n_neighbors).index
-    
+
     # Extract neighbor data
-    neighbor_data = info_df.loc[nearest_indices].copy()  # Use .copy() to avoid SettingWithCopyWarning
-    
+    # Copy the rows to avoid pandas SettingWithCopyWarning.
+    neighbor_data = info_df.loc[nearest_indices].copy()
+
     # Add distance column to neighbor data
-    neighbor_data['distance_km'] = distances.loc[nearest_indices].values
+    neighbor_data["distance_km"] = distances.loc[nearest_indices].values
     return neighbor_data
 
 
 # Function to compute taxonomy probabilities using inverse-distance weighted soft voting
 def compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row):
-    """
-    Computes a probability distribution of taxonomies from the nearest neighbors using 
-    inverse-distance weighted voting and returns the results with the corresponding 
-    building attributes.
+    """Compute taxonomy probabilities using inverse-distance weighting.
+
+    Return one output record per taxonomy, including representative building
+    attributes from the nearest-neighbor reference data.
     """
     class_weights = defaultdict(float)
 
     # Assign weights to each neighbor based on the chosen kernel
     for _, row in nearest_neighbors.iterrows():
-        dist = row['distance_km']
-        label = row['taxonomy']
-        
+        dist = row["distance_km"]
+        label = row["taxonomy"]
+
         # Compute weight based on kernel
         weight = 1 / (dist + 1e-6)  # Avoid division by zero
         class_weights[label] += weight
@@ -471,47 +584,61 @@ def compute_taxonomy_distribution_full_structure(nearest_neighbors, input_row):
     distribution_rows = []
     for taxonomy, prob in probs.items():
         # Take a representative row (first one with the taxonomy)
-        taxonomy_row = nearest_neighbors[nearest_neighbors['taxonomy'] == taxonomy].iloc[0]
-        
-        distribution_rows.append({
-            'id': input_row['id'],
-            'latitude': input_row['latitude'],
-            'longitude': input_row['longitude'],
-            'country': taxonomy_row['country'],
-            'city': taxonomy_row['city'],
-            'material': taxonomy_row['material'],
-            'llrs': taxonomy_row['llrs'],
-            'code_level': taxonomy_row['code_level'],
-            'n_stories': taxonomy_row['n_stories'],
-            'occupancy': taxonomy_row['occupancy'],
-            'block_position': taxonomy_row['block_position'],
-            'roof_shape': taxonomy_row['roof_shape'],
-            'roof_material': taxonomy_row['roof_material'],
-            'taxonomy': taxonomy,
-            'probability': prob
-        })
+        taxonomy_row = nearest_neighbors[
+            nearest_neighbors["taxonomy"] == taxonomy
+        ].iloc[0]
+
+        distribution_rows.append(
+            {
+                "id": input_row["id"],
+                "latitude": input_row["latitude"],
+                "longitude": input_row["longitude"],
+                "country": taxonomy_row["country"],
+                "city": taxonomy_row["city"],
+                "material": taxonomy_row["material"],
+                "llrs": taxonomy_row["llrs"],
+                "code_level": taxonomy_row["code_level"],
+                "n_stories": taxonomy_row["n_stories"],
+                "occupancy": taxonomy_row["occupancy"],
+                "block_position": taxonomy_row["block_position"],
+                "roof_shape": taxonomy_row["roof_shape"],
+                "roof_material": taxonomy_row["roof_material"],
+                "taxonomy": taxonomy,
+                "probability": prob,
+            }
+        )
 
     return distribution_rows
 
 
-def extrapolation_existing_reference(data_existing , data_extrapolation, saved_path, n_neigh):
+def extrapolation_existing_reference(
+    data_existing, data_extrapolation, saved_path, n_neigh
+):
+    """Apply KNN extrapolation and save taxonomy probabilities.
+
+    Process every unclassified building, compute its weighted taxonomy
+    distribution, and write the combined results to a CSV file.
     """
-    Applies nearest-neighbor extrapolation to each input record, computes the taxonomy 
-    probability distribution based on nearby reference data, and saves the results to a CSV file.
-    """
-    final_distribution_list_full = []   
+    final_distribution_list_full = []
     # Iterate over each building with no image
-    for idx, input_row in data_extrapolation.iterrows():
+    for _idx, input_row in data_extrapolation.iterrows():
         # Find 3 nearest neighbors using geodesic distance
-        nearest_neighbors_value = find_nearest_neighbors_geodesic(input_row, data_existing, n_neigh)
+        nearest_neighbors_value = find_nearest_neighbors_geodesic(
+            input_row, data_existing, n_neigh
+        )
         # Compute taxonomy-based distributions with full structure
-        distribution_rows = compute_taxonomy_distribution_full_structure(nearest_neighbors_value, input_row)
-        
+        distribution_rows = compute_taxonomy_distribution_full_structure(
+            nearest_neighbors_value, input_row
+        )
+
         # Append to final result
         final_distribution_list_full.extend(distribution_rows)
-    
+
     # Convert final list to DataFrame
     final_distribution_df_full = pd.DataFrame(final_distribution_list_full)
     # Export to CSV
     final_distribution_df_full.to_csv(saved_path, index=False)
-  
+
+
+# Backward-compatible alias for existing imports.
+knn_options_window = KNNOptionsWindow

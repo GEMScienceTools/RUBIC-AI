@@ -1,0 +1,63 @@
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+indent-width = 4
+
+extend-exclude = [
+    ".git",
+    ".venv",
+    "venv",
+    "__pycache__",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".mypy_cache",
+    "build",
+    "dist",
+    "*.egg-info",
+    "resources",
+    "dl_weights",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",      # PEP 8 errors
+    "W",      # PEP 8 warnings
+    "F",      # Undefined names, unused imports, etc.
+    "I",      # Import organization
+    "N",      # Naming conventions
+    "B",      # Likely bugs and design problems
+    "UP",     # Modern Python syntax
+    "SIM",    # Simplifiable code
+    "C90",    # McCabe complexity
+    "D",      # Docstring conventions
+    "RUF",    # Ruff-specific checks
+]
+
+ignore = [
+    "D100",   # Missing docstring in public module
+    "D104",   # Missing docstring in public package
+    "D105",   # Missing docstring in magic method
+    "D107",   # Missing docstring in __init__
+    "D203",   # Conflicts with D211
+    "D213",   # Conflicts with D212
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 15
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["D"]
+"ui_*.py" = ["D", "N"]
+"**/ui_*.py" = ["D", "N"]
+"*Ui.py" = ["D", "N"]
+"**/*Ui.py" = ["D", "N"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+docstring-code-format = true
+skip-magic-trailing-comma = false

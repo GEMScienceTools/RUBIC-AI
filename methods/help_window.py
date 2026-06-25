@@ -1,173 +1,234 @@
-"""
-help_window.py
-==============
-This module provides a PyQt5-based, scrollable help dialog that displays labeled 
-reference images and includes access to the GEM documentation website.
-"""
+"""Provide a scrollable PyQt5 help dialog with reference images."""
 
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QDialog, QGridLayout, QScrollArea
-from PyQt5.QtGui import QPixmap, QFont
-from PyQt5.QtCore import Qt
 import sys
+
 import numpy as np
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont, QPixmap
+from PyQt5.QtWidgets import (
+    QApplication,
+    QDialog,
+    QGridLayout,
+    QLabel,
+    QScrollArea,
+    QVBoxLayout,
+    QWidget,
+)
+
+DESIGN_WIDTH = 1920
+DESIGN_HEIGHT = 1080
+DESIGN_DPI = 120
+DEFAULT_WINDOW_WIDTH = 400
+DEFAULT_WINDOW_HEIGHT = 300
+ITEMS_PER_ROW = 3
+LOGPIXELSX = 88
+MIN_REASONABLE_DPI = 60
+MAX_REASONABLE_DPI = 200
+GEM_TAXONOMY_URL = "https://taxonomy.openquake.org/terms/"
+
 
 class HelpDialog(QDialog):
-    
-    def __init__(self, image_paths, w_size_width, w_size_height, w_title, img_width, img_height, description=None, parent=None, main_window=None):
-    # def __init__(self, image_paths, w_size_width, w_size_height, w_title, img_width, img_height, parent=None, main_window=None):
+    """Display reference images and descriptions in a scrollable dialog.
+
+    Parameters
+    ----------
+    image_paths : dict
+        Mapping from class labels to image paths or dictionaries containing
+        ``path`` and ``description`` entries.
+    w_size_width : int
+        Final width of the dialog in pixels.
+    w_size_height : int
+        Final height of the dialog in pixels.
+    w_title : str
+        Window title.
+    img_width : int
+        Maximum displayed image width in pixels.
+    img_height : int
+        Maximum displayed image height in pixels.
+    description : str, optional
+        General explanatory text displayed above the image grid.
+    parent : QWidget, optional
+        Parent widget of the dialog.
+    main_window : QWidget, optional
+        Reference to the main application window.
+    """
+
+    def __init__(
+        self,
+        image_paths,
+        w_size_width,
+        w_size_height,
+        w_title,
+        img_width,
+        img_height,
+        description=None,
+        parent=None,
+        main_window=None,
+    ):
         super().__init__(parent)
-        self.main_window = main_window  # Reference to the main window (GUIInterface)
-        
-        # Get screen resolution
-        screen = QApplication.primaryScreen()
-        screen_geometry = screen.geometry()
-        screen_width = screen_geometry.width()
-        screen_height = screen_geometry.height()
+        self.main_window = main_window
 
-        DESIGN_WIDTH = 1920
-        DESIGN_HEIGHT = 1080
-        DESIGN_DPI = 96 * 1.25  # 125% Windows baseline -> 120 DPI
-        
-        # Scale the GUI based on resolution
-        sf_x = screen_width / DESIGN_WIDTH
-        sf_y = screen_height / DESIGN_HEIGHT
-        sf_factor = np.sqrt(sf_x * sf_y)
-
-        # DPI-based scale
-        # Get a reliable DPI value
-        if sys.platform.startswith("win"):
-            # Windows: use ctypes to get real DPI
-            import ctypes
-            LOGPIXELSX = 88
-            hdc = ctypes.windll.user32.GetDC(0)
-            dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
-            ctypes.windll.user32.ReleaseDC(0, hdc)
-        else:
-            # macOS / Linux: start with logical DPI
-            dpi = screen.logicalDotsPerInch()
-            # If logical DPI looks weird, fallback to physical
-            if dpi < 60 or dpi > 200:
-                dpi = screen.physicalDotsPerInch()
-
-        # For geometry: mainly resolution-based
-        sf_x = sf_factor
-        sf_y = sf_factor
-
-        # Normalize to your design environment (Windows @ 125% = 120 DPI)
-        # If dpi == 120 => scale_dpi = 1 (your original machine)
-        scale_dpi = DESIGN_DPI / dpi
-        # Scale the GUI based on resolution
-        sf_font = sf_factor * scale_dpi
-        
-        # Window Title
+        scale_factor, font_scale = self._calculate_scale_factors()
         self.setWindowTitle(w_title)
-        self.resize(int(400*sf_x), int(300*sf_y))
-        
+        self.resize(
+            int(DEFAULT_WINDOW_WIDTH * scale_factor),
+            int(DEFAULT_WINDOW_HEIGHT * scale_factor),
+        )
+
         layout = QVBoxLayout()
-        
         if description:
-            description_label = QLabel(description)
-            description_label.setWordWrap(True)
-            description_label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-        
-            font = QFont()
-            font.setPointSize(int(10*sf_font))
-            description_label.setFont(font)
-        
-            description_label.setStyleSheet(
-                "padding: 6px; "
-                "margin-bottom: 8px;"
+            layout.addWidget(self._create_general_description(description, font_scale))
+
+        layout.addWidget(
+            self._create_image_scroll_area(
+                image_paths,
+                img_width,
+                img_height,
+                font_scale,
             )
-        
-            layout.addWidget(description_label)
-        
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
+        )
+        layout.addWidget(self._create_reference_link())
+
+        self.setLayout(layout)
+        self.resize(w_size_width, w_size_height)
+
+    @staticmethod
+    def _calculate_scale_factors():
+        screen = QApplication.primaryScreen()
+        if screen is None:
+            return 1.0, 1.0
+
+        screen_geometry = screen.geometry()
+        scale_x = screen_geometry.width() / DESIGN_WIDTH
+        scale_y = screen_geometry.height() / DESIGN_HEIGHT
+        scale_factor = float(np.sqrt(scale_x * scale_y))
+        dpi = HelpDialog._get_screen_dpi(screen)
+        font_scale = scale_factor * (DESIGN_DPI / dpi)
+        return scale_factor, font_scale
+
+    @staticmethod
+    def _get_screen_dpi(screen):
+        if sys.platform.startswith("win"):
+            import ctypes
+
+            device_context = ctypes.windll.user32.GetDC(0)
+            try:
+                return ctypes.windll.gdi32.GetDeviceCaps(
+                    device_context,
+                    LOGPIXELSX,
+                )
+            finally:
+                ctypes.windll.user32.ReleaseDC(0, device_context)
+
+        dpi = screen.logicalDotsPerInch()
+        if not MIN_REASONABLE_DPI <= dpi <= MAX_REASONABLE_DPI:
+            dpi = screen.physicalDotsPerInch()
+        return dpi or DESIGN_DPI
+
+    @staticmethod
+    def _create_general_description(description, font_scale):
+        description_label = QLabel(description)
+        description_label.setWordWrap(True)
+        description_label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+
+        font = QFont()
+        font.setPointSize(max(1, int(10 * font_scale)))
+        description_label.setFont(font)
+        description_label.setStyleSheet("padding: 6px; margin-bottom: 8px;")
+        return description_label
+
+    def _create_image_scroll_area(
+        self,
+        image_paths,
+        img_width,
+        img_height,
+        font_scale,
+    ):
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+
         content = QWidget()
         grid = QGridLayout()
 
-        row, col = 0, 0
-        for i, (label, item) in enumerate(image_paths.items()):
-            # Accept both formats:
-            # 1) "Concrete": "help_img/concrete.jpg"
-            # 2) "Concrete": {"path": "help_img/concrete.jpg", "description": "..."}
-            if isinstance(item, dict):
-                path = item.get("path", "")
-                description = item.get("description", "")
-            else:
-                path = item
-                description = ""
-        
-            # Image
-            pixmap = QPixmap(path).scaled(
+        for index, (label, item) in enumerate(image_paths.items()):
+            path, item_description = self._parse_image_item(item)
+            cell = self._create_image_cell(
+                label,
+                path,
+                item_description,
                 img_width,
                 img_height,
-                Qt.KeepAspectRatio,
-                Qt.SmoothTransformation
+                font_scale,
             )
-        
-            img_label = QLabel()
-            img_label.setPixmap(pixmap)
-            img_label.setAlignment(Qt.AlignCenter)
-        
-            # Class label
-            text_label = QLabel(label)
-            text_label.setAlignment(Qt.AlignCenter)
-        
-            font = QFont()
-            font.setBold(True)
-            text_label.setFont(font)
-            text_label.setStyleSheet("color: darkred;")
-        
-            # Class description
+            row, column = divmod(index, ITEMS_PER_ROW)
+            grid.addWidget(cell, row, column)
+
+        content.setLayout(grid)
+        scroll_area.setWidget(content)
+        return scroll_area
+
+    @staticmethod
+    def _parse_image_item(item):
+        if isinstance(item, dict):
+            return item.get("path", ""), item.get("description", "")
+        return item, ""
+
+    @staticmethod
+    def _create_image_cell(
+        label,
+        path,
+        description,
+        img_width,
+        img_height,
+        font_scale,
+    ):
+        image_label = QLabel()
+        pixmap = QPixmap(path).scaled(
+            img_width,
+            img_height,
+            Qt.KeepAspectRatio,
+            Qt.SmoothTransformation,
+        )
+        image_label.setPixmap(pixmap)
+        image_label.setAlignment(Qt.AlignCenter)
+
+        text_label = QLabel(label)
+        text_label.setAlignment(Qt.AlignCenter)
+        label_font = QFont()
+        label_font.setBold(True)
+        text_label.setFont(label_font)
+        text_label.setStyleSheet("color: darkred;")
+
+        cell_layout = QVBoxLayout()
+        cell_layout.addWidget(image_label)
+        cell_layout.addWidget(text_label)
+
+        if description:
             description_label = QLabel(description)
             description_label.setWordWrap(True)
             description_label.setAlignment(Qt.AlignCenter)
-        
             description_font = QFont()
-            description_font.setPointSize(int(9*sf_font))
+            description_font.setPointSize(max(1, int(9 * font_scale)))
             description_label.setFont(description_font)
-        
             description_label.setStyleSheet(
-                "color: black; "
-                "padding-left: 4px; "
-                "padding-right: 4px;"
+                "color: black; padding-left: 4px; padding-right: 4px;"
             )
-        
-            # Layout for image + label + description
-            cell_layout = QVBoxLayout()
-            cell_layout.addWidget(img_label)
-            cell_layout.addWidget(text_label)
-        
-            if description:
-                cell_layout.addWidget(description_label)
+            cell_layout.addWidget(description_label)
 
-            cell = QWidget()
-            cell.setLayout(cell_layout)
+        cell = QWidget()
+        cell.setLayout(cell_layout)
+        return cell
 
-            grid.addWidget(cell, row, col)
-
-            col += 1
-            if col == 3:  # 3 items per row
-                row += 1
-                col = 0
-
-        content.setLayout(grid)
-        scroll.setWidget(content)
-        layout.addWidget(scroll)
-        
-        # Add hyperlink
+    @staticmethod
+    def _create_reference_link():
         link_label = QLabel()
         link_label.setText(
-            '<span style="font-style: italic; color: darkred; font-size: 16px;">For more information:</span> '
-            '<a href="https://taxonomy.openquake.org/terms/" style="font-size: 16px;">https://taxonomy.openquake.org/terms/</a>'
+            '<span style="font-style: italic; color: darkred; '
+            'font-size: 16px;">For more information:</span> '
+            f'<a href="{GEM_TAXONOMY_URL}" style="font-size: 16px;">'
+            f"{GEM_TAXONOMY_URL}</a>"
         )
         link_label.setOpenExternalLinks(True)
         link_label.setAlignment(Qt.AlignCenter)
         link_label.setTextInteractionFlags(Qt.TextBrowserInteraction)
-        
-        layout.addWidget(link_label)
-        
-        self.setLayout(layout)
-        self.resize(w_size_width, w_size_height)
-
+        return link_label

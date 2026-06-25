@@ -1,274 +1,307 @@
-"""
-xml_to_csv_converter.py
-=======================
-This module provides functions to extract and convert OpenQuake NRML vulnerability
-and fragility XML data into pandas DataFrames or CSV files.
-"""
+"""Convert OpenQuake NRML vulnerability and fragility XML data."""
+
+import xml.etree.ElementTree as ET
+from pathlib import Path
 
 import pandas as pd
-import xml.etree.ElementTree as ET
 import requests
-from typing import Optional
+
+NRML_NAMESPACE = {"nrml": "http://openquake.org/xmlns/nrml/0.5"}
+REQUEST_TIMEOUT_SECONDS = 30
 
 
-def extract_vulnerability_function(xml_url: str, function_id: str, save_csv: bool = False, 
-                                   output_filename: Optional[str] = None) -> pd.DataFrame:
-    """
-    Extract a specific vulnerability function from XML and convert to DataFrame.
-    
-    Parameters:
-    -----------
-    xml_url : str
-        URL or local path to the XML file
-    function_id : str
-        ID of the vulnerability function to extract (e.g., "CR_LDUAL+CDH+DUH_H6/RES")
-    save_csv : bool
-        Whether to save the result as a CSV file
-    output_filename : str, optional
-        Name of the output CSV file (default: uses function_id as filename)
-    
-    Returns:
-    --------
-    pd.DataFrame
-        DataFrame containing the vulnerability function data
-    """
-    
-    # Fetch XML content
-    try:
-        if xml_url.startswith('http://') or xml_url.startswith('https://'):
-            response = requests.get(xml_url)
+def _load_xml_content(xml_source: str) -> str:
+    """Load XML content from a URL or local file."""
+    if xml_source.startswith(("http://", "https://")):
+        try:
+            response = requests.get(
+                xml_source,
+                timeout=REQUEST_TIMEOUT_SECONDS,
+            )
             response.raise_for_status()
-            xml_content = response.text
-        else:
-            with open(xml_url, 'r') as f:
-                xml_content = f.read()
-    except Exception as e:
-        raise Exception(f"Error fetching XML: {str(e)}")
-    
-    # Parse XML
+        except requests.RequestException as error:
+            raise RuntimeError(
+                f"Could not download XML from {xml_source!r}."
+            ) from error
+        return response.text
+
     try:
-        root = ET.fromstring(xml_content)
-    except ET.ParseError as e:
-        raise Exception(f"Error parsing XML: {str(e)}")
-    
-    # Find the specific vulnerability function
-    # Handle both with and without namespaces
-    vuln_func = None
-    
-    # Try to find with namespace
-    namespaces = {'nrml': 'http://openquake.org/xmlns/nrml/0.5'}
-    for func in root.findall('.//vulnerabilityFunction', namespaces):
-        if func.get('id') == function_id:
-            vuln_func = func
-            break
-    
-    # If not found, try without namespace
-    if vuln_func is None:
-        for func in root.iter():
-            if func.tag.endswith('vulnerabilityFunction') or func.tag == 'vulnerabilityFunction':
-                if func.get('id') == function_id:
-                    vuln_func = func
-                    break
-    
-    if vuln_func is None:
-        raise ValueError(f"Vulnerability function with id '{function_id}' not found in XML")
-    
-    # Extract data
-    dist = vuln_func.get('dist', '')
-    
-    # Extract IMT (Intensity Measure Type)
-    imls_elem = vuln_func.find('imls')
-    if imls_elem is None:
-        # Try finding by tag name ending (for namespaced XML)
-        for child in vuln_func:
-            if child.tag.endswith('imls') or child.tag == 'imls':
-                imls_elem = child
-                break
-    
-    if imls_elem is None:
-        raise ValueError("No 'imls' element found in vulnerability function")
-    
-    imt = imls_elem.get('imt', '')
-    imls_text = imls_elem.text.strip()
-    imls = [float(x) for x in imls_text.split()]
-    
-    # Extract mean loss ratios
-    mean_lrs_elem = vuln_func.find('meanLRs')
-    if mean_lrs_elem is None:
-        for child in vuln_func:
-            if child.tag.endswith('meanLRs') or child.tag == 'meanLRs':
-                mean_lrs_elem = child
-                break
-    
-    if mean_lrs_elem is None:
-        raise ValueError("No 'meanLRs' element found in vulnerability function")
-    
-    mean_lrs_text = mean_lrs_elem.text.strip()
-    mean_lrs = [float(x) for x in mean_lrs_text.split()]
-    
-    # Extract coefficient of variation of loss ratios
-    cov_lrs_elem = vuln_func.find('covLRs')
-    if cov_lrs_elem is None:
-        for child in vuln_func:
-            if child.tag.endswith('covLRs') or child.tag == 'covLRs':
-                cov_lrs_elem = child
-                break
-    
-    if cov_lrs_elem is None:
-        raise ValueError("No 'covLRs' element found in vulnerability function")
-    
-    cov_lrs_text = cov_lrs_elem.text.strip()
-    cov_lrs = [float(x) for x in cov_lrs_text.split()]
-    
-    # Verify all arrays have the same length
-    if not (len(imls) == len(mean_lrs) == len(cov_lrs)):
-        raise ValueError(f"Array length mismatch: imls={len(imls)}, meanLRs={len(mean_lrs)}, covLRs={len(cov_lrs)}")
-    
-    # Create DataFrame
-    df = pd.DataFrame({
-        'IMT': [imt] * len(imls),
-        'IML': imls,
-        'meanLR': mean_lrs,
-        'covLR': cov_lrs
-    })
-    
-    # Add metadata as attributes
-    df.attrs['function_id'] = function_id
-    df.attrs['distribution'] = dist
-    df.attrs['imt'] = imt
-    
-    # Save to CSV if requested
-    if save_csv:
-        if output_filename is None:
-            # Create safe filename from function_id
-            safe_id = function_id.replace('/', '_').replace('+', '_')
-            output_filename = f"{safe_id}.csv"
-        
-        df.to_csv(output_filename, index=False)
-        print(f"Data saved to: {output_filename}")
-    
-    return df
+        return Path(xml_source).read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as error:
+        raise RuntimeError(f"Could not read the XML file {xml_source!r}.") from error
 
 
-def fragility_xml_to_csv(xml_url: str,
-                         save_csv: bool = True,
-                         output_filename: Optional[str] = None) -> pd.DataFrame:
+def _parse_xml(xml_content: str) -> ET.Element:
+    """Parse XML text and return its root element."""
+    try:
+        return ET.fromstring(xml_content)
+    except ET.ParseError as error:
+        raise ValueError("The XML content could not be parsed.") from error
+
+
+def _tag_matches(element: ET.Element, tag_name: str) -> bool:
+    """Return whether an element matches a local XML tag name."""
+    return element.tag == tag_name or element.tag.endswith(f"}}{tag_name}")
+
+
+def _find_child(
+    parent: ET.Element,
+    tag_name: str,
+) -> ET.Element | None:
+    """Find a direct child by local XML tag name."""
+    direct_match = parent.find(tag_name)
+    if direct_match is not None:
+        return direct_match
+
+    return next(
+        (child for child in parent if _tag_matches(child, tag_name)),
+        None,
+    )
+
+
+def _find_all_children(
+    parent: ET.Element,
+    tag_name: str,
+) -> list[ET.Element]:
+    """Find all direct children matching a local XML tag name."""
+    return [child for child in parent if _tag_matches(child, tag_name)]
+
+
+def _parse_float_values(
+    element: ET.Element,
+    element_name: str,
+) -> list[float]:
+    """Parse whitespace-separated floating-point values from an XML element."""
+    if element.text is None or not element.text.strip():
+        raise ValueError(f"The {element_name!r} element contains no values.")
+
+    try:
+        return [float(value) for value in element.text.split()]
+    except ValueError as error:
+        raise ValueError(
+            f"The {element_name!r} element contains a non-numeric value."
+        ) from error
+
+
+def _find_function_by_id(
+    root: ET.Element,
+    tag_name: str,
+    function_id: str,
+) -> ET.Element | None:
+    """Find an NRML function element by tag name and identifier."""
+    for element in root.iter():
+        if _tag_matches(element, tag_name) and element.get("id") == function_id:
+            return element
+    return None
+
+
+def _safe_output_filename(function_id: str) -> str:
+    """Create a filesystem-safe CSV filename from a function identifier."""
+    safe_id = function_id.replace("/", "_").replace("+", "_")
+    return f"{safe_id}.csv"
+
+
+def _save_dataframe(
+    dataframe: pd.DataFrame,
+    output_filename: str,
+) -> None:
+    """Save a DataFrame to CSV and report the resulting path."""
+    dataframe.to_csv(output_filename, index=False)
+    print(f"Data saved to: {output_filename}")
+
+
+def extract_vulnerability_function(
+    xml_url: str,
+    function_id: str,
+    save_csv: bool = False,
+    output_filename: str | None = None,
+) -> pd.DataFrame:
+    """Extract one vulnerability function from an OpenQuake NRML XML file.
+
+    Parameters
+    ----------
+    xml_url : str
+        URL or local path to the XML file.
+    function_id : str
+        Identifier of the vulnerability function to extract.
+    save_csv : bool, default=False
+        Whether to save the extracted data as a CSV file.
+    output_filename : str or None, default=None
+        Output CSV path. When omitted, a safe name is derived from
+        ``function_id``.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Vulnerability data with ``IMT``, ``IML``, ``meanLR``, and ``covLR``
+        columns.
+
+    Raises
+    ------
+    RuntimeError
+        If the XML source cannot be loaded.
+    ValueError
+        If the XML is invalid or the requested function is incomplete.
     """
-    Convert an OpenQuake NRML *fragility* XML file (e.g., fragility_structural.xml)
-    into a long-format CSV/DataFrame with **5 columns**:
+    root = _parse_xml(_load_xml_content(xml_url))
+    vulnerability_function = _find_function_by_id(
+        root,
+        "vulnerabilityFunction",
+        function_id,
+    )
+    if vulnerability_function is None:
+        raise ValueError(
+            f"Vulnerability function with id {function_id!r} was not found."
+        )
 
-        function_id | imt | iml | limit_state | poe
+    imls_element = _find_child(vulnerability_function, "imls")
+    mean_lrs_element = _find_child(vulnerability_function, "meanLRs")
+    cov_lrs_element = _find_child(vulnerability_function, "covLRs")
 
-    Notes
-    -----
-    - This function targets "Discrete" fragility functions with:
-        <imls imt="..."> ... </imls>
-        <poes ls="..."> ... </poes>
-      which is the common format in GEM/OpenQuake fragility models.
-    - If a function has multiple <poes> (one per limit state), all are included.
-    - Rows are stacked (long format): one row per (function_id, limit_state, iml).
+    missing_elements = [
+        name
+        for name, element in (
+            ("imls", imls_element),
+            ("meanLRs", mean_lrs_element),
+            ("covLRs", cov_lrs_element),
+        )
+        if element is None
+    ]
+    if missing_elements:
+        missing = ", ".join(missing_elements)
+        raise ValueError(f"The vulnerability function is missing: {missing}.")
+
+    imls = _parse_float_values(imls_element, "imls")
+    mean_lrs = _parse_float_values(mean_lrs_element, "meanLRs")
+    cov_lrs = _parse_float_values(cov_lrs_element, "covLRs")
+
+    if len({len(imls), len(mean_lrs), len(cov_lrs)}) != 1:
+        raise ValueError(
+            "Array length mismatch: "
+            f"imls={len(imls)}, meanLRs={len(mean_lrs)}, "
+            f"covLRs={len(cov_lrs)}."
+        )
+
+    imt = imls_element.get("imt", "")
+    dataframe = pd.DataFrame(
+        {
+            "IMT": [imt] * len(imls),
+            "IML": imls,
+            "meanLR": mean_lrs,
+            "covLR": cov_lrs,
+        }
+    )
+    dataframe.attrs.update(
+        {
+            "function_id": function_id,
+            "distribution": vulnerability_function.get("dist", ""),
+            "imt": imt,
+        }
+    )
+
+    if save_csv:
+        filename = output_filename or _safe_output_filename(function_id)
+        _save_dataframe(dataframe, filename)
+
+    return dataframe
+
+
+def _find_fragility_functions(root: ET.Element) -> list[ET.Element]:
+    """Return all fragility function elements in an XML document."""
+    functions = root.findall(
+        ".//nrml:fragilityFunction",
+        NRML_NAMESPACE,
+    )
+    if functions:
+        return functions
+
+    return [
+        element for element in root.iter() if _tag_matches(element, "fragilityFunction")
+    ]
+
+
+def _fragility_records(
+    fragility_function: ET.Element,
+) -> list[dict[str, str | float]]:
+    """Convert one fragility function element into long-format records."""
+    imls_element = _find_child(fragility_function, "imls")
+    if imls_element is None or imls_element.text is None:
+        return []
+
+    function_id = fragility_function.get("id", "")
+    imt = imls_element.get("imt", "")
+    imls = _parse_float_values(imls_element, "imls")
+    records: list[dict[str, str | float]] = []
+
+    for poes_element in _find_all_children(fragility_function, "poes"):
+        if poes_element.text is None:
+            continue
+
+        limit_state = poes_element.get("ls", "")
+        poes = _parse_float_values(poes_element, "poes")
+        if len(poes) != len(imls):
+            raise ValueError(
+                f"Array length mismatch in function {function_id!r}, "
+                f"limit state {limit_state!r}: imls={len(imls)}, "
+                f"poes={len(poes)}."
+            )
+
+        records.extend(
+            {
+                "function_id": function_id,
+                "imt": imt,
+                "iml": iml,
+                "limit_state": limit_state,
+                "poe": poe,
+            }
+            for iml, poe in zip(imls, poes, strict=True)
+        )
+
+    return records
+
+
+def fragility_xml_to_csv(
+    xml_url: str,
+    save_csv: bool = True,
+    output_filename: str | None = None,
+) -> pd.DataFrame:
+    """Convert an OpenQuake discrete fragility XML file to long format.
 
     Parameters
     ----------
     xml_url : str
         URL or local path to the fragility XML file.
-    save_csv : bool
-        Whether to save the result as a CSV file.
-    output_filename : str, optional
-        Output CSV file name. Default: "fragility_from_xml.csv"
+    save_csv : bool, default=True
+        Whether to save the resulting DataFrame as a CSV file.
+    output_filename : str or None, default=None
+        Output CSV path. The default is ``fragility_from_xml.csv``.
 
     Returns
     -------
-    pd.DataFrame
-        DataFrame with columns: [function_id, imt, iml, limit_state, poe]
+    pandas.DataFrame
+        DataFrame with ``function_id``, ``imt``, ``iml``, ``limit_state``,
+        and ``poe`` columns.
+
+    Raises
+    ------
+    RuntimeError
+        If the XML source cannot be loaded.
+    ValueError
+        If the XML is invalid or contains inconsistent fragility data.
     """
+    root = _parse_xml(_load_xml_content(xml_url))
+    functions = _find_fragility_functions(root)
+    if not functions:
+        raise ValueError("No fragilityFunction elements were found in the XML.")
 
-    # Fetch XML content
-    try:
-        if xml_url.startswith('http://') or xml_url.startswith('https://'):
-            response = requests.get(xml_url)
-            response.raise_for_status()
-            xml_content = response.text
-        else:
-            with open(xml_url, 'r', encoding='utf-8') as f:
-                xml_content = f.read()
-    except Exception as e:
-        raise Exception(f"Error fetching XML: {str(e)}")
+    records = [
+        record for function in functions for record in _fragility_records(function)
+    ]
+    columns = ["function_id", "imt", "iml", "limit_state", "poe"]
+    dataframe = pd.DataFrame(records, columns=columns)
 
-    # Parse XML
-    try:
-        root = ET.fromstring(xml_content)
-    except ET.ParseError as e:
-        raise Exception(f"Error parsing XML: {str(e)}")
-
-    # Find fragility functions (with and without namespaces)
-    namespaces = {'nrml': 'http://openquake.org/xmlns/nrml/0.5'}
-    funcs = root.findall('.//nrml:fragilityFunction', namespaces)
-
-    if not funcs:
-        funcs = []
-        for el in root.iter():
-            if el.tag.endswith('fragilityFunction') or el.tag == 'fragilityFunction':
-                funcs.append(el)
-
-    if not funcs:
-        raise ValueError("No 'fragilityFunction' elements found in XML")
-
-    records = []
-
-    for func in funcs:
-        function_id = func.get('id', '')
-
-        # Find <imls>
-        imls_elem = None
-        for child in func:
-            if child.tag.endswith('imls') or child.tag == 'imls':
-                imls_elem = child
-                break
-
-        if imls_elem is None or imls_elem.text is None:
-            # Skip functions without IMLs
-            continue
-
-        imt = imls_elem.get('imt', '')
-        imls = [float(x) for x in imls_elem.text.split()]
-
-        # Find all <poes ls="...">
-        poes_elems = []
-        for child in func:
-            if child.tag.endswith('poes') or child.tag == 'poes':
-                poes_elems.append(child)
-
-        for poes in poes_elems:
-            limit_state = poes.get('ls', '')
-            if poes.text is None:
-                continue
-
-            poe_vals = [float(x) for x in poes.text.split()]
-
-            # Defensive check: sizes must match
-            if len(poe_vals) != len(imls):
-                raise ValueError(
-                    f"Array length mismatch in function '{function_id}', "
-                    f"limit_state='{limit_state}': imls={len(imls)} vs poes={len(poe_vals)}"
-                )
-
-            for iml, poe in zip(imls, poe_vals):
-                records.append({
-                    "function_id": function_id,
-                    "imt": imt,
-                    "iml": iml,
-                    "limit_state": limit_state,
-                    "poe": poe
-                })
-
-    df = pd.DataFrame(records, columns=["function_id", "imt", "iml", "limit_state", "poe"])
-
-    # Save to CSV if requested
     if save_csv:
-        if output_filename is None:
-            output_filename = "fragility_from_xml.csv"
-        df.to_csv(output_filename, index=False)
-        print(f"Data saved to: {output_filename}")
+        filename = output_filename or "fragility_from_xml.csv"
+        _save_dataframe(dataframe, filename)
 
-    return df
+    return dataframe

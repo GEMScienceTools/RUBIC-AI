@@ -1,218 +1,395 @@
-"""
-get_building_orientation.py
-===========================
-This module provides utility functions to determine road orientation and retrieve
-Google Street View imagery based on a geographic location.
+"""Retrieve road orientation and Google Street View imagery.
+
+This module provides utilities for calculating geographic azimuths, obtaining
+nearby road orientation from the Google Roads API, and downloading outdoor
+Google Street View images for a specified location.
 """
 
-import requests
 import math
-import numpy as np
+from pathlib import Path
+
 import cv2
+import numpy as np
+import requests
+
+ROADS_API_KEY_PATH = Path("methods/roads_api_key.txt")
+ROADS_API_URL = "https://roads.googleapis.com/v1/nearestRoads"
+STREET_VIEW_METADATA_URL = "https://maps.googleapis.com/maps/api/streetview/metadata"
+STREET_VIEW_IMAGE_URL = "https://maps.googleapis.com/maps/api/streetview"
+MAPS_PANORAMA_URL = "https://www.google.com/maps/@?api=1&map_action=pano"
+REQUEST_TIMEOUT = 30
+DEFAULT_MAX_RADIUS = 20
+DEFAULT_RADIUS_STEP = 5
 
 
-def get_road_orientation(location):
+def _read_api_key(path):
+    """Read an API key from a text file.
+
+    Parameters
+    ----------
+    path : pathlib.Path
+        Path to the text file containing the API key.
+
+    Returns
+    -------
+    str
+        API key with surrounding whitespace removed.
     """
-    Determine the road orientation (azimuth) near a specified location using the Google Roads API.
-    """
-    with open("methods/roads_api_key.txt", "r") as f:
-        roads_api_key = f.read().strip()
-
-    base_url = "https://roads.googleapis.com/v1/nearestRoads"
-    params = {"points": f"{location[0]},{location[1]}", "key": roads_api_key}
-
-    response = requests.get(base_url, params=params)
-    if response.status_code == 200:
-        data = response.json()
-        if "snappedPoints" in data and data["snappedPoints"]:
-            snapped_point = data["snappedPoints"][0]
-            road_lat = snapped_point["location"]["latitude"]
-            road_lng = snapped_point["location"]["longitude"]
-            orientation = compute_azimuth(location, (road_lat, road_lng))
-            return orientation
-        else:
-            print("No road found near the location.")
-            return None
-    else:
-        print(f"Error: {response.status_code}, {response.text}")
-        return None
+    with path.open(encoding="utf-8") as file:
+        return file.read().strip()
 
 
 def compute_azimuth(point1, point2):
-    """Compute the azimuth (bearing) between two geographic points."""
-    lat1, lon1 = math.radians(point1[0]), math.radians(point1[1])
-    lat2, lon2 = math.radians(point2[0]), math.radians(point2[1])
-    d_lon = lon2 - lon1
-    x = math.sin(d_lon) * math.cos(lat2)
-    y = math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * math.cos(lat2) * math.cos(d_lon)
-    azimuth = math.degrees(math.atan2(x, y))
+    """Compute the azimuth between two geographic points.
+
+    Parameters
+    ----------
+    point1 : tuple[float, float]
+        Latitude and longitude of the starting point in degrees.
+    point2 : tuple[float, float]
+        Latitude and longitude of the destination point in degrees.
+
+    Returns
+    -------
+    float
+        Bearing from the first point to the second in degrees, measured
+        clockwise from north within the interval ``[0, 360)``.
+    """
+    lat1, lon1 = map(math.radians, point1)
+    lat2, lon2 = map(math.radians, point2)
+    longitude_difference = lon2 - lon1
+
+    x_component = math.sin(longitude_difference) * math.cos(lat2)
+    y_component = math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * math.cos(
+        lat2
+    ) * math.cos(longitude_difference)
+    azimuth = math.degrees(math.atan2(x_component, y_component))
     return (azimuth + 360) % 360
 
 
-def get_street_view_image(location, api_key, angle, pitch, fov):
+def get_road_orientation(location):
+    """Determine the road orientation near a geographic location.
+
+    Parameters
+    ----------
+    location : tuple[float, float]
+        Latitude and longitude of the target location.
+
+    Returns
+    -------
+    float or None
+        Estimated road orientation in degrees, or ``None`` when no nearby
+        road can be found or the API request fails.
     """
-    Fetch a Google Street View image (outdoor-only) and generate its corresponding Maps URL.
+    roads_api_key = _read_api_key(ROADS_API_KEY_PATH)
+    params = {
+        "points": f"{location[0]},{location[1]}",
+        "key": roads_api_key,
+    }
+
+    try:
+        response = requests.get(
+            ROADS_API_URL,
+            params=params,
+            timeout=REQUEST_TIMEOUT,
+        )
+        response.raise_for_status()
+    except requests.RequestException as error:
+        print(f"Unable to retrieve the nearest road: {error}")
+        return None
+
+    snapped_points = response.json().get("snappedPoints", [])
+    if not snapped_points:
+        print("No road found near the location.")
+        return None
+
+    snapped_location = snapped_points[0]["location"]
+    road_point = (
+        snapped_location["latitude"],
+        snapped_location["longitude"],
+    )
+    return compute_azimuth(location, road_point)
+
+
+def _request_metadata(location, api_key, radius=None):
+    """Request Street View metadata for an outdoor panorama.
+
+    Parameters
+    ----------
+    location : tuple[float, float]
+        Latitude and longitude of the target location.
+    api_key : str
+        Google Street View API key.
+    radius : int or None, optional
+        Search radius in metres. When omitted, the API default is used.
+
+    Returns
+    -------
+    dict
+        Decoded Street View metadata response.
     """
-    # --- Metadata request (for year and indoor/outdoor detection) ---
-    meta_url = "https://maps.googleapis.com/maps/api/streetview/metadata"
-    meta_params = {
+    params = {
         "location": f"{location[0]},{location[1]}",
-        "source": "outdoor",  # ✅ only request outdoor panoramas
+        "source": "outdoor",
         "key": api_key,
     }
-    meta_response = requests.get(meta_url, params=meta_params)
-    meta_data = meta_response.json()
+    if radius is not None:
+        params["radius"] = radius
 
-    # Check if outdoor panorama is available
-    if meta_data.get("status") != "OK":
-        print(f"No outdoor panorama available at {location}. Status: {meta_data.get('status')}")
-    
-       ######################################################
-       ############# NEW FUNCTION ###########################
-       ######################################################
-        found_close = False
-        max_radius = 20
-        step = 5
-        show_debug = True
+    try:
+        response = requests.get(
+            STREET_VIEW_METADATA_URL,
+            params=params,
+            timeout=REQUEST_TIMEOUT,
+        )
+        response.raise_for_status()
+    except requests.RequestException as error:
+        print(f"Unable to retrieve Street View metadata: {error}")
+        return {}
 
-        with open("methods/gsv_api_key.txt", "r") as f:
-            api_key = f.read().strip()
+    return response.json()
 
-        meta_url = "https://maps.googleapis.com/maps/api/streetview/metadata"
-        img_url = "https://maps.googleapis.com/maps/api/streetview"
 
-        pano_id = None
-        pano_lat, pano_lon, year = None, None, None
+def _find_nearby_panorama(location, api_key, show_debug=True):
+    """Find the nearest outdoor panorama within the configured radius.
 
-        for radius in range(step, max_radius + step, step):
-            meta_params = {
-                "location": f"{location[0]},{location[1]}",
-                "radius": radius,
-                "source": "outdoor",
-                "key": api_key,
-            }
-            r = requests.get(meta_url, params=meta_params)
-            meta = r.json()
-            status = meta.get("status")
+    Parameters
+    ----------
+    location : tuple[float, float]
+        Latitude and longitude of the target location.
+    api_key : str
+        Google Street View API key.
+    show_debug : bool, optional
+        Whether to print information about each search radius.
 
-            if show_debug:
-                print(f"Checking radius {radius} m → status={status}")
+    Returns
+    -------
+    tuple[str, float, float, str | None] or None
+        Panorama ID, latitude, longitude, and capture year, or ``None`` when
+        no panorama is available.
+    """
+    radii = range(
+        DEFAULT_RADIUS_STEP,
+        DEFAULT_MAX_RADIUS + DEFAULT_RADIUS_STEP,
+        DEFAULT_RADIUS_STEP,
+    )
 
-            if status == "OK":
-                pano_id = meta.get("pano_id") or meta.get("panoId")
-                pano_loc = meta.get("location", {})
-                pano_lat, pano_lon = pano_loc.get("lat"), pano_loc.get("lng")
-                found_close = True
-                if "date" in meta:
-                    year = meta["date"].split("-")[0]
-                if show_debug:
-                    print(f"✅ Outdoor pano found at {radius} m → ({pano_lat}, {pano_lon})")
-                break
+    for radius in radii:
+        metadata = _request_metadata(location, api_key, radius)
+        status = metadata.get("status")
+        if show_debug:
+            print(f"Checking radius {radius} m: status={status}")
 
-        if not found_close:
-            print(f"⚠️ No outdoor pano found within {max_radius} m of {location}")
-            return None, None, None
+        if status != "OK":
+            continue
 
-        # Determine if pano is to the right or left
-        try:
-            if pano_lon > location[1]:
-                angle = 180
-                side = "right"
-            else:
-                angle = 0
-                side = "left"
+        panorama_id = metadata.get("pano_id") or metadata.get("panoId")
+        panorama_location = metadata.get("location", {})
+        panorama_latitude = panorama_location.get("lat")
+        panorama_longitude = panorama_location.get("lng")
+        year = metadata.get("date", "").split("-")[0] or None
 
-            if show_debug:
-                print(f"Pano is located to the {side} of the building → angle={angle}°")
-
-            # Compute road orientation
-            road_orientation = get_road_orientation(location)
-            if road_orientation is None:
-                road_orientation = 0
-            heading = (road_orientation + angle + 180) % 360
-
-            if show_debug:
-                print(f"Road orientation: {road_orientation}")
-                print(f"Final heading: {heading}")
-
-            # Fetch image from pano ID
-            params = {
-                "size": "640x480",
-                "pano": pano_id,
-                "heading": heading,
-                "pitch": pitch,
-                "fov": fov,
-                "source": "outdoor",
-                "key": api_key,
-            }
-
-            resp = requests.get(img_url, params=params)
-            if resp.status_code == 200 and resp.headers.get("content-type", "").startswith("image/"):
-                np_arr = np.frombuffer(resp.content, np.uint8)
-                img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-            else:
-                print(f"❌ Error fetching image: {resp.status_code}")
-                img = None
-
-            maps_url = (
-                f"https://www.google.com/maps/@?api=1&map_action=pano"
-                f"&viewpoint={pano_lat},{pano_lon}&heading={heading}&pitch=5&fov=120"
+        if show_debug:
+            print(
+                "Outdoor panorama found at "
+                f"{radius} m: ({panorama_latitude}, {panorama_longitude})"
             )
 
-            return maps_url, img, year
-
-        except Exception as e:
-            print(f"Error determining pano direction: {e}")
-            return None, None, None
-
-    else:
-        # --- Extract available info ---
-        year = None
-        if "date" in meta_data:
-            year = meta_data["date"].split("-")[0]
-    
-        # --- Compute road orientation ---
-        road_orientation = get_road_orientation(location)
-        if road_orientation is None:
-            road_orientation = 0
-        heading = (road_orientation + angle + 180) % 360
-    
-        # --- Secure API key load ---
-        with open("methods/gsv_api_key.txt", "r") as f:
-            api_key = f.read().strip()
-    
-        # --- Image capture parameters ---
-        scale = 2
-    
-        # --- Base URLs ---
-        base_url = "https://maps.googleapis.com/maps/api/streetview"
-    
-        # --- Define parameters for outdoor imagery ---
-        params = {
-            "size": "640x480",
-            "location": f"{location[0]},{location[1]}",
-            "heading": heading,
-            "fov": fov,
-            "pitch": pitch,
-            "scale": scale,
-            "source": "outdoor",
-            "key": api_key,
-        }
-    
-        # --- Build visualization URL ---
-        maps_url = (
-            f"https://www.google.com/maps/@?api=1&map_action=pano"
-            f"&viewpoint={location[0]},{location[1]}&heading={heading}&pitch={pitch}&fov={fov}"
+        return (
+            panorama_id,
+            panorama_latitude,
+            panorama_longitude,
+            year,
         )
-    
-        # --- Request the image ---
-        response = requests.get(base_url, params=params)
-        if response.status_code == 200:
-            np_array = np.frombuffer(response.content, np.uint8)
-            img = cv2.imdecode(np_array, cv2.IMREAD_COLOR)
-        else:
-            print("Error fetching image:", response.status_code)
-            img = None
-    
-        return maps_url, img, year
 
+    print(f"No outdoor panorama found within {DEFAULT_MAX_RADIUS} m of {location}.")
+    return None
+
+
+def _calculate_heading(location, angle):
+    """Calculate the Street View heading for a location and angle.
+
+    Parameters
+    ----------
+    location : tuple[float, float]
+        Latitude and longitude of the target location.
+    angle : float
+        Additional viewing angle in degrees.
+
+    Returns
+    -------
+    float
+        Final Street View heading in degrees.
+    """
+    road_orientation = get_road_orientation(location) or 0
+    return (road_orientation + angle + 180) % 360
+
+
+def _download_street_view_image(api_key, heading, pitch, fov, **location):
+    """Download and decode a Street View image.
+
+    Parameters
+    ----------
+    api_key : str
+        Google Street View API key.
+    heading : float
+        Camera heading in degrees.
+    pitch : float
+        Camera pitch in degrees.
+    fov : float
+        Horizontal field of view in degrees.
+    **location : str
+        Either a ``location`` coordinate string or a ``pano`` identifier.
+
+    Returns
+    -------
+    numpy.ndarray or None
+        Decoded OpenCV image, or ``None`` when the request fails.
+    """
+    params = {
+        "size": "640x480",
+        "heading": heading,
+        "pitch": pitch,
+        "fov": fov,
+        "source": "outdoor",
+        "key": api_key,
+        **location,
+    }
+    if "location" in location:
+        params["scale"] = 2
+
+    try:
+        response = requests.get(
+            STREET_VIEW_IMAGE_URL,
+            params=params,
+            timeout=REQUEST_TIMEOUT,
+        )
+        response.raise_for_status()
+    except requests.RequestException as error:
+        print(f"Unable to fetch the Street View image: {error}")
+        return None
+
+    content_type = response.headers.get("content-type", "")
+    if not content_type.startswith("image/"):
+        print("The Street View response did not contain an image.")
+        return None
+
+    image_array = np.frombuffer(response.content, np.uint8)
+    return cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+
+
+def _build_maps_url(viewpoint, heading, pitch, fov):
+    """Build a Google Maps panorama URL.
+
+    Parameters
+    ----------
+    viewpoint : tuple[float, float]
+        Panorama latitude and longitude.
+    heading : float
+        Camera heading in degrees.
+    pitch : float
+        Camera pitch in degrees.
+    fov : float
+        Horizontal field of view in degrees.
+
+    Returns
+    -------
+    str
+        Google Maps URL for visualizing the panorama.
+    """
+    return (
+        f"{MAPS_PANORAMA_URL}"
+        f"&viewpoint={viewpoint[0]},{viewpoint[1]}"
+        f"&heading={heading}&pitch={pitch}&fov={fov}"
+    )
+
+
+def _get_image_from_nearby_panorama(location, api_key, pitch, fov):
+    """Retrieve an image from a nearby outdoor panorama.
+
+    Parameters
+    ----------
+    location : tuple[float, float]
+        Latitude and longitude of the target location.
+    api_key : str
+        Google Street View API key.
+    pitch : float
+        Camera pitch in degrees.
+    fov : float
+        Horizontal field of view in degrees.
+
+    Returns
+    -------
+    tuple[str | None, numpy.ndarray | None, str | None]
+        Maps URL, decoded image, and capture year.
+    """
+    panorama = _find_nearby_panorama(location, api_key)
+    if panorama is None:
+        return None, None, None
+
+    panorama_id, panorama_latitude, panorama_longitude, year = panorama
+    angle = 180 if panorama_longitude > location[1] else 0
+    heading = _calculate_heading(location, angle)
+    image = _download_street_view_image(
+        api_key,
+        heading,
+        pitch,
+        fov,
+        pano=panorama_id,
+    )
+    maps_url = _build_maps_url(
+        (panorama_latitude, panorama_longitude),
+        heading,
+        pitch,
+        fov,
+    )
+    return maps_url, image, year
+
+
+def get_street_view_image(location, api_key, angle, pitch, fov):
+    """Fetch an outdoor Google Street View image.
+
+    The function first requests imagery at the exact location. If no outdoor
+    panorama is available, it searches incrementally within 20 metres and
+    retrieves an image from the nearest panorama found.
+
+    Parameters
+    ----------
+    location : tuple[float, float]
+        Latitude and longitude of the target location.
+    api_key : str
+        Google Street View API key.
+    angle : float
+        Additional camera angle in degrees.
+    pitch : float
+        Camera pitch in degrees.
+    fov : float
+        Horizontal field of view in degrees.
+
+    Returns
+    -------
+    tuple[str | None, numpy.ndarray | None, str | None]
+        Google Maps URL, decoded OpenCV image, and panorama capture year.
+    """
+    metadata = _request_metadata(location, api_key)
+    if metadata.get("status") != "OK":
+        status = metadata.get("status")
+        print(f"No outdoor panorama available at {location}. Status: {status}")
+        return _get_image_from_nearby_panorama(
+            location,
+            api_key,
+            pitch,
+            fov,
+        )
+
+    year = metadata.get("date", "").split("-")[0] or None
+    heading = _calculate_heading(location, angle)
+    image = _download_street_view_image(
+        api_key,
+        heading,
+        pitch,
+        fov,
+        location=f"{location[0]},{location[1]}",
+    )
+    maps_url = _build_maps_url(location, heading, pitch, fov)
+    return maps_url, image, year

@@ -1,16 +1,21 @@
+"""Retrieve Mapillary imagery and generate perspective orthophotos.
+
+This module queries nearby Mapillary panoramic images, downloads image data,
+creates perspective projections, and returns matrices for the RUBIC-AI workflow.
+"""
+
 from __future__ import annotations
 
 import io
 import json
 import math
 from pathlib import Path
-from typing import Any, Dict, Literal, Optional, Tuple, Union
+from typing import Any, Literal
 
 import mapillary.interface as mly
 import numpy as np
 import requests
 from PIL import Image
-
 
 # ============================================================
 # DEFAULT SETTINGS
@@ -36,6 +41,7 @@ PRINT_PROGRESS = False
 # LOGGING
 # ============================================================
 
+
 def log_info(message: str) -> None:
     """Print progress messages only when PRINT_PROGRESS is enabled."""
     if PRINT_PROGRESS:
@@ -51,7 +57,8 @@ def log_error(message: str) -> None:
 # BASIC UTILITIES
 # ============================================================
 
-def ensure_dirs(output_dir: Path) -> Dict[str, Path]:
+
+def ensure_dirs(output_dir: Path) -> dict[str, Path]:
     """Create output folders and return their paths."""
     folders = {
         "output": output_dir,
@@ -72,7 +79,7 @@ def save_json(data: Any, path: Path) -> None:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 
-def parse_response(response: Any) -> Dict[str, Any]:
+def parse_response(response: Any) -> dict[str, Any]:
     """Convert Mapillary SDK responses into a plain Python dictionary."""
     if isinstance(response, dict):
         return response
@@ -113,7 +120,7 @@ def haversine_meters(lat1: float, lon1: float, lat2: float, lon2: float) -> floa
     return earth_radius_m * c
 
 
-def meters_to_degree_offsets(lat_deg: float, meters: float) -> Tuple[float, float]:
+def meters_to_degree_offsets(lat_deg: float, meters: float) -> tuple[float, float]:
     """Approximate meter-to-degree conversion around a given latitude."""
     delta_lat = meters / 111320.0
     cos_lat = math.cos(math.radians(lat_deg))
@@ -126,7 +133,7 @@ def meters_to_degree_offsets(lat_deg: float, meters: float) -> Tuple[float, floa
     return delta_lat, delta_lon
 
 
-def build_bbox(lat: float, lon: float, radius_m: float) -> Dict[str, float]:
+def build_bbox(lat: float, lon: float, radius_m: float) -> dict[str, float]:
     """Build a small bounding box around one coordinate."""
     delta_lat, delta_lon = meters_to_degree_offsets(lat, radius_m * 2.0)
 
@@ -142,12 +149,13 @@ def build_bbox(lat: float, lon: float, radius_m: float) -> Dict[str, float]:
 # MAPILLARY QUERY
 # ============================================================
 
+
 def query_images_in_bbox(
     latitude: float,
     longitude: float,
     search_radius_m: float,
     image_type: str,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Query Mapillary images around one coordinate."""
     bbox = build_bbox(latitude, longitude, search_radius_m)
     bbox_image_type = "all" if image_type == "both" else image_type
@@ -165,7 +173,7 @@ def find_nearest_image_from_coordinate(
     longitude: float,
     max_offset_m: float,
     image_type: str,
-) -> Optional[Dict[str, Any]]:
+) -> dict[str, Any] | None:
     """Find the nearest Mapillary image within max_offset_m from one coordinate."""
     data = query_images_in_bbox(
         latitude=latitude,
@@ -220,7 +228,7 @@ def find_nearest_image_from_coordinate(
     return best_result
 
 
-def get_image_metadata(image_id: str) -> Dict[str, Any]:
+def get_image_metadata(image_id: str) -> dict[str, Any]:
     """Request Mapillary image metadata."""
     response = mly.image_from_key(
         key=image_id,
@@ -246,9 +254,9 @@ def get_image_metadata(image_id: str) -> Dict[str, Any]:
 
 def get_thumbnail_url(
     image_id: str,
-    metadata: Dict[str, Any],
+    metadata: dict[str, Any],
     thumbnail_resolution: int,
-) -> Optional[str]:
+) -> str | None:
     """Get the best available Mapillary image URL."""
     try:
         thumb_url = mly.image_thumbnail(
@@ -286,8 +294,7 @@ def download_image_to_pil(url: str, request_timeout: int) -> Image.Image:
 
 
 def ensure_uint8_rgb(image_array: np.ndarray) -> np.ndarray:
-    """
-    Ensure that an image matrix is returned as uint8 RGB with shape (H, W, 3).
+    """Ensure that an image matrix is returned as uint8 RGB with shape (H, W, 3).
 
     Notes
     -----
@@ -301,7 +308,9 @@ def ensure_uint8_rgb(image_array: np.ndarray) -> np.ndarray:
         raise TypeError(f"Expected a NumPy array, got {type(image_array)}.")
 
     if image_array.ndim != 3 or image_array.shape[2] != 3:
-        raise ValueError(f"Expected image with shape (H, W, 3), got {image_array.shape}.")
+        raise ValueError(
+            f"Expected image with shape (H, W, 3), got {image_array.shape}."
+        )
 
     if image_array.dtype != np.uint8:
         image_array = np.clip(image_array, 0, 255).astype(np.uint8)
@@ -319,6 +328,7 @@ def convert_rgb_to_bgr(image_array: np.ndarray) -> np.ndarray:
 # ORTHOPHOTO GENERATION
 # ============================================================
 
+
 def generate_orthophoto_from_360(
     image_path: Path,
     output_path: Path,
@@ -329,8 +339,7 @@ def generate_orthophoto_from_360(
     out_w: int,
     vertical_flip: bool = False,
 ) -> np.ndarray:
-    """
-    Convert a 360 equirectangular image into a perspective/orthophoto image.
+    """Convert a 360 equirectangular image into a perspective/orthophoto image.
 
     The orthophoto is saved to output_path and returned as an RGB matrix.
     """
@@ -387,16 +396,16 @@ def generate_orthophoto_from_360(
     du = u - u0
     dv = v - v0
 
-    Ia = pano[v0, u0]
-    Ib = pano[v0, u1]
-    Ic = pano[v1, u0]
-    Id = pano[v1, u1]
+    top_left = pano[v0, u0]
+    top_right = pano[v0, u1]
+    bottom_left = pano[v1, u0]
+    bottom_right = pano[v1, u1]
 
     out = (
-        Ia * (1 - du)[..., None] * (1 - dv)[..., None]
-        + Ib * du[..., None] * (1 - dv)[..., None]
-        + Ic * (1 - du)[..., None] * dv[..., None]
-        + Id * du[..., None] * dv[..., None]
+        top_left * (1 - du)[..., None] * (1 - dv)[..., None]
+        + top_right * du[..., None] * (1 - dv)[..., None]
+        + bottom_left * (1 - du)[..., None] * dv[..., None]
+        + bottom_right * du[..., None] * dv[..., None]
     )
 
     orthophoto = np.clip(out, 0, 255).astype(np.uint8)
@@ -416,7 +425,8 @@ def generate_orthophoto_from_360(
 # SIDE CLASSIFICATION
 # ============================================================
 
-def azimuth_to_vector(azimuth_deg: float) -> Tuple[float, float]:
+
+def azimuth_to_vector(azimuth_deg: float) -> tuple[float, float]:
     """Convert azimuth to a 2D unit vector."""
     az_rad = math.radians(azimuth_deg)
     return math.sin(az_rad), math.cos(az_rad)
@@ -427,7 +437,7 @@ def latlon_to_local_xy(
     lon_ref: float,
     lat_pt: float,
     lon_pt: float,
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """Convert a nearby geographic point to local East-North coordinates in meters."""
     earth_radius_m = 6371000.0
 
@@ -452,10 +462,9 @@ def calculate_azimuth(lat1: float, lon1: float, lat2: float, lon2: float) -> flo
     dlon_rad = math.radians(lon2 - lon1)
 
     x = math.sin(dlon_rad) * math.cos(lat2_rad)
-    y = (
-        math.cos(lat1_rad) * math.sin(lat2_rad)
-        - math.sin(lat1_rad) * math.cos(lat2_rad) * math.cos(dlon_rad)
-    )
+    y = math.cos(lat1_rad) * math.sin(lat2_rad) - math.sin(lat1_rad) * math.cos(
+        lat2_rad
+    ) * math.cos(dlon_rad)
 
     return (math.degrees(math.atan2(x, y)) + 360.0) % 360.0
 
@@ -463,11 +472,11 @@ def calculate_azimuth(lat1: float, lon1: float, lat2: float, lon2: float) -> flo
 def image_side(
     building_lat: float,
     building_lon: float,
-    preview_lat: Optional[float],
-    preview_lon: Optional[float],
-    direction_azimuth: Optional[float],
-) -> Optional[Dict[str, Any]]:
-    """Determine whether the coordinate is on the left or right side of the camera direction."""
+    preview_lat: float | None,
+    preview_lon: float | None,
+    direction_azimuth: float | None,
+) -> dict[str, Any] | None:
+    """Determine the coordinate side relative to the camera direction."""
     if preview_lat is None or preview_lon is None or direction_azimuth is None:
         return None
 
@@ -506,7 +515,7 @@ def image_side(
     }
 
 
-def select_yaw_offset(side_result: Optional[Dict[str, Any]]) -> int:
+def select_yaw_offset(side_result: dict[str, Any] | None) -> int:
     """Select the yaw offset using the same left/right logic as the previous script."""
     if side_result is not None and side_result.get("side") == "right":
         return 180
@@ -518,15 +527,16 @@ def select_yaw_offset(side_result: Optional[Dict[str, Any]]) -> int:
 # MAIN FUNCTION TO CALL FROM YOUR SCRIPT
 # ============================================================
 
+
 def mapillary_image_source(
     access_token: str,
     latitude: float,
     longitude: float,
     point_id: str = "point_1",
-    output_dir: Union[str, Path] = DEFAULT_OUTPUT_DIR,
+    output_dir: str | Path = DEFAULT_OUTPUT_DIR,
     max_offset_m: float = DEFAULT_MAX_OFFSET_METERS,
     image_type: str = DEFAULT_IMAGE_TYPE,
-    image_number: Optional[Union[int, str]] = None,
+    image_number: int | str | None = None,
     save_original_image: bool = True,
     save_json_files: bool = False,
     return_info: bool = False,
@@ -537,12 +547,12 @@ def mapillary_image_source(
     ortho_out_h: int = DEFAULT_ORTHO_OUT_H,
     ortho_out_w: int = DEFAULT_ORTHO_OUT_W,
     ortho_vertical_flip: bool = DEFAULT_ORTHO_VERTICAL_FLIP,
-) -> Union[np.ndarray, Tuple[np.ndarray, Dict[str, Any]]]:
-    """
-    Retrieve one Mapillary 360 image for one coordinate, generate an orthophoto,
-    save the orthophoto locally, and return the orthophoto as a 3D RGB matrix.
-    """
+) -> np.ndarray | tuple[np.ndarray, dict[str, Any]]:
+    """Retrieve a Mapillary panorama and generate an orthophoto.
 
+    Save the generated orthophoto locally and return it as a three-dimensional
+    RGB or BGR matrix, optionally together with processing metadata.
+    """
     if not access_token or "YOUR_ACCESS_TOKEN_HERE" in access_token:
         raise ValueError("Please provide a valid Mapillary access token.")
 
@@ -554,7 +564,7 @@ def mapillary_image_source(
 
     mly.set_access_token(access_token)
 
-    info: Dict[str, Any] = {
+    info: dict[str, Any] = {
         "point_id": point_id,
         "building_latitude": latitude,
         "building_longitude": longitude,
@@ -655,8 +665,8 @@ def mapillary_image_source(
         else:
             orthophoto_filename = (
                 f"{point_id}_{image_id}_orthophoto"
-                f"_yaw{int(round(yaw_deg))}"
-                f"_pitch{int(round(ortho_pitch_deg))}.jpg"
+                f"_yaw{round(yaw_deg)}"
+                f"_pitch{round(ortho_pitch_deg)}.jpg"
             )
 
         orthophoto_path = folders["orthophotos"] / orthophoto_filename

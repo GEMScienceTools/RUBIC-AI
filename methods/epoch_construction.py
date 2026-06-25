@@ -1,87 +1,80 @@
+"""Provide a dialog for entering building construction epochs.
+
+The dialog allows users to select the number of construction epochs and enter
+an identifying value for each epoch using dynamically displayed input fields.
 """
-epoch_construction.py
-=====================
-This module provides a PyQt5-based dialog for selecting and inputting
-construction epoch values through a dynamically adjustable set of fields.
-"""
-from PyQt5 import QtWidgets
-import sys 
+
 import numpy as np
+from PyQt5 import QtWidgets
+
+_DESIGN_WIDTH = 1920
+_DESIGN_HEIGHT = 1080
+_MAX_EPOCHS = 6
+_MIN_EPOCHS = 2
+
 
 class EpochSelectionDialog(QtWidgets.QDialog):
+    """Provide a dialog for selecting and entering construction epochs.
+
+    Parameters
+    ----------
+    parent : PyQt5.QtWidgets.QWidget, optional
+        Parent widget of the dialog.
+    main_window : object, optional
+        Reference to the main application window.
+
+    Attributes
+    ----------
+    main_window : object or None
+        Reference to the main application window.
+    epoch_count_cb : PyQt5.QtWidgets.QComboBox
+        Dropdown used to select the number of construction epochs.
+    epoch_inputs : list[PyQt5.QtWidgets.QLineEdit]
+        Input fields containing the construction-epoch values.
+    """
+
     def __init__(self, parent=None, main_window=None):
         super().__init__(parent)
-        self.main_window = main_window  # Reference to the main window (GUIInterface)
-        
-        # Get screen resolution
+        self.main_window = main_window
+
         screen = QtWidgets.QApplication.primaryScreen()
         screen_geometry = screen.geometry()
         screen_width = screen_geometry.width()
         screen_height = screen_geometry.height()
 
-        #
-        DESIGN_WIDTH = 1920
-        DESIGN_HEIGHT = 1080
-        
-        # Scale the GUI based on resolution
-        sf_x = screen_width / DESIGN_WIDTH
-        sf_y = screen_height / DESIGN_HEIGHT
-        sf_factor = np.sqrt(sf_x * sf_y)
+        scale_x = screen_width / _DESIGN_WIDTH
+        scale_y = screen_height / _DESIGN_HEIGHT
+        scale_factor = np.sqrt(scale_x * scale_y)
 
-        # DPI-based scale
-        # Get a reliable DPI value
-        if sys.platform.startswith("win"):
-            # Windows: use ctypes to get real DPI
-            import ctypes
-            LOGPIXELSX = 88
-            hdc = ctypes.windll.user32.GetDC(0)
-            dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
-            ctypes.windll.user32.ReleaseDC(0, hdc)
-        else:
-            # macOS / Linux: start with logical DPI
-            dpi = screen.logicalDotsPerInch()
-            # If logical DPI looks weird, fallback to physical
-            if dpi < 60 or dpi > 200:
-                dpi = screen.physicalDotsPerInch()
-        
-        # For geometry: mainly resolution-based
-        sf_x = sf_factor
-        sf_y = sf_factor
-
-        # Window Title
         self.setWindowTitle("Epoch of construction values")
-        self.resize(int(400*sf_x), int(300*sf_y))
+        self.resize(int(400 * scale_factor), int(300 * scale_factor))
 
-        # Main layout
         self.layout = QtWidgets.QVBoxLayout(self)
 
-        # Dropdown to choose number of epochs
         self.layout.addWidget(QtWidgets.QLabel("Select number of epochs:"))
         self.epoch_count_cb = QtWidgets.QComboBox()
-        self.epoch_count_cb.addItems([str(i) for i in range(2, 7)])  # Always at least 2
+        self.epoch_count_cb.addItems(
+            [str(index) for index in range(_MIN_EPOCHS, _MAX_EPOCHS + 1)]
+        )
         self.epoch_count_cb.currentIndexChanged.connect(self.update_fields)
         self.layout.addWidget(self.epoch_count_cb)
 
-        # Container for input fields
         self.inputs_container = QtWidgets.QWidget()
         self.inputs_layout = QtWidgets.QFormLayout(self.inputs_container)
         self.layout.addWidget(self.inputs_container)
 
-        # Create input fields for epochs
         self.epoch_inputs = []
-        for i in range(6):
+        for index in range(_MAX_EPOCHS):
             line_edit = QtWidgets.QLineEdit()
 
-            # Set placeholders for first two fields
-            if i == 0:
+            if index == 0:
                 line_edit.setPlaceholderText("Y:1990-2000")
-            elif i == 1:
+            elif index == 1:
                 line_edit.setPlaceholderText("Y:>1990 or Y:<1990")
 
-            self.inputs_layout.addRow(f"Epoch {i+1}:", line_edit)
+            self.inputs_layout.addRow(f"Epoch {index + 1}:", line_edit)
             self.epoch_inputs.append(line_edit)
 
-        # OK / Cancel buttons
         self.button_box = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
         )
@@ -89,27 +82,23 @@ class EpochSelectionDialog(QtWidgets.QDialog):
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
 
-        # Set default visibility
         self.update_fields()
 
     def update_fields(self):
-        """
-        Updates the visibility of epoch input fields based on the selected count, while always 
-        keeping the first two inputs visible.
+        """Update the visibility of the construction-epoch input fields.
+
+        Display the number of fields selected in the dropdown while ensuring
+        that at least the first two input fields remain visible.
         """
         count = int(self.epoch_count_cb.currentText())
+        visible_count = max(count, _MIN_EPOCHS)
 
-        # Always show first 2 inputs
-        for i, line_edit in enumerate(self.epoch_inputs):
-            visible = i < count
-            if i < 2:
-                visible = True
-            line_edit.setVisible(visible)
-            self.inputs_layout.labelForField(line_edit).setVisible(visible)
+        for index, line_edit in enumerate(self.epoch_inputs):
+            is_visible = index < visible_count
+            line_edit.setVisible(is_visible)
+            self.inputs_layout.labelForField(line_edit).setVisible(is_visible)
 
     def get_epochs(self):
-        """
-        Returns the epoch values entered by the user based on the selected number of epochs.
-        """
+        """Return the construction-epoch values entered by the user."""
         count = int(self.epoch_count_cb.currentText())
-        return [self.epoch_inputs[i].text() for i in range(count)]
+        return [self.epoch_inputs[index].text() for index in range(count)]
