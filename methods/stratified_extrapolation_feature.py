@@ -1,30 +1,44 @@
-import sys 
+import ctypes
+import sys
+
 import numpy as np
-from PyQt5 import QtCore, QtGui, QtWidgets
 import pandas as pd
+from PyQt5 import QtCore, QtGui, QtWidgets
 
-from methods.utilities import select_output_folder, upload_csv
-from methods.dl_prediction_models import predict_material_img, predict_llrs_img, predict_block_position_img
-from methods.dl_prediction_models import predict_n_stories_img, predict_occupancy_img, predict_code_img
-from methods.dl_prediction_models import predict_roof_shape_img, predict_roof_material_img
+from methods.dl_prediction_models import (
+    predict_block_position_img,
+    predict_code_img,
+    predict_llrs_img,
+    predict_material_img,
+    predict_n_stories_img,
+    predict_occupancy_img,
+    predict_roof_material_img,
+    predict_roof_shape_img,
+)
 from methods.get_building_orientation import get_street_view_image
+from methods.utilities import select_output_folder, upload_csv
 
-class stratified_extrapolation(QtWidgets.QDialog):
+DESIGN_WIDTH = 1920
+DESIGN_HEIGHT = 1080
+DESIGN_DPI = 96 * 1.25
+LOGPIXELS_X = 88
+MIN_VALID_DPI = 60
+MAX_VALID_DPI = 200
+
+
+class StratifiedExtrapolation(QtWidgets.QDialog):
+    """Configure stratified extrapolation settings and sampling options."""
+
     def __init__(self, parent=None, main_window=None):
         super().__init__(parent)
         self.method = parent
 
-         ## Get screen resolution
+        ## Get screen resolution
         screen = QtWidgets.QApplication.primaryScreen()
         screen_geometry = screen.geometry()
         screen_width = screen_geometry.width()
         screen_height = screen_geometry.height()
 
-        #
-        DESIGN_WIDTH = 1920
-        DESIGN_HEIGHT = 1080
-        DESIGN_DPI = 96 * 1.25  # 125% Windows baseline -> 120 DPI
-        
         # Scale the GUI based on resolution
         sf_x = screen_width / DESIGN_WIDTH
         sf_y = screen_height / DESIGN_HEIGHT
@@ -34,22 +48,20 @@ class stratified_extrapolation(QtWidgets.QDialog):
         # Get a reliable DPI value
         if sys.platform.startswith("win"):
             # Windows: use ctypes to get real DPI
-            import ctypes
-            LOGPIXELSX = 88
             hdc = ctypes.windll.user32.GetDC(0)
-            dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELSX)
+            dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, LOGPIXELS_X)
             ctypes.windll.user32.ReleaseDC(0, hdc)
         else:
             # macOS / Linux: start with logical DPI
             dpi = screen.logicalDotsPerInch()
             # If logical DPI looks weird, fallback to physical
-            if dpi < 60 or dpi > 200:
+            if dpi < MIN_VALID_DPI or dpi > MAX_VALID_DPI:
                 dpi = screen.physicalDotsPerInch()
 
         # Normalize to your design environment (Windows @ 125% = 120 DPI)
         # If dpi == 120 => scale_dpi = 1 (your original machine)
         scale_dpi = DESIGN_DPI / dpi
-        
+
         # For geometry: mainly resolution-based
         sf_x = sf_factor
         sf_y = sf_factor
@@ -59,26 +71,34 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.setObjectName("DataSetting")
         self.resize(int(640 * sf_x), int(680 * sf_y))
         self.setWindowTitle("Setting input files")
-        
+
         # === UI Elements Start ===
         self.data_frame = QtWidgets.QWidget(self)
         self.data_frame.setObjectName("data_frame")
         layout = QtWidgets.QVBoxLayout(self)
         layout.addWidget(self.data_frame)
-        
+
         # Title Label
         self.w_title = QtWidgets.QLabel(self.data_frame)
-        self.w_title.setGeometry(QtCore.QRect(int(220 * sf_x), int(0 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.w_title.setGeometry(
+            QtCore.QRect(
+                int(220 * sf_x), int(0 * sf_y), int(191 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(12 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.w_title.setFont(font)
         self.w_title.setObjectName("w_title")
-        
+
         # Save Button
         self.save_button = QtWidgets.QPushButton(self.data_frame)
-        self.save_button.setGeometry(QtCore.QRect(int(210 * sf_x), int(620 * sf_y), int(191 * sf_x), int(31 * sf_y)))
+        self.save_button.setGeometry(
+            QtCore.QRect(
+                int(210 * sf_x), int(620 * sf_y), int(191 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
@@ -86,43 +106,63 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.save_button.setFont(font)
         self.save_button.setObjectName("save_button")
         self.save_button.clicked.connect(self.select_method)
-        
+
         # Table Widget
         self.tableWidget = QtWidgets.QTableWidget(self.data_frame)
-        self.tableWidget.setGeometry(QtCore.QRect(int(10 * sf_x), int(400 * sf_y), int(590 * sf_x), int(211 * sf_y)))
+        self.tableWidget.setGeometry(
+            QtCore.QRect(
+                int(10 * sf_x), int(400 * sf_y), int(590 * sf_x), int(211 * sf_y)
+            )
+        )
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
 
         # Output Label - New
         self.output_label_new = QtWidgets.QLabel(self.data_frame)
-        self.output_label_new.setGeometry(QtCore.QRect(int(40 * sf_x), int(55 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.output_label_new.setGeometry(
+            QtCore.QRect(
+                int(40 * sf_x), int(55 * sf_y), int(121 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.output_label_new.setFont(font)
         self.output_label_new.setObjectName("output_label_new")
-        
+
         # Output Value - New
         self.output_new_value = QtWidgets.QLineEdit(self.data_frame)
-        self.output_new_value.setGeometry(QtCore.QRect(int(180 * sf_x), int(55 * sf_y), int(331 * sf_x), int(31 * sf_y)))
+        self.output_new_value.setGeometry(
+            QtCore.QRect(
+                int(180 * sf_x), int(55 * sf_y), int(331 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.output_new_value.setFont(font)
         self.output_new_value.setObjectName("output_new_value")
-        
+
         # Background 2
         self.backg_2 = QtWidgets.QLabel(self.data_frame)
-        self.backg_2.setGeometry(QtCore.QRect(int(10 * sf_x), int(40 * sf_y), int(591 * sf_x), int(351 * sf_y)))
+        self.backg_2.setGeometry(
+            QtCore.QRect(
+                int(10 * sf_x), int(40 * sf_y), int(591 * sf_x), int(351 * sf_y)
+            )
+        )
         self.backg_2.setStyleSheet("background-color: rgb(255, 255, 127);")
         self.backg_2.setText("")
         self.backg_2.setObjectName("backg_2")
         self.backg_2.lower()
-        
+
         # Population Button - New
         self.population_new_button = QtWidgets.QPushButton(self.data_frame)
-        self.population_new_button.setGeometry(QtCore.QRect(int(40 * sf_x), int(185 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.population_new_button.setGeometry(
+            QtCore.QRect(
+                int(40 * sf_x), int(185 * sf_y), int(241 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(False)
@@ -130,26 +170,38 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.population_new_button.setFont(font)
         self.population_new_button.setObjectName("population_new_button")
         self.population_new_button.clicked.connect(self.data_population)
-        
+
         # Population Path - New
         self.population_new_path = QtWidgets.QLabel(self.data_frame)
-        self.population_new_path.setGeometry(QtCore.QRect(int(290 * sf_x), int(190 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        self.population_new_path.setGeometry(
+            QtCore.QRect(
+                int(290 * sf_x), int(190 * sf_y), int(291 * sf_x), int(21 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.population_new_path.setFont(font)
         self.population_new_path.setObjectName("population_new_path")
-        
+
         # Saved Path - New
         self.saved_path_new = QtWidgets.QLabel(self.data_frame)
-        self.saved_path_new.setGeometry(QtCore.QRect(int(290 * sf_x), int(100 * sf_y), int(291 * sf_x), int(21 * sf_y)))
+        self.saved_path_new.setGeometry(
+            QtCore.QRect(
+                int(290 * sf_x), int(100 * sf_y), int(291 * sf_x), int(21 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.saved_path_new.setFont(font)
         self.saved_path_new.setObjectName("saved_path_new")
-        
+
         # Output Path Button - New
         self.output_path_new_button = QtWidgets.QPushButton(self.data_frame)
-        self.output_path_new_button.setGeometry(QtCore.QRect(int(40 * sf_x), int(95 * sf_y), int(241 * sf_x), int(31 * sf_y)))
+        self.output_path_new_button.setGeometry(
+            QtCore.QRect(
+                int(40 * sf_x), int(95 * sf_y), int(241 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(False)
@@ -158,37 +210,52 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.output_path_new_button.setObjectName("output_path_new_button")
         # self.output_path_new_button.clicked.connect(self.select_output_folder_new)
         self.output_path_new_button.clicked.connect(self._on_select_output_folder)
-        
-        
+
         self.extra_label_new = QtWidgets.QLabel(self.data_frame)
-        self.extra_label_new.setGeometry(QtCore.QRect(int(40 * sf_x), int(140 * sf_y), int(181 * sf_x), int(31 * sf_y)))
+        self.extra_label_new.setGeometry(
+            QtCore.QRect(
+                int(40 * sf_x), int(140 * sf_y), int(181 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.extra_label_new.setFont(font)
         self.extra_label_new.setObjectName("extra_label_new")
-        
+
         self.extrap_mode_new = QtWidgets.QComboBox(self.data_frame)
-        self.extrap_mode_new.setGeometry(QtCore.QRect(int(230 * sf_x), int(140 * sf_y), int(201 * sf_x), int(31 * sf_y)))
+        self.extrap_mode_new.setGeometry(
+            QtCore.QRect(
+                int(230 * sf_x), int(140 * sf_y), int(201 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.extrap_mode_new.setFont(font)
         self.extrap_mode_new.setObjectName("extrap_mode_new")
         self.extrap_mode_new.addItem("Deep learning models", 0)
         self.extrap_mode_new.addItem("Manually", 1)
-        
+
         self.ini_fract_new_label = QtWidgets.QLabel(self.data_frame)
-        self.ini_fract_new_label.setGeometry(QtCore.QRect(int(40 * sf_x), int(300 * sf_y), int(141 * sf_x), int(31 * sf_y)))
+        self.ini_fract_new_label.setGeometry(
+            QtCore.QRect(
+                int(40 * sf_x), int(300 * sf_y), int(141 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.ini_fract_new_label.setFont(font)
         self.ini_fract_new_label.setObjectName("ini_fract_new_label")
-        
+
         self.ini_fract_new_value = QtWidgets.QDoubleSpinBox(self.data_frame)
-        self.ini_fract_new_value.setGeometry(QtCore.QRect(int(180 * sf_x), int(300 * sf_y), int(71 * sf_x), int(31 * sf_y)))
+        self.ini_fract_new_value.setGeometry(
+            QtCore.QRect(
+                int(180 * sf_x), int(300 * sf_y), int(71 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.ini_fract_new_value.setFont(font)
@@ -196,18 +263,26 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.ini_fract_new_value.setSingleStep(0.05)
         self.ini_fract_new_value.setProperty("value", 0.1)
         self.ini_fract_new_value.setObjectName("ini_fract_new_value")
-        
+
         self.step_new_label = QtWidgets.QLabel(self.data_frame)
-        self.step_new_label.setGeometry(QtCore.QRect(int(270 * sf_x), int(300 * sf_y), int(71 * sf_x), int(31 * sf_y)))
+        self.step_new_label.setGeometry(
+            QtCore.QRect(
+                int(270 * sf_x), int(300 * sf_y), int(71 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.step_new_label.setFont(font)
         self.step_new_label.setObjectName("step_new_label")
-        
+
         self.step_new_value = QtWidgets.QDoubleSpinBox(self.data_frame)
-        self.step_new_value.setGeometry(QtCore.QRect(int(330 * sf_x), int(300 * sf_y), int(71 * sf_x), int(31 * sf_y)))
+        self.step_new_value.setGeometry(
+            QtCore.QRect(
+                int(330 * sf_x), int(300 * sf_y), int(71 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.step_new_value.setFont(font)
@@ -215,18 +290,26 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.step_new_value.setSingleStep(0.05)
         self.step_new_value.setProperty("value", 0.05)
         self.step_new_value.setObjectName("step_new_value")
-        
+
         self.max_frac_new_label = QtWidgets.QLabel(self.data_frame)
-        self.max_frac_new_label.setGeometry(QtCore.QRect(int(40 * sf_x), int(340 * sf_y), int(121 * sf_x), int(31 * sf_y)))
+        self.max_frac_new_label.setGeometry(
+            QtCore.QRect(
+                int(40 * sf_x), int(340 * sf_y), int(121 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.max_frac_new_label.setFont(font)
         self.max_frac_new_label.setObjectName("max_frac_new_label")
-        
+
         self.max_frac_new_value = QtWidgets.QDoubleSpinBox(self.data_frame)
-        self.max_frac_new_value.setGeometry(QtCore.QRect(int(160 * sf_x), int(340 * sf_y), int(71 * sf_x), int(31 * sf_y)))
+        self.max_frac_new_value.setGeometry(
+            QtCore.QRect(
+                int(160 * sf_x), int(340 * sf_y), int(71 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.max_frac_new_value.setFont(font)
@@ -234,36 +317,52 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.max_frac_new_value.setSingleStep(0.05)
         self.max_frac_new_value.setProperty("value", 0.30)
         self.max_frac_new_value.setObjectName("max_frac_new_value")
-        
+
         self.n_iter_new_label = QtWidgets.QLabel(self.data_frame)
-        self.n_iter_new_label.setGeometry(QtCore.QRect(int(420 * sf_x), int(300 * sf_y), int(71 * sf_x), int(31 * sf_y)))
+        self.n_iter_new_label.setGeometry(
+            QtCore.QRect(
+                int(420 * sf_x), int(300 * sf_y), int(71 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.n_iter_new_label.setFont(font)
         self.n_iter_new_label.setObjectName("n_iter_new_label")
-        
+
         self.n_iter_new_value = QtWidgets.QSpinBox(self.data_frame)
-        self.n_iter_new_value.setGeometry(QtCore.QRect(int(690 * sf_x), int(300 * sf_y), int(51 * sf_x), int(31 * sf_y)))
+        self.n_iter_new_value.setGeometry(
+            QtCore.QRect(
+                int(690 * sf_x), int(300 * sf_y), int(51 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.n_iter_new_value.setFont(font)
         self.n_iter_new_value.setMaximum(100)
         self.n_iter_new_value.setProperty("value", 5)
         self.n_iter_new_value.setObjectName("n_iter_new_value")
-        
+
         self.threshold_new = QtWidgets.QLabel(self.data_frame)
-        self.threshold_new.setGeometry(QtCore.QRect(int(250 * sf_x), int(340 * sf_y), int(181 * sf_x), int(31 * sf_y)))
+        self.threshold_new.setGeometry(
+            QtCore.QRect(
+                int(250 * sf_x), int(340 * sf_y), int(181 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         font.setWeight(75)
         self.threshold_new.setFont(font)
         self.threshold_new.setObjectName("threshold_new")
-        
+
         self.threshold_new_value = QtWidgets.QDoubleSpinBox(self.data_frame)
-        self.threshold_new_value.setGeometry(QtCore.QRect(int(430 * sf_x), int(340 * sf_y), int(71 * sf_x), int(31 * sf_y)))
+        self.threshold_new_value.setGeometry(
+            QtCore.QRect(
+                int(430 * sf_x), int(340 * sf_y), int(71 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.threshold_new_value.setFont(font)
@@ -271,25 +370,39 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.threshold_new_value.setSingleStep(0.005)
         self.threshold_new_value.setProperty("value", 0.05)
         self.threshold_new_value.setObjectName("threshold_new_value")
-        
+
         # --- Features of Interest filter (Excel-like) ---
         self.features_label = QtWidgets.QLabel(self.data_frame)
-        self.features_label.setGeometry(QtCore.QRect(int(40 * sf_x), int(220 * sf_y), int(181 * sf_x), int(31 * sf_y)))
+        self.features_label.setGeometry(
+            QtCore.QRect(
+                int(40 * sf_x), int(220 * sf_y), int(181 * sf_x), int(31 * sf_y)
+            )
+        )
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         font.setBold(True)
         self.features_label.setFont(font)
         self.features_label.setText("Features of interest:")
-        
-        self.features_btn = CheckFilterButton(values=[""], parent=self.data_frame, text="Feature strata")
-        self.features_btn.setGeometry(QtCore.QRect(int(230 * sf_x), int(220 * sf_y), int(161 * sf_x), int(31 * sf_y)))
-        
+
+        self.features_btn = CheckFilterButton(
+            values=[""], parent=self.data_frame, text="Feature strata"
+        )
+        self.features_btn.setGeometry(
+            QtCore.QRect(
+                int(230 * sf_x), int(220 * sf_y), int(161 * sf_x), int(31 * sf_y)
+            )
+        )
+
         self.features_selected = QtWidgets.QLabel(self.data_frame)
-        self.features_selected.setGeometry(QtCore.QRect(int(40 * sf_x), int(255 * sf_y), int(540 * sf_x), int(31 * sf_y)))
+        self.features_selected.setGeometry(
+            QtCore.QRect(
+                int(40 * sf_x), int(255 * sf_y), int(540 * sf_x), int(31 * sf_y)
+            )
+        )
         self.features_selected.setText("Selected: ----")
-        
-        self.features_btn.selectionChanged.connect(self.on_features_changed)
-        self.feature_strata = []   # initialize
+
+        self.features_btn.selection_changed.connect(self.on_features_changed)
+        self.feature_strata = []  # initialize
 
         self.w_title.setText("Setting input files")
         self.save_button.setText("Save and continue")
@@ -298,81 +411,75 @@ class stratified_extrapolation(QtWidgets.QDialog):
         self.population_new_button.setText("Upload population data")
         self.population_new_path.setText("filename.csv")
         self.saved_path_new.setText("path/where/save/the/results")
-        self.output_path_new_button.setText("Select output folder") 
+        self.output_path_new_button.setText("Select output folder")
         self.extra_label_new.setText("Extrapolation mode:")
         self.ini_fract_new_label.setText("Initial fraction:")
         self.step_new_label.setText("Step:")
         self.max_frac_new_label.setText("Max fraction:")
         self.n_iter_new_label.setText("N° iter:")
         self.threshold_new.setText("Maximum threshold:")
-        
+
         # ==============================================================
         # Stratified method functions
         # ==============================================================
-    
+
     def select_method(self):
-        """
-        Sets the stratified extrapolation mode based on the selected option and closes the dialog.
-        """
+        """Set the extrapolation mode and close the dialog."""
         if self.extrap_mode_new.currentData() == 0:
             # stratified deep learning
             self.stratified_mode = 0
             self.accept()
         else:
             # stratified manually
-            self.stratified_mode = 1       
+            self.stratified_mode = 1
             self.accept()
-                
-   
+
     def _on_upload_csv(self):
-        """
-        Opens a dialog to select a CSV file, loads and validates the input data, stores the file 
-        path, and updates the interface with the selected file name.
-        """
+        """Open a CSV file and update the interface."""
         upload_csv(self)
-        
-    
+
     def _on_select_output_folder(self):
-        """
-        Opens a folder selection dialog, stores the selected output folder path, and displays 
-        the folder name in the interface.
-        """
+        """Select and display the output folder."""
         self.folder_path_new, self.display_folder = select_output_folder(self)
         self.saved_path_new.setText(self.display_folder)
-    
-    
+
     def data_population(self):
-        """
-        Loads the population dataset and updates the feature selection options with the available 
-        building attribute fields.
-        """
-        self.data_population = upload_csv(self)
-        unique_vals = ["material", "llrs", "code_level","n_stories","occupancy","block_position",
-                       "roof_shape", "roof_material"]
+        """Load population data and update feature options."""
+        self.population_data = upload_csv(self)
+        unique_vals = [
+            "material",
+            "llrs",
+            "code_level",
+            "n_stories",
+            "occupancy",
+            "block_position",
+            "roof_shape",
+            "roof_material",
+        ]
         self.features_btn.set_values(unique_vals)
- 
-    
+
     def on_features_changed(self, vals):
-        """
-        Updates the selected stratification features and displays them in the interface.
-        """
+        """Update and display the selected stratification features."""
         self.feature_strata = list(vals)  # keep a copy
         self.features_selected.setText(
             "Selected: " + (", ".join(vals) if vals else "(none)")
         )
 
- # ==============================================================
- # Filter Selector by Feature
- # ==============================================================
- 
+
+# ==============================================================
+# Filter Selector by Feature
+# ==============================================================
+
+
 class CheckFilterPopup(QtWidgets.QWidget):
+    """Display a searchable checklist in a popup widget."""
+
     # Signal emitted when the user confirms the selection.
     # It sends a list with the selected values.
-    selectionChanged = QtCore.pyqtSignal(list)
+    selection_changed = QtCore.pyqtSignal(list)
 
     def __init__(self, values=None, parent=None):
-        """
-        Popup widget that behaves like a filterable checklist.
+        """Popup widget that behaves like a filterable checklist.
 
         Main purpose:
         - Display a small popup window with a search bar
@@ -415,8 +522,7 @@ class CheckFilterPopup(QtWidgets.QWidget):
         # - OK confirms selection and emits the signal
         # - Cancel closes the popup without emitting anything
         btns = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
-            self
+            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel, self
         )
         vbox.addWidget(btns)
 
@@ -435,8 +541,7 @@ class CheckFilterPopup(QtWidgets.QWidget):
         btns.rejected.connect(self.close)
 
     def set_values(self, values):
-        """
-        Load values into the popup list.
+        """Load values into the popup list.
 
         Steps:
         - Convert all values to string
@@ -450,8 +555,7 @@ class CheckFilterPopup(QtWidgets.QWidget):
         self._rebuild_list(uniq)
 
     def selected_values(self):
-        """
-        Return the currently checked values that are visible in the list.
+        """Return the currently checked values that are visible in the list.
 
         Note:
         Hidden items are excluded, which means this function respects
@@ -469,8 +573,7 @@ class CheckFilterPopup(QtWidgets.QWidget):
     # ------------------------------------------------------------------
 
     def _rebuild_list(self, vals):
-        """
-        Recreate the checklist items from scratch.
+        """Recreate the checklist items from scratch.
 
         Each value is added as a checkable item and is checked by default.
         Signals are temporarily blocked to avoid triggering update logic
@@ -489,8 +592,7 @@ class CheckFilterPopup(QtWidgets.QWidget):
         self._update_select_all_state()
 
     def _apply_filter(self, text):
-        """
-        Filter the list items according to the search text.
+        """Filter the list items according to the search text.
 
         Behavior:
         - Converts the search text to lowercase for case-insensitive matching
@@ -509,8 +611,7 @@ class CheckFilterPopup(QtWidgets.QWidget):
         self._update_select_all_state()
 
     def _visible_items(self):
-        """
-        Return a list of all items that are currently visible.
+        """Return a list of all items that are currently visible.
 
         This is useful because filtering hides some items, and many actions
         such as 'Select All' should only affect visible ones.
@@ -522,8 +623,7 @@ class CheckFilterPopup(QtWidgets.QWidget):
         ]
 
     def _toggle_all(self, state):
-        """
-        Check or uncheck all visible items depending on the '(Select All)' state.
+        """Check or uncheck all visible items depending on the '(Select All)' state.
 
         Important:
         - If the checkbox is in PartiallyChecked state, do nothing
@@ -533,7 +633,9 @@ class CheckFilterPopup(QtWidgets.QWidget):
         if state == QtCore.Qt.PartiallyChecked:
             return
 
-        target = QtCore.Qt.Checked if state == QtCore.Qt.Checked else QtCore.Qt.Unchecked
+        target = (
+            QtCore.Qt.Checked if state == QtCore.Qt.Checked else QtCore.Qt.Unchecked
+        )
 
         self.list.blockSignals(True)
         for it in self._visible_items():
@@ -543,8 +645,7 @@ class CheckFilterPopup(QtWidgets.QWidget):
         self._update_select_all_state()
 
     def _update_select_all_state(self):
-        """
-        Update the tri-state '(Select All)' checkbox based on visible items.
+        """Update the tri-state '(Select All)' checkbox based on visible items.
 
         Logic:
         - If no visible items exist, set it to Unchecked
@@ -568,29 +669,29 @@ class CheckFilterPopup(QtWidgets.QWidget):
             self.selectAll.setCheckState(QtCore.Qt.Unchecked)
 
     def _emit_and_close(self):
-        """
-        Emit the final selected values and close the popup.
+        """Emit the final selected values and close the popup.
 
         This method is called when the user clicks OK.
         """
-        self.selectionChanged.emit(self.selected_values())
+        self.selection_changed.emit(self.selected_values())
         self.close()
 
 
 class CheckFilterButton(QtWidgets.QToolButton):
+    """Open and manage a searchable checklist popup."""
+
     # Signal re-emitted from the popup so external widgets can react
     # when the selection is confirmed.
-    selectionChanged = QtCore.pyqtSignal(list)
+    selection_changed = QtCore.pyqtSignal(list)
 
     def __init__(self, values=None, parent=None, text="Feature strata"):
-        """
-        Tool button that opens the CheckFilterPopup.
+        """Tool button that opens the CheckFilterPopup.
 
         Main purpose:
         - Act as the visible control in the interface
         - Open the popup below the button when clicked
         - Provide a simple way to access the selected values
-        - Re-emit the popup selectionChanged signal
+        - Re-emit the popup selection_changed signal
         """
         super().__init__(parent)
 
@@ -608,23 +709,18 @@ class CheckFilterButton(QtWidgets.QToolButton):
 
         # Re-emit the popup signal so users of this button do not need
         # to access the popup object directly
-        self._popup.selectionChanged.connect(self.selectionChanged)
+        self._popup.selection_changed.connect(self.selection_changed)
 
     def set_values(self, values):
-        """
-        Update the values available in the popup checklist.
-        """
+        """Update the values available in the popup checklist."""
         self._popup.set_values(values)
 
     def selected_values(self):
-        """
-        Return the values currently selected in the popup.
-        """
+        """Return the values currently selected in the popup."""
         return self._popup.selected_values()
 
     def _show_popup(self):
-        """
-        Show the popup directly below the button.
+        """Show the popup directly below the button.
 
         Steps:
         - Convert the button's local position to global screen coordinates
@@ -636,9 +732,9 @@ class CheckFilterButton(QtWidgets.QToolButton):
         self._popup.show()
 
 
-#####################################################################################################    
-############ --------- Stratified function for calling gui_methods.py ---------------################
-##################################################################################################### 
+# ==============================================================================
+# Stratified function for calling gui_methods.py
+# ==============================================================================
 
 
 # ========== Iterative sampling using existing labels ==========
@@ -651,13 +747,12 @@ def iterative_distribution_stability_manual(
     max_fraction,
     stability_threshold,
     max_iterations,
-    random_state: int = 42):
-    
-    """
-    Iteratively samples the dataset, monitors the distribution of a selected feature, and 
-    stops when the class proportions become stable or the maximum number of iterations is reached.
-    """
+    random_state: int = 42,
+):
+    """Sample data iteratively until feature proportions stabilize.
 
+    Stop when the class proportions are stable or the iteration limit is reached.
+    """
     population_size = len(data)
     all_sampled = pd.DataFrame(columns=data.columns)
     previous_dist = None
@@ -665,13 +760,19 @@ def iterative_distribution_stability_manual(
 
     # Shuffle dataset
     np.random.seed(random_state)
-    shuffled_data = data.sample(frac=1, random_state=random_state).reset_index(drop=True)
+    shuffled_data = data.sample(frac=1, random_state=random_state).reset_index(
+        drop=True
+    )
     while iteration < max_iterations:
-        current_fraction = min(initial_fraction + step_fraction * iteration, max_fraction)
+        current_fraction = min(
+            initial_fraction + step_fraction * iteration, max_fraction
+        )
         target_size = int(population_size * current_fraction)
 
         # Select next sample
-        remaining = shuffled_data[~shuffled_data[id_column].isin(all_sampled[id_column])]
+        remaining = shuffled_data[
+            ~shuffled_data[id_column].isin(all_sampled[id_column])
+        ]
         next_sample = remaining.head(target_size - len(all_sampled))
 
         if next_sample.empty:
@@ -680,14 +781,22 @@ def iterative_distribution_stability_manual(
         all_sampled = pd.concat([all_sampled, next_sample], ignore_index=True)
 
         # Compute current distribution
-        current_counts = all_sampled[id_feature].value_counts(normalize=True).sort_index()
+        current_counts = (
+            all_sampled[id_feature].value_counts(normalize=True).sort_index()
+        )
         current_dist = current_counts.to_dict()
 
         # Check stabilization
         if previous_dist is not None:
             all_keys = set(previous_dist) | set(current_dist)
-            max_change = max(abs(previous_dist.get(k, 0) - current_dist.get(k, 0)) for k in all_keys)
-            print(f"Iteration {iteration+1}: Sample size = {len(all_sampled)}, Max Δ = {max_change:.4f}")
+            max_change = max(
+                abs(previous_dist.get(k, 0) - current_dist.get(k, 0)) for k in all_keys
+            )
+            print(
+                f"Iteration {iteration + 1}: "
+                f"Sample size = {len(all_sampled)}, "
+                f"Max Δ = {max_change:.4f}"
+            )
 
             if max_change < stability_threshold:
                 print("✅ Class proportions stabilized.")
@@ -705,34 +814,41 @@ def iterative_label_discovery_cached_fractional(
     id_feature,
     data: pd.DataFrame,
     labeling_function,
-    id_column: str = 'id',
+    id_column: str = "id",
     initial_fraction: float = 0.10,
     step_fraction: float = 0.05,
     max_fraction: float = 1.00,
     stability_threshold: float = 0.05,
     max_iterations: int = 20,
-    random_state: int = 42):
+    random_state: int = 42,
+):
+    """Label increasing data fractions until label proportions stabilize.
 
+    Stop when the proportions are stable or the iteration limit is reached.
     """
-    Iteratively labels increasing fractions of the dataset, tracks the distribution of the 
-    target feature, and stops when the label proportions stabilize or the iteration limit is reached.
-    """
-    
     population_size = len(data)
-    all_labeled = pd.DataFrame(columns=[id_column, id_feature])  # Initialize labeled dataset
+    all_labeled = pd.DataFrame(
+        columns=[id_column, id_feature]
+    )  # Initialize labeled dataset
     previous_dist = None  # Store label distribution from previous iteration
     iteration = 0  # Iteration counter
     # Shuffle the dataset for randomized sampling
     np.random.seed(random_state)
-    shuffled_data = data.sample(frac=1, random_state=random_state).reset_index(drop=True)
+    shuffled_data = data.sample(frac=1, random_state=random_state).reset_index(
+        drop=True
+    )
     # === Iterative sampling loop ===
     while iteration < max_iterations:
         # Calculate current target sample size
-        current_fraction = min(initial_fraction + step_fraction * iteration, max_fraction)
+        current_fraction = min(
+            initial_fraction + step_fraction * iteration, max_fraction
+        )
         target_size = min(int(population_size * current_fraction), population_size)
         # Filter out already labeled IDs and select next batch
         already_labeled_ids = set(all_labeled[id_column])
-        next_sample = shuffled_data[~shuffled_data[id_column].isin(already_labeled_ids)].head(target_size - len(all_labeled))
+        next_sample = shuffled_data[
+            ~shuffled_data[id_column].isin(already_labeled_ids)
+        ].head(target_size - len(all_labeled))
         if next_sample.empty:
             break  # Stop if no more samples to process
         # Apply labeling function to new samples
@@ -740,7 +856,9 @@ def iterative_label_discovery_cached_fractional(
         all_labeled = pd.concat([all_labeled, next_sample], ignore_index=True)
 
         # Calculate class distribution
-        current_counts = all_labeled[id_feature].value_counts(normalize=True).sort_index()
+        current_counts = (
+            all_labeled[id_feature].value_counts(normalize=True).sort_index()
+        )
         current_dist = current_counts.to_dict()
 
         # Check for stabilization in label distribution
@@ -748,8 +866,14 @@ def iterative_label_discovery_cached_fractional(
             all_keys = set(previous_dist) | set(current_dist)
             print("Previous dist: ")
             print(previous_dist)
-            max_change = max(abs(previous_dist.get(k, 0) - current_dist.get(k, 0)) for k in all_keys)
-            print(f"Iteration {iteration+1}: Sample size = {len(all_labeled)}, Max Δ = {max_change:.4f}")
+            max_change = max(
+                abs(previous_dist.get(k, 0) - current_dist.get(k, 0)) for k in all_keys
+            )
+            print(
+                f"Iteration {iteration + 1}: "
+                f"Sample size = {len(all_labeled)}, "
+                f"Max Δ = {max_change:.4f}"
+            )
 
             if max_change < stability_threshold:
                 print("✅ Class proportions stabilized.")
@@ -765,76 +889,86 @@ def iterative_label_discovery_cached_fractional(
 def _is_valid_img(arr):
     """Return True if arr is a non-empty HxWx3 uint8 NumPy image."""
     return (
-        isinstance(arr, np.ndarray) and
-        arr.ndim == 3 and arr.shape[2] in (3, 4) and
-        arr.size > 0
+        isinstance(arr, np.ndarray)
+        and arr.ndim == 3
+        and arr.shape[2] in (3, 4)
+        and arr.size > 0
     )
+
 
 # ========== Labeling Function ==========
 def labeling_function(image_id, id_feature, data_building):
-    """
-    Retrieves a Street View image for the given building location and applies the 
-    corresponding prediction model to infer the selected building feature label.
-    """
-    # Building coordinates
+    """Predict one building attribute from a Street View image."""
     row = data_building.loc[data_building["id"] == image_id, ["latitude", "longitude"]]
     if row.empty:
         print(f"[WARN] Missing lat/lon for id={image_id}")
         return None
-    lat = float(row.iloc[0]["latitude"])
-    lon = float(row.iloc[0]["longitude"])
-    location = (lat,lon)
 
-    # API key is required; without it, access to GSV is not possible
-    with open("methods/gsv_api_key.txt", "r") as f:
-        api_key = f.read().strip() 
-    
+    location = (
+        float(row.iloc[0]["latitude"]),
+        float(row.iloc[0]["longitude"]),
+    )
+
+    with open("methods/gsv_api_key.txt", encoding="utf-8") as file:
+        api_key = file.read().strip()
+
     try:
-        url , result, year = get_street_view_image(location, api_key, 0, 5, 120)
-        # result can be (url, ndarray) or just ndarray depending on your impl
-        if isinstance(result, tuple):
-            img = result[1]
-        else:
-            img = result
-        
-        if _is_valid_img(img):
-            pass
-        else:
-            img = None
-    except Exception as e:
-        print(f"[WARN] GSV fetch failed at {location}: {e}")
+        _url, result, _year = get_street_view_image(location, api_key, 0, 5, 120)
+        image = result[1] if isinstance(result, tuple) else result
+    except (
+        AttributeError,
+        ConnectionError,
+        IndexError,
+        OSError,
+        TimeoutError,
+        TypeError,
+        ValueError,
+    ) as error:
+        print(f"[WARN] GSV fetch failed at {location}: {error}")
         return None
-    
-    material_classes = ['CR', 'HYB(MCF;MUR)', 'INF','MCF', 'MR', 'MUR','S','W']
-    llrs_classes = ['LDUAL', 'LFBR', 'LFINF', 'LFM', 'LN', 'LWAL', 'LWAL']
-    code_level_classes = ['CDH','CDL', 'CDM', 'CDN']
-    ns_classes = ['10-12', '13+', '1', '2', '3', '4', '5', '6-7', '8-9']
-    occupancy_class = ['COM' , 'IND' ,'MIX(RES;COM)', 'RES']
-    block_position_classes = ['BP1', 'BP2', 'BP3', 'BPD']
-    roof_shape_classes = ['RSH1', 'RSH2', 'RSH3', 'RSH5', 'RSH7']
-    roof_material_classes = ['RMN', 'RMT1', 'RMT6']
-    
-    if id_feature == "llrs":
-        llrs_data = llrs_classes[predict_llrs_img (img, 3, None,  None)] 
-        return llrs_data
-    elif id_feature == "material":
-        material_data = material_classes[predict_material_img(img, 3, None,  None)]   
-        return material_data
-    elif id_feature == "n_stories":
-        material_data = ns_classes[predict_n_stories_img(img, 3, None,  None)]   
-        return material_data
-    elif id_feature == "occupancy":
-        material_data = occupancy_class[predict_occupancy_img(img, 3, None,  None)]   
-        return material_data
-    elif id_feature == "code_level":
-        material_data = code_level_classes[predict_code_img(img, 3, None,  None)]   
-        return material_data
-    elif id_feature == "block_position":
-        material_data = block_position_classes[predict_block_position_img(img, 3, None,  None)]   
-        return material_data
-    elif id_feature == "roof_shape":
-        material_data = roof_shape_classes[predict_roof_shape_img(img, 3, None,  None)]   
-        return material_data
-    elif id_feature == "roof_material":
-        material_data = roof_material_classes[predict_roof_material_img(img, 3, None,  None)]   
-        return material_data
+
+    if not _is_valid_img(image):
+        return None
+
+    prediction_map = {
+        "material": (
+            predict_material_img,
+            ["CR", "HYB(MCF;MUR)", "INF", "MCF", "MR", "MUR", "S", "W"],
+        ),
+        "llrs": (
+            predict_llrs_img,
+            ["LDUAL", "LFBR", "LFINF", "LFM", "LN", "LWAL", "LWAL"],
+        ),
+        "code_level": (
+            predict_code_img,
+            ["CDH", "CDL", "CDM", "CDN"],
+        ),
+        "n_stories": (
+            predict_n_stories_img,
+            ["10-12", "13+", "1", "2", "3", "4", "5", "6-7", "8-9"],
+        ),
+        "occupancy": (
+            predict_occupancy_img,
+            ["COM", "IND", "MIX(RES;COM)", "RES"],
+        ),
+        "block_position": (
+            predict_block_position_img,
+            ["BP1", "BP2", "BP3", "BPD"],
+        ),
+        "roof_shape": (
+            predict_roof_shape_img,
+            ["RSH1", "RSH2", "RSH3", "RSH5", "RSH7"],
+        ),
+        "roof_material": (
+            predict_roof_material_img,
+            ["RMN", "RMT1", "RMT6"],
+        ),
+    }
+
+    try:
+        predictor, classes = prediction_map[id_feature]
+    except KeyError as error:
+        raise ValueError(f"Unsupported feature: {id_feature}") from error
+
+    prediction_index = predictor(image, 3, None, None)
+    return classes[prediction_index]
