@@ -1345,9 +1345,6 @@ class GUIInterface(QtWidgets.QMainWindow):
         """ GEM icon GUI elements """
         self.setWindowIcon(QtGui.QIcon("help_img/RUBIC_logo.png"))
 
-        """ GEM icon GUI elements """
-        self.setWindowIcon(QtGui.QIcon("help_img/RUBIC_logo.png"))
-
         """ Progress Bar elements """
         # Progress bar widget
         self.progress_bar_method = QtWidgets.QProgressBar(self.centralwidget)

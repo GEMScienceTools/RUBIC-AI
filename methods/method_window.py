@@ -181,22 +181,6 @@ class InspectionSetting(QDialog):
         checkbox.setText(text)
         return checkbox
 
-    def _create_description(
-        self,
-        text: str,
-        object_name: str,
-        geometry: tuple[int, int, int, int],
-        scale_x: float,
-        scale_y: float,
-        font_scale: float,
-    ) -> QtWidgets.QTextBrowser:
-        """Create and return a formatted method description."""
-        browser = QtWidgets.QTextBrowser(self.method_frame)
-        browser.setGeometry(_scaled_rect(*geometry, scale_x, scale_y))
-        browser.setObjectName(object_name)
-        browser.setHtml(_description_html(text, 10 * font_scale))
-        return browser
-
     def _create_image(
         self,
         path: str,
@@ -213,6 +197,73 @@ class InspectionSetting(QDialog):
         label.setScaledContents(True)
         return label
 
+    def _create_description(
+        self,
+        text: str,
+        object_name: str,
+        geometry: tuple[int, int, int, int],
+        scale_x: float,
+        scale_y: float,
+        font_scale: float,
+    ) -> QtWidgets.QTextEdit:
+        """Create a scaled, justified description text box."""
+        description = QtWidgets.QTextEdit(self)
+        description.setObjectName(object_name)
+    
+        x, y, width, height = geometry
+        description.setGeometry(
+            int(x * scale_x),
+            int(y * scale_y),
+            int(width * scale_x),
+            int(height * scale_y),
+        )
+    
+        description.setReadOnly(True)
+        description.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        description.setHorizontalScrollBarPolicy(
+            QtCore.Qt.ScrollBarAlwaysOff
+        )
+        description.setVerticalScrollBarPolicy(
+            QtCore.Qt.ScrollBarAsNeeded
+        )
+    
+        # Apply the resolution-dependent font scale exactly once.
+        font = QtGui.QFont()
+        font.setPointSizeF(10 * font_scale)
+    
+        description.setFont(font)
+        description.document().setDefaultFont(font)
+        description.document().setDocumentMargin(4)
+    
+        # Add the content after configuring the font.
+        description.setPlainText(text)
+    
+        cursor = description.textCursor()
+        cursor.select(QtGui.QTextCursor.Document)
+    
+        block_format = QtGui.QTextBlockFormat()
+        block_format.setAlignment(QtCore.Qt.AlignJustify)
+        block_format.setTextIndent(0)
+        block_format.setLeftMargin(0)
+        block_format.setRightMargin(0)
+        block_format.setTopMargin(0)
+        block_format.setBottomMargin(0)
+    
+        cursor.mergeBlockFormat(block_format)
+    
+        character_format = QtGui.QTextCharFormat()
+        character_format.setFont(font)
+        cursor.mergeCharFormat(character_format)
+    
+        cursor.clearSelection()
+        cursor.movePosition(QtGui.QTextCursor.Start)
+        description.setTextCursor(cursor)
+    
+        description.setContentsMargins(0, 0, 0, 0)
+        description.setViewportMargins(0, 0, 0, 0)
+    
+        return description
+    
     def _create_polygon_section(
         self,
         scale_x: float,
@@ -227,6 +278,7 @@ class InspectionSetting(QDialog):
             scale_x,
             scale_y,
         )
+    
         self.dafault_img = self._create_image(
             "help_img/default_buildings.png",
             "dafault_img",
@@ -234,19 +286,24 @@ class InspectionSetting(QDialog):
             scale_x,
             scale_y,
         )
+    
         text = (
-            "Creates a polygon from vertices provided in clockwise or "
-            "counterclockwise order and performs virtual inspections using "
-            "either a sample or the complete building population."
+            "Creates a polygon from uploaded vertex coordinates, provided in "
+            "either clockwise or counterclockwise order, or from an existing "
+            "polygon file in SHP or GPKG format. Virtual inspections are then "
+            "performed using either the specified sample size or the entire "
+            "building population within the polygon."
         )
+    
         self.default_descrip = self._create_description(
             text,
             "default_descrip",
-            (230, 50, 430, 130),
+            (230, 50, 430, 140),
             scale_x,
             scale_y,
             font_scale,
         )
+    
         self.default_check = self._create_method_checkbox(
             "Polygon method",
             "default_check",
@@ -321,14 +378,18 @@ class InspectionSetting(QDialog):
             scale_y,
         )
         text = (
-            "Requires a folder containing the images and a CSV metadata file "
-            "with 'id', 'latitude', and 'longitude' columns. Each 'id' must "
-            "match its image filename, including the extension."
+            "In this mode, users can analyse local images captured using mobile "
+            "phones, drones, or other devices. Users must provide a folder "
+            "containing the building images and a CSV file with the corresponding "
+            "image information. The CSV file must contain columns named 'id', "
+            "'latitude', and 'longitude'. The 'id' value must match the complete "
+            "image filename, including its extension (e.g., .png or .jpg). HEIC "
+            "images are not supported."
         )
         self.local_descrip = self._create_description(
             text,
             "local_descrip",
-            (230, 410, 430, 181),
+            (230, 410, 430, 180),
             scale_x,
             scale_y,
             font_scale,
@@ -384,7 +445,7 @@ class InspectionSetting(QDialog):
             font_scale,
         )
         self.extra_img = self._create_image(
-            "help_img/extrapolation.jpg",
+            "help_img/extrapolation.png",
             "extra_img",
             (680, 630, 171, 101),
             scale_x,

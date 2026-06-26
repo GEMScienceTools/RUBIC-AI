@@ -6,7 +6,7 @@ import numpy as np
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from methods.knn_extrapolation_feature import knn_options_window
-from methods.stratified_extrapolation_feature import stratified_extrapolation
+from methods.stratified_extrapolation_feature import StratifiedExtrapolation
 
 DESIGN_WIDTH = 1920
 DESIGN_HEIGHT = 1080
@@ -353,7 +353,7 @@ stable; otherwise, it continues to improve <b>statistical robustness</b> and
 
     def _configure_stratified_method(self):
         """Open the stratified-sampling configuration dialog."""
-        dialog = stratified_extrapolation(parent=self)
+        dialog = StratifiedExtrapolation(parent=self)
         self.insp_method = self.method.insp_method
 
         if dialog.exec_() != QtWidgets.QDialog.Accepted:

@@ -268,13 +268,31 @@ class BoundingBoxWindow(QDialog):
             self.draw_dashed_line(self.points[3], self.points[2])
             self.draw_dashed_line(self.points[2], self.points[0])
 
-            displayed_path = (
-                self.main_window.output_folder_value
-                + "/Mapillary/displayed_images/"
-                + str(self.gui_methods.click_count + 1)
-                + ".jpg"
-            )
-            cv2.imwrite(displayed_path, cv2.cvtColor(self.image, cv2.COLOR_RGB2BGR))
+            if self.insp_method != 2:
+                # Mapillary images
+                if self.main_window.img_source == 2:
+                    displayed_path = (
+                        self.main_window.output_folder_value
+                        + "/Mapillary/displayed_images/"
+                        + str(self.gui_methods.click_count + 1)
+                        + ".jpg"
+                    )
+                    cv2.imwrite(
+                        displayed_path,
+                        cv2.cvtColor(self.image, cv2.COLOR_RGB2BGR)
+                        )
+            else:
+                # Local images
+                displayed_path = (
+                    self.main_window.folder_path
+                    + "/displayed_images/"
+                    + str(self.gui_methods.data_building.iloc[
+                        self.gui_methods.old_local+self.gui_methods.box_id, 0
+                        ]
+                        )[:-4]
+                    + "_displayed.jpg"
+                    )
+                cv2.imwrite(displayed_path, cv2.cvtColor(self.image, cv2.COLOR_RGB2BGR))
 
             self.update_display()
 
@@ -442,14 +460,13 @@ class BoundingBoxWindow(QDialog):
                 )
                 cv2.imwrite(save_path, cv2.cvtColor(cropped_image, cv2.COLOR_RGB2BGR))
         else:
-            if self.gui_methods.box_id is None:
-                # Save the cropped image to the specified path
-                save_path = self.cropped_img_path
-                cv2.imwrite(
-                    save_path, cv2.cvtColor(cropped_image_original, cv2.COLOR_RGB2BGR)
-                )  # Convert RGB to BGR before saving
-            else:
-                self.prediction_img = cropped_image
+            # Save the cropped image to the specified path
+            save_path = self.cropped_img_path
+
+            cv2.imwrite(
+                save_path, cv2.cvtColor(cropped_image_original, cv2.COLOR_RGB2BGR)
+            )  # Convert RGB to BGR before saving
+            self.prediction_img = cropped_image
 
         # Return the cropped image
         return cropped_image
