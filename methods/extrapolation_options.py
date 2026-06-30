@@ -239,22 +239,22 @@ class ExtrapolationOptions(QtWidgets.QDialog):
         """Return the formatted K-nearest-neighbours description."""
         body = """
 <p align="justify">
-This method considers the distance to the 
-<b>K nearest neighbors</b> and uses <b>soft voting</b>, meaning that closer
+This method considers the distance to the
+<b> K nearest neighbors</b> and uses <b>soft voting</b>, meaning that closer
 neighbors carry more weight in determining the final class. It assumes that
 nearby buildings are more likely to share similar characteristics and applies
 <b> inverse kernel weighting</b> to reflect this relationship.
 </p>
 <p align="justify">
-The process begins with an <b>initial sample representing 10% of the 
-population</b>. Building information can be provided by uploading a CSV file
+The process begins with an <b>initial sample representing 10% of the population
+</b>. Building information can be provided by uploading a CSV file
 or by using the built-in <b>deep learning model</b>.
 </p>
 <p align="justify">
 <b>Convergence</b> is evaluated from the stability of the variable of interest,
 which is the distribution of <b>building taxonomies</b>. Convergence is assumed
-when the distribution changes by no more than <b>5%</b> in the next iteration. 
-Otherwise, the sample increases by 5% of the population per iteration.
+when the distribution changes by no more than <b>5%</b> in the next iteration.
+ Otherwise, the sample increases by 5% of the population per iteration.
 </p>
 <p align="justify">
 After convergence, the tool calculates the <b>geodesic distance</b> from each
@@ -276,15 +276,15 @@ maximum uncertainty in the class proportions.
 </p>
 <p align="justify">
 Each class is represented according to its estimated frequency and variance.
-Users can upload <b>new CSV files manually</b> or use the built-in 
-<b>deep learning model</b> to expand the sample by a user-defined percentage of
+Users can upload <b>new CSV files manually</b> or use the built-in
+<b> deep learning model</b> to expand the sample by a user-defined percentage of
 the population in each iteration.
 </p>
 <p align="justify">
 After each iteration, the method checks whether the estimated class
 proportions have <b>converged</b>. Sampling stops when the proportions remain
-stable; otherwise, it continues to improve <b>statistical robustness</b> and 
-<b>data efficiency</b>.
+stable; otherwise, it continues to improve <b>statistical robustness</b> and
+<b> data efficiency</b>.
 </p>
 """
         return cls._html_document(font_size, body)

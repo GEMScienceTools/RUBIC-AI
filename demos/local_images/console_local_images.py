@@ -1,499 +1,724 @@
+"""Run building-attribute inference on locally stored images.
+
+The script reads building coordinates and image filenames from a CSV file,
+detects the main building in each image, predicts its attributes, validates
+the resulting taxonomy, and writes the results to a CSV file.
+
+Model architecture and output dimensions are validated against each
+checkpoint before inference.
+"""
+
+from __future__ import annotations
+
+import re
+import sys
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
+
+import cv2
 import numpy as np
-from geopy.geocoders import Nominatim
 import pandas as pd
 import torch
 import torch.nn as nn
-from ultralytics import YOLO
 import torchvision.transforms as transforms
-from torchvision import models
+from geopy.exc import GeocoderServiceError, GeocoderTimedOut
+from geopy.geocoders import Nominatim
 from PIL import Image
-import cv2
-import os
-import re 
-import sys
-#########################################################
-#######===========  General functions ==========#########
-#########################################################
-rubicai = Path(__file__).parent.parent.parent.resolve()
-dir_path = Path(__file__).parent.resolve()
-sys.path.append(str(rubicai))
-from methods.taxonomy import check_taxonomy
+from torch import Tensor
+from torchvision import models
+from ultralytics import YOLO
 
-def create_database(local_building_info):
-    global footprint_data
-    # Load data
+RUBICAI_ROOT = Path(__file__).parent.parent.parent.resolve()
+SCRIPT_DIR = Path(__file__).parent.resolve()
+DL_DIR = RUBICAI_ROOT / "dl_weights"
+
+if str(RUBICAI_ROOT) not in sys.path:
+    sys.path.append(str(RUBICAI_ROOT))
+
+from methods.taxonomy import check_taxonomy  # noqa: E402
+
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+TARGET_CLASS = "building-xzyh"
+CONFIDENCE_THRESHOLD = 0.5
+GEOCODER_TIMEOUT_SECONDS = 3
+
+DATABASE_COLUMNS = [
+    "id",
+    "latitude",
+    "longitude",
+    "country",
+    "city",
+    "material",
+    "llrs",
+    "code_level",
+    "n_stories",
+    "occupancy",
+    "block_position",
+    "roof_shape",
+    "roof_material",
+    "taxonomy",
+    "image filename or link",
+]
+
+CLASS_NAMES = {
+    "material": [
+        "CR",
+        "MCF",
+        "MUR",
+    ],
+    "llrs": [
+        "LDUAL",
+        "LFINF",
+        "LFM",
+        "LWAL",
+        "LWAL",
+    ],
+    "code_level": [
+        "CDH",
+        "CDL",
+        "CDM",
+        "CDN",
+    ],
+    "n_stories": [
+        "10-12",
+        "13+",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6-7",
+        "8-9",
+    ],
+    "occupancy": [
+        "COM",
+        "IND",
+        "MIX(RES;COM)",
+        "RES",
+    ],
+    "block_position": [
+        "BP1",
+        "BP2",
+        "BP3",
+        "BPD",
+    ],
+    "roof_shape": [
+        "RSH1",
+        "RSH2",
+        "RSH3",
+        "RSH7",
+    ],
+    "roof_material": [
+        "RMN",
+        "RMT1",
+        "RMT6",
+    ],
+}
+
+IMAGE_TRANSFORM = transforms.Compose(
+    [
+        transforms.Resize((256, 256)),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+    ]
+)
+
+
+@dataclass
+class PredictionModels:
+    """Store all loaded building-attribute models."""
+
+    material: nn.Module
+    llrs: nn.Module
+    code_level: nn.Module
+    n_stories: nn.Module
+    occupancy: nn.Module
+    block_position: nn.Module
+    roof_shape: nn.Module
+    roof_material: nn.Module
+
+
+@dataclass(frozen=True)
+class ModelSpecification:
+    """Describe one classifier and its checkpoint."""
+
+    attribute: str
+    architecture: str
+    weight_path: Path
+
+
+MODEL_SPECIFICATIONS = [
+    ModelSpecification(
+        attribute="material",
+        architecture="convnext_tiny",
+        weight_path=DL_DIR / "convnext_tiny_material.pt",
+    ),
+    ModelSpecification(
+        attribute="llrs",
+        architecture="convnext_tiny",
+        weight_path=DL_DIR / "convnext_tiny_llrs.pt",
+    ),
+    ModelSpecification(
+        attribute="code_level",
+        architecture="convnext_tiny",
+        weight_path=DL_DIR / "convnext_tiny_code.pt",
+    ),
+    ModelSpecification(
+        attribute="n_stories",
+        architecture="convnext_tiny",
+        weight_path=DL_DIR / "convnext_tiny_n_stories.pt",
+    ),
+    ModelSpecification(
+        attribute="occupancy",
+        architecture="convnext_tiny",
+        weight_path=DL_DIR / "convnext_tiny_occupancy.pt",
+    ),
+    ModelSpecification(
+        attribute="block_position",
+        architecture="swin_t",
+        weight_path=DL_DIR / "swin_t_b_position.pt",
+    ),
+    ModelSpecification(
+        attribute="roof_shape",
+        architecture="swin_t",
+        weight_path=DL_DIR / "swin_t_roof_shape.pt",
+    ),
+    ModelSpecification(
+        attribute="roof_material",
+        architecture="swin_t",
+        weight_path=DL_DIR / "swin_t_roof_material.pt",
+    ),
+]
+
+
+def create_database(
+    local_building_info: Path,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Load building information and create an empty output database."""
     footprint_data = pd.read_csv(local_building_info)
-    footprint_data.columns = footprint_data.columns.str.lower()
+    footprint_data.columns = footprint_data.columns.str.lower().str.strip()
 
-    # Define the column namesfor the inspection database
-    column_names = ["id", 
-                    "latitude", 
-                    "longitude",
-                    "country",
-                    "city",
-                    "material",
-                    "llrs",
-                    "code_level",
-                    "n_stories",
-                    "occupancy",
-                    "block_position",
-                    "roof_shape",
-                    "roof_material",
-                    "taxonomy",
-                    "image filename or link"]
-    
-    # Create an empty DataFrame for number of footprint available
-    data_ai = pd.DataFrame(np.full((footprint_data.shape[0], len(column_names)), None), columns=column_names)
-        
-    return data_ai
-        
-    
-############ Building detector model ################
-def object_detector_building(lat, lon, img_path):
-    # Class mapping (update this with your actual mappings)
-    weight_path = dl_dir / "building_detector.pt"  # Path object
-    # Load the YOLO model
-    model = YOLO(weight_path)
-    # Classes
-    class_names = model.names
-    TARGET_CLASS = 'building-xzyh'
-    # Set device GPU or CPU
-    device= "cuda" if torch.cuda.is_available() else "cpu"
+    required_columns = {"id", "latitude", "longitude"}
+    missing_columns = required_columns.difference(footprint_data.columns)
+    if missing_columns:
+        missing = ", ".join(sorted(missing_columns))
+        raise ValueError(f"Missing required CSV columns: {missing}")
 
-    results = model.predict(img_path, device=device)
-    image_rgb = cv2.imread(img_path)
-    
-    best_box = None
+    inspection_data = pd.DataFrame(
+        np.full(
+            (len(footprint_data), len(DATABASE_COLUMNS)),
+            None,
+            dtype=object,
+        ),
+        columns=DATABASE_COLUMNS,
+    )
+
+    return inspection_data, footprint_data
+
+
+def load_building_detector() -> YOLO:
+    """Load the YOLO building detector once."""
+    weight_path = DL_DIR / "building_detector.pt"
+    if not weight_path.exists():
+        raise FileNotFoundError(
+            f"Building-detector weights not found: {weight_path}"
+        )
+
+    return YOLO(weight_path)
+
+
+def detect_building(
+    image_path: Path,
+    detector: YOLO,
+) -> np.ndarray | None:
+    """Return the highest-confidence building crop from a local image."""
+    if not image_path.exists():
+        print(f"Image not found: {image_path}")
+        return None
+
+    image = cv2.imread(str(image_path))
+    if image is None:
+        print(f"Unable to read image: {image_path}")
+        return None
+
+    try:
+        result = detector.predict(
+            source=str(image_path),
+            device=str(DEVICE),
+            verbose=False,
+        )[0]
+    except (RuntimeError, TypeError, ValueError) as error:
+        print(f"Object detection failed for {image_path.name}: {error}")
+        return None
+
+    best_box: np.ndarray | None = None
     best_score = 0.0
 
-    # for box in results.boxes:
-    for box in results[0].boxes:
-        cls_id = int(box.cls)
-        cls_name = class_names[cls_id]
-        score = float(box.conf)  # confidence score
-    
-        if cls_name == TARGET_CLASS and score > best_score and score > 0.5:
-            best_score = score
-            best_box = box
+    if result.boxes is not None:
+        for box in result.boxes:
+            class_id = int(box.cls[0])
+            class_name = detector.names[class_id]
+            score = float(box.conf[0])
 
-    # Bounding box coordinates
-    x1, y1, x2, y2 = map(int, best_box.xyxy[0])
-        
-    # Crop the area within the bounding box
-    cropped_image = image_rgb[y1:y2, x1:x2]
+            if (
+                class_name == TARGET_CLASS
+                and score > CONFIDENCE_THRESHOLD
+                and score > best_score
+            ):
+                best_score = score
+                best_box = box.xyxy[0].cpu().numpy().astype(int)
+
+    if best_box is None:
+        print(f"No building detected in {image_path.name}.")
+        return None
+
+    image_height, image_width = image.shape[:2]
+    x_min, y_min, x_max, y_max = best_box
+
+    x_min = max(0, x_min)
+    y_min = max(0, y_min)
+    x_max = min(image_width, x_max)
+    y_max = min(image_height, y_max)
+
+    cropped_image = image[y_min:y_max, x_min:x_max]
+    if cropped_image.size == 0:
+        print(f"Empty building crop for {image_path.name}.")
+        return None
+
     return cropped_image
-    
-############ Get city name using coordinates ################
-def get_city_name(lat, lon):           
-    try:    
-        geolocator = Nominatim(user_agent="city_name_locator")
-        location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
-        if location and 'address' in location.raw:
-            address = location.raw['address']
-            city = (address.get("city") or address.get("town") or address.get("village")
-                or address.get("municipality") or address.get("county") or address.get("state_district")
-                or "Unknown")
-            country = address.get('country', 'Unknown')
-            return city , country
-    except:
-        city = "Unknown"
-        country = "Unknown"
-        return city , country
 
 
-
-#########################################################
-#######==========  DL models definition ========#########
-#########################################################
-
-
-################### Material model #########################
-# Define the device (CPU-only if no GPU is available)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-# Define the image transformation (must match training)
-transform = transforms.Compose([
-    transforms.Resize((256, 256)),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-])
-    
-root_dir = Path(__file__).parent.resolve()
-dl_dir = (root_dir / '..' / '..' / 'dl_weights').resolve()
-
-def dl_models():
-    global model_material, model_llrs, model_code, model_n_stories, model_occupancy, model_bp, model_rshp, model_rmt
-    print("Uploading DL models")
-    # Load the model_material architecture
-    model_material = models.densenet201(weights=None)  # base architecture
-    num_features = model_material.classifier.in_features  # 1920 for densenet201
-
-    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
-    model_material.classifier = nn.Sequential(
-        nn.Dropout(p=0.2),
-        nn.Linear(num_features, 8)   # 8 material classes
+def get_city_name(
+    latitude: float,
+    longitude: float,
+) -> tuple[str, str]:
+    """Return the city and country associated with coordinates."""
+    geolocator = Nominatim(
+        user_agent="rubic_ai_city_name_locator",
+        timeout=GEOCODER_TIMEOUT_SECONDS,
     )
 
-    # Load the trained DenseNet201 weights
-    state_dict = torch.load(str(dl_dir / "densenet201_material.pt"),
-                            map_location=device)
-    model_material.load_state_dict(state_dict)  # strict=True (default)
-    model_material.to(device)
-    model_material.eval()
-    
-    ################### LLRS model #########################
-    # Define the device (CPU-only if no GPU is available)
-
-    # Load the model architecture
-    model_llrs = models.densenet201(weights=None)  # base architecture
-    num_features = model_llrs.classifier.in_features  # 1920 for densenet201
-
-    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
-    model_llrs.classifier = nn.Sequential(
-        nn.Dropout(p=0.2),
-        nn.Linear(num_features, 6)   # 8 material classes
-    )
-
-    # Load the trained DenseNet201 weights
-    state_dict = torch.load(str(dl_dir / "densenet201_llrs.pt"),
-                            map_location=device)
-    model_llrs.load_state_dict(state_dict)  # strict=True (default)
-    model_llrs.to(device)
-    model_llrs.eval()
-
-
-    ################### CODE model #########################
-    # Define the device (CPU-only if no GPU is available)
-
-    # Load the model architecture
-    model_code = models.convnext_tiny(weights=None)
-    in_features = model_code.classifier[2].in_features  # should be 768
-
-    model_code.classifier[2] = nn.Sequential(
-        nn.Dropout(p=0.2),
-        nn.Linear(in_features, 4)   # 8 material classes
-    )
-
-    # Load the trained ConvNeXt weights
-    state_dict = torch.load(str(dl_dir / "convnext_tiny_code_level.pt"), map_location=device)
-    model_code.load_state_dict(state_dict)   # strict=True by default
-    model_code.to(device)
-    model_code.eval()
-
-
-    ################### N STORIES model #########################
-    # Define the device (CPU-only if no GPU is available)
-
-    # Load the model architecture
-    model_n_stories = models.convnext_tiny(weights=None)
-    in_features = model_n_stories.classifier[2].in_features  # should be 768
- 
-    model_n_stories.classifier[2] = nn.Sequential(
-        nn.Dropout(p=0.2),
-        nn.Linear(in_features, 9)   # 8 material classes
-    )
- 
-    # Load the trained ConvNeXt weights
-    state_dict = torch.load(str(dl_dir / "convnext_tiny_n_stories.pt"), map_location=device)
-    model_n_stories.load_state_dict(state_dict)   # strict=True by default
-    model_n_stories.to(device)
-    model_n_stories.eval()
-
-
-    ################### OCCUPANCY model #########################
-    # Define the device (CPU-only if no GPU is available)
-
-    # Load the model architecture
-    model_occupancy = models.convnext_tiny(weights=None)
-    in_features = model_occupancy.classifier[2].in_features  # should be 768
-
-    model_occupancy.classifier[2] = nn.Sequential(
-        nn.Dropout(p=0.2),
-        nn.Linear(in_features, 4)   # 8 material classes
-    )
-
-    # Load the trained ConvNeXt weights
-    state_dict = torch.load(str(dl_dir / "convnext_tiny_occupancy.pt"), map_location=device)
-    model_occupancy.load_state_dict(state_dict)   # strict=True by default
-    model_occupancy.to(device)
-    model_occupancy.eval()
-
-
-    ################### BLOCK POSTION model #########################
-    # Define the device (CPU-only if no GPU is available)
-
-    # Load the model architecture
-    model_bp = models.densenet201(weights=None)  # base architecture
-    num_features = model_bp.classifier.in_features  # 1920 for densenet201
-
-    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
-    model_bp.classifier = nn.Sequential(
-        nn.Dropout(p=0.2),
-        nn.Linear(num_features, 4)   # 8 material classes
-    )
-
-    # Load the trained DenseNet201 weights
-    state_dict = torch.load(str(dl_dir / "densenet201_block_position.pt"),
-                            map_location=device)
-    model_bp.load_state_dict(state_dict)  # strict=True (default)
-    model_bp.to(device)
-    model_bp.eval()
-
-
-    ################### Roof Shape model #########################
-    # Define the device (CPU-only if no GPU is available)
-
-    # Load the model architecture
-    model_rshp = models.densenet201(weights=None)  # base architecture
-    num_features = model_rshp.classifier.in_features  # 1920 for densenet201
-
-    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
-    model_rshp.classifier = nn.Sequential(
-        nn.Dropout(p=0.2),
-        nn.Linear(num_features, 5)   # 8 material classes
-    )
-
-    # Load the trained DenseNet201 weights
-    state_dict = torch.load(str(dl_dir / "densenet201_roof_shape.pt"),
-                            map_location=device)
-    model_rshp.load_state_dict(state_dict)  # strict=True (default)
-    model_rshp.to(device)
-    model_rshp.eval()
-        
-
-    ################### Roof Material model #########################
-    # Define the device (CPU-only if no GPU is available)
-
-    # Load the model architecture
-    model_rmt = models.densenet201(weights=None)  # base architecture
-    num_features = model_rmt.classifier.in_features  # 1920 for densenet201
- 
-    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
-    model_rmt.classifier = nn.Sequential(
-        nn.Dropout(p=0.2),
-        nn.Linear(num_features, 3)   # 8 material classes
-    )
- 
-    # Load the trained DenseNet201 weights
-    state_dict = torch.load(str(dl_dir / "densenet201_roof_material.pt"),
-                            map_location=device)
-    model_rmt.load_state_dict(state_dict)  # strict=True (default)
-    model_rmt.to(device)
-    model_rmt.eval()
-
-    print("The DL models have been successfully uploaded!")
-#########################################################
-#######===========  Models predicition =========#########
-#########################################################
-
-dl_models()
-
-############ Material prediction ################
-def predict_material_img (image_path):
-    # Function to predict the class of an image
-    image = Image.fromarray(image_path.astype('uint8'))
-    image = transform(image).unsqueeze(0).to(device)
-
-    # Perform inference
-    with torch.no_grad():
-        output = model_material(image)
-        prediction = torch.argmax(output, dim=1).item()
-
-    # LLRS building image sets prediction
-    material_classes = ['CR', 'HYB(MCF;MUR)', 'INF','MCF', 'MR', 'MUR','S','W']
-    material_id = material_classes[prediction]
-
-    return material_id
-
-############ LLRS prediction ################
-def predict_llrs_img (image_path):
-    # Function to predict the class of an image
-    image = Image.fromarray(image_path.astype('uint8'))
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model_llrs(image)
-        prediction = torch.argmax(output, dim=1).item()
-        
-    # LLRS building image sets prediction
-    llrs_classes = ['LDUAL', 'LFINF', 'LFM', 'LN', 'LWAL', 'LWAL']
-    llrs_id = llrs_classes[prediction]
-    
-    return llrs_id
-
-############ Code level prediction ################
-def predict_code_img (image_path):
-    # Function to predict the class of an image
-    image = Image.fromarray(image_path.astype('uint8'))
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model_code(image)
-        prediction = torch.argmax(output, dim=1).item()
-        
-    # code_level building image sets prediction
-    code_level_classes = ['CDH','CDL', 'CDM', 'CDN']
-    code_level_id = code_level_classes[prediction]
-    return code_level_id
-
-############ Number of Stories prediction ################
-def predict_n_stories_img (image_path):
-    # Function to predict the class of an image
-    image = Image.fromarray(image_path.astype('uint8'))
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model_n_stories(image)
-        prediction = torch.argmax(output, dim=1).item()
-        
-    class_names = ['10-12', '13+', '1', '2', '3', '4', '5', '6-7', '8-9']
-    n_stories_id = class_names[prediction]
-    return n_stories_id
-
-############ Occupancy prediction ################
-def predict_occupancy_img (image_path): 
-    # Function to predict the class of an image
-    image = Image.fromarray(image_path.astype('uint8'))
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model_occupancy(image)
-        prediction = torch.argmax(output, dim=1).item()
-        
-    occupancy_class = ['COM' , 'IND' ,'MIX(RES;COM)', 'RES']
-    occupancy_id = occupancy_class[prediction]
-    return occupancy_id
-
-############ Block Position prediction ################
-def predict_block_position_img (image_path):
-    # Function to predict the class of an image
-    image = Image.fromarray(image_path.astype('uint8'))
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model_bp(image)
-        prediction = torch.argmax(output, dim=1).item()
-        
-    block_position_classes = ['BP1', 'BP2', 'BP3', 'BPD']
-    block_position_id = block_position_classes[prediction]
-    return block_position_id
-
-############ Roof Shape prediction ################
-def predict_roof_shape_img (image_path):
-    # Function to predict the class of an image
-    image = Image.fromarray(image_path.astype('uint8'))
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model_rshp(image)
-        prediction = torch.argmax(output, dim=1).item()
-        
-    roof_shape_classes = ['RSH1', 'RSH2', 'RSH3', 'RSH5', 'RSH7']
-    roof_shape_id = roof_shape_classes[prediction]
-    return roof_shape_id
-
-
-############ Roof Material prediction ################
-def predict_roof_material_img (image_path):
-    # Function to predict the class of an image
-    image = Image.fromarray(image_path.astype('uint8'))
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model_rmt(image)
-        prediction = torch.argmax(output, dim=1).item()
-        
-    roof_material_classes = ['RMN', 'RMT1', 'RMT6']
-    roof_material_id = roof_material_classes[prediction]
-    return roof_material_id
-  
-def tax_check(tax_value):
-    # 1) Create a small DataFrame with taxonomy strings
-    df = pd.DataFrame({"TAXONOMY": [tax_value]})
-    
     try:
-        tax = check_taxonomy(df, taxo_col="TAXONOMY")
-    except ValueError as e:
-        print("There are invalid taxonomies ❌")
-        # Convert the error to string
-        err_str = str(e)
-        
-        # Extract the canonical value from the string using regex
-        match = re.search(r"'canonical': '([^']+)'", err_str)
-        if match:
-            tax_canonical = match.group(1)
-            print("Canonical taxonomy:", tax_canonical)
+        location = geolocator.reverse(
+            (latitude, longitude),
+            exactly_one=True,
+            language="en",
+        )
+    except (GeocoderServiceError, GeocoderTimedOut) as error:
+        print(f"Reverse geocoding failed: {error}")
+        return "Unknown", "Unknown"
+
+    if location is None:
+        return "Unknown", "Unknown"
+
+    address = location.raw.get("address", {})
+    city = (
+        address.get("city")
+        or address.get("town")
+        or address.get("village")
+        or address.get("municipality")
+        or address.get("county")
+        or address.get("state_district")
+        or "Unknown"
+    )
+    country = address.get("country", "Unknown")
+    return city, country
+
+
+def extract_state_dict(checkpoint: Any) -> dict[str, Tensor]:
+    """Extract and normalize a model state dictionary."""
+    if isinstance(checkpoint, dict):
+        for key in ("state_dict", "model_state_dict"):
+            nested_state = checkpoint.get(key)
+            if isinstance(nested_state, dict):
+                checkpoint = nested_state
+                break
+
+    if not isinstance(checkpoint, dict):
+        raise TypeError(
+            "The checkpoint must contain a PyTorch state dictionary."
+        )
+
+    state_dict = {}
+    for key, value in checkpoint.items():
+        if not isinstance(value, Tensor):
+            continue
+
+        normalized_key = key.removeprefix("module.")
+        state_dict[normalized_key] = value
+
+    if not state_dict:
+        raise ValueError("No tensor parameters were found in the checkpoint.")
+
+    return state_dict
+
+
+def read_checkpoint(weight_path: Path) -> dict[str, Tensor]:
+    """Read a checkpoint and return its normalized state dictionary."""
+    if not weight_path.exists():
+        raise FileNotFoundError(f"Model weights not found: {weight_path}")
+
+    checkpoint = torch.load(
+        weight_path,
+        map_location=DEVICE,
+    )
+    return extract_state_dict(checkpoint)
+
+
+def find_output_layer(
+    state_dict: dict[str, Tensor],
+    architecture: str,
+) -> tuple[str, int, bool]:
+    """Find the output layer key, class count, and head structure."""
+    if architecture == "convnext_tiny":
+        candidate_keys = (
+            "classifier.2.weight",
+            "classifier.2.1.weight",
+        )
+    elif architecture == "swin_t":
+        candidate_keys = (
+            "head.weight",
+            "head.1.weight",
+        )
+    else:
+        raise ValueError(f"Unsupported architecture: {architecture}")
+
+    for key in candidate_keys:
+        weight = state_dict.get(key)
+        if weight is not None and weight.ndim == 2:
+            uses_sequential_head = ".1.weight" in key
+            return key, int(weight.shape[0]), uses_sequential_head
+
+    expected_keys = ", ".join(candidate_keys)
+    raise KeyError(
+        "Unable to locate the classifier output layer. "
+        f"Expected one of: {expected_keys}"
+    )
+
+
+def create_classifier_model(
+    specification: ModelSpecification,
+) -> nn.Module:
+    """Create a model whose output head matches its checkpoint."""
+    state_dict = read_checkpoint(specification.weight_path)
+    output_key, checkpoint_classes, uses_sequential_head = (
+        find_output_layer(
+            state_dict,
+            specification.architecture,
+        )
+    )
+
+    labels = CLASS_NAMES[specification.attribute]
+    expected_classes = len(labels)
+
+    if checkpoint_classes != expected_classes:
+        raise ValueError(
+            f"{specification.attribute}: checkpoint output layer "
+            f"'{output_key}' has {checkpoint_classes} classes, but "
+            f"{expected_classes} labels are configured: {labels}"
+        )
+
+    if specification.architecture == "convnext_tiny":
+        model = models.convnext_tiny(weights=None)
+        input_features = model.classifier[2].in_features
+
+        if uses_sequential_head:
+            model.classifier[2] = nn.Sequential(
+                nn.Dropout(p=0.2),
+                nn.Linear(input_features, checkpoint_classes),
+            )
         else:
-            tax_canonical = None
-            print("No canonical value found.")
-    
-############ Obtain value of the form of each building image ################       
-def inspection_database (data_ai, image_folder):
-    for i in range (data_ai.shape[0]):
-        data_ai.iloc[i, 0] = footprint_data.iloc[i,0]                                                 # ID
-        data_ai.iloc[i, 1] = footprint_data.loc[i , "latitude"]                                                 # Latitude
-        data_ai.iloc[i, 2] = footprint_data.loc[i , "longitude"] 
-        
-        img_id = footprint_data.loc[i , "id"] 
-        img_path = str(image_folder / img_id)
+            model.classifier[2] = nn.Linear(
+                input_features,
+                checkpoint_classes,
+            )
+
+    elif specification.architecture == "swin_t":
+        model = models.swin_t(weights=None)
+        input_features = model.head.in_features
+
+        if uses_sequential_head:
+            model.head = nn.Sequential(
+                nn.Dropout(p=0.2),
+                nn.Linear(input_features, checkpoint_classes),
+            )
+        else:
+            model.head = nn.Linear(
+                input_features,
+                checkpoint_classes,
+            )
+
+    else:
+        raise ValueError(
+            f"Unsupported architecture: {specification.architecture}"
+        )
+
+    model.load_state_dict(state_dict, strict=True)
+    model.to(DEVICE)
+    model.eval()
+
+    print(
+        f"Loaded {specification.attribute}: "
+        f"{specification.architecture}, "
+        f"{checkpoint_classes} classes"
+    )
+    return model
+
+
+def load_prediction_models() -> PredictionModels:
+    """Load and validate all building-attribute prediction models."""
+    print(f"Loading deep-learning models on {DEVICE}...")
+
+    loaded_models = {
+        specification.attribute: create_classifier_model(specification)
+        for specification in MODEL_SPECIFICATIONS
+    }
+
+    prediction_models = PredictionModels(
+        material=loaded_models["material"],
+        llrs=loaded_models["llrs"],
+        code_level=loaded_models["code_level"],
+        n_stories=loaded_models["n_stories"],
+        occupancy=loaded_models["occupancy"],
+        block_position=loaded_models["block_position"],
+        roof_shape=loaded_models["roof_shape"],
+        roof_material=loaded_models["roof_material"],
+    )
+
+    print("Deep-learning models loaded and validated successfully.")
+    return prediction_models
+
+
+def prepare_image(image_array: np.ndarray) -> Tensor:
+    """Convert an OpenCV BGR image into a normalized model tensor."""
+    rgb_image = cv2.cvtColor(
+        image_array.astype(np.uint8),
+        cv2.COLOR_BGR2RGB,
+    )
+    image = Image.fromarray(rgb_image)
+    return IMAGE_TRANSFORM(image).unsqueeze(0).to(DEVICE)
+
+
+def predict_class(
+    image_array: np.ndarray,
+    model: nn.Module,
+    class_names: list[str],
+) -> str:
+    """Predict one class label for an image."""
+    image_tensor = prepare_image(image_array)
+
+    with torch.inference_mode():
+        output = model(image_tensor)
+
+    if output.ndim != 2 or output.shape[0] != 1:
+        raise ValueError(
+            f"Unexpected model output shape: {tuple(output.shape)}"
+        )
+
+    if output.shape[1] != len(class_names):
+        raise ValueError(
+            f"Model returned {output.shape[1]} outputs, but "
+            f"{len(class_names)} labels were provided."
+        )
+
+    prediction = int(torch.argmax(output, dim=1).item())
+    return class_names[prediction]
+
+
+def normalize_llrs_label(label: str) -> str:
+    """Map internal wall subclasses to the common LWAL taxonomy class."""
+    if label in {"LWAL(LR)", "LWAL(HR)"}:
+        return "LWAL"
+    return label
+
+
+def build_taxonomy(row: pd.Series) -> str:
+    """Build a taxonomy string from the predicted attributes."""
+    return (
+        f"{row['material']}/{row['llrs']}/{row['code_level']}"
+        f"/H:{row['n_stories']}/{row['block_position']}"
+        f"/{row['roof_shape']}+{row['roof_material']}"
+        f"/{row['occupancy']}"
+    )
+
+
+def validate_taxonomy(taxonomy: str) -> str | None:
+    """Validate a taxonomy and return its canonical value when available."""
+    taxonomy_data = pd.DataFrame({"TAXONOMY": [taxonomy]})
+
+    try:
+        check_taxonomy(
+            taxonomy_data,
+            taxo_col="TAXONOMY",
+        )
+        return taxonomy
+    except ValueError as error:
+        print(f"Invalid taxonomy: {taxonomy}")
+
+        match = re.search(
+            r"'canonical': '([^']+)'",
+            str(error),
+        )
+        if match:
+            canonical_taxonomy = match.group(1)
+            print(f"Canonical taxonomy: {canonical_taxonomy}")
+            return canonical_taxonomy
+
+        print("No canonical taxonomy was found.")
+        return None
+
+
+def inspect_buildings(
+    inspection_data: pd.DataFrame,
+    footprint_data: pd.DataFrame,
+    image_folder: Path,
+    detector: YOLO,
+    prediction_models: PredictionModels,
+) -> pd.DataFrame:
+    """Inspect local images and populate building-attribute predictions."""
+    for row_index, footprint in footprint_data.iterrows():
+        building_id = footprint["id"]
+        latitude = float(footprint["latitude"])
+        longitude = float(footprint["longitude"])
+        image_path = image_folder / str(building_id)
+
+        inspection_data.loc[
+            row_index,
+            ["id", "latitude", "longitude"],
+        ] = [
+            building_id,
+            latitude,
+            longitude,
+        ]
+
         try:
-            image_file = object_detector_building(float(footprint_data.loc[i,"latitude"]) , 
-                                                  float(footprint_data.loc[i,"longitude"]), img_path)
-    
-            if image_file is None:
-                pass
-            else:
-                city, country = get_city_name(float(footprint_data.loc[i,"latitude"]) , float(footprint_data.loc[i,"longitude"]))
-                                                 
-                data_ai.iloc[i, 3], data_ai.iloc[i, 4] = country , city
-                data_ai.iloc[i, 5] = predict_material_img (image_file)                            # LLRS Material
-                data_ai.iloc[i, 6] = predict_llrs_img (image_file)                                # LLRS 
-                data_ai.iloc[i, 7] = predict_code_img (image_file)                                # Code Level 
-                data_ai.iloc[i, 8] = predict_n_stories_img (image_file)                           # Number of Stories 
-                data_ai.iloc[i, 9] = predict_occupancy_img (image_file)                           # Occupancy
-                data_ai.iloc[i, 10] = predict_block_position_img (image_file)                     # Block Position
-                data_ai.iloc[i, 11] = predict_roof_shape_img (image_file)                         # Roof shape
-                data_ai.iloc[i, 12] = predict_roof_material_img (image_file)                      # Roof material
-                
-                try:
-                    data_ai.iloc[i, 13] = (data_ai.iloc[i, 5]+"/"+data_ai.iloc[i, 6]+"/"+data_ai.iloc[i, 7]+"/H:"+
-                                           data_ai.iloc[i, 8]+"/"+data_ai.iloc[i, 10]+"/"+data_ai.iloc[i, 11]+"+"+
-                                           data_ai.iloc[i, 12]+"/"+data_ai.iloc[i, 9])
-                                                                    
-                    # Taxonomy
-                    tax_check(data_ai.iloc[i, 13])
-                except:
-                    pass                      # Taxonomy
-                
-                data_ai.iloc[i, 14] = img_path
-        except:
-            print(" Error in building ID: " + str(footprint_data.loc[i, "id"]))
-            pass
-        print("Inspection: " + str(i+1)+"/"+str(data_ai.shape[0]) +" -------------------------------------")
-       
-        
-#########################################################
-#######===========  Input parameters =========###########
-#########################################################
+            building_image = detect_building(
+                image_path,
+                detector,
+            )
+            if building_image is None:
+                continue
 
-# Input parameters using Path
-local_building_info = dir_path / "data_ex1.csv"
-image_folder = dir_path / "images_ex1"
-saved_path = dir_path / "console_mode/local_results_ex1.csv"
+            city, country = get_city_name(
+                latitude,
+                longitude,
+            )
+            inspection_data.loc[
+                row_index,
+                ["country", "city"],
+            ] = [
+                country,
+                city,
+            ]
 
-#########################################################
-#######===========  Function results =========###########
-#########################################################
+            inspection_data.loc[row_index, "material"] = predict_class(
+                building_image,
+                prediction_models.material,
+                CLASS_NAMES["material"],
+            )
 
-data_ai = create_database(local_building_info)
-inspection_database(data_ai, image_folder)
-os.makedirs(os.path.dirname(saved_path), exist_ok=True)
-data_ai.to_csv(str(saved_path), index= False)
+            llrs_label = predict_class(
+                building_image,
+                prediction_models.llrs,
+                CLASS_NAMES["llrs"],
+            )
+            inspection_data.loc[row_index, "llrs"] = (
+                normalize_llrs_label(llrs_label)
+            )
+
+            inspection_data.loc[row_index, "code_level"] = predict_class(
+                building_image,
+                prediction_models.code_level,
+                CLASS_NAMES["code_level"],
+            )
+            inspection_data.loc[row_index, "n_stories"] = predict_class(
+                building_image,
+                prediction_models.n_stories,
+                CLASS_NAMES["n_stories"],
+            )
+            inspection_data.loc[row_index, "occupancy"] = predict_class(
+                building_image,
+                prediction_models.occupancy,
+                CLASS_NAMES["occupancy"],
+            )
+            inspection_data.loc[row_index, "block_position"] = (
+                predict_class(
+                    building_image,
+                    prediction_models.block_position,
+                    CLASS_NAMES["block_position"],
+                )
+            )
+            inspection_data.loc[row_index, "roof_shape"] = predict_class(
+                building_image,
+                prediction_models.roof_shape,
+                CLASS_NAMES["roof_shape"],
+            )
+            inspection_data.loc[row_index, "roof_material"] = (
+                predict_class(
+                    building_image,
+                    prediction_models.roof_material,
+                    CLASS_NAMES["roof_material"],
+                )
+            )
+
+            taxonomy = build_taxonomy(inspection_data.loc[row_index])
+            inspection_data.loc[row_index, "taxonomy"] = (
+                validate_taxonomy(taxonomy) or taxonomy
+            )
+            inspection_data.loc[
+                row_index,
+                "image filename or link",
+            ] = str(image_path)
+
+        except (
+            IndexError,
+            KeyError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as error:
+            print(f"Error in building ID {building_id}: {error}")
+
+        print(f"Inspection: {row_index + 1}/{len(inspection_data)}")
+
+    return inspection_data
+
+
+def main() -> None:
+    """Run local-image building inspection."""
+    local_building_info = SCRIPT_DIR / "data_ex1.csv"
+    image_folder = SCRIPT_DIR / "images_ex1"
+    saved_path = SCRIPT_DIR / "console_mode/local_results_ex1.csv"
+
+    inspection_data, footprint_data = create_database(
+        local_building_info
+    )
+    detector = load_building_detector()
+    prediction_models = load_prediction_models()
+
+    inspection_data = inspect_buildings(
+        inspection_data,
+        footprint_data,
+        image_folder,
+        detector,
+        prediction_models,
+    )
+
+    saved_path.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+    inspection_data.to_csv(
+        saved_path,
+        index=False,
+    )
+
+    print(f"Results saved to: {saved_path}")
+
+
+if __name__ == "__main__":
+    main()

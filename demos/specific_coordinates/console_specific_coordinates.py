@@ -1,766 +1,944 @@
-import re 
+"""Run building-attribute inference for specific coordinates.
+
+The workflow reads a CSV file containing building identifiers and geographic
+coordinates, retrieves Google Street View imagery, detects the most likely
+building, predicts its attributes, validates the resulting taxonomy, and
+exports the completed inspection database.
+
+All classification models are validated against their configured class
+labels before inference.
+"""
+
+from __future__ import annotations
+
+import math
+import re
 import sys
-import os
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
+
+import cv2
 import numpy as np
-from geopy.geocoders import Nominatim
 import pandas as pd
+import requests
 import torch
 import torch.nn as nn
-from ultralytics import YOLO
 import torchvision.transforms as transforms
-from torchvision import models
+from geopy.exc import GeocoderServiceError, GeocoderTimedOut
+from geopy.geocoders import Nominatim
 from PIL import Image
-import requests
-import math
-import cv2
+from torch import Tensor
+from torchvision import models
+from ultralytics import YOLO
 
-#########################################################
-#######===========  General functions ==========#########
-#########################################################
+RUBICAI_ROOT = Path(__file__).parent.parent.parent.resolve()
+DL_DIR = RUBICAI_ROOT / "dl_weights"
 
-rubicai = Path(__file__).parent.parent.parent.resolve()
-sys.path.append(str(rubicai))
+if str(RUBICAI_ROOT) not in sys.path:
+    sys.path.append(str(RUBICAI_ROOT))
 
-from methods.taxonomy import check_taxonomy
+from methods.taxonomy import check_taxonomy  # noqa: E402
 
-gsv_api_file = rubicai / 'methods/gsv_api_key.txt'
-assert gsv_api_file.exists(), "`gsv_api_key.txt` not found in `methods` directory."
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-roads_api_file = rubicai / 'methods/roads_api_key.txt'
-assert roads_api_file.exists(), "`roads_api_key.txt` not found in `methods` directory."
+GSV_API_FILE = RUBICAI_ROOT / "methods/gsv_api_key.txt"
+ROADS_API_FILE = RUBICAI_ROOT / "methods/roads_api_key.txt"
 
-def create_database(local_building_info):
-    global footprint_data
-    # Load data
-    footprint_data = pd.read_csv(local_building_info)
-    
-    # Define the column namesfor the inspection database
-    column_names = ["id", 
-                    "latitude", 
-                    "longitude",
-                    "country",
-                    "city",
-                    "material",
-                    "llrs",
-                    "code_level",
-                    "n_stories",
-                    "occupancy",
-                    "block_position",
-                    "roof_shape",
-                    "roof_material",
-                    "taxonomy",
-                    "image filename or link"]
-    
-    # Create an empty DataFrame for number of footprint available
-    data_ai = pd.DataFrame(np.full((footprint_data.shape[0], len(column_names)), None), columns=column_names)
-        
-    return data_ai
+TARGET_CLASS = "building-xzyh"
+CONFIDENCE_THRESHOLD = 0.5
+REQUEST_TIMEOUT_SECONDS = 30
+GEOCODER_TIMEOUT_SECONDS = 3
 
-def get_road_orientation(location):
-    """
-    Determine the road orientation (azimuth) near a specified location using the Google Roads API.
-    """
-    with open(roads_api_file, "r") as f:
-        roads_api_key = f.read().strip()
+DATABASE_COLUMNS = [
+    "id",
+    "latitude",
+    "longitude",
+    "country",
+    "city",
+    "material",
+    "llrs",
+    "code_level",
+    "n_stories",
+    "occupancy",
+    "block_position",
+    "roof_shape",
+    "roof_material",
+    "taxonomy",
+    "image filename or link",
+]
 
-    base_url = "https://roads.googleapis.com/v1/nearestRoads"
-    params = {"points": f"{location[0]},{location[1]}", "key": roads_api_key}
+CLASS_NAMES = {
+    "material": ["CR", "MCF", "MUR"],
+    "llrs": ["LDUAL", "LFINF", "LFM", "LWAL", "LWAL"],
+    "code_level": ["CDH", "CDL", "CDM", "CDN"],
+    "n_stories": [
+        "10-12",
+        "13+",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6-7",
+        "8-9",
+    ],
+    "occupancy": ["COM", "IND", "MIX(RES;COM)", "RES"],
+    "block_position": ["BP1", "BP2", "BP3", "BPD"],
+    "roof_shape": ["RSH1", "RSH2", "RSH3", "RSH7"],
+    "roof_material": ["RMN", "RMT1", "RMT6"],
+}
 
-    response = requests.get(base_url, params=params)
-    if response.status_code == 200:
-        data = response.json()
-        if "snappedPoints" in data and data["snappedPoints"]:
-            snapped_point = data["snappedPoints"][0]
-            road_lat = snapped_point["location"]["latitude"]
-            road_lng = snapped_point["location"]["longitude"]
-            orientation = compute_azimuth(location, (road_lat, road_lng))
-            return orientation
-        else:
-            print("No road found near the location.")
-            return None
-    else:
-        print(f"Error: {response.status_code}, {response.text}")
-        return None
+IMAGE_TRANSFORM = transforms.Compose(
+    [
+        transforms.Resize((256, 256)),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+    ]
+)
 
 
-def compute_azimuth(point1, point2):
-    """Compute the azimuth (bearing) between two geographic points."""
-    lat1, lon1 = math.radians(point1[0]), math.radians(point1[1])
-    lat2, lon2 = math.radians(point2[0]), math.radians(point2[1])
-    d_lon = lon2 - lon1
-    x = math.sin(d_lon) * math.cos(lat2)
-    y = math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * math.cos(lat2) * math.cos(d_lon)
-    azimuth = math.degrees(math.atan2(x, y))
+@dataclass
+class PredictionModels:
+    """Store all loaded building-attribute models."""
+
+    material: nn.Module
+    llrs: nn.Module
+    code_level: nn.Module
+    n_stories: nn.Module
+    occupancy: nn.Module
+    block_position: nn.Module
+    roof_shape: nn.Module
+    roof_material: nn.Module
+
+
+@dataclass(frozen=True)
+class ModelSpecification:
+    """Describe one classifier checkpoint."""
+
+    attribute: str
+    architecture: str
+    weight_path: Path
+
+
+MODEL_SPECIFICATIONS = [
+    ModelSpecification(
+        attribute="material",
+        architecture="convnext_tiny",
+        weight_path=DL_DIR / "convnext_tiny_material.pt",
+    ),
+    ModelSpecification(
+        attribute="llrs",
+        architecture="convnext_tiny",
+        weight_path=DL_DIR / "convnext_tiny_llrs.pt",
+    ),
+    ModelSpecification(
+        attribute="code_level",
+        architecture="convnext_tiny",
+        weight_path=DL_DIR / "convnext_tiny_code.pt",
+    ),
+    ModelSpecification(
+        attribute="n_stories",
+        architecture="convnext_tiny",
+        weight_path=DL_DIR / "convnext_tiny_n_stories.pt",
+    ),
+    ModelSpecification(
+        attribute="occupancy",
+        architecture="convnext_tiny",
+        weight_path=DL_DIR / "convnext_tiny_occupancy.pt",
+    ),
+    ModelSpecification(
+        attribute="block_position",
+        architecture="swin_t",
+        weight_path=DL_DIR / "swin_t_b_position.pt",
+    ),
+    ModelSpecification(
+        attribute="roof_shape",
+        architecture="swin_t",
+        weight_path=DL_DIR / "swin_t_roof_shape.pt",
+    ),
+    ModelSpecification(
+        attribute="roof_material",
+        architecture="swin_t",
+        weight_path=DL_DIR / "swin_t_roof_material.pt",
+    ),
+]
+
+
+def read_api_key(path: Path) -> str:
+    """Read and validate an API key file."""
+    if not path.exists():
+        raise FileNotFoundError(f"API key file not found: {path}")
+
+    api_key = path.read_text(encoding="utf-8").strip()
+    if not api_key:
+        raise ValueError(f"API key file is empty: {path}")
+
+    return api_key
+
+
+def create_database(
+    coordinate_file: Path,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Create an empty inspection table and load building coordinates."""
+    footprint_data = pd.read_csv(coordinate_file)
+    footprint_data.columns = footprint_data.columns.str.lower().str.strip()
+
+    required_columns = {"id", "latitude", "longitude"}
+    missing_columns = required_columns.difference(footprint_data.columns)
+    if missing_columns:
+        missing = ", ".join(sorted(missing_columns))
+        raise ValueError(
+            f"Missing required building columns: {missing}"
+        )
+
+    inspection_data = pd.DataFrame(
+        np.full(
+            (len(footprint_data), len(DATABASE_COLUMNS)),
+            None,
+            dtype=object,
+        ),
+        columns=DATABASE_COLUMNS,
+    )
+    return inspection_data, footprint_data
+
+
+def compute_azimuth(
+    point_1: tuple[float, float],
+    point_2: tuple[float, float],
+) -> float:
+    """Compute the azimuth between two geographic points."""
+    latitude_1, longitude_1 = map(math.radians, point_1)
+    latitude_2, longitude_2 = map(math.radians, point_2)
+
+    longitude_difference = longitude_2 - longitude_1
+    x_value = (
+        math.sin(longitude_difference) * math.cos(latitude_2)
+    )
+    y_value = (
+        math.cos(latitude_1) * math.sin(latitude_2)
+        - math.sin(latitude_1)
+        * math.cos(latitude_2)
+        * math.cos(longitude_difference)
+    )
+
+    azimuth = math.degrees(math.atan2(x_value, y_value))
     return (azimuth + 360) % 360
 
 
-def get_street_view_image(location, api_key, angle, pitch, fov):
-    """
-    Fetch a Google Street View image (outdoor-only) and generate its corresponding Maps URL.
-    """
-    # --- Metadata request (for year and indoor/outdoor detection) ---
-    meta_url = "https://maps.googleapis.com/maps/api/streetview/metadata"
-    meta_params = {
+def get_road_orientation(
+    location: tuple[float, float],
+    roads_api_key: str,
+) -> float | None:
+    """Get the road orientation near a geographic location."""
+    endpoint = "https://roads.googleapis.com/v1/nearestRoads"
+    params = {
+        "points": f"{location[0]},{location[1]}",
+        "key": roads_api_key,
+    }
+
+    try:
+        response = requests.get(
+            endpoint,
+            params=params,
+            timeout=REQUEST_TIMEOUT_SECONDS,
+        )
+        response.raise_for_status()
+    except requests.RequestException as error:
+        print(f"Roads API request failed: {error}")
+        return None
+
+    snapped_points = response.json().get("snappedPoints", [])
+    if not snapped_points:
+        print("No road was found near the building.")
+        return None
+
+    snapped_location = snapped_points[0]["location"]
+    road_point = (
+        snapped_location["latitude"],
+        snapped_location["longitude"],
+    )
+    return compute_azimuth(location, road_point)
+
+
+def request_street_view_metadata(
+    location: tuple[float, float],
+    api_key: str,
+    radius: int | None = None,
+) -> dict[str, Any]:
+    """Request Google Street View metadata."""
+    endpoint = (
+        "https://maps.googleapis.com/maps/api/streetview/metadata"
+    )
+    params: dict[str, Any] = {
         "location": f"{location[0]},{location[1]}",
-        "source": "outdoor",  # ✅ only request outdoor panoramas
+        "source": "outdoor",
         "key": api_key,
     }
-    meta_response = requests.get(meta_url, params=meta_params)
-    meta_data = meta_response.json()
 
-    # Check if outdoor panorama is available
-    if meta_data.get("status") != "OK":
-        print(f"No outdoor panorama available at {location}. Status: {meta_data.get('status')}")
-    
-       ######################################################
-       ############# NEW FUNCTION ###########################
-       ######################################################
-        found_close = False
-        max_radius = 20
-        step = 5
-        show_debug = True
+    if radius is not None:
+        params["radius"] = radius
 
-        with open(gsv_api_file, "r") as f:
-            api_key = f.read().strip()
+    response = requests.get(
+        endpoint,
+        params=params,
+        timeout=REQUEST_TIMEOUT_SECONDS,
+    )
+    response.raise_for_status()
+    return response.json()
 
-        meta_url = "https://maps.googleapis.com/maps/api/streetview/metadata"
-        img_url = "https://maps.googleapis.com/maps/api/streetview"
 
-        pano_id = None
-        pano_lat, pano_lon, used_radius, year = None, None, None, None
+def download_street_view_image(
+    params: dict[str, Any],
+) -> np.ndarray | None:
+    """Download and decode one Street View image."""
+    endpoint = "https://maps.googleapis.com/maps/api/streetview"
 
-        for radius in range(step, max_radius + step, step):
-            meta_params = {
-                "location": f"{location[0]},{location[1]}",
-                "radius": radius,
-                "source": "outdoor",
-                "key": api_key,
-            }
-            r = requests.get(meta_url, params=meta_params)
-            meta = r.json()
-            status = meta.get("status")
+    response = requests.get(
+        endpoint,
+        params=params,
+        timeout=REQUEST_TIMEOUT_SECONDS,
+    )
+    response.raise_for_status()
 
-            if show_debug:
-                print(f"Checking radius {radius} m → status={status}")
+    content_type = response.headers.get("content-type", "")
+    if not content_type.startswith("image/"):
+        print("Street View response did not contain an image.")
+        return None
 
-            if status == "OK":
-                pano_id = meta.get("pano_id") or meta.get("panoId")
-                pano_loc = meta.get("location", {})
-                pano_lat, pano_lon = pano_loc.get("lat"), pano_loc.get("lng")
-                found_close, used_radius = True, radius
-                if "date" in meta:
-                    year = meta["date"].split("-")[0]
-                if show_debug:
-                    print(f"✅ Outdoor pano found at {radius} m → ({pano_lat}, {pano_lon})")
+    image_array = np.frombuffer(response.content, np.uint8)
+    return cv2.imdecode(
+        image_array,
+        cv2.IMREAD_COLOR,
+    )
+
+
+def get_street_view_image(
+    location: tuple[float, float],
+    gsv_api_key: str,
+    roads_api_key: str,
+    angle: float = 0,
+    pitch: float = 5,
+    field_of_view: float = 120,
+) -> tuple[str | None, np.ndarray | None, str | None]:
+    """Fetch an outdoor Street View image and its Maps URL."""
+    metadata = None
+
+    for radius in (None, 5, 10, 15, 20):
+        try:
+            metadata = request_street_view_metadata(
+                location,
+                gsv_api_key,
+                radius=radius,
+            )
+        except requests.RequestException as error:
+            print(f"Street View metadata request failed: {error}")
+            continue
+
+        if metadata.get("status") == "OK":
+            break
+
+    if metadata is None or metadata.get("status") != "OK":
+        print(f"No outdoor Street View panorama near {location}.")
+        return None, None, None
+
+    pano_id = metadata.get("pano_id") or metadata.get("panoId")
+    panorama_location = metadata.get("location", {})
+    panorama_latitude = panorama_location.get("lat")
+    panorama_longitude = panorama_location.get("lng")
+    year = metadata.get("date", "").split("-")[0] or None
+
+    if panorama_longitude is not None:
+        angle = 180 if panorama_longitude > location[1] else 0
+
+    road_orientation = get_road_orientation(
+        location,
+        roads_api_key,
+    )
+    heading = ((road_orientation or 0) + angle + 180) % 360
+
+    image_params: dict[str, Any] = {
+        "size": "640x480",
+        "heading": heading,
+        "pitch": pitch,
+        "fov": field_of_view,
+        "source": "outdoor",
+        "key": gsv_api_key,
+    }
+
+    if pano_id:
+        image_params["pano"] = pano_id
+    else:
+        image_params["location"] = (
+            f"{location[0]},{location[1]}"
+        )
+        image_params["scale"] = 2
+
+    try:
+        image = download_street_view_image(image_params)
+    except requests.RequestException as error:
+        print(f"Street View image request failed: {error}")
+        return None, None, year
+
+    viewpoint_latitude = panorama_latitude or location[0]
+    viewpoint_longitude = panorama_longitude or location[1]
+    maps_url = (
+        "https://www.google.com/maps/@?api=1&map_action=pano"
+        f"&viewpoint={viewpoint_latitude},{viewpoint_longitude}"
+        f"&heading={heading}&pitch={pitch}&fov={field_of_view}"
+    )
+    return maps_url, image, year
+
+
+def load_building_detector() -> YOLO:
+    """Load the YOLO building detector once."""
+    weight_path = DL_DIR / "building_detector.pt"
+    if not weight_path.exists():
+        raise FileNotFoundError(
+            f"Building-detector weights not found: {weight_path}"
+        )
+
+    return YOLO(weight_path)
+
+
+def detect_building(
+    latitude: float,
+    longitude: float,
+    detector: YOLO,
+    gsv_api_key: str,
+    roads_api_key: str,
+) -> tuple[np.ndarray | None, str | None]:
+    """Retrieve Street View imagery and return the best building crop."""
+    maps_url, image, _ = get_street_view_image(
+        (latitude, longitude),
+        gsv_api_key,
+        roads_api_key,
+    )
+
+    if image is None:
+        return None, maps_url
+
+    try:
+        result = detector.predict(
+            source=image,
+            device=str(DEVICE),
+            verbose=False,
+        )[0]
+    except (RuntimeError, TypeError, ValueError) as error:
+        print(f"Building detection failed: {error}")
+        return None, maps_url
+
+    best_box: np.ndarray | None = None
+    best_confidence = 0.0
+
+    if result.boxes is not None:
+        for box in result.boxes:
+            class_id = int(box.cls[0])
+            label = detector.names[class_id]
+            confidence = float(box.conf[0])
+
+            if (
+                label == TARGET_CLASS
+                and confidence > CONFIDENCE_THRESHOLD
+                and confidence > best_confidence
+            ):
+                best_confidence = confidence
+                best_box = box.xyxy[0].cpu().numpy().astype(int)
+
+    if best_box is None:
+        print("No building was detected in the Street View image.")
+        return None, maps_url
+
+    image_height, image_width = image.shape[:2]
+    x_min, y_min, x_max, y_max = best_box
+
+    x_min = max(0, x_min)
+    y_min = max(0, y_min)
+    x_max = min(image_width, x_max)
+    y_max = min(image_height, y_max)
+
+    cropped_image = image[y_min:y_max, x_min:x_max]
+    if cropped_image.size == 0:
+        print("The detected building crop is empty.")
+        return None, maps_url
+
+    return cropped_image, maps_url
+
+
+def get_city_name(
+    latitude: float,
+    longitude: float,
+) -> tuple[str, str]:
+    """Return the city and country corresponding to coordinates."""
+    geolocator = Nominatim(
+        user_agent="rubic_ai_city_name_locator",
+        timeout=GEOCODER_TIMEOUT_SECONDS,
+    )
+
+    try:
+        location = geolocator.reverse(
+            (latitude, longitude),
+            exactly_one=True,
+            language="en",
+        )
+    except (GeocoderServiceError, GeocoderTimedOut) as error:
+        print(f"Reverse geocoding failed: {error}")
+        return "Unknown", "Unknown"
+
+    if location is None:
+        return "Unknown", "Unknown"
+
+    address = location.raw.get("address", {})
+    city = (
+        address.get("city")
+        or address.get("town")
+        or address.get("village")
+        or address.get("municipality")
+        or address.get("county")
+        or address.get("state_district")
+        or "Unknown"
+    )
+    country = address.get("country", "Unknown")
+    return city, country
+
+
+def extract_state_dict(
+    checkpoint: Any,
+) -> dict[str, Tensor]:
+    """Extract and normalize a model state dictionary."""
+    if isinstance(checkpoint, dict):
+        for key in ("state_dict", "model_state_dict"):
+            nested_state = checkpoint.get(key)
+            if isinstance(nested_state, dict):
+                checkpoint = nested_state
                 break
 
-        if not found_close:
-            print(f"⚠️ No outdoor pano found within {max_radius} m of {location}")
-            return None, None, None
+    if not isinstance(checkpoint, dict):
+        raise TypeError(
+            "The checkpoint must contain a PyTorch state dictionary."
+        )
 
-        # Determine if pano is to the right or left
-        try:
-            if pano_lon > location[1]:
-                angle = 180
-                side = "right"
-            else:
-                angle = 0
-                side = "left"
+    state_dict = {}
+    for key, value in checkpoint.items():
+        if isinstance(value, Tensor):
+            state_dict[key.removeprefix("module.")] = value
 
-            if show_debug:
-                print(f"Pano is located to the {side} of the building → angle={angle}°")
+    if not state_dict:
+        raise ValueError(
+            "No tensor parameters were found in the checkpoint."
+        )
 
-            # Compute road orientation
-            road_orientation = get_road_orientation(location)
-            heading = ((road_orientation or 0) + angle + 180) % 360
+    return state_dict
 
-            if show_debug:
-                print(f"Road orientation: {road_orientation}")
-                print(f"Final heading: {heading}")
 
-            # Fetch image from pano ID
-            params = {
-                "size": "640x480",
-                "pano": pano_id,
-                "heading": heading,
-                "pitch": pitch,
-                "fov": fov,
-                "source": "outdoor",
-                "key": api_key,
-            }
+def read_checkpoint(
+    weight_path: Path,
+) -> dict[str, Tensor]:
+    """Read and normalize a model checkpoint."""
+    if not weight_path.exists():
+        raise FileNotFoundError(
+            f"Model weights not found: {weight_path}"
+        )
 
-            resp = requests.get(img_url, params=params)
-            if resp.status_code == 200 and resp.headers.get("content-type", "").startswith("image/"):
-                np_arr = np.frombuffer(resp.content, np.uint8)
-                img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-            else:
-                print(f"❌ Error fetching image: {resp.status_code}")
-                img = None
+    checkpoint = torch.load(
+        weight_path,
+        map_location=DEVICE,
+    )
+    return extract_state_dict(checkpoint)
 
-            maps_url = (
-                f"https://www.google.com/maps/@?api=1&map_action=pano"
-                f"&viewpoint={pano_lat},{pano_lon}&heading={heading}&pitch=5&fov=120"
+
+def find_output_layer(
+    state_dict: dict[str, Tensor],
+    architecture: str,
+) -> tuple[str, int, bool]:
+    """Find the output layer key, class count, and head structure."""
+    if architecture == "convnext_tiny":
+        candidate_keys = (
+            "classifier.2.weight",
+            "classifier.2.1.weight",
+        )
+    elif architecture == "swin_t":
+        candidate_keys = (
+            "head.weight",
+            "head.1.weight",
+        )
+    else:
+        raise ValueError(f"Unsupported architecture: {architecture}")
+
+    for key in candidate_keys:
+        weight = state_dict.get(key)
+        if weight is not None and weight.ndim == 2:
+            uses_sequential_head = ".1.weight" in key
+            return key, int(weight.shape[0]), uses_sequential_head
+
+    expected_keys = ", ".join(candidate_keys)
+    raise KeyError(
+        "Unable to locate the classifier output layer. "
+        f"Expected one of: {expected_keys}"
+    )
+
+
+def create_classifier_model(
+    specification: ModelSpecification,
+) -> nn.Module:
+    """Create a model whose output head matches its checkpoint."""
+    state_dict = read_checkpoint(specification.weight_path)
+    output_key, checkpoint_classes, uses_sequential_head = (
+        find_output_layer(
+            state_dict,
+            specification.architecture,
+        )
+    )
+
+    labels = CLASS_NAMES[specification.attribute]
+    expected_classes = len(labels)
+
+    if checkpoint_classes != expected_classes:
+        raise ValueError(
+            f"{specification.attribute}: checkpoint output layer "
+            f"'{output_key}' has {checkpoint_classes} classes, but "
+            f"{expected_classes} labels are configured: {labels}"
+        )
+
+    if specification.architecture == "convnext_tiny":
+        model = models.convnext_tiny(weights=None)
+        input_features = model.classifier[2].in_features
+
+        if uses_sequential_head:
+            model.classifier[2] = nn.Sequential(
+                nn.Dropout(p=0.2),
+                nn.Linear(input_features, checkpoint_classes),
+            )
+        else:
+            model.classifier[2] = nn.Linear(
+                input_features,
+                checkpoint_classes,
             )
 
-            return maps_url, img, year
+    elif specification.architecture == "swin_t":
+        model = models.swin_t(weights=None)
+        input_features = model.head.in_features
 
-        except Exception as e:
-            print(f"Error determining pano direction: {e}")
-            return None, None, None
+        if uses_sequential_head:
+            model.head = nn.Sequential(
+                nn.Dropout(p=0.2),
+                nn.Linear(input_features, checkpoint_classes),
+            )
+        else:
+            model.head = nn.Linear(
+                input_features,
+                checkpoint_classes,
+            )
 
     else:
-        # --- Extract available info ---
-        year = None
-        if "date" in meta_data:
-            year = meta_data["date"].split("-")[0]
-    
-        # --- Compute road orientation ---
-        road_orientation = get_road_orientation(location)
-        try:
-            heading = (road_orientation + angle + 180) % 360
-        except:
-            heading = (0 + angle + 180) % 360
-    
-        # --- Secure API key load ---
-        with open(gsv_api_file, "r") as f:
-            api_key = f.read().strip()
-    
-        # --- Image capture parameters ---
-        scale = 2
-    
-        # --- Base URLs ---
-        base_url = "https://maps.googleapis.com/maps/api/streetview"
-    
-        # --- Define parameters for outdoor imagery ---
-        params = {
-            "size": "640x480",
-            "location": f"{location[0]},{location[1]}",
-            "heading": heading,
-            "fov": fov,
-            "pitch": pitch,
-            "scale": scale,
-            "source": "outdoor",
-            "key": api_key,
-        }
-    
-        # --- Build visualization URL ---
-        maps_url = (
-            f"https://www.google.com/maps/@?api=1&map_action=pano"
-            f"&viewpoint={location[0]},{location[1]}&heading={heading}&pitch={pitch}&fov={fov}"
+        raise ValueError(
+            f"Unsupported architecture: {specification.architecture}"
         )
-    
-        # --- Request the image ---
-        response = requests.get(base_url, params=params)
-        if response.status_code == 200:
-            np_array = np.frombuffer(response.content, np.uint8)
-            img = cv2.imdecode(np_array, cv2.IMREAD_COLOR)
-        else:
-            print("Error fetching image:", response.status_code)
-            img = None
-    
-        return maps_url, img, year
-    
-############ Checks if there is GSV availability ################  
-def check_street_view(lat, lon):
-    # Input parameters
-    with open(gsv_api_file, "r") as f:
-        api_key = f.read().strip()
-    url = "https://maps.googleapis.com/maps/api/streetview/metadata"
-    params = {
-        "location": f"{lat},{lon}",
-        "key": api_key
+
+    model.load_state_dict(state_dict, strict=True)
+    model.to(DEVICE)
+    model.eval()
+
+    print(
+        f"Loaded {specification.attribute}: "
+        f"{specification.architecture}, "
+        f"{checkpoint_classes} classes"
+    )
+    return model
+
+
+def load_prediction_models() -> PredictionModels:
+    """Load and validate every attribute-prediction model."""
+    print(f"Loading deep-learning models on {DEVICE}...")
+
+    loaded_models = {
+        specification.attribute: create_classifier_model(
+            specification
+        )
+        for specification in MODEL_SPECIFICATIONS
     }
-    response = requests.get(url, params=params)
-    data = response.json()
-    # Check status
-    if data.get("status") == "OK":
-        return True  # Street View is available
-    else:
-        return False  # No Street View coverage
-    
-############# Downnload GSV building images ################   
-def fetch_three_step_views(lat, lon):                                                                             
-    # Building coordinates
-    location = (float(lat), float(lon))
-    # API key is required; without it, access to GSV is not possible
-    with open(gsv_api_file, "r") as f:
-        api_key = f.read().strip()  
-    
-    if check_street_view(lat, lon) == True:
-        # Get image from GSV
-        angle = 0
-        url_gsv, img_gsv, year = get_street_view_image(location, api_key, angle, 5, 120)
-    else:
-        print("Street View not available")
-        url_gsv = "Street View not available"
-        img_gsv = []
-        
-    return img_gsv, url_gsv  
-    
-############ Building detector model ################
-def object_detector_building(lat, lon):
-    global url_gsv
-    # Class mapping (update this with your actual mappings)
-    weight_path = dl_dir / "building_detector.pt" # Replace with your YOLO .pt file
-    model = YOLO(weight_path)
-    TARGET_CLASS = 'building-xzyh'
-    CONF_THRESHOLD = 0.5
-    # Set device GPU or CPU
-    device= "cuda" if torch.cuda.is_available() else "cpu"
 
-    img_gsv, url_gsv  = fetch_three_step_views(lat, lon)
+    model_bundle = PredictionModels(
+        material=loaded_models["material"],
+        llrs=loaded_models["llrs"],
+        code_level=loaded_models["code_level"],
+        n_stories=loaded_models["n_stories"],
+        occupancy=loaded_models["occupancy"],
+        block_position=loaded_models["block_position"],
+        roof_shape=loaded_models["roof_shape"],
+        roof_material=loaded_models["roof_material"],
+    )
+
+    print("All deep-learning models loaded and validated.")
+    return model_bundle
+
+
+def prepare_image(
+    image_array: np.ndarray,
+) -> Tensor:
+    """Convert an OpenCV BGR image to a normalized tensor."""
+    rgb_image = cv2.cvtColor(
+        image_array.astype(np.uint8),
+        cv2.COLOR_BGR2RGB,
+    )
+    image = Image.fromarray(rgb_image)
+    return IMAGE_TRANSFORM(image).unsqueeze(0).to(DEVICE)
+
+
+def predict_class(
+    image_array: np.ndarray,
+    model: nn.Module,
+    class_names: list[str],
+) -> str:
+    """Predict one class label and validate the output dimension."""
+    image_tensor = prepare_image(image_array)
+
+    with torch.inference_mode():
+        output = model(image_tensor)
+
+    if output.ndim != 2 or output.shape[0] != 1:
+        raise ValueError(
+            f"Unexpected model output shape: {tuple(output.shape)}"
+        )
+
+    if output.shape[1] != len(class_names):
+        raise ValueError(
+            f"Model returned {output.shape[1]} outputs, but "
+            f"{len(class_names)} labels were provided."
+        )
+
+    prediction = int(torch.argmax(output, dim=1).item())
+    return class_names[prediction]
+
+
+def normalize_llrs_label(
+    label: str,
+) -> str:
+    """Map internal wall subclasses to the common LWAL class."""
+    if label in {"LWAL(LR)", "LWAL(HR)"}:
+        return "LWAL"
+    return label
+
+
+def build_taxonomy(
+    row: pd.Series,
+) -> str:
+    """Build a taxonomy string from predicted attributes."""
+    return (
+        f"{row['material']}/{row['llrs']}/{row['code_level']}"
+        f"/H:{row['n_stories']}/{row['block_position']}"
+        f"/{row['roof_shape']}+{row['roof_material']}"
+        f"/{row['occupancy']}"
+    )
+
+
+def validate_taxonomy(
+    taxonomy: str,
+) -> str | None:
+    """Validate a taxonomy and return its canonical value."""
+    taxonomy_data = pd.DataFrame(
+        {"TAXONOMY": [taxonomy]}
+    )
+
     try:
-        # Run inference
-        results = model.predict(img_gsv, device=device)[0]
-    
-        h, w, _ = img_gsv.shape
-    
-        # Get class names
-        class_names = model.names
-    
-        best_box = None
-        best_conf = 0
-    
-        # Loop through detected boxes
-        if results.boxes is not None:
-            for box in results.boxes:
-    
-                cls_id = int(box.cls[0])
-                label = class_names[cls_id]
-                conf = float(box.conf[0])
-                if label == TARGET_CLASS and conf > CONF_THRESHOLD:
-                    if conf > best_conf:
-                        best_conf = conf
-                        best_box = box.xyxy[0].cpu().numpy().astype(int)
-    
-        if best_box is None:
-            print("❌ No Building detected in image.")
-            print()
-            return
-    
-        x1, y1, x2, y2 = best_box
-    
-        # ✅ Ensure values inside image
-        x1 = max(0, x1)
-        y1 = max(0, y1)
-        x2 = min(w, x2)
-        y2 = min(h, y2)
-    
-        # ✅ Crop image
-        cropped_image = img_gsv[y1:y2, x1:x2]
-        return cropped_image
-    except:
-        cropped_image = []
-    
-############ Get city name using coordinates ################
-def get_city_name(lat, lon):           
-    try:    
-        geolocator = Nominatim(user_agent="city_name_locator")
-        location = geolocator.reverse((lat, lon), exactly_one=True, language="en", timeout=3)
-        if location and 'address' in location.raw:
-            address = location.raw['address']
-            city = (address.get("city") or address.get("town") or address.get("village")
-                or address.get("municipality") or address.get("county") or address.get("state_district")
-                or "Unknown")
-            country = address.get('country', 'Unknown')
-            return city , country
-    except:
-        city = "Unknown"
-        country = "Unknown"
-        return city , country
-    
-    
-#########################################################
-#######==========  DL models definition ========#########
-#########################################################
+        check_taxonomy(
+            taxonomy_data,
+            taxo_col="TAXONOMY",
+        )
+        return taxonomy
+    except ValueError as error:
+        print(f"Invalid taxonomy: {taxonomy}")
 
-
-################### Material model #########################
-# Define the device (CPU-only if no GPU is available)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-# Define the image transformation (must match training)
-transform = transforms.Compose([
-    transforms.Resize((256, 256)),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-])
-    
-root_dir = Path(__file__).parent.resolve()
-dl_dir = (root_dir / '..' / '..' / 'dl_weights').resolve()
-
-def dl_models():
-    global model_material, model_llrs, model_code, model_n_stories, model_occupancy, model_bp, model_rshp, model_rmt
-    print("Uploading DL models")
-    # Load the model_material architecture
-    model_material = models.densenet201(weights=None)  # base architecture
-    num_features = model_material.classifier.in_features  # 1920 for densenet201
-
-    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
-    model_material.classifier = nn.Sequential(
-        nn.Dropout(p=0.2),
-        nn.Linear(num_features, 8)   # 8 material classes
-    )
-
-    # Load the trained DenseNet201 weights
-    state_dict = torch.load(str(dl_dir / "densenet201_material.pt"),
-                            map_location=device)
-    model_material.load_state_dict(state_dict)  # strict=True (default)
-    model_material.to(device)
-    model_material.eval()
-    
-    ################### LLRS model #########################
-    # Define the device (CPU-only if no GPU is available)
-
-    # Load the model architecture
-    model_llrs = models.densenet201(weights=None)  # base architecture
-    num_features = model_llrs.classifier.in_features  # 1920 for densenet201
-
-    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
-    model_llrs.classifier = nn.Sequential(
-        nn.Dropout(p=0.2),
-        nn.Linear(num_features, 6)   # 8 material classes
-    )
-
-    # Load the trained DenseNet201 weights
-    state_dict = torch.load(str(dl_dir / "densenet201_llrs.pt"),
-                            map_location=device)
-    model_llrs.load_state_dict(state_dict)  # strict=True (default)
-    model_llrs.to(device)
-    model_llrs.eval()
-
-
-    ################### CODE model #########################
-    # Define the device (CPU-only if no GPU is available)
-
-    # Load the model architecture
-    model_code = models.convnext_tiny(weights=None)
-    in_features = model_code.classifier[2].in_features  # should be 768
-
-    model_code.classifier[2] = nn.Sequential(
-        nn.Dropout(p=0.2),
-        nn.Linear(in_features, 4)   # 8 material classes
-    )
-
-    # Load the trained ConvNeXt weights
-    state_dict = torch.load(str(dl_dir / "convnext_tiny_code_level.pt"), map_location=device)
-    model_code.load_state_dict(state_dict)   # strict=True by default
-    model_code.to(device)
-    model_code.eval()
-
-
-    ################### N STORIES model #########################
-    # Define the device (CPU-only if no GPU is available)
-
-    # Load the model architecture
-    model_n_stories = models.convnext_tiny(weights=None)
-    in_features = model_n_stories.classifier[2].in_features  # should be 768
- 
-    model_n_stories.classifier[2] = nn.Sequential(
-        nn.Dropout(p=0.2),
-        nn.Linear(in_features, 9)   # 8 material classes
-    )
- 
-    # Load the trained ConvNeXt weights
-    state_dict = torch.load(str(dl_dir / "convnext_tiny_n_stories.pt"), map_location=device)
-    model_n_stories.load_state_dict(state_dict)   # strict=True by default
-    model_n_stories.to(device)
-    model_n_stories.eval()
-
-
-    ################### OCCUPANCY model #########################
-    # Define the device (CPU-only if no GPU is available)
-
-    # Load the model architecture
-    model_occupancy = models.convnext_tiny(weights=None)
-    in_features = model_occupancy.classifier[2].in_features  # should be 768
-
-    model_occupancy.classifier[2] = nn.Sequential(
-        nn.Dropout(p=0.2),
-        nn.Linear(in_features, 4)   # 8 material classes
-    )
-
-    # Load the trained ConvNeXt weights
-    state_dict = torch.load(str(dl_dir / "convnext_tiny_occupancy.pt"), map_location=device)
-    model_occupancy.load_state_dict(state_dict)   # strict=True by default
-    model_occupancy.to(device)
-    model_occupancy.eval()
-
-
-    ################### BLOCK POSTION model #########################
-    # Define the device (CPU-only if no GPU is available)
-
-    # Load the model architecture
-    model_bp = models.densenet201(weights=None)  # base architecture
-    num_features = model_bp.classifier.in_features  # 1920 for densenet201
-
-    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
-    model_bp.classifier = nn.Sequential(
-        nn.Dropout(p=0.2),
-        nn.Linear(num_features, 4)   # 8 material classes
-    )
-
-    # Load the trained DenseNet201 weights
-    state_dict = torch.load(str(dl_dir / "densenet201_block_position.pt"),
-                            map_location=device)
-    model_bp.load_state_dict(state_dict)  # strict=True (default)
-    model_bp.to(device)
-    model_bp.eval()
-
-
-    ################### Roof Shape model #########################
-    # Define the device (CPU-only if no GPU is available)
-
-    # Load the model architecture
-    model_rshp = models.densenet201(weights=None)  # base architecture
-    num_features = model_rshp.classifier.in_features  # 1920 for densenet201
-
-    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
-    model_rshp.classifier = nn.Sequential(
-        nn.Dropout(p=0.2),
-        nn.Linear(num_features, 5)   # 8 material classes
-    )
-
-    # Load the trained DenseNet201 weights
-    state_dict = torch.load(str(dl_dir / "densenet201_roof_shape.pt"),
-                            map_location=device)
-    model_rshp.load_state_dict(state_dict)  # strict=True (default)
-    model_rshp.to(device)
-    model_rshp.eval()
-        
-
-    ################### Roof Material model #########################
-    # Define the device (CPU-only if no GPU is available)
-
-    # Load the model architecture
-    model_rmt = models.densenet201(weights=None)  # base architecture
-    num_features = model_rmt.classifier.in_features  # 1920 for densenet201
- 
-    # During training you had: classifier[1] = Linear(1920, 8) with a Dropout before
-    model_rmt.classifier = nn.Sequential(
-        nn.Dropout(p=0.2),
-        nn.Linear(num_features, 3)   # 8 material classes
-    )
- 
-    # Load the trained DenseNet201 weights
-    state_dict = torch.load(str(dl_dir / "densenet201_roof_material.pt"),
-                            map_location=device)
-    model_rmt.load_state_dict(state_dict)  # strict=True (default)
-    model_rmt.to(device)
-    model_rmt.eval()
-
-    print("The DL models have been successfully uploaded!")
-#########################################################
-#######===========  Models predicition =========#########
-#########################################################
-
-dl_models()
-
-############ Material prediction ################
-def predict_material_img (image_path):
-    # Function to predict the class of an image
-    image = Image.fromarray(image_path.astype('uint8'))
-    image = transform(image).unsqueeze(0).to(device)
-
-    # Perform inference
-    with torch.no_grad():
-        output = model_material(image)
-        prediction = torch.argmax(output, dim=1).item()
-
-    # LLRS building image sets prediction
-    material_classes = ['CR', 'HYB(MCF;MUR)', 'INF','MCF', 'MR', 'MUR','S','W']
-    material_id = material_classes[prediction]
-
-    return material_id
-
-############ LLRS prediction ################
-def predict_llrs_img (image_path):
-    # Function to predict the class of an image
-    image = Image.fromarray(image_path.astype('uint8'))
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model_llrs(image)
-        prediction = torch.argmax(output, dim=1).item()
-        
-    # LLRS building image sets prediction
-    llrs_classes = ['LDUAL', 'LFBR', 'LFINF', 'LFM', 'LN', 'LWAL', 'LWAL']
-    llrs_id = llrs_classes[prediction]
-    
-    return llrs_id
-
-############ Code level prediction ################
-def predict_code_img (image_path):
-    # Function to predict the class of an image
-    image = Image.fromarray(image_path.astype('uint8'))
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model_code(image)
-        prediction = torch.argmax(output, dim=1).item()
-        
-    # code_level building image sets prediction
-    code_level_classes = ['CDH','CDL', 'CDM', 'CDN']
-    code_level_id = code_level_classes[prediction]
-    return code_level_id
-
-############ Number of Stories prediction ################
-def predict_n_stories_img (image_path):
-    # Function to predict the class of an image
-    image = Image.fromarray(image_path.astype('uint8'))
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model_n_stories(image)
-        prediction = torch.argmax(output, dim=1).item()
-        
-    class_names = ['10-12', '13+', '1', '2', '3', '4', '5', '6-7', '8-9']
-    n_stories_id = class_names[prediction]
-    return n_stories_id
-
-############ Occupancy prediction ################
-def predict_occupancy_img (image_path): 
-    # Function to predict the class of an image
-    image = Image.fromarray(image_path.astype('uint8'))
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model_occupancy(image)
-        prediction = torch.argmax(output, dim=1).item()
-        
-    occupancy_class = ['COM' , 'IND' ,'MIX(RES;COM)', 'RES']
-    occupancy_id = occupancy_class[prediction]
-    return occupancy_id
-
-############ Block Position prediction ################
-def predict_block_position_img (image_path):
-    # Function to predict the class of an image
-    image = Image.fromarray(image_path.astype('uint8'))
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model_bp(image)
-        prediction = torch.argmax(output, dim=1).item()
-        
-    block_position_classes = ['BP1', 'BP2', 'BP3', 'BPD']
-    block_position_id = block_position_classes[prediction]
-    return block_position_id
-
-############ Roof Shape prediction ################
-def predict_roof_shape_img (image_path):
-    # Function to predict the class of an image
-    image = Image.fromarray(image_path.astype('uint8'))
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model_rshp(image)
-        prediction = torch.argmax(output, dim=1).item()
-        
-    roof_shape_classes = ['RSH1', 'RSH2', 'RSH3', 'RSH5', 'RSH7']
-    roof_shape_id = roof_shape_classes[prediction]
-    return roof_shape_id
-
-
-############ Roof Material prediction ################
-def predict_roof_material_img (image_path):
-    # Function to predict the class of an image
-    image = Image.fromarray(image_path.astype('uint8'))
-    image = transform(image).unsqueeze(0).to(device)
-    
-    # Perform inference
-    with torch.no_grad():
-        output = model_rmt(image)
-        prediction = torch.argmax(output, dim=1).item()
-        
-    roof_material_classes = ['RMN', 'RMT1', 'RMT6']
-    roof_material_id = roof_material_classes[prediction]
-    return roof_material_id
-  
-def tax_check(tax_value):
-    # 1) Create a small DataFrame with taxonomy strings
-    df = pd.DataFrame({"TAXONOMY": [tax_value]})
-    
-    try:
-        tax = check_taxonomy(df, taxo_col="TAXONOMY")
-    except ValueError as e:
-        print("There are invalid taxonomies ❌")
-        # Convert the error to string
-        err_str = str(e)
-        
-        # Extract the canonical value from the string using regex
-        match = re.search(r"'canonical': '([^']+)'", err_str)
+        match = re.search(
+            r"'canonical': '([^']+)'",
+            str(error),
+        )
         if match:
-            tax_canonical = match.group(1)
-            print("Canonical taxonomy:", tax_canonical)
-        else:
-            tax_canonical = None
-            print("No canonical value found.")
-            
-############ Obtain value of the form of each building image ################       
-def inspection_database (data_ai):
-    for i in range (data_ai.shape[0]):
-        data_ai.iloc[i, 0] = footprint_data.loc[i, "id"]                                     # ID
-        data_ai.iloc[i, 1] = footprint_data.loc[i , "latitude"]                               # Latitude
-        data_ai.iloc[i, 2] = footprint_data.loc[i , "longitude"]                              # Latitude
-        
+            canonical_taxonomy = match.group(1)
+            print(f"Canonical taxonomy: {canonical_taxonomy}")
+            return canonical_taxonomy
+
+        print("No canonical taxonomy was found.")
+        return None
+
+
+def inspect_buildings(
+    inspection_data: pd.DataFrame,
+    footprint_data: pd.DataFrame,
+    detector: YOLO,
+    prediction_models: PredictionModels,
+    gsv_api_key: str,
+    roads_api_key: str,
+) -> pd.DataFrame:
+    """Inspect sampled buildings and populate their attributes."""
+    for row_index, footprint in footprint_data.iterrows():
+        building_id = footprint["id"]
+        latitude = float(footprint["latitude"])
+        longitude = float(footprint["longitude"])
+
+        inspection_data.loc[
+            row_index,
+            ["id", "latitude", "longitude"],
+        ] = [
+            building_id,
+            latitude,
+            longitude,
+        ]
+
         try:
-            image_file = object_detector_building(float(footprint_data.loc[i,"latitude"]) , 
-                                                    float(footprint_data.loc[i,"longitude"]))
+            building_image, maps_url = detect_building(
+                latitude,
+                longitude,
+                detector,
+                gsv_api_key,
+                roads_api_key,
+            )
 
-            if image_file is None:
-                pass
-            else:
-                city, country = get_city_name(float(footprint_data.loc[i,"latitude"]) , float(footprint_data.loc[i,"longitude"]))
-                data_ai.iloc[i, 3], data_ai.iloc[i, 4] = country , city
-                data_ai.iloc[i, 5] = predict_material_img (image_file)                            # LLRS Material
-                data_ai.iloc[i, 6] = predict_llrs_img (image_file)                                # LLRS 
-                data_ai.iloc[i, 7] = predict_code_img (image_file)                                # Code Level 
-                data_ai.iloc[i, 8] = predict_n_stories_img (image_file)                           # Number of Stories 
-                data_ai.iloc[i, 9] = predict_occupancy_img (image_file)                           # Occupancy
-                data_ai.iloc[i, 10] = predict_block_position_img (image_file)                     # Block Position
-                data_ai.iloc[i, 11] = predict_roof_shape_img (image_file)                         # Roof shape
-                data_ai.iloc[i, 12] = predict_roof_material_img (image_file)                      # Roof material
-                
-                try:
-                    data_ai.iloc[i, 13] = (data_ai.iloc[i, 5]+"/"+data_ai.iloc[i, 6]+"/"+data_ai.iloc[i, 7]+"/H:"+
-                                            data_ai.iloc[i, 8]+"/"+data_ai.iloc[i, 10]+"/"+data_ai.iloc[i, 11]+"+"+
-                                            data_ai.iloc[i, 12]+"/"+data_ai.iloc[i, 9])
-                                                                    
-                    # Taxonomy
-                    tax_check(data_ai.iloc[i, 13])
-                except:
-                    pass
-                
-                data_ai.iloc[i, 14] = url_gsv
-        except:
-            print(" Error in building ID: " + str(footprint_data.loc[i, "id"]))
-            pass
-        
-        print("Inspection: " + str(i+1)+"/"+str(data_ai.shape[0]) +" -------------------------------------")
-       
-        
-#########################################################
-#######===========  Input parameters =========###########
-#########################################################
+            if building_image is None:
+                print(
+                    f"No usable building image for ID {building_id}."
+                )
+                continue
 
-# Input data
-local_building_info = rubicai / "ECEE/ECEE_building_info.csv"
-# Output path
-saved_path = rubicai / "ECEE/console_mode/ECEE_AI_total_classification.csv"
+            city, country = get_city_name(
+                latitude,
+                longitude,
+            )
+            inspection_data.loc[
+                row_index,
+                ["country", "city"],
+            ] = [
+                country,
+                city,
+            ]
 
-#########################################################
-#######===========  Function results =========###########
-#########################################################
+            inspection_data.loc[row_index, "material"] = (
+                predict_class(
+                    building_image,
+                    prediction_models.material,
+                    CLASS_NAMES["material"],
+                )
+            )
 
-data_ai = create_database(local_building_info)
-inspection_database(data_ai)
-os.makedirs(os.path.dirname(saved_path), exist_ok=True)
-data_ai.to_csv(saved_path, index= False)
+            llrs_label = predict_class(
+                building_image,
+                prediction_models.llrs,
+                CLASS_NAMES["llrs"],
+            )
+            inspection_data.loc[row_index, "llrs"] = (
+                normalize_llrs_label(llrs_label)
+            )
 
+            inspection_data.loc[row_index, "code_level"] = (
+                predict_class(
+                    building_image,
+                    prediction_models.code_level,
+                    CLASS_NAMES["code_level"],
+                )
+            )
+            inspection_data.loc[row_index, "n_stories"] = (
+                predict_class(
+                    building_image,
+                    prediction_models.n_stories,
+                    CLASS_NAMES["n_stories"],
+                )
+            )
+            inspection_data.loc[row_index, "occupancy"] = (
+                predict_class(
+                    building_image,
+                    prediction_models.occupancy,
+                    CLASS_NAMES["occupancy"],
+                )
+            )
+            inspection_data.loc[row_index, "block_position"] = (
+                predict_class(
+                    building_image,
+                    prediction_models.block_position,
+                    CLASS_NAMES["block_position"],
+                )
+            )
+            inspection_data.loc[row_index, "roof_shape"] = (
+                predict_class(
+                    building_image,
+                    prediction_models.roof_shape,
+                    CLASS_NAMES["roof_shape"],
+                )
+            )
+            inspection_data.loc[row_index, "roof_material"] = (
+                predict_class(
+                    building_image,
+                    prediction_models.roof_material,
+                    CLASS_NAMES["roof_material"],
+                )
+            )
+
+            taxonomy = build_taxonomy(
+                inspection_data.loc[row_index]
+            )
+            inspection_data.loc[row_index, "taxonomy"] = (
+                validate_taxonomy(taxonomy) or taxonomy
+            )
+            inspection_data.loc[
+                row_index,
+                "image filename or link",
+            ] = maps_url
+
+        except (
+            IndexError,
+            KeyError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+        ) as error:
+            print(
+                f"Error while processing building ID "
+                f"{building_id}: {error}"
+            )
+
+        print(
+            f"Inspection: {row_index + 1}/"
+            f"{len(inspection_data)}"
+        )
+
+    return inspection_data
+
+
+def main() -> None:
+    """Run inference for the buildings listed in the input CSV file."""
+    coordinate_file = (
+        RUBICAI_ROOT
+        / "demos/specific_coordinates/specific_coordinates_example_data.csv"
+    )
+    saved_path = (
+        RUBICAI_ROOT
+        / "demos/specific_coordinates/console_mode"
+        / "example_prediction_result.csv"
+    )
+
+    gsv_api_key = read_api_key(GSV_API_FILE)
+    roads_api_key = read_api_key(ROADS_API_FILE)
+
+    inspection_data, footprint_data = create_database(coordinate_file)
+    detector = load_building_detector()
+    prediction_models = load_prediction_models()
+
+    inspection_data = inspect_buildings(
+        inspection_data,
+        footprint_data,
+        detector,
+        prediction_models,
+        gsv_api_key,
+        roads_api_key,
+    )
+
+    saved_path.parent.mkdir(parents=True, exist_ok=True)
+    inspection_data.to_csv(saved_path, index=False)
+
+    print(f"Results saved to: {saved_path}")
+
+
+if __name__ == "__main__":
+    main()
