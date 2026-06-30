@@ -616,6 +616,7 @@ class GUIMethods:
                 self.ui.progress_bar_method.setValue(10)
                 self.ui.method_progress.setText("Extrapolation in progress...")
                 if self.ui.extrapolation_mode == 2:
+                    # KNN
                     footprint_data = self.ui.coord_reference
 
             # Define the column namesfor the inspection database
@@ -653,6 +654,7 @@ class GUIMethods:
                 PermissionError,
                 TypeError,
                 ValueError,
+                UnboundLocalError,
                 pd.errors.EmptyDataError,
                 pd.errors.ParserError,
                 AttributeError,
@@ -1608,6 +1610,7 @@ class GUIMethods:
                         RuntimeError,
                         TypeError,
                         ValueError,
+                        FileNotFoundError,
                         cv2.error,
                     ):
                         self.no_image = "Street View not available"
@@ -1670,7 +1673,7 @@ class GUIMethods:
 
                     cropped_path = (
                         self.ui.output_folder_value
-                        + "/Mapillary/Cropped_images/"
+                        + "/Mapillary/cropped_images/"
                         + str(self.click_count + 1)
                         + ".jpg"
                     )
@@ -1889,7 +1892,7 @@ class GUIMethods:
 
                     aux_cropped_path = (
                         self.ui.folder_path
-                        + "/Cropped_images/"
+                        + "/cropped_images/"
                         + str(self.data_building.iloc[self.old_local + aux, 0])
                     )
                     cropped_path = (
@@ -2228,6 +2231,10 @@ class GUIMethods:
         Use a Google Street View image for polygon and specific-coordinate
         workflows. Use a local image when the local-image workflow is active.
         """
+        # Highlight the image used for AI-prediction
+        self.ui.left_gsv_bb.setContentsMargins(4, 4, 4, 4)
+        self.ui.central_gsv_bb.setContentsMargins(0, 0, 0, 0)
+        self.ui.right_gsv_bb.setContentsMargins(0, 0, 0, 0)
         try:
             # Getting the image depending of the inspection mode selected.
             if self.ui.insp_method == 0 or self.ui.insp_method == 1:
@@ -2249,7 +2256,7 @@ class GUIMethods:
                     # Auxiliary cropped-image path
                     aux_cropped_path = (
                         self.ui.folder_path
-                        + "/Cropped_images/"
+                        + "/cropped_images/"
                         + str(self.data_building.iloc[self.old_local, 0])
                     )
 
@@ -2287,6 +2294,10 @@ class GUIMethods:
         Use a Google Street View image for polygon and specific-coordinate
         workflows. Use a local image when the local-image workflow is active.
         """
+        # Highlight the image used for AI-prediction
+        self.ui.left_gsv_bb.setContentsMargins(0, 0, 0, 0)
+        self.ui.central_gsv_bb.setContentsMargins(4, 4, 4, 4)
+        self.ui.right_gsv_bb.setContentsMargins(0, 0, 0, 0)
         try:
             # Getting the image depending of the inspection mode selected.
             if self.ui.insp_method == 0 or self.ui.insp_method == 1:
@@ -2308,7 +2319,7 @@ class GUIMethods:
                     # Cropped image path
                     aux_cropped_path = (
                         self.ui.folder_path
-                        + "/Cropped_images/"
+                        + "/cropped_images/"
                         + str(self.data_building.iloc[self.old_local + 1, 0])
                     )
                     self.cropped_path = (
@@ -2343,6 +2354,10 @@ class GUIMethods:
         Use a Google Street View image for polygon and specific-coordinate
         workflows. Use a local image when the local-image workflow is active.
         """
+        # Highlight the image used for AI-prediction
+        self.ui.left_gsv_bb.setContentsMargins(0, 0, 0, 0)
+        self.ui.central_gsv_bb.setContentsMargins(0, 0, 0, 0)
+        self.ui.right_gsv_bb.setContentsMargins(4, 4, 4, 4)
         try:
             # Getting the image depending of the inspection mode selected.
             if self.ui.insp_method == 0 or self.ui.insp_method == 1:
@@ -2363,7 +2378,7 @@ class GUIMethods:
                     # Cropped image path
                     aux_cropped_path = (
                         self.ui.folder_path
-                        + "/Cropped_images/"
+                        + "/cropped_images/"
                         + str(self.data_building.iloc[self.old_local + 2, 0])
                     )
                     self.cropped_path = (
@@ -3563,14 +3578,26 @@ class GUIMethods:
                             # Central image
                             pred_img = True
                             j = 1
+                            # Highlight the image used for AI-prediction
+                            self.ui.left_gsv_bb.setContentsMargins(0, 0, 0, 0)
+                            self.ui.central_gsv_bb.setContentsMargins(4, 4, 4, 4)
+                            self.ui.right_gsv_bb.setContentsMargins(0, 0, 0, 0)
                         elif self.predicted_img[0] == 1:
                             # Left image
                             pred_img = True
                             j = 0
+                            # Highlight the image used for AI-prediction
+                            self.ui.left_gsv_bb.setContentsMargins(4, 4, 4, 4)
+                            self.ui.central_gsv_bb.setContentsMargins(0, 0, 0, 0)
+                            self.ui.right_gsv_bb.setContentsMargins(0, 0, 0, 0)
                         elif self.predicted_img[2] == 1:
                             # Right image
                             pred_img = True
                             j = 2
+                            # Highlight the image used for AI-prediction
+                            self.ui.left_gsv_bb.setContentsMargins(0, 0, 0, 0)
+                            self.ui.central_gsv_bb.setContentsMargins(0, 0, 0, 0)
+                            self.ui.right_gsv_bb.setContentsMargins(4, 4, 4, 4)
 
                     if pred_img is True:
                         image_file = self.cropped_image[j]
@@ -3599,13 +3626,13 @@ class GUIMethods:
 
                     cropped_path = (
                         self.ui.output_folder_value
-                        + "/Mapillary/Cropped_images/"
+                        + "/Mapillary/cropped_images/"
                         + str(self.click_count + 1)
                         + ".jpg"
                     )
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
-                        raise FileNotFoundError("Unable to read iamge")
+                        raise FileNotFoundError("Unable to read image")
 
                     material_index = predict_material_img(
                         image, self.ui.insp_method, self.box_id, self.ui
@@ -3635,21 +3662,20 @@ class GUIMethods:
                 try:
                     aux_path = (
                         self.ui.folder_path
-                        + "/Cropped_images/"
+                        + "/cropped_images/"
                         + str(self.data_building.iloc[self.old_local, 0])
                     )
                     cropped_path = os.path.splitext(aux_path)[0] + "_cropped.jpg"
+                    # Highlight the image used for AI-prediction
+                    self.ui.left_gsv_bb.setContentsMargins(4, 4, 4, 4)
+                    self.ui.central_gsv_bb.setContentsMargins(0, 0, 0, 0)
+                    self.ui.right_gsv_bb.setContentsMargins(0, 0, 0, 0)
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
-                        raise FileNotFoundError("Unable to read iamge")
-                except (OSError, KeyError, AttributeError, TypeError, ValueError):
-                    aux_path = (
-                        self.ui.folder_path
-                        + "/Cropped_images/"
-                        + str(self.data_building.iloc[self.old_local, 0])
-                    )
-
-                    cropped_path = os.path.splitext(aux_path)[0] + "_cropped.jpg"
+                        raise FileNotFoundError("Unable to read image")
+                except (OSError, KeyError, AttributeError, TypeError, ValueError) as e:
+                    print(f"Error building path: {e}")
+                    cropped_path = None
 
                 # LLRS building image prediction
                 material_index = predict_material_img(
@@ -3721,10 +3747,6 @@ class GUIMethods:
                             ):
                                 self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4])
 
-                            # LLRS Material adjusments based on LLRS
-                            # if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
-                            #     Set the corresponding material class.
-
                             # Progress bar update
                             self.ui.progress_bar_method.setValue(100)
                             self.ui.method_progress.setText("Prediction complete!")
@@ -3736,13 +3758,13 @@ class GUIMethods:
 
                     cropped_path = (
                         self.ui.output_folder_value
-                        + "/Mapillary/Cropped_images/"
+                        + "/Mapillary/cropped_images/"
                         + str(self.click_count + 1)
                         + ".jpg"
                     )
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
-                        raise FileNotFoundError("Unable to read iamge")
+                        raise FileNotFoundError("Unable to read image")
 
                     llrs_index = predict_llrs_img(
                         image, self.ui.insp_method, self.box_id, self.ui
@@ -3757,10 +3779,6 @@ class GUIMethods:
                         # LLRS adjusments based on material
                         if self.pred_mat_value == "MCF" or self.pred_mat_value == "MUR":
                             self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4])
-
-                        # LLRS Material adjusments based on LLRS
-                        # if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
-                        #     self.ui.material_cb_1.setCurrentText(self.class_mat[0])
 
                         # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
@@ -3778,7 +3796,7 @@ class GUIMethods:
                 try:
                     aux_cropped_path = (
                         self.ui.folder_path
-                        + "/Cropped_images/"
+                        + "/cropped_images/"
                         + str(self.data_building.iloc[self.old_local, 0])
                     )
                     cropped_path = (
@@ -3786,15 +3804,11 @@ class GUIMethods:
                     )
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
-                        raise FileNotFoundError("Unable to read iamge")
-                except (OSError, KeyError, AttributeError, TypeError, ValueError):
-                    aux_path = (
-                        self.ui.folder_path
-                        + "/Cropped_images/"
-                        + str(self.data_building.iloc[self.old_local, 0])
-                    )
+                        raise FileNotFoundError("Unable to read image")
+                except (OSError, KeyError, AttributeError, TypeError, ValueError) as e:
+                    print(f"Error building path: {e}")
+                    cropped_path = None
 
-                    cropped_path = os.path.splitext(aux_path)[0] + "_cropped.jpg"
                 # LLRS building image prediction
                 llrs_index = predict_llrs_img(
                     cropped_path, self.ui.insp_method, self.box_id, self.ui
@@ -3809,10 +3823,6 @@ class GUIMethods:
                     # LLRS adjusments based on material
                     if self.pred_mat_value == "MCF" or self.pred_mat_value == "MUR":
                         self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4])
-
-                    # LLRS Material adjusments based on LLRS
-                    # if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
-                    #     self.ui.material_cb_1.setCurrentText(self.class_mat[0])
 
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
@@ -3885,13 +3895,13 @@ class GUIMethods:
 
                     cropped_path = (
                         self.ui.output_folder_value
-                        + "/Mapillary/Cropped_images/"
+                        + "/Mapillary/cropped_images/"
                         + str(self.click_count + 1)
                         + ".jpg"
                     )
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
-                        raise FileNotFoundError("Unable to read iamge")
+                        raise FileNotFoundError("Unable to read image")
 
                     code_level_index = predict_code_img(
                         image, self.ui.insp_method, self.box_id, self.ui
@@ -3928,7 +3938,7 @@ class GUIMethods:
                 try:
                     aux_cropped_path = (
                         self.ui.folder_path
-                        + "/Cropped_images/"
+                        + "/cropped_images/"
                         + str(self.data_building.iloc[self.old_local, 0])
                     )
                     cropped_path = (
@@ -3936,15 +3946,10 @@ class GUIMethods:
                     )
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
-                        raise FileNotFoundError("Unable to read iamge")
-                except (OSError, KeyError, AttributeError, TypeError, ValueError):
-                    aux_path = (
-                        self.ui.folder_path
-                        + "/Cropped_images/"
-                        + str(self.data_building.iloc[self.old_local, 0])
-                    )
-
-                    cropped_path = os.path.splitext(aux_path)[0] + "_cropped.jpg"
+                        raise FileNotFoundError("Unable to read image")
+                except (OSError, KeyError, AttributeError, TypeError, ValueError) as e:
+                    print(f"Error building path: {e}")
+                    cropped_path = None
 
                 # LLRS building image prediction
                 code_level_index = predict_code_img(
@@ -4022,13 +4027,13 @@ class GUIMethods:
 
                     cropped_path = (
                         self.ui.output_folder_value
-                        + "/Mapillary/Cropped_images/"
+                        + "/Mapillary/cropped_images/"
                         + str(self.click_count + 1)
                         + ".jpg"
                     )
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
-                        raise FileNotFoundError("Unable to read iamge")
+                        raise FileNotFoundError("Unable to read image")
 
                     # LLRS building image prediction
                     n_stories_index = predict_n_stories_img(
@@ -4058,7 +4063,7 @@ class GUIMethods:
                 try:
                     aux_cropped_path = (
                         self.ui.folder_path
-                        + "/Cropped_images/"
+                        + "/cropped_images/"
                         + str(self.data_building.iloc[self.old_local, 0])
                     )
                     cropped_path = (
@@ -4066,15 +4071,10 @@ class GUIMethods:
                     )
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
-                        raise FileNotFoundError("Unable to read iamge")
-                except (OSError, KeyError, AttributeError, TypeError, ValueError):
-                    aux_path = (
-                        self.ui.folder_path
-                        + "/Cropped_images/"
-                        + str(self.data_building.iloc[self.old_local, 0])
-                    )
-
-                    cropped_path = os.path.splitext(aux_path)[0] + "_cropped.jpg"
+                        raise FileNotFoundError("Unable to read image")
+                except (OSError, KeyError, AttributeError, TypeError, ValueError) as e:
+                    print(f"Error building path: {e}")
+                    cropped_path = None
 
                 # LLRS building image prediction
                 n_stories_index = predict_n_stories_img(
@@ -4134,7 +4134,17 @@ class GUIMethods:
                             self.ui.occup_cb_1.setCurrentText(
                                 self.class_occ[occupancy_index]
                             )
-                            # Peogress bar update
+
+                            self.pred_occ_value = self.ui.occup_cb_1.currentData()
+                            # Material and LLRS adjustment based on occupancy
+                            if self.pred_occ_value == "IND":
+                                if self.pred_mat_value in ("CR"):
+                                    pass
+                                else:
+                                    self.ui.material_cb_1.setCurrentText(self.class_mat[0])
+                                    self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
+
+                            # Progress bar update
                             self.ui.progress_bar_method.setValue(100)
                             self.ui.method_progress.setText("Prediction complete!")
                 else:
@@ -4145,13 +4155,13 @@ class GUIMethods:
 
                     cropped_path = (
                         self.ui.output_folder_value
-                        + "/Mapillary/Cropped_images/"
+                        + "/Mapillary/cropped_images/"
                         + str(self.click_count + 1)
                         + ".jpg"
                     )
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
-                        raise FileNotFoundError("Unable to read iamge")
+                        raise FileNotFoundError("Unable to read image")
 
                     occupancy_index = predict_occupancy_img(
                         image, self.ui.insp_method, self.box_id, self.ui
@@ -4163,6 +4173,15 @@ class GUIMethods:
                         self.ui.occup_cb_1.setCurrentText(
                             self.class_occ[occupancy_index]
                         )
+
+                        self.pred_occ_value = self.ui.occup_cb_1.currentData()
+                        # Material and LLRS adjustment based on occupancy
+                        if self.pred_occ_value == "IND":
+                            if self.pred_mat_value in ("CR"):
+                                pass
+                            else:
+                                self.ui.material_cb_1.setCurrentText(self.class_mat[0])
+                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
 
                         # Progress bar update
                         self.ui.progress_bar_method.setValue(100)
@@ -4180,7 +4199,7 @@ class GUIMethods:
                 try:
                     aux_cropped_path = (
                         self.ui.folder_path
-                        + "/Cropped_images/"
+                        + "/cropped_images/"
                         + str(self.data_building.iloc[self.old_local, 0])
                     )
                     cropped_path = (
@@ -4188,15 +4207,10 @@ class GUIMethods:
                     )
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
-                        raise FileNotFoundError("Unable to read iamge")
-                except (OSError, KeyError, AttributeError, TypeError, ValueError):
-                    aux_path = (
-                        self.ui.folder_path
-                        + "/Cropped_images/"
-                        + str(self.data_building.iloc[self.old_local, 0])
-                    )
-
-                    cropped_path = os.path.splitext(aux_path)[0] + "_cropped.jpg"
+                        raise FileNotFoundError("Unable to read image")
+                except (OSError, KeyError, AttributeError, TypeError, ValueError) as e:
+                    print(f"Error building path: {e}")
+                    cropped_path = None
 
                 # LLRS building image prediction
                 occupancy_index = predict_occupancy_img(
@@ -4207,6 +4221,15 @@ class GUIMethods:
                     pass
                 else:
                     self.ui.occup_cb_1.setCurrentText(self.class_occ[occupancy_index])
+
+                    self.pred_occ_value = self.ui.occup_cb_1.currentData()
+                    # Material and LLRS adjustment based on occupancy
+                    if self.pred_occ_value == "IND":
+                        if self.pred_mat_value in ("CR"):
+                            pass
+                        else:
+                            self.ui.material_cb_1.setCurrentText(self.class_mat[0])
+                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
 
                     # Progress bar update
                     self.ui.progress_bar_method.setValue(100)
@@ -4271,7 +4294,7 @@ class GUIMethods:
                     )
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
-                        raise FileNotFoundError("Unable to read iamge")
+                        raise FileNotFoundError("Unable to read image")
 
                     block_position_index = predict_block_position_img(
                         image, self.ui.insp_method, self.box_id, self.ui
@@ -4300,7 +4323,7 @@ class GUIMethods:
                 try:
                     aux_cropped_path = (
                         self.ui.folder_path
-                        + "/Cropped_images/"
+                        + "/cropped_images/"
                         + str(self.data_building.iloc[self.old_local, 0])
                     )
                     cropped_path = (
@@ -4308,14 +4331,10 @@ class GUIMethods:
                     )
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
-                        raise FileNotFoundError("Unable to read iamge")
-                except (OSError, KeyError, AttributeError, TypeError, ValueError):
-                    aux_path = (
-                        self.ui.folder_path
-                        + "/Cropped_images/"
-                        + str(self.data_building.iloc[self.old_local, 0])
-                    )
-                    cropped_path = os.path.splitext(aux_path)[0] + "_cropped.jpg"
+                        raise FileNotFoundError("Unable to read image")
+                except (OSError, KeyError, AttributeError, TypeError, ValueError) as e:
+                    print(f"Error building path: {e}")
+                    cropped_path = None
 
                 org_path = (
                     self.ui.folder_path
@@ -4392,13 +4411,13 @@ class GUIMethods:
 
                     cropped_path = (
                         self.ui.output_folder_value
-                        + "/Mapillary/Cropped_images/"
+                        + "/Mapillary/cropped_images/"
                         + str(self.click_count + 1)
                         + ".jpg"
                     )
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
-                        raise FileNotFoundError("Unable to read iamge")
+                        raise FileNotFoundError("Unable to read image")
 
                     roof_shape_index = predict_roof_shape_img(
                         image, self.ui.insp_method, self.box_id, self.ui
@@ -4427,7 +4446,7 @@ class GUIMethods:
                 try:
                     aux_cropped_path = (
                         self.ui.folder_path
-                        + "/Cropped_images/"
+                        + "/cropped_images/"
                         + str(self.data_building.iloc[self.old_local, 0])
                     )
                     cropped_path = (
@@ -4435,15 +4454,10 @@ class GUIMethods:
                     )
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
-                        raise FileNotFoundError("Unable to read iamge")
-                except (OSError, KeyError, AttributeError, TypeError, ValueError):
-                    aux_path = (
-                        self.ui.folder_path
-                        + "/Cropped_images/"
-                        + str(self.data_building.iloc[self.old_local, 0])
-                    )
-
-                    cropped_path = os.path.splitext(aux_path)[0] + "_cropped.jpg"
+                        raise FileNotFoundError("Unable to read image")
+                except (OSError, KeyError, AttributeError, TypeError, ValueError) as e:
+                    print(f"Error building path: {e}")
+                    cropped_path = None
 
                 # roof_shape building image prediction
                 roof_shape_index = predict_roof_shape_img(
@@ -4542,13 +4556,13 @@ class GUIMethods:
 
                     cropped_path = (
                         self.ui.output_folder_value
-                        + "/Mapillary/Cropped_images/"
+                        + "/Mapillary/cropped_images/"
                         + str(self.click_count + 1)
                         + ".jpg"
                     )
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
-                        raise FileNotFoundError("Unable to read iamge")
+                        raise FileNotFoundError("Unable to read image")
 
                     roof_material_index = predict_roof_material_img(
                         image, self.ui.insp_method, self.box_id, self.ui
@@ -4600,7 +4614,7 @@ class GUIMethods:
                 try:
                     aux_cropped_path = (
                         self.ui.folder_path
-                        + "/Cropped_images/"
+                        + "/cropped_images/"
                         + str(self.data_building.iloc[self.old_local, 0])
                     )
                     cropped_path = (
@@ -4608,15 +4622,10 @@ class GUIMethods:
                     )
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
                     if image is None:
-                        raise FileNotFoundError("Unable to read iamge")
-                except (OSError, KeyError, AttributeError, TypeError, ValueError):
-                    aux_path = (
-                        self.ui.folder_path
-                        + "/Cropped_images/"
-                        + str(self.data_building.iloc[self.old_local, 0])
-                    )
-
-                    cropped_path = os.path.splitext(aux_path)[0] + "_cropped.jpg"
+                        raise FileNotFoundError("Unable to read image")
+                except (OSError, KeyError, AttributeError, TypeError, ValueError) as e:
+                    print(f"Error building path: {e}")
+                    cropped_path = None
 
                 # roof_material building image prediction
                 roof_material_index = predict_roof_material_img(

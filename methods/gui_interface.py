@@ -480,6 +480,14 @@ class GUIInterface(QtWidgets.QMainWindow):
         )
         self.verticalLayoutWidget_5.setObjectName("verticalLayoutWidget_5")
 
+        # Edge color left image
+        self.verticalLayoutWidget_5.setStyleSheet("""
+            QWidget#verticalLayoutWidget_5 {
+                border: 4px solid lightgreen;
+                border-radius: 6px;
+            }
+        """)
+
         # Left image bounding box
         self.left_gsv_bb = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_5)
         self.left_gsv_bb.setContentsMargins(0, 0, 0, 0)
@@ -1076,6 +1084,14 @@ class GUIInterface(QtWidgets.QMainWindow):
             )
         )
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
+        # Thick green border
+        self.verticalLayoutWidget.setStyleSheet("""
+            QWidget#verticalLayoutWidget {
+                border: 4px solid lightgreen;
+                border-radius: 6px;
+            }
+        """)
+
         # Central image bounding box
         self.central_gsv_bb = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.central_gsv_bb.setContentsMargins(0, 0, 0, 0)
@@ -1192,6 +1208,15 @@ class GUIInterface(QtWidgets.QMainWindow):
             )
         )
         self.verticalLayoutWidget_2.setObjectName("verticalLayoutWidget_2")
+
+        # Thick green border
+        self.verticalLayoutWidget_2.setStyleSheet("""
+            QWidget#verticalLayoutWidget_2 {
+                border: 4px solid cyan;
+                border-radius: 6px;
+            }
+        """)
+
         # Right image bounding box
         self.right_gsv_bb = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_2)
         self.right_gsv_bb.setContentsMargins(0, 0, 0, 0)

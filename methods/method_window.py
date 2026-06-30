@@ -145,7 +145,7 @@ class InspectionSetting(QDialog):
         self.save_button.setGeometry(_scaled_rect(340, 760, 191, 31, scale_x, scale_y))
         self.save_button.setFont(self._font(10 * font_scale, bold=True))
         self.save_button.setObjectName("save_button")
-        self.save_button.setText("Save and continue")
+        self.save_button.setText("Input Requirements")
         self.save_button.clicked.connect(self.select_method)
 
     def _create_section_background(
@@ -209,7 +209,7 @@ class InspectionSetting(QDialog):
         """Create a scaled, justified description text box."""
         description = QtWidgets.QTextEdit(self)
         description.setObjectName(object_name)
-    
+
         x, y, width, height = geometry
         description.setGeometry(
             int(x * scale_x),
@@ -217,7 +217,7 @@ class InspectionSetting(QDialog):
             int(width * scale_x),
             int(height * scale_y),
         )
-    
+
         description.setReadOnly(True)
         description.setFrameShape(QtWidgets.QFrame.StyledPanel)
         description.setHorizontalScrollBarPolicy(
@@ -226,21 +226,21 @@ class InspectionSetting(QDialog):
         description.setVerticalScrollBarPolicy(
             QtCore.Qt.ScrollBarAsNeeded
         )
-    
+
         # Apply the resolution-dependent font scale exactly once.
         font = QtGui.QFont()
         font.setPointSizeF(10 * font_scale)
-    
+
         description.setFont(font)
         description.document().setDefaultFont(font)
         description.document().setDocumentMargin(4)
-    
+
         # Add the content after configuring the font.
         description.setPlainText(text)
-    
+
         cursor = description.textCursor()
         cursor.select(QtGui.QTextCursor.Document)
-    
+
         block_format = QtGui.QTextBlockFormat()
         block_format.setAlignment(QtCore.Qt.AlignJustify)
         block_format.setTextIndent(0)
@@ -248,22 +248,22 @@ class InspectionSetting(QDialog):
         block_format.setRightMargin(0)
         block_format.setTopMargin(0)
         block_format.setBottomMargin(0)
-    
+
         cursor.mergeBlockFormat(block_format)
-    
+
         character_format = QtGui.QTextCharFormat()
         character_format.setFont(font)
         cursor.mergeCharFormat(character_format)
-    
+
         cursor.clearSelection()
         cursor.movePosition(QtGui.QTextCursor.Start)
         description.setTextCursor(cursor)
-    
+
         description.setContentsMargins(0, 0, 0, 0)
         description.setViewportMargins(0, 0, 0, 0)
-    
+
         return description
-    
+
     def _create_polygon_section(
         self,
         scale_x: float,
@@ -278,7 +278,7 @@ class InspectionSetting(QDialog):
             scale_x,
             scale_y,
         )
-    
+
         self.dafault_img = self._create_image(
             "help_img/default_buildings.png",
             "dafault_img",
@@ -286,7 +286,7 @@ class InspectionSetting(QDialog):
             scale_x,
             scale_y,
         )
-    
+
         text = (
             "Creates a polygon from uploaded vertex coordinates, provided in "
             "either clockwise or counterclockwise order, or from an existing "
@@ -294,7 +294,7 @@ class InspectionSetting(QDialog):
             "performed using either the specified sample size or the entire "
             "building population within the polygon."
         )
-    
+
         self.default_descrip = self._create_description(
             text,
             "default_descrip",
@@ -303,7 +303,7 @@ class InspectionSetting(QDialog):
             scale_y,
             font_scale,
         )
-    
+
         self.default_check = self._create_method_checkbox(
             "Polygon method",
             "default_check",

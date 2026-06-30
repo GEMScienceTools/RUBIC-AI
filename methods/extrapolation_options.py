@@ -50,7 +50,7 @@ class ExtrapolationOptions(QtWidgets.QDialog):
 
         self.setWindowTitle("Setting Extrapolation Method")
         self.setWindowIcon(QtGui.QIcon("help_img/RUBIC_logo.png"))
-        self.resize(int(1060 * scale_x), int(790 * scale_y))
+        self.resize(int(1060 * scale_x), int(700 * scale_y))
 
         self.method_frame = QtWidgets.QWidget(self)
         title_font = self._create_font(12, scale_font)
@@ -118,8 +118,8 @@ class ExtrapolationOptions(QtWidgets.QDialog):
             QtCore.QRect(
                 int(10 * scale_x),
                 int(40 * scale_y),
-                int(1011 * scale_x),
-                int(351 * scale_y),
+                int(1010 * scale_x),
+                int(320 * scale_y),
             )
         )
         self.backg_1.setStyleSheet("background-color: rgb(255, 224, 185);")
@@ -141,8 +141,8 @@ class ExtrapolationOptions(QtWidgets.QDialog):
             QtCore.QRect(
                 int(30 * scale_x),
                 int(80 * scale_y),
-                int(981 * scale_x),
-                int(301 * scale_y),
+                int(980 * scale_x),
+                int(260 * scale_y),
             )
         )
         self.knn_descrip.setObjectName("knn_descrip")
@@ -161,9 +161,9 @@ class ExtrapolationOptions(QtWidgets.QDialog):
         self.backg_2.setGeometry(
             QtCore.QRect(
                 int(10 * scale_x),
-                int(420 * scale_y),
-                int(1011 * scale_x),
-                int(300 * scale_y),
+                int(380 * scale_y),
+                int(1010 * scale_x),
+                int(240 * scale_y),
             )
         )
         self.backg_2.setStyleSheet("background-color: rgb(215, 213, 255);")
@@ -172,7 +172,7 @@ class ExtrapolationOptions(QtWidgets.QDialog):
         self.stratified_check.setGeometry(
             QtCore.QRect(
                 int(30 * scale_x),
-                int(430 * scale_y),
+                int(390 * scale_y),
                 int(201 * scale_x),
                 int(21 * scale_y),
             )
@@ -184,9 +184,9 @@ class ExtrapolationOptions(QtWidgets.QDialog):
         self.stratified_descrip.setGeometry(
             QtCore.QRect(
                 int(30 * scale_x),
-                int(455 * scale_y),
-                int(981 * scale_x),
-                int(250 * scale_y),
+                int(415 * scale_y),
+                int(980 * scale_x),
+                int(185 * scale_y),
             )
         )
         self.stratified_descrip.setObjectName("stratified_descrip")
@@ -199,7 +199,7 @@ class ExtrapolationOptions(QtWidgets.QDialog):
         self.load_button.setGeometry(
             QtCore.QRect(
                 int(300 * scale_x),
-                int(730 * scale_y),
+                int(640 * scale_y),
                 int(191 * scale_x),
                 int(31 * scale_y),
             )
@@ -212,7 +212,7 @@ class ExtrapolationOptions(QtWidgets.QDialog):
         self.save_button.setGeometry(
             QtCore.QRect(
                 int(590 * scale_x),
-                int(730 * scale_y),
+                int(640 * scale_y),
                 int(191 * scale_x),
                 int(31 * scale_y),
             )
@@ -239,21 +239,21 @@ class ExtrapolationOptions(QtWidgets.QDialog):
         """Return the formatted K-nearest-neighbours description."""
         body = """
 <p align="justify">
-This method considers the distance to the
+This method considers the distance to the 
 <b>K nearest neighbors</b> and uses <b>soft voting</b>, meaning that closer
 neighbors carry more weight in determining the final class. It assumes that
 nearby buildings are more likely to share similar characteristics and applies
-<b>inverse kernel weighting</b> to reflect this relationship.
+<b> inverse kernel weighting</b> to reflect this relationship.
 </p>
 <p align="justify">
-The process begins with an <b>initial sample representing 10% of the
+The process begins with an <b>initial sample representing 10% of the 
 population</b>. Building information can be provided by uploading a CSV file
 or by using the built-in <b>deep learning model</b>.
 </p>
 <p align="justify">
 <b>Convergence</b> is evaluated from the stability of the variable of interest,
 which is the distribution of <b>building taxonomies</b>. Convergence is assumed
-when the distribution changes by no more than <b>5%</b> in the next iteration.
+when the distribution changes by no more than <b>5%</b> in the next iteration. 
 Otherwise, the sample increases by 5% of the population per iteration.
 </p>
 <p align="justify">
@@ -276,14 +276,14 @@ maximum uncertainty in the class proportions.
 </p>
 <p align="justify">
 Each class is represented according to its estimated frequency and variance.
-Users can upload <b>new CSV files manually</b> or use the built-in
+Users can upload <b>new CSV files manually</b> or use the built-in 
 <b>deep learning model</b> to expand the sample by a user-defined percentage of
 the population in each iteration.
 </p>
 <p align="justify">
 After each iteration, the method checks whether the estimated class
 proportions have <b>converged</b>. Sampling stops when the proportions remain
-stable; otherwise, it continues to improve <b>statistical robustness</b> and
+stable; otherwise, it continues to improve <b>statistical robustness</b> and 
 <b>data efficiency</b>.
 </p>
 """
@@ -361,7 +361,7 @@ stable; otherwise, it continues to improve <b>statistical robustness</b> and
 
         try:
             self.extrapolation_mode = dialog.stratified_mode
-            self.data_population = dialog.data_population
+            self.data_population = dialog.population_data
             self.folder_path_new = dialog.folder_path_new
             self.initial_fraction = dialog.ini_fract_new_value.value()
             self.step_fraction = dialog.step_new_value.value()
@@ -404,5 +404,9 @@ stable; otherwise, it continues to improve <b>statistical robustness</b> and
         QtWidgets.QMessageBox.warning(
             self,
             "Inspection Method Error",
-            "Please select and configure an extrapolation method.",
+            (
+                "Please select and configure an extrapolation method. "
+                "View the input requirements by clicking the "
+                "'Load Files' button."
+            ),
         )
