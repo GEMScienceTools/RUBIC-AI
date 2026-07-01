@@ -484,8 +484,8 @@ class GUIInterface(QtWidgets.QMainWindow):
         # Edge color left image
         self.verticalLayoutWidget_5.setStyleSheet("""
             QWidget#verticalLayoutWidget_5 {
-                border: 4px solid lightgreen;
-                border-radius: 6px;
+                border: 8px solid green;
+                border-radius: 8px;
             }
         """)
 
@@ -1088,8 +1088,8 @@ class GUIInterface(QtWidgets.QMainWindow):
         # Thick green border
         self.verticalLayoutWidget.setStyleSheet("""
             QWidget#verticalLayoutWidget {
-                border: 4px solid lightgreen;
-                border-radius: 6px;
+                border: 8px solid green;
+                border-radius: 8px;
             }
         """)
 
@@ -1213,8 +1213,8 @@ class GUIInterface(QtWidgets.QMainWindow):
         # Thick green border
         self.verticalLayoutWidget_2.setStyleSheet("""
             QWidget#verticalLayoutWidget_2 {
-                border: 4px solid cyan;
-                border-radius: 6px;
+                border: 8px solid cyan;
+                border-radius: 8px;
             }
         """)
 
