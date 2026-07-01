@@ -4,7 +4,7 @@
 
 **Workflow:**
 1. **Set the usage mode**  
-   Select the **Neighbor extrapolation** option, and then click the ***Save and continue*** button.
+   Select the **Neighbor extrapolation** option, and then click the ***Input Requerements*** button.
 
 2. **Set the Extrapolation Mode**  
    Currently, there are two options available:  
@@ -71,7 +71,7 @@
 4. **Set Input Files – Stratified Sampling**  
 
 - **4.1 📄 New Distribution**  
-  - Define the output file name using the ***Output name*** field (default: **"new_strat"**).  
+  - Define the output file name using the ***Output name*** field (default: **"rubic_ai"**).  
   - Define the output folder.  
   - Define the extrapolation mode: **(I)** Deep Learning Model or **(II)** Manual.  
   - Provide population data:  
