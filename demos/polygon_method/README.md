@@ -3,7 +3,7 @@
 
 **Workflow:**
 1. **Set the usage mode**  
-   Select the **Polygon method** option, and then click the ***Save and continue*** button.
+   Select the **Polygon method** option, and then click the ***Input Requirements*** button.
    
 2. **Select the output project folder**  
    Click the ***Select output folder*** button to open a pop-up window and navigate to the folder where outputs will be saved.  
@@ -51,19 +51,19 @@ However, this option may take more time to retrieve the footprints.
 
 	- 7.1. 📝 ***Manual Classification***
 		- **7.1.1.** Click the ***Next Building*** button to upload and display the first building image.
-		- **7.1.2.** Specify the construction epoch that is most relevant to the area under analysis (this step is only required for the first analysis).
+		- **7.1.2.** User should provide the construction epoch classes (this step is only required for the first analysis).
 		- **7.1.3.** Use the corresponding combo boxes to select the appropriate features based on the displayed image (e.g., select "Concrete" as the LLRS material).
 		- **7.1.4.** Click the ***Next Building*** button again to proceed to the next image, and repeat this process until all images have been reviewed.
-		- **7.1.5.** Save either all results or a partial set by clicking the ***Save data*** button. When the GUI is launched again, previously saved results will be reloaded, allowing the classification process to resume from where it left off.  
+		- **7.1.5.** Save either all results or a partial set by clicking the ***Save Data*** button. When the GUI is launched again, previously saved results will be reloaded, allowing the classification process to resume from where it left off.  
 		> ⚠️ **Important:** *If you do not save your data before closing the GUI, your work will be lost.*
 
 	- 7.2. 🤖 ***AI-Powered Classification***
 		- **7.2.1.** The ***AI Powered*** checkbox will be activated, which means the feature will be predicted using AI.  
 However, the user can easily switch back to manual inspection by clicking the checkbox again.
 		- **7.2.2.** Upload the images by clicking the ***Next Building*** button. At this step, the tool will automatically predict the building features.
-		- **7.2.3.** The user should manually define the epoch of construction and image quality, since there is currently no model available for these features
+		- **7.2.3.** The user should manually define the epoch of construction, vertical irregularity, number of bays, and image quality, since there are currently no models available for these features.
 		- **7.2.4.** Click the ***Next Building*** button again to proceed to the next image, and repeat this process until all images have been reviewed.
-		- **7.2.5.** Save either all results or a partial set by clicking the ***Save data*** button. When the GUI is launched again, previously saved results will be reloaded, allowing the classification process to resume from where it left off.  
+		- **7.2.5.** Save either all results or a partial set by clicking the ***Save Data*** button. When the GUI is launched again, previously saved results will be reloaded, allowing the classification process to resume from where it left off.  
 		> ⚠️ **Important:** *If you do not save your data before closing the GUI, your work will be lost.*
 	
 	- 7.3. The results will be saved using the name specified in the ***Output name*** field (default: **"polygon_building"**) as a `.csv` file. This file will contain all the building features, along with metadata such as city, country, coordinates, and the path to the corresponding building image.
@@ -84,10 +84,13 @@ However, the user can easily switch back to manual inspection by clicking the ch
 
 		- The user can also define the **FOV** (field of view). The FOV controls the **camera zoom**: smaller values zoom in, while larger values zoom out. By default, this value is set to **120**, which is the maximum allowed. This helps create a natural zoom effect without losing too much resolution in distant building images.
 
-	- **7.3 Review Previous Classifications**
+	- **8.3 Review Previous Classifications**
 	     - If you want to check a specific image, use the ***Search Building*** button. First, enter the image ID (e.g., `1_1`) in the adjacent field, then click the ***Search Building*** button. The GUI will automatically display the corresponding image and its saved classification.
 		   > ⚠️ **Important:** *This only works for inspections that were previously saved.*
 
+	- **8.4 Building Attribute Prediction**
+	     - Even when up to three images are displayed, only one image is used to classify the building. The selected image is identified by a highlighted border.
+        
 9. **API Key Configuration**  
 
 The user must create two Google API keys:  
