@@ -2042,7 +2042,12 @@ class GUIMethods:
                                     QtCore.Qt.SmoothTransformation,
                                 )
                             )  # Ensure high-quality scaling
-                        except (AttributeError, IndexError, TypeError):
+                        except (
+                                AttributeError, 
+                                IndexError, 
+                                TypeError,
+                                UnboundLocalError
+                                ):
                             if self.gap is not None:
                                 # Displayed image in corresponding frames
                                 image_rgb = self.add_not_detected_overlay(
@@ -2232,7 +2237,7 @@ class GUIMethods:
         workflows. Use a local image when the local-image workflow is active.
         """
         # Highlight the image used for AI-prediction
-        self.ui.left_gsv_bb.setContentsMargins(4, 4, 4, 4)
+        self.ui.left_gsv_bb.setContentsMargins(8, 8, 8, 8)
         self.ui.central_gsv_bb.setContentsMargins(0, 0, 0, 0)
         self.ui.right_gsv_bb.setContentsMargins(0, 0, 0, 0)
         try:
@@ -2296,7 +2301,7 @@ class GUIMethods:
         """
         # Highlight the image used for AI-prediction
         self.ui.left_gsv_bb.setContentsMargins(0, 0, 0, 0)
-        self.ui.central_gsv_bb.setContentsMargins(4, 4, 4, 4)
+        self.ui.central_gsv_bb.setContentsMargins(8, 8, 8, 8)
         self.ui.right_gsv_bb.setContentsMargins(0, 0, 0, 0)
         try:
             # Getting the image depending of the inspection mode selected.
@@ -2357,7 +2362,7 @@ class GUIMethods:
         # Highlight the image used for AI-prediction
         self.ui.left_gsv_bb.setContentsMargins(0, 0, 0, 0)
         self.ui.central_gsv_bb.setContentsMargins(0, 0, 0, 0)
-        self.ui.right_gsv_bb.setContentsMargins(4, 4, 4, 4)
+        self.ui.right_gsv_bb.setContentsMargins(8, 8, 8, 8)
         try:
             # Getting the image depending of the inspection mode selected.
             if self.ui.insp_method == 0 or self.ui.insp_method == 1:
@@ -4846,14 +4851,14 @@ class GUIMethods:
                             )
                         )
                         final_sample.to_csv(
-                            f"{self.ui.folder_path_new}/stratified_dl_{aux}.csv",
+                            f"{self.ui.folder_path_new}/{self.ui.prefix_strata}_stratified_dl_{aux}.csv",
                             index=False,
                         )
                         dist_por = pd.DataFrame(
                             list(class_dist.items()), columns=["Class", "Proportion"]
                         )
                         dist_por.to_csv(
-                            f"{self.ui.folder_path_new}/stratified_dl_dist_{aux}.csv",
+                            f"{self.ui.folder_path_new}/{self.ui.prefix_strata}_stratified_dl_dist_{aux}.csv",
                             index=False,
                         )
                         print("")
@@ -4886,11 +4891,11 @@ class GUIMethods:
                             list(class_dist.items()), columns=["Class", "Proportion"]
                         )
                         dist_por.to_csv(
-                            f"{self.ui.folder_path_new}/stratified_dist_{feature}.csv",
+                            f"{self.ui.folder_path_new}/{self.ui.prefix_strata}_stratified_dist_{feature}.csv",
                             index=False,
                         )
                         final_sample.to_csv(
-                            f"{self.ui.folder_path_new}/stratified_{feature}.csv",
+                            f"{self.ui.folder_path_new}/{self.ui.prefix_strata}_stratified_{feature}.csv",
                             index=False,
                         )
                         print("")

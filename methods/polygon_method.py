@@ -341,7 +341,7 @@ class PolygonSetting(QtWidgets.QDialog):
             )
         )
         self.save_button.setFont(label_font)
-        self.save_button.setText("Save and continue")
+        self.save_button.setText("Save and Continue")
         self.save_button.clicked.connect(self.building_sample)
 
         # ==============================================================

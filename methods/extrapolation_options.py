@@ -205,7 +205,7 @@ class ExtrapolationOptions(QtWidgets.QDialog):
             )
         )
         self.load_button.setFont(label_font)
-        self.load_button.setText("Load files")
+        self.load_button.setText("Load Files")
         self.load_button.clicked.connect(self.select_method)
 
         self.save_button = QtWidgets.QPushButton(self.method_frame)
@@ -218,7 +218,7 @@ class ExtrapolationOptions(QtWidgets.QDialog):
             )
         )
         self.save_button.setFont(label_font)
-        self.save_button.setText("Save and continue")
+        self.save_button.setText("Save and Continue")
         self.save_button.clicked.connect(self.save_and_continue)
 
     @staticmethod
@@ -369,6 +369,7 @@ stable; otherwise, it continues to improve <b>statistical robustness</b> and
             self.max_iterations = dialog.n_iter_new_value.value()
             self.stability_threshold = dialog.threshold_new_value.value()
             self.feature_strata = dialog.feature_strata
+            self.prefix_strata = dialog.output_new_value.text()
             self.load_check = True
             self._show_success_message()
         except (AttributeError, FileNotFoundError, TypeError, ValueError) as error:
@@ -380,7 +381,7 @@ stable; otherwise, it continues to improve <b>statistical robustness</b> and
         QtWidgets.QMessageBox.information(
             self,
             "Success",
-            "Setup complete!\n\nPlease click the Save and continue button.",
+            "Setup complete!\n\nPlease click the Save and Continue button.",
         )
 
     def _show_input_error(self):

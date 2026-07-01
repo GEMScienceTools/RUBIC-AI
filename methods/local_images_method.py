@@ -214,7 +214,7 @@ class LocalImageSetting(QtWidgets.QDialog):
         self.save_button = QtWidgets.QPushButton(self.coord_frame)
         self.save_button.setGeometry(self._scaled_rect(220, 470, 191, 31, sf_x, sf_y))
         self.save_button.setFont(bold_font)
-        self.save_button.setText("Save and continue")
+        self.save_button.setText("Save and Continue")
         self.save_button.clicked.connect(self._on_save_coordinates)
 
     def _set_stacking_order(self) -> None:

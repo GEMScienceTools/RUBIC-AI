@@ -70,7 +70,7 @@ class StratifiedExtrapolation(QtWidgets.QDialog):
         self.sf_font = sf_font
         self.setObjectName("DataSetting")
         self.resize(int(640 * sf_x), int(680 * sf_y))
-        self.setWindowTitle("Setting input files")
+        self.setWindowTitle("Setting Input Files")
 
         # === UI Elements Start ===
         self.data_frame = QtWidgets.QWidget(self)
@@ -404,10 +404,10 @@ class StratifiedExtrapolation(QtWidgets.QDialog):
         self.features_btn.selection_changed.connect(self.on_features_changed)
         self.feature_strata = []  # initialize
 
-        self.w_title.setText("Setting input files")
-        self.save_button.setText("Save and continue")
+        self.w_title.setText("Setting Input Files")
+        self.save_button.setText("Save and Continue")
         self.output_label_new.setText("Output name:")
-        self.output_new_value.setText("new_strat")
+        self.output_new_value.setText("rubic_ai")
         self.population_new_button.setText("Upload population data")
         self.population_new_path.setText("filename.csv")
         self.saved_path_new.setText("path/where/save/the/results")

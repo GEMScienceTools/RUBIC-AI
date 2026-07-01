@@ -67,7 +67,7 @@ class KNNOptionsWindow(QtWidgets.QDialog):
 
         self.setObjectName("DataSetting")
         self.resize(int(1210 * sf_x), int(600 * sf_y))
-        self.setWindowTitle("Setting input files")
+        self.setWindowTitle("Setting Input Files")
 
         # === UI Elements Start ===
         self.data_frame = QtWidgets.QWidget(self)
@@ -75,7 +75,7 @@ class KNNOptionsWindow(QtWidgets.QDialog):
         layout = QtWidgets.QVBoxLayout(self)
         layout.addWidget(self.data_frame)
 
-        self.w_title = QtWidgets.QLabel("Setting input files", self.data_frame)
+        self.w_title = QtWidgets.QLabel("Setting Input Files", self.data_frame)
         self.w_title.setGeometry(
             QtCore.QRect(int(510 * sf_x), 0, int(191 * sf_x), int(41 * sf_y))
         )
@@ -418,7 +418,7 @@ class KNNOptionsWindow(QtWidgets.QDialog):
         self.output_dl_value.setText("KNN_dl")
         self.manual_op.setText("Upload data manually")
         self.dl_op.setText("Deep learning model")
-        self.save_button.setText("Save and continue")
+        self.save_button.setText("Save and Continue")
         self.unclassified_button.setText("Unclassified building coords")
         self.unclassfied_path.setText("filename.csv")
         self.output_label_manual.setText("Output name:")

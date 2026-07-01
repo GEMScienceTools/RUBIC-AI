@@ -305,7 +305,7 @@ class InspectionSetting(QDialog):
         )
 
         self.default_check = self._create_method_checkbox(
-            "Polygon method",
+            "Polygon Method",
             "default_check",
             (20, 120, 171, 21),
             scale_x,
@@ -348,7 +348,7 @@ class InspectionSetting(QDialog):
             scale_y,
         )
         self.specific_check = self._create_method_checkbox(
-            "Specific coordinates",
+            "Specific Coordinates",
             "specific_check",
             (20, 300, 201, 21),
             scale_x,
@@ -395,7 +395,7 @@ class InspectionSetting(QDialog):
             font_scale,
         )
         self.local_check = self._create_method_checkbox(
-            "Local images",
+            "Local Images",
             "local_check",
             (30, 480, 171, 21),
             scale_x,
@@ -429,7 +429,7 @@ class InspectionSetting(QDialog):
         self.extra_label.setGeometry(_scaled_rect(50, 670, 121, 21, scale_x, scale_y))
         self.extra_label.setFont(self._font(10 * font_scale, bold=True))
         self.extra_label.setObjectName("extra_label")
-        self.extra_label.setText("extrapolation")
+        self.extra_label.setText("Extrapolation")
 
         text = (
             "Requires locations for buildings without imagery and a reference "
@@ -582,3 +582,4 @@ class InspectionSetting(QDialog):
         self.max_iterations = self.extra_dialog.max_iterations
         self.stability_threshold = self.extra_dialog.stability_threshold
         self.feature_strata = self.extra_dialog.feature_strata
+        self.prefix_strata = self.extra_dialog.prefix_strata

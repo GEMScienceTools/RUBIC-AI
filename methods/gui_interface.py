@@ -82,6 +82,7 @@ class GUIInterface(QtWidgets.QMainWindow):
                 self.max_iterations = self.method_dialog.max_iterations
                 self.stability_threshold = self.method_dialog.stability_threshold
                 self.feature_strata = self.method_dialog.feature_strata
+                self.prefix_strata = self.method_dialog.prefix_strata
 
         QtWidgets.QMessageBox.information(
             self,
@@ -1002,7 +1003,7 @@ class GUIInterface(QtWidgets.QMainWindow):
             QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter
         )
         self.epc_const_label_1.setObjectName("epc_const_label_1")
-        self.epc_const_label_1.setText("Epoch of construction:")
+        self.epc_const_label_1.setText("Epoch of Construction:")
 
         self.epc_const_cb_1 = QtWidgets.QComboBox(self.centralwidget)
         self.epc_const_cb_1.setGeometry(
@@ -1441,7 +1442,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         font.setWeight(75)
         self.vulnerability_curve_button.setFont(font)
         self.vulnerability_curve_button.setObjectName("vulnerability_curve_button")
-        self.vulnerability_curve_button.setText("Vulnerability curve")
+        self.vulnerability_curve_button.setText("Vulnerability Curve")
 
         """ Saved frame"""
         self.saved_frame = QtWidgets.QLabel(self.centralwidget)
@@ -1829,11 +1830,11 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.search_img_label.setText(_translate("GUIInterface", "Image ID:"))
         self.method_progress.setText(_translate("GUIInterface", "-"))
         self.ai_check.setText(_translate("GUIInterface", "AI Powered"))
-        self.save_data_button.setText(_translate("GUIInterface", "Save data"))
-        self.bounding_box_1.setText(_translate("search_img_value", "Manual box"))
-        self.bounding_box_2.setText(_translate("search_img_value", "Manual box"))
-        self.bounding_box_3.setText(_translate("search_img_value", "Manual box"))
-        self.n_bay_label.setText(_translate("search_img_value", "Number of bays:"))
+        self.save_data_button.setText(_translate("GUIInterface", "Save Data"))
+        self.bounding_box_1.setText(_translate("search_img_value", "Manual Box"))
+        self.bounding_box_2.setText(_translate("search_img_value", "Manual Box"))
+        self.bounding_box_3.setText(_translate("search_img_value", "Manual Box"))
+        self.n_bay_label.setText(_translate("search_img_value", "Number of Bays:"))
         self.n_bay_cb.setItemText(
             0, _translate("search_img_value", "Select Number of Bays")
         )
