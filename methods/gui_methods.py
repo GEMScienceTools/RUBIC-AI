@@ -3585,14 +3585,14 @@ class GUIMethods:
                             j = 1
                             # Highlight the image used for AI-prediction
                             self.ui.left_gsv_bb.setContentsMargins(0, 0, 0, 0)
-                            self.ui.central_gsv_bb.setContentsMargins(4, 4, 4, 4)
+                            self.ui.central_gsv_bb.setContentsMargins(8, 8, 8, 8)
                             self.ui.right_gsv_bb.setContentsMargins(0, 0, 0, 0)
                         elif self.predicted_img[0] == 1:
                             # Left image
                             pred_img = True
                             j = 0
                             # Highlight the image used for AI-prediction
-                            self.ui.left_gsv_bb.setContentsMargins(4, 4, 4, 4)
+                            self.ui.left_gsv_bb.setContentsMargins(8, 8, 8, 8)
                             self.ui.central_gsv_bb.setContentsMargins(0, 0, 0, 0)
                             self.ui.right_gsv_bb.setContentsMargins(0, 0, 0, 0)
                         elif self.predicted_img[2] == 1:
@@ -3602,7 +3602,7 @@ class GUIMethods:
                             # Highlight the image used for AI-prediction
                             self.ui.left_gsv_bb.setContentsMargins(0, 0, 0, 0)
                             self.ui.central_gsv_bb.setContentsMargins(0, 0, 0, 0)
-                            self.ui.right_gsv_bb.setContentsMargins(4, 4, 4, 4)
+                            self.ui.right_gsv_bb.setContentsMargins(8, 8, 8, 8)
 
                     if pred_img is True:
                         image_file = self.cropped_image[j]
@@ -3672,7 +3672,7 @@ class GUIMethods:
                     )
                     cropped_path = os.path.splitext(aux_path)[0] + "_cropped.jpg"
                     # Highlight the image used for AI-prediction
-                    self.ui.left_gsv_bb.setContentsMargins(4, 4, 4, 4)
+                    self.ui.left_gsv_bb.setContentsMargins(8, 8, 8, 8)
                     self.ui.central_gsv_bb.setContentsMargins(0, 0, 0, 0)
                     self.ui.right_gsv_bb.setContentsMargins(0, 0, 0, 0)
                     image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
