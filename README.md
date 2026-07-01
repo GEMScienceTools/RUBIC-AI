@@ -17,7 +17,7 @@
 
 # ✨ Key Features
 
-- **AI-powered building feature prediction** using Deep Learning model e.g.(DenseNet201,ConvNeXt) with transfer learning and fine tuning
+- **AI-powered building feature prediction** using Deep Learning model e.g.(Swin Transformer,ConvNeXt) with transfer learning and fine tuning
 - **Multiple usage modes** for different data sources and use cases
 - **Interactive GUI** for streamlined building assessment workflows
 - **Object detection module** to isolate building of interest
@@ -35,12 +35,16 @@ Before you begin, make sure the following are installed on your system:
   ```bash
   git --version
   ```
+- [Git LFS](https://git-lfs.com/) — These files may not be downloaded correctly with Git alone, so Git LFS must be installed before cloning the repository. You can verify whether Git LFS is installed by running the following command in the terminal: 
+  ```bash
+  git lfs --version
+  ```
 - **Python 3.11**
 	which can be download is not native supported in some operative system version, in those cases you can install it from python website:
-	- Python 3.11[macOS](https://www.python.org/ftp/python/3.11.9/python-3.11.9-macos11.pkg)
+	- Python 3.11 [macOS](https://www.python.org/ftp/python/3.11.9/python-3.11.9-macos11.pkg)
 	
 	For windows one recommend option is to use Anaconda which makes the process easier, otherwise you can install directly python from this link 
-	- Python 3.11[windows](https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe)
+	- Python 3.11 [windows](https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe)
 		
 - **Anaconda**   
   📥 Download: [Anaconda.com](https://www.anaconda.com/download/success)  
@@ -73,6 +77,7 @@ Before you begin, make sure the following are installed on your system:
 
     Clone the ropository
    ```bash
+   git lfs install
    git clone https://github.com/GEMScienceTools/RUBIC-AI.git
    ```
 
@@ -121,7 +126,7 @@ Restarting your system can help resolve potential issues related to environment 
 
 ### AI Models
 
-- **Base Architectures:** DenseNet201, ConvNeXt-Tiny
+- **Base Architectures:** SwinTransformer-Tiny, ConvNeXt-Tiny
 - **Training Strategy:** Transfer learning from ImageNet with fine-tuning
 - **Inference:** Real-time feature prediction with or without human verification.  
   > ⚠️ **Warning:**  
@@ -130,29 +135,45 @@ Restarting your system can help resolve potential issues related to environment 
 
 ### 🔧 **Model performance**
 
-🏗️ **Lateral Load Resistant System (LLRS) Classifier Performance**
-- Current Accuracy: **~71.0%**
+🏗️ **Lateral Load Resisting System (LLRS) Classifier Performance**
+- Current Accuracy: **~79%**
+- Current Balanced Accuracy: **~80%**
+- Current Macro F1 Score: **~80%**
   
 🧱 **LLRS Material Classifier Performance**
-- Current Accuracy: **~71.5%**
+- Current Accuracy: **~81%**
+- Current Balanced Accuracy: **~81%**
+- Current Macro F1 Score: **~81%**
   
 🏢 **Number of Stories Classifier Performance**
-- Current Accuracy: **~73.7%**
-  
+- Current Accuracy: **~85%**
+- Current Balanced Accuracy: **~84%**
+- Current Macro F1 Score: **~84%**
+ 
 🏠 **Occupancy Classifier Performance** 
--  Current Accuracy: **~82.3%**
+-  Current Accuracy: **~83%**
+- Current Balanced Accuracy: **~74%**
+- Current Macro F1 Score: **~76%**
 
 🧾 **Code Level Classifier Performance** 
--  Current Accuracy: **~64.0%**
+- Current Accuracy: **~64%**
+- Current Balanced Accuracy: **~64%**
+- Current Macro F1 Score: **~63%**
   
 📍 **Block Position Classifier Performance** 
--  Current Accuracy: **~59.1%**
-  
+- Current Accuracy: **~65%**
+- Current Balanced Accuracy: **~68%**
+- Current Macro F1 Score: **~67%**
+
 🏛️ **Roof Shape Classifier Performance**
--  Current Accuracy: **~72.6%**
+- Current Accuracy: **~79%**
+- Current Balanced Accuracy: **~80%**
+- Current Macro F1 Score: **~73%**
   
 🔨 **Roof Material Classifier Performance** 
--  Current Accuracy: **~82.6%**
+-  Current Accuracy: **~81%**
+- Current Balanced Accuracy: **~79%**
+- Current Macro F1 Score: **~79%**
 
 For each application, there are additional metrics of interest.  
 Below is the information from the confusion matrices, which allows users to determine whether these models work for their specific needs.  
