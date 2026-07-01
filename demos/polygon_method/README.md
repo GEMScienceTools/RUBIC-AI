@@ -90,6 +90,7 @@ However, the user can easily switch back to manual inspection by clicking the ch
 
 	- **8.4 Building Attribute Prediction**
 	     - Even when up to three images are displayed, only one image is used to classify the building. The selected image is identified by a highlighted border.
+   		 <img src="../../help_img/manual_box.png">
         
 9. **API Key Configuration**  
 
