@@ -64,6 +64,9 @@ However, the user can easily switch back to manual inspection by clicking the ch
 	- **5.3 Review Previous Classifications**
 	     - If you want to check a specific image, use the ***Search Building*** button. First, enter the image ID (e.g., `1_1`) in the adjacent field, then click the ***Search Building*** button. The GUI will automatically display the corresponding image and its saved classification.
 		   > ⚠️ **Important:** *This only works for inspections that were previously saved.*
+    - **5.4 Building Attribute Prediction**
+	     - Even when up to three images are displayed, only one image is used to classify the building. The selected image is identified by a highlighted border.
+   		 <img src="../../help_img/selected_building_img.png" height="350">
 
 6. **API Key Configuration**  
 
