@@ -108,8 +108,8 @@
 	- 4.7. **API Key Configuration**  
 	
 	The user must create two Google API keys:  
-	- **Google Street View Static API** → saved as ***gsv_api_key.txt***  
-	- **Google Roads API** → saved as ***roads_api_key.txt***  
+	- [Google Street View Static API](https://developers.google.com/maps/documentation/streetview/get-api-key) → saved as ***gsv_api_key.txt***  
+	- [Google Roads API](https://developers.google.com/maps/documentation/roads/get-api-key)  → saved as ***roads_api_key.txt***
 	
 	Both files should be placed inside the `methods` folder.  
 	
