@@ -185,8 +185,8 @@ Furthermore, it is shown the **distribution of building attributes** in the full
 
 * **Lateral Load Resistant System (LLRS)**
   
-![LLRS CM](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/LLRS.png)
-![LLRS DD](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/LLRS_dist.png)
+![LLRS CM](https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/LLRS.png)
+![LLRS DD](https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/LLRS_dist.png)
 
 ---
 
