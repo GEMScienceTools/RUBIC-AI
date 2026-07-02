@@ -100,12 +100,12 @@
 		
 		</details>
 	
-	- 4.5 Define the parameters for stratified sampling or keep the default values (e.g. initial fraction, step)  
+- 4.5 Define the parameters for stratified sampling or keep the default values (e.g. initial fraction, step)  
 	
-	- 4.6 Click the ***Save and Continue*** button and follow the instructions provided by the GUI.  
+- 4.6 Click the ***Save and Continue*** button and follow the instructions provided by the GUI.  
 	  Then, click the ***Next Building*** button in the main panel to start the extrapolation analysis.
 	
-	- 4.7. **API Key Configuration**  
+- 4.7. **API Key Configuration**  
 	
 	The user must create two Google API keys:  
 	- [Google Street View Static API](https://developers.google.com/maps/documentation/streetview/get-api-key) → saved as ***gsv_api_key.txt***  
