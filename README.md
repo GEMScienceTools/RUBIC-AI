@@ -175,15 +175,20 @@ Restarting your system can help resolve potential issues related to environment 
 - Current Balanced Accuracy: **~79%**
 - Current Macro F1 Score: **~79%**
 
-For each application, there are additional metrics of interest.  
-Below is the information from the confusion matrices, which allows users to determine whether these models work for their specific needs.  
+###  📊 **Data distrubution and confusion matrices** 
+For each application, there are additional data and metrics of interest.  
+The confusion matrices presented below enable users to evaluate whether these models are suitable for their specific use cases.
+Furthermore, it is shown the **distribution of building attributes** in the full database, together with the final number of images used to train each deep-learning model. Minority classes were generally excluded when they contained too few samples for reliable model training. However, some minority classes were retained when they were visually distinct from the remaining classes, thereby preserving a broader range of building attributes within the classification framework.
 
 <details>
-<summary>📊 Confusion Matrices (Click to Expand)</summary>
+<summary>📊 Data Distribution and Confusion Matrices (Click to Expand)</summary>
 
 * **Lateral Load Resistant System (LLRS)**
   
-![LLRS](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/LLRS.png)
+![LLRS CM](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/LLRS.png)
+![LLRS DD](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/LLRS_dist.png)
+
+---
 
 * **LLRS Material**
   
