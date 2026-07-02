@@ -185,38 +185,131 @@ Furthermore, it is shown the **distribution of building attributes** in the full
 
 * **Lateral Load Resistant System (LLRS)**
   
-![LLRS CM](https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/LLRS.png)
-![LLRS DD](https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/LLRS_dist.png)
+<img
+  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/LLRS.png?raw=true"
+  alt="LLRS Confusion Matrix"
+  width="700"
+/>
+
+<img
+  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/LLRS_dist.png?raw=true"
+  alt="LLRS Data Distribution"
+  width="700"
+/>
 
 ---
 
 * **LLRS Material**
   
-![LLRS](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/LLRS_Material.png)
+<img
+  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/LLRS_Material.png?raw=true"
+  alt="LLRS Material Confusion Matrix"
+  width="700"
+/>
+
+<img
+  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/LLRS_Material_dist.png?raw=true"
+  alt="LLRS Material Data Distribution"
+  width="700"
+/>
+
+---
 
 * **Number of stories**
   
-![LLRS](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/n_stories.png)
+<img
+  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/n_stories.png?raw=true"
+  alt="Number of stories Confusion Matrix"
+  width="700"
+/>
+
+<img
+  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/n_stories_dist.png?raw=true"
+  alt="Number of stories Data Distribution"
+  width="700"
+/>
+
+---
 
 * **Occupancy**
   
-![LLRS](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/occupancy.png)
+<img
+  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/occupancy.png?raw=true"
+  alt="Occupancy Confusion Matrix"
+  width="700"
+/>
+
+<img
+  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/occupancy_dist.png?raw=true"
+  alt="Occupancy Data Distribution"
+  width="700"
+/>
+
+---
 
 * **Code level**
   
-![LLRS](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/code_level.png)
+<img
+  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/code_level.png?raw=true"
+  alt="Code level Confusion Matrix"
+  width="500"
+/>
+
+<img
+  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/code_level_dist.png?raw=true"
+  alt="Code level Data Distribution"
+  width="500"
+/>
+
+---
 
 * **Block position**
   
-![LLRS](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/block_matrix.png)
+<img
+  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/block_matrix.png?raw=true"
+  alt="Block position Confusion Matrix"
+  width="700"
+/>
+
+<img
+  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/block_matrix_dist.png?raw=true"
+  alt="Block position Data Distribution"
+  width="700"
+/>
+
+---
 
 * **Roof shape**
   
-![LLRS](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/roof_shape.png)
+<img
+  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/roof_shape.png?raw=true"
+  alt="Roof shape Confusion Matrix"
+  width="700"
+/>
+
+<img
+  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/roof_shape_dist.png?raw=true"
+  alt="Roof shape Data Distribution"
+  width="700"
+/>
+
+---
 
 * **Roof material**
   
-![LLRS](https://github.com/dangomezm/RUBIC-AI/blob/main/help_img/roof_material.png)
+<img
+  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/roof_material.png?raw=true"
+  alt="Roof Material Confusion Matrix"
+  width="500"
+/>
+
+<img
+  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/roof_material_dist.png?raw=true"
+  alt="Roof Material Data Distribution"
+  width="500"
+/>
+
+---
 
 </details>
 
