@@ -2,12 +2,12 @@
 **Best for:** Characterizing specific buildings, for example: reviewing all hospitals in the area of analysis, even if they are located in different countries.
 
 **Workflow:**
-1. **Set output prefix**
-The results will be saved using the name specified in the ***Output name*** field (default: **"specific_coord"**) as a `.csv` file. This file will contain all the building features, along with metadata such as city, country, coordinates, and the path to the corresponding building image.
-   
-2. **Set the usage mode**  
+1. **Set the usage mode**  
    Select the **Specific coordinates** option, and then click the ***Input Requirements*** button.
-   
+
+2. **Set the output prefix**  
+   Select The results will be saved using the name specified in the ***Output name*** field (default: **"specific_coord"**) as a `.csv` file. This file will contain all the building features, along with metadata such as city, country, coordinates, and the path to the corresponding building image.
+
 3. **Select the output project folder**  
    Click the ***Select output folder*** button to open a pop-up window and navigate to the folder where outputs will be saved.  
    > 📁 *Example:* `demos/specific_coordinates`
