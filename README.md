@@ -184,15 +184,22 @@ Furthermore, it is shown the **distribution of building attributes** in the full
 <summary>📊 Data Distribution and Confusion Matrices (Click to Expand)</summary>
 
 * **Lateral Load Resistant System (LLRS)**
-  
+It is important to note that the wall-system class was divided into low-rise [LWAL(LR)] and high-rise [LWAL(HR)] subclasses because these building types exhibit distinct visual characteristics. In general, low-rise wall buildings are more commonly associated with masonry construction, whereas high-rise wall buildings are typically constructed with reinforced concrete walls. This subdivision was introduced to improve class separability and enhance model performance. However, in the final output, RUBIC-AI maps both subclasses back to the common LWAL class.
+
 <img
-  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/LLRS.png?raw=true"
+  src="https://github.com/GEMScienceTools/RUBIC-AI/blob/phd/help_img/LWAL_division.png?raw=true"
+  alt="Wall system subclasses (left) low-rise (right) high-rise"
+  width="700"
+/>
+
+<img
+  src="https://github.com/GEMScienceTools/RUBIC-AI/blob/phd/help_img/LLRS.png?raw=true"
   alt="LLRS Confusion Matrix"
   width="700"
 />
 
 <img
-  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/LLRS_dist.png?raw=true"
+  src="https://github.com/GEMScienceTools/RUBIC-AI/blob/phd/help_img/LLRS_dist.png?raw=true"
   alt="LLRS Data Distribution"
   width="700"
 />
@@ -202,13 +209,13 @@ Furthermore, it is shown the **distribution of building attributes** in the full
 * **LLRS Material**
   
 <img
-  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/LLRS_Material.png?raw=true"
+  src="https://github.com/GEMScienceTools/RUBIC-AI/blob/phd/help_img/LLRS_Material.png?raw=true"
   alt="LLRS Material Confusion Matrix"
   width="700"
 />
 
 <img
-  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/LLRS_Material_dist.png?raw=true"
+  src="https://github.com/GEMScienceTools/RUBIC-AI/blob/phd/help_img/LLRS_Material_dist.png?raw=true"
   alt="LLRS Material Data Distribution"
   width="700"
 />
@@ -218,13 +225,13 @@ Furthermore, it is shown the **distribution of building attributes** in the full
 * **Number of stories**
   
 <img
-  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/n_stories.png?raw=true"
+  src="https://github.com/GEMScienceTools/RUBIC-AI/blob/phd/help_img/n_stories.png?raw=true"
   alt="Number of stories Confusion Matrix"
   width="700"
 />
 
 <img
-  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/n_stories_dist.png?raw=true"
+  src="https://github.com/GEMScienceTools/RUBIC-AI/blob/phd/help_img/n_stories_dist.png?raw=true"
   alt="Number of stories Data Distribution"
   width="700"
 />
@@ -234,13 +241,13 @@ Furthermore, it is shown the **distribution of building attributes** in the full
 * **Occupancy**
   
 <img
-  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/occupancy.png?raw=true"
+  src="https://github.com/GEMScienceTools/RUBIC-AI/blob/phd/help_img/occupancy.png?raw=true"
   alt="Occupancy Confusion Matrix"
   width="700"
 />
 
 <img
-  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/occupancy_dist.png?raw=true"
+  src="https://github.com/GEMScienceTools/RUBIC-AI/blob/phd/help_img/occupancy_dist.png?raw=true"
   alt="Occupancy Data Distribution"
   width="700"
 />
@@ -250,15 +257,15 @@ Furthermore, it is shown the **distribution of building attributes** in the full
 * **Code level**
   
 <img
-  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/code_level.png?raw=true"
+  src="https://github.com/GEMScienceTools/RUBIC-AI/blob/phd/help_img/code_level.png?raw=true"
   alt="Code level Confusion Matrix"
-  width="500"
+  width="700"
 />
 
 <img
-  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/code_level_dist.png?raw=true"
+  src="https://github.com/GEMScienceTools/RUBIC-AI/blob/phd/help_img/code_level_dist.png?raw=true"
   alt="Code level Data Distribution"
-  width="500"
+  width="700"
 />
 
 ---
@@ -266,13 +273,13 @@ Furthermore, it is shown the **distribution of building attributes** in the full
 * **Block position**
   
 <img
-  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/block_matrix.png?raw=true"
+  src="https://github.com/GEMScienceTools/RUBIC-AI/blob/phd/help_img/block_matrix.png?raw=true"
   alt="Block position Confusion Matrix"
   width="700"
 />
 
 <img
-  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/block_matrix_dist.png?raw=true"
+  src="https://github.com/GEMScienceTools/RUBIC-AI/blob/phd/help_img/block_matrix_dist.png?raw=true"
   alt="Block position Data Distribution"
   width="700"
 />
@@ -282,13 +289,13 @@ Furthermore, it is shown the **distribution of building attributes** in the full
 * **Roof shape**
   
 <img
-  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/roof_shape.png?raw=true"
+  src="https://github.com/GEMScienceTools/RUBIC-AI/blob/phd/help_img/roof_shape.png?raw=true"
   alt="Roof shape Confusion Matrix"
   width="700"
 />
 
 <img
-  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/roof_shape_dist.png?raw=true"
+  src="https://github.com/GEMScienceTools/RUBIC-AI/blob/phd/help_img/roof_shape_dist.png?raw=true"
   alt="Roof shape Data Distribution"
   width="700"
 />
@@ -298,15 +305,15 @@ Furthermore, it is shown the **distribution of building attributes** in the full
 * **Roof material**
   
 <img
-  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/roof_material.png?raw=true"
+  src="https://github.com/GEMScienceTools/RUBIC-AI/blob/phd/help_img/roof_material.png?raw=true"
   alt="Roof Material Confusion Matrix"
-  width="500"
+  width="700"
 />
 
 <img
-  src="https://github.com/dangomezm/RUBIC-AI/blob/phd/help_img/roof_material_dist.png?raw=true"
+  src="https://github.com/GEMScienceTools/RUBIC-AI/blob/phd/help_img/roof_material_dist.png?raw=true"
   alt="Roof Material Data Distribution"
-  width="500"
+  width="700"
 />
 
 ---
