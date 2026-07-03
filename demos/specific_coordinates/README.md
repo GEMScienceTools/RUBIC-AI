@@ -14,7 +14,6 @@
     
 4. **Set input files**  
    Click the ***Upload file with coordinates*** button to open a pop-up window and navigate to the file where the coordinates of the building of interest are stored.
-   > 📁 *Example:* `demos/specific_coordinates/specific_coordinates_example_data.csv`  
    > 📝 *Required CSV format:*
    
    ```csv
@@ -22,15 +21,18 @@
    1,10.9639,-74.7964
    2,10.9640,-74.7965
    ```
-	  At this point, the file will be previewed in a table so you can verify the selected information.  
 	  
 5. **Image Source**
 Users can select one of the following image sources:
-	(I). **Google Street View (GSV) imagery**
-	(II). **Mapillary imagery**
+	- (I). **Google Street View (GSV) imagery**
 
-Google Street View generally provides broader global coverage and more consistent imagery. However, access to the GSV API requires a paid service.
-Mapillary provides street-level and 360° imagery contributed mainly by members of the public. As a result, its geographical coverage may be more limited or uneven. Nevertheless, users can upload their own 360° videos to Mapillary, creating a practical alternative for rapidly collecting street-level imagery and supporting exposure modelling and building-attribute classification.
+		Google Street View generally provides broader global coverage and more consistent imagery. However, access to the GSV API requires a paid service.
+		> 📁 *Example:* `demos/specific_coordinates/specific_coordinates_example_data.csv`
+	- (II). **Mapillary imagery**
+
+		Mapillary provides street-level and 360° imagery contributed mainly by members of the public. As a result, its geographical coverage may be more limited or uneven. Nevertheless, users can upload their own 360° videos to Mapillary, creating a practical alternative for rapidly collecting street-level imagery and supporting exposure modelling and building-attribute classification.
+		> 📁 *Example:* `demos/specific_coordinates/mapillary_360_coordinates.csv`
+
 After selecting the image source and providing the required input files, click **Save and Continue** to validate the information.
 If a required field is missing or a column name is incorrect, the GUI will display a message identifying the missing or invalid fields.
 
