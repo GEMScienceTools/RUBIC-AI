@@ -124,7 +124,7 @@ class ExtrapolationOptions(QtWidgets.QDialog):
         )
         self.backg_1.setStyleSheet("background-color: rgb(255, 224, 185);")
 
-        self.knn_check = QtWidgets.QCheckBox(self.method_frame)
+        self.knn_check = QtWidgets.QRadioButton(self.method_frame)
         self.knn_check.setGeometry(
             QtCore.QRect(
                 int(30 * scale_x),
@@ -168,7 +168,7 @@ class ExtrapolationOptions(QtWidgets.QDialog):
         )
         self.backg_2.setStyleSheet("background-color: rgb(215, 213, 255);")
 
-        self.stratified_check = QtWidgets.QCheckBox(self.method_frame)
+        self.stratified_check = QtWidgets.QRadioButton(self.method_frame)
         self.stratified_check.setGeometry(
             QtCore.QRect(
                 int(30 * scale_x),

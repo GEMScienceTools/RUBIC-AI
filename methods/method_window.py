@@ -172,9 +172,9 @@ class InspectionSetting(QDialog):
         scale_x: float,
         scale_y: float,
         font_scale: float,
-    ) -> QtWidgets.QCheckBox:
+    ) -> QtWidgets.QRadioButton:
         """Create and return a method-selection checkbox."""
-        checkbox = QtWidgets.QCheckBox(self.method_frame)
+        checkbox = QtWidgets.QRadioButton(self.method_frame)
         checkbox.setGeometry(_scaled_rect(*geometry, scale_x, scale_y))
         checkbox.setFont(self._font(10 * font_scale, bold=True))
         checkbox.setObjectName(object_name)

@@ -183,7 +183,7 @@ class KNNOptionsWindow(QtWidgets.QDialog):
         self.b_info_button.setObjectName("b_info_button")
         self.b_info_button.clicked.connect(self.data_existing)
 
-        self.manual_op = QtWidgets.QCheckBox(self.data_frame)
+        self.manual_op = QtWidgets.QRadioButton(self.data_frame)
         self.manual_op.setGeometry(
             QtCore.QRect(
                 int(30 * sf_x), int(50 * sf_y), int(221 * sf_x), int(31 * sf_y)
@@ -206,7 +206,7 @@ class KNNOptionsWindow(QtWidgets.QDialog):
         self.backg_2.setText("")
         self.backg_2.setObjectName("backg_2")
 
-        self.dl_op = QtWidgets.QCheckBox(self.data_frame)
+        self.dl_op = QtWidgets.QRadioButton(self.data_frame)
         self.dl_op.setGeometry(
             QtCore.QRect(
                 int(640 * sf_x), int(45 * sf_y), int(221 * sf_x), int(31 * sf_y)
