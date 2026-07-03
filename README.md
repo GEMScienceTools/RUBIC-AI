@@ -320,6 +320,19 @@ It is important to note that the wall-system class was divided into low-rise [LW
 
 </details>
 
+###  ⚠️ **Manual constraints for taxonomy consistency** 
+To ensure consistency among feasible combinations of building attributes, RUBIC-AI incorporates a set of rule-based constraints that prevent the generation of unrealistic building classes. For example, when the primary construction material is classified as unreinforced masonry (MUR), the lateral load-resisting system is automatically assigned as a wall system (LWAL), since unreinforced masonry buildings cannot be represented by other systems. This rule prevents invalid building classes, such as unreinforced masonry moment frame (MUR/LFM), that are not defined in the adopted taxonomy but could otherwise be generated because the individual classification models operate independently and do not exchange information.
+
+<details>
+<summary>🔒 Rule-based constraints currently applied (Click to Expand)</summary>
+
+- Buildings classified as unreinforced masonry or confined masonry are assigned to wall system for LLRS.
+- Buildings with flat roofs are assigned concrete as the roof material, under the assumption that the roof consists of a concrete slab.
+- Buildings with gable or hipped roofs are checked to determine whether the roof material corresponds to metal/asbestos sheets or clay tiles. If neither valid option is predicted, the roof is assigned to the metal/asbestos class. This rule reflects the geographic composition of the training database, which is dominated by South American images, where this roofing material is more common than clay tiles, which are more prevalent in European contexts.
+- Buildings with curved roofs are assigned metal sheets as the roof material.
+- For unreinforced masonry buildings, the predicted code level is checked to determine whether it corresponds to no-code regulation or low-code regulation. This constraint reflects the fact that many such buildings are either older structures or newer informal constructions that may not fully comply with modern building regulations.
+</details>
+
 ### Image input specifications
 - Supported formats: *[JPG, JPEG, PNG]*
 - Recommended minimum resolution: *640x480*
