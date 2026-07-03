@@ -2043,8 +2043,8 @@ class GUIMethods:
                                 )
                             )  # Ensure high-quality scaling
                         except (
-                                AttributeError, 
-                                IndexError, 
+                                AttributeError,
+                                IndexError,
                                 TypeError,
                                 UnboundLocalError
                                 ):
