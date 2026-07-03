@@ -1,3 +1,4 @@
+pip==26.1.2
 PyQt5==5.15.11
 numpy==1.26.4
 opencv-python==4.10.0.84
