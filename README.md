@@ -80,7 +80,7 @@ Before you begin, make sure the following are installed on your system:
    git lfs install
    git clone https://github.com/GEMScienceTools/RUBIC-AI.git
    ```
-
+	> It should be ensured that the artificial intelligence model weights have been downloaded correctly. A common issue is that the model-weight files stored in the **dl_weights** folder have an incorrect file size, which indicates that the download was incomplete or unsuccessful.
 3. **Install dependencies**
    ```bash
    pip install -r requirements.txt
