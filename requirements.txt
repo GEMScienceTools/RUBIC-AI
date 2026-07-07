@@ -1,4 +1,5 @@
 pip==26.1.2
+pyproj==3.6
 PyQt5==5.15.11
 numpy==1.26.4
 opencv-python==4.10.0.84
@@ -15,7 +16,6 @@ osmnx==2.0.0
 ultralytics==8.3.40
 matplotlib==3.10.3
 chardet==5.2.0
-openai==1.77.0
 mercantile==1.2.1
 overturemaps==0.17.0
 openquake.gem-taxonomy @ git+https://github.com/gem/oq-gem-taxonomy.git@taxonomy_v4.x
