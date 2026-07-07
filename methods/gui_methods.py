@@ -833,18 +833,21 @@ class GUIMethods:
                 with open("methods/mapillary_api_key.txt") as f:
                     mapillary_access_token = f.read().strip()
 
+                img_name = str(self.click_count + 1) + ".jpg"
+                self.img_url = [img_name, img_name, img_name]
+
+                img_path = (
+                    self.ui.output_folder_value
+                    + "/Mapillary/orthophotos/"
+                    + str(self.click_count + 1)
+                    + ".jpg"
+                )
                 try:
-                    img_name = str(self.click_count + 1) + ".jpg"
-                    self.img_url = [img_name, img_name, img_name]
-
-                    img_path = (
-                        self.ui.output_folder_value
-                        + "/Mapillary/orthophotos/"
-                        + str(self.click_count + 1)
-                        + ".jpg"
-                    )
                     orthophoto_matrix = cv2.imread(img_path, cv2.IMREAD_COLOR)
+                except FileNotFoundError:
+                    orthophoto_matrix = None
 
+                if orthophoto_matrix is not None:
                     for aux in range(3):
                         if aux == 0:
                             self.img_original_1 = orthophoto_matrix
@@ -852,7 +855,7 @@ class GUIMethods:
                             self.img_original_2 = orthophoto_matrix
                         else:
                             self.img_original_3 = orthophoto_matrix
-                except (FileNotFoundError, AttributeError, TypeError):
+                else:
                     # ==============================================================
                     # Get Images From Mapillary
                     try:
@@ -3752,6 +3755,11 @@ class GUIMethods:
                             ):
                                 self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4])
 
+                            if self.pred_mat_value == "CR":
+                                if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
+                                    pass
+                                else:
+                                    self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
                             # Progress bar update
                             self.ui.progress_bar_method.setValue(100)
                             self.ui.method_progress.setText("Prediction complete!")
@@ -3784,6 +3792,12 @@ class GUIMethods:
                         # LLRS adjusments based on material
                         if self.pred_mat_value == "MCF" or self.pred_mat_value == "MUR":
                             self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4])
+
+                        if self.pred_mat_value == "CR":
+                            if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
+                                pass
+                            else:
+                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
 
                         # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
@@ -3828,6 +3842,12 @@ class GUIMethods:
                     # LLRS adjusments based on material
                     if self.pred_mat_value == "MCF" or self.pred_mat_value == "MUR":
                         self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4])
+
+                    if self.pred_mat_value == "CR":
+                        if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
+                            pass
+                        else:
+                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
 
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
@@ -4673,7 +4693,10 @@ class GUIMethods:
     ############ Search and load existing inspections ################
     def search_inspection(self):
         """Search for and load a saved inspection by image ID."""
-        # Get the value from the QLineEdit
+        # Clean the image frame
+        self.ui.left_gsv_bb.setContentsMargins(0, 0, 0, 0)
+        self.ui.central_gsv_bb.setContentsMargins(0, 0, 0, 0)
+        self.ui.right_gsv_bb.setContentsMargins(0, 0, 0, 0)
         search_value = self.ui.search_img_value.text()
         # Check if the value is not empty
         if not search_value.strip():

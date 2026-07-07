@@ -75,8 +75,8 @@ venv.bak/
 */.vscode/
 .vscode/
 
-# Ignore a google street view static api
+# Ignore api keys
 gsv_api_key.txt
 roads_api_key.txt
-openai_api_key.txt
+mapillary_api_key.txt
 api_key/

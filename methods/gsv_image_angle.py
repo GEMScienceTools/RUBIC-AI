@@ -43,7 +43,7 @@ class GSVAngleSetting(QtWidgets.QDialog):
 
         self.setObjectName("GSV_angle_setting")
         self.resize(int(680 * scale_x), int(900 * scale_y))
-        self.setWindowTitle("GSV image angle settings")
+        self.setWindowTitle("Virtual image angle settings")
 
         self._create_interface(scale_x, scale_y, font_scale)
 
@@ -147,9 +147,9 @@ class GSVAngleSetting(QtWidgets.QDialog):
         self.gsv_label = QtWidgets.QLabel(self.gsv_angle_frame)
         self._set_geometry(
             self.gsv_label,
-            230,
+            200,
             10,
-            241,
+            270,
             30,
             scale_x,
             scale_y,
@@ -164,7 +164,7 @@ class GSVAngleSetting(QtWidgets.QDialog):
             )
         )
         self.gsv_label.setObjectName("gsv_label")
-        self.gsv_label.setText("GSV image parameters")
+        self.gsv_label.setText("Virtual image parameters")
 
     def _create_pitch_controls(self, scale_x, scale_y, font_scale):
         """Create controls and guidance for the pitch angle."""

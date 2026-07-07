@@ -524,6 +524,14 @@ class CheckFilterPopup(QtWidgets.QWidget):
         btns = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel, self
         )
+        btns.setStyleSheet("""
+            QPushButton {
+                color: black;
+                background-color: #f0f0f0;
+                border: 1px solid #999;
+                padding: 4px 12px;
+            }
+        """)
         vbox.addWidget(btns)
 
         # Internal storage of all unique values currently loaded
