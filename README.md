@@ -343,12 +343,7 @@ To ensure consistency among feasible combinations of building attributes, RUBIC-
 
 # © License
 
-[PRIVATE AND CONFIDENTIAL](./LICENSE.txt)
-
-You should have received a specific license agreement along with
-this product.  If you did not, please contact the GEM Foundation
-at licensing@globalquakemodel.org.
-
+The OpenQuake Engine is released under the **[GNU Affero Public License 3](LICENSE)**.
 
 # Citation
 [WIP]
