@@ -343,7 +343,7 @@ To ensure consistency among feasible combinations of building attributes, RUBIC-
 
 # © License
 
-The OpenQuake Engine is released under the **[GNU Affero Public License 3](./LICENSE.txt)**.
+RUBIC-AI is released under the **[GNU Affero Public License 3](./LICENSE.txt)**.
 
 # Citation
 [WIP]
