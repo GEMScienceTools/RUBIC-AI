@@ -279,8 +279,7 @@ def predict_material_img(
             self,
             "Image Error",
             (
-                "No Street View image was found, or no building was "
-                f"detected for ID: {box_id}"
+                "No building was detected"
             ),
         )
         return None
