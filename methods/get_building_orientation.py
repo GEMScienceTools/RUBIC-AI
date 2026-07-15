@@ -35,9 +35,11 @@ def _read_api_key(path):
     str
         API key with surrounding whitespace removed.
     """
-    with path.open(encoding="utf-8") as file:
-        return file.read().strip()
-
+    try:
+        with path.open(encoding="utf-8") as file:
+            return file.read().strip()
+    except FileNotFoundError:
+        return None
 
 def compute_azimuth(point1, point2):
     """Compute the azimuth between two geographic points.
