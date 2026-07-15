@@ -431,29 +431,19 @@ class GUIMethods:
                         # Try multiple providers automatically
                         city, country = self.get_location_with_fallback(lat, lon)
 
-                        if city != "Unknown" and country != "Unknown":
-                            self.city = city
-                            self.country = country
-                            self.ui.city_value.setText(self.city)
-                            self.ui.country_value.setText(self.country)
-                            return (self.city, self.country)
-                        else:
-                            raise Exception("All geocoding providers failed")
-
                     except (AttributeError, ValueError, ConnectionError, TimeoutError):
                         QMessageBox.warning(
                             self.ui,
                             "Geocoding Error",
-                            (
-                                "The city and country could not be retrieved. "
-                                "Please try again."
-                            ),
+                            "The city and country could not be retrieved."
+                            + "Please try again.",
                         )
-                        self.city = "Unknown"
-                        self.country = "Unknown"
-                        self.ui.city_value.setText(self.city)
-                        self.ui.country_value.setText(self.country)
-                        return self.city, self.country
+                        city, country = "Unknown", "Unknown"
+
+                    self.city, self.country = city, country
+                    self.ui.city_value.setText(self.city)
+                    self.ui.country_value.setText(self.country)
+                    return self.city, self.country
 
                 except (
                     AttributeError,
@@ -489,29 +479,19 @@ class GUIMethods:
                     # Try multiple providers automatically
                     city, country = self.get_location_with_fallback(lat, lon)
 
-                    if city != "Unknown" and country != "Unknown":
-                        self.city = city
-                        self.country = country
-                        self.ui.city_value.setText(self.city)
-                        self.ui.country_value.setText(self.country)
-                        return (self.city, self.country)
-                    else:
-                        raise Exception("All geocoding providers failed")
-
                 except (AttributeError, ValueError, ConnectionError, TimeoutError):
                     QMessageBox.warning(
                         self.ui,
                         "Geocoding Error",
-                        (
-                            "The city and country could not be retrieved. "
-                            "Please try again."
-                        ),
+                        "The city and country could not be retrieved."
+                        + "Please try again.",
                     )
-                    self.city = "Unknown"
-                    self.country = "Unknown"
-                    self.ui.city_value.setText(self.city)
-                    self.ui.country_value.setText(self.country)
-                    return self.city, self.country
+                    city, country = "Unknown", "Unknown"
+
+                self.city, self.country = city, country
+                self.ui.city_value.setText(self.city)
+                self.ui.country_value.setText(self.country)
+                return self.city, self.country
 
             # ==============================================================
             # Extrapolation city name
@@ -746,9 +726,11 @@ class GUIMethods:
         """
         if self.ui.insp_method in (0, 1) and self.ui.img_source == 1:
             # Google Street View requires a paid API key.
-            with open("methods/gsv_api_key.txt") as f:
-                api_key = f.read().strip()
-
+            try:
+                with open("methods/gsv_api_key.txt") as f:
+                    api_key = f.read().strip()
+            except FileNotFoundError:
+                api_key = None
             lat = self.ui.lat_value.text()
             lon = self.ui.lon_value.text()
             url = "https://maps.googleapis.com/maps/api/streetview/metadata"
@@ -791,8 +773,19 @@ class GUIMethods:
                     float(self.ui.lon_value.text()),
                 )
                 # API key is required; without it, access to GSV is not possible
-                with open("methods/gsv_api_key.txt") as f:
-                    api_key = f.read().strip()
+                try:
+                    with open("methods/gsv_api_key.txt") as f:
+                        api_key = f.read().strip()
+                except FileNotFoundError as error:
+                    QMessageBox.warning(
+                        self.ui,
+                        "API Key Error",
+                        (
+                            "The Google Street View API key file is missing.\n\n"
+                            f"Details: {error}"
+                        ),
+                    )
+                    return
                 # angles for taking the images
                 angle = (-30, 0, 30)
                 self.img_url = ["", "", ""]
@@ -830,9 +823,19 @@ class GUIMethods:
 
             # 2: Mapillary
             else:
-                with open("methods/mapillary_api_key.txt") as f:
-                    mapillary_access_token = f.read().strip()
-
+                try:
+                    with open("methods/mapillary_api_key.txt") as f:
+                        mapillary_access_token = f.read().strip()
+                except FileNotFoundError as error:
+                    QMessageBox.warning(
+                        self.ui,
+                        "API Key Error",
+                        (
+                            "The Mapillary API key file is missing.\n\n"
+                            f"Details: {error}"
+                        ),
+                    )
+                    return
                 img_name = str(self.click_count + 1) + ".jpg"
                 self.img_url = [img_name, img_name, img_name]
 
@@ -912,9 +915,11 @@ class GUIMethods:
                 lat, lon = self.lat_extrapolation, self.lon_extrapolation
                 location = (lat, lon)
                 # API key is required; without it, access to GSV is not possible
-                with open("methods/gsv_api_key.txt") as f:
-                    api_key = f.read().strip()
-
+                try:
+                    with open("methods/gsv_api_key.txt") as f:
+                        api_key = f.read().strip()
+                except FileNotFoundError:
+                    api_key = None
                 try:
                     angle = 0
                     url_gsv, img_gsv, _year = get_street_view_image(
@@ -949,9 +954,11 @@ class GUIMethods:
                         float(self.ui.lon_value.text()),
                     )
                     # API key is required; without it, access to GSV is not possible
-                    with open("methods/gsv_api_key.txt") as f:
-                        api_key = f.read().strip()
-
+                    try:
+                        with open("methods/gsv_api_key.txt") as f:
+                            api_key = f.read().strip()
+                    except FileNotFoundError:
+                        api_key = None
                     app = QApplication.instance()  # Ensure PyQt instance exists
                     if app is None:
                         app = QApplication([])
@@ -1031,10 +1038,11 @@ class GUIMethods:
                 app = QApplication.instance()  # Ensure PyQt instance exists
                 if app is None:
                     app = QApplication([])
-
-                with open("methods/mapillary_api_key.txt") as f:
-                    mapillary_access_token = f.read().strip()
-
+                try:
+                    with open("methods/mapillary_api_key.txt") as f:
+                        mapillary_access_token = f.read().strip()
+                except FileNotFoundError:
+                    mapillary_access_token = None
                 # Called function where the GSV image can be adjusted
                 gsv_dialog = gsv_angle_setting(
                     parent=self.ui, main_window=self.ui, gui_methods=self
@@ -1122,9 +1130,11 @@ class GUIMethods:
                         float(self.ui.lon_value.text()),
                     )
                     # API key is required; without it, access to GSV is not possible
-                    with open("methods/gsv_api_key.txt") as f:
-                        api_key = f.read().strip()
-
+                    try:
+                        with open("methods/gsv_api_key.txt") as f:
+                            api_key = f.read().strip()
+                    except FileNotFoundError:
+                        api_key = None
                     app = QApplication.instance()  # Ensure PyQt instance exists
                     if app is None:
                         app = QApplication([])
@@ -1218,9 +1228,11 @@ class GUIMethods:
                         float(self.ui.lon_value.text()),
                     )
                     # API key is required; without it, access to GSV is not possible
-                    with open("methods/gsv_api_key.txt") as f:
-                        api_key = f.read().strip()
-
+                    try:
+                        with open("methods/gsv_api_key.txt") as f:
+                            api_key = f.read().strip()
+                    except FileNotFoundError:
+                        api_key = None
                     app = QApplication.instance()  # Ensure PyQt instance exists
                     if app is None:
                         app = QApplication([])
@@ -4937,7 +4949,8 @@ class GUIMethods:
                 if self.epoch_const is True:
                     self.epoch_const = False
                     for i in range(len(epoch)):
-                        self.ui.epc_const_cb_1.addItem(str(epoch.iloc[i, 0]))
+                        self.ui.epc_const_cb_1.addItem(str(epoch.iloc[i, 0]), 
+                                                       str(epoch.iloc[i, 0]))
 
             except (
                 AttributeError,
