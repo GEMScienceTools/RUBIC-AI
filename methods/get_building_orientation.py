@@ -21,7 +21,6 @@ REQUEST_TIMEOUT = 30
 DEFAULT_MAX_RADIUS = 20
 DEFAULT_RADIUS_STEP = 5
 
-
 def _read_api_key(path):
     """Read an API key from a text file.
 
@@ -35,11 +34,8 @@ def _read_api_key(path):
     str
         API key with surrounding whitespace removed.
     """
-    try:
-        with path.open(encoding="utf-8") as file:
-            return file.read().strip()
-    except FileNotFoundError:
-        return None
+    with path.open(encoding="utf-8") as file:
+        return file.read().strip()
 
 def compute_azimuth(point1, point2):
     """Compute the azimuth between two geographic points.
@@ -223,12 +219,20 @@ def _calculate_heading(location, angle):
     float
         Final Street View heading in degrees.
     """
-    road_orientation = get_road_orientation(location) or 0
-    return (road_orientation + angle + 180) % 360
+    try:
+        road_orientation = get_road_orientation(location)
+        h_angle = (road_orientation + angle + 180) % 360
+        api_error = False
+    except TypeError:
+        road_orientation = 0
+        h_angle = (road_orientation + angle + 180) % 360
+        api_error = True
+
+    return h_angle , api_error
 
 
-def _download_street_view_image(api_key, heading, pitch, fov, **location):
-    """Download and decode a Street View image.
+def _decode_street_view_image(api_key, heading, pitch, fov, **location):
+    """Decode a Street View image.
 
     Parameters
     ----------
@@ -331,8 +335,8 @@ def _get_image_from_nearby_panorama(location, api_key, pitch, fov):
 
     panorama_id, panorama_latitude, panorama_longitude, year = panorama
     angle = 180 if panorama_longitude > location[1] else 0
-    heading = _calculate_heading(location, angle)
-    image = _download_street_view_image(
+    heading = _calculate_heading(location, angle)[0]
+    image = _decode_street_view_image(
         api_key,
         heading,
         pitch,
@@ -385,8 +389,8 @@ def get_street_view_image(location, api_key, angle, pitch, fov):
         )
 
     year = metadata.get("date", "").split("-")[0] or None
-    heading = _calculate_heading(location, angle)
-    image = _download_street_view_image(
+    heading, roads_api_error = _calculate_heading(location, angle)
+    image = _decode_street_view_image(
         api_key,
         heading,
         pitch,
@@ -394,4 +398,4 @@ def get_street_view_image(location, api_key, angle, pitch, fov):
         location=f"{location[0]},{location[1]}",
     )
     maps_url = _build_maps_url(location, heading, pitch, fov)
-    return maps_url, image, year
+    return maps_url, image, year, roads_api_error

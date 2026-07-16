@@ -737,9 +737,10 @@ class GUIMethods:
             params = {"location": f"{lat},{lon}", "key": api_key}
             response = requests.get(url, params=params)
             data = response.json()
-            return data.get("status") == "OK"
+            gsv_data = data
+            return data.get("status") == "OK", gsv_data
 
-        return False
+        return False, gsv_data
 
     ############# Retrieve GSV building images ################
     def fetch_three_step_views(self):  # noqa: C901
@@ -790,31 +791,86 @@ class GUIMethods:
                 angle = (-30, 0, 30)
                 self.img_url = ["", "", ""]
                 for aux in range(3):
-                    if self.check_street_view() is True:
+                    check_gsv, gsv_answer = self.check_street_view()
+                    if check_gsv is True:
                         # Get image from GSV
                         if aux == 0:
-                            self.img_url[aux], self.img_original_1, self.year_left = (
-                                get_street_view_image(
-                                    location, api_key, angle[aux], 5, 120
+                            try:
+                                (
+                                    self.img_url[aux],
+                                    self.img_original_1,
+                                    self.year_left,
+                                    roads_api,
+                                ) = get_street_view_image(
+                                    location,
+                                    api_key,
+                                    angle[aux],
+                                    5,
+                                    120,
                                 )
-                            )
+
+                                if roads_api is True:
+                                    QMessageBox.warning(
+                                        self.ui,
+                                        "API Key Error",
+                                        (
+                                            "Roads API error: the API key is invalid. "
+                                            "Please check the console. The API key "
+                                            "may have been modified or deleted. "
+                                            "The images will be displayed, but with "
+                                            "a random orientation that may not match "
+                                            "the target building."
+                                        ),
+                                    )
+                            except FileNotFoundError as error:
+                                QMessageBox.warning(
+                                    self.ui,
+                                    "API Key Error",
+                                    (
+                                        "The Roads API key file is missing.\n\n"
+                                        f"Details: {error}"
+                                    ),
+                                )
                         elif aux == 1:
-                            self.img_url[aux], self.img_original_2, self.year_center = (
-                                get_street_view_image(
-                                    location, api_key, angle[aux], 5, 120
-                                )
+                            (
+                                self.img_url[aux],
+                                self.img_original_2,
+                                self.year_center,
+                                roads_api,
+                            ) = get_street_view_image(
+                                location,
+                                api_key,
+                                angle[aux],
+                                5,
+                                120,
                             )
                         else:
-                            self.img_url[aux], self.img_original_3, self.year_right = (
-                                get_street_view_image(
-                                    location, api_key, angle[aux], 5, 120
-                                )
+                            (
+                                self.img_url[aux],
+                                self.img_original_3,
+                                self.year_right,
+                                roads_api,
+                            ) = get_street_view_image(
+                                location,
+                                api_key,
+                                angle[aux],
+                                5,
+                                120,
                             )
                     else:
-                        print("Street View not available")
                         self.img_original_1, self.year_left = ["", ""]
                         self.img_original_2, self.year_center = ["", ""]
                         self.img_original_3, self.year_right = ["", ""]
+                        # Error message
+                        QMessageBox.warning(
+                            self.ui,
+                            "API Key Error",
+                            (
+                                f"GSV API Error: {gsv_answer['error_message']}"
+                            ),
+                        )
+                    if gsv_answer['status'] == 'REQUEST_DENIED':
+                        break
 
                 # Year of the GSV IMAGE
                 self.ui.year_value_1.setText(str(self.year_left))
@@ -922,7 +978,7 @@ class GUIMethods:
                     api_key = None
                 try:
                     angle = 0
-                    url_gsv, img_gsv, _year = get_street_view_image(
+                    url_gsv, img_gsv, _year, roads_api = get_street_view_image(
                         location, api_key, angle, 5, 120
                     )
                 except (
@@ -4949,7 +5005,7 @@ class GUIMethods:
                 if self.epoch_const is True:
                     self.epoch_const = False
                     for i in range(len(epoch)):
-                        self.ui.epc_const_cb_1.addItem(str(epoch.iloc[i, 0]), 
+                        self.ui.epc_const_cb_1.addItem(str(epoch.iloc[i, 0]),
                                                        str(epoch.iloc[i, 0]))
 
             except (
