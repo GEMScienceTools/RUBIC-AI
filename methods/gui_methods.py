@@ -1898,7 +1898,11 @@ class GUIMethods:
                                     QtCore.Qt.SmoothTransformation,
                                 )
                             )  # Ensure high-quality scaling
-                        except (AttributeError, IndexError, TypeError):
+                        except (AttributeError,
+                                IndexError,
+                                TypeError,
+                                UnboundLocalError
+                                ):
                             if self.gap is not None:
                                 # Displayed image in corresponding frames
                                 image_rgb = self.add_not_detected_overlay(
@@ -3706,9 +3710,10 @@ class GUIMethods:
                         + str(self.click_count + 1)
                         + ".jpg"
                     )
-                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
-                    if image is None:
-                        raise FileNotFoundError("Unable to read image")
+                    try:
+                        image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    except FileNotFoundError:
+                        image = None
 
                     material_index = predict_material_img(
                         image, self.ui.insp_method, self.box_id, self.ui
@@ -3843,9 +3848,10 @@ class GUIMethods:
                         + str(self.click_count + 1)
                         + ".jpg"
                     )
-                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
-                    if image is None:
-                        raise FileNotFoundError("Unable to read image")
+                    try:
+                        image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    except FileNotFoundError:
+                        image = None
 
                     llrs_index = predict_llrs_img(
                         image, self.ui.insp_method, self.box_id, self.ui
@@ -3992,9 +3998,10 @@ class GUIMethods:
                         + str(self.click_count + 1)
                         + ".jpg"
                     )
-                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
-                    if image is None:
-                        raise FileNotFoundError("Unable to read image")
+                    try:
+                        image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    except FileNotFoundError:
+                        image = None
 
                     code_level_index = predict_code_img(
                         image, self.ui.insp_method, self.box_id, self.ui
@@ -4124,9 +4131,10 @@ class GUIMethods:
                         + str(self.click_count + 1)
                         + ".jpg"
                     )
-                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
-                    if image is None:
-                        raise FileNotFoundError("Unable to read image")
+                    try:
+                        image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    except FileNotFoundError:
+                        image = None
 
                     # LLRS building image prediction
                     n_stories_index = predict_n_stories_img(
@@ -4252,9 +4260,10 @@ class GUIMethods:
                         + str(self.click_count + 1)
                         + ".jpg"
                     )
-                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
-                    if image is None:
-                        raise FileNotFoundError("Unable to read image")
+                    try:
+                        image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    except FileNotFoundError:
+                        image = None
 
                     occupancy_index = predict_occupancy_img(
                         image, self.ui.insp_method, self.box_id, self.ui
@@ -4508,9 +4517,10 @@ class GUIMethods:
                         + str(self.click_count + 1)
                         + ".jpg"
                     )
-                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
-                    if image is None:
-                        raise FileNotFoundError("Unable to read image")
+                    try:
+                        image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    except FileNotFoundError:
+                        image = None
 
                     roof_shape_index = predict_roof_shape_img(
                         image, self.ui.insp_method, self.box_id, self.ui
@@ -4653,9 +4663,10 @@ class GUIMethods:
                         + str(self.click_count + 1)
                         + ".jpg"
                     )
-                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
-                    if image is None:
-                        raise FileNotFoundError("Unable to read image")
+                    try:
+                        image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    except FileNotFoundError:
+                        image = None
 
                     roof_material_index = predict_roof_material_img(
                         image, self.ui.insp_method, self.box_id, self.ui
