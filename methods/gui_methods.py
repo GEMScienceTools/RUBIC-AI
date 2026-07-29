@@ -693,7 +693,7 @@ class GUIMethods:
                     )
                     # Upload the existing inspections for AI
                     self.data_ai_existing = pd.read_csv(
-                        insp_path + "_AI_classification.csv"
+                        insp_path + "_AI_aux_cont.csv"
                     )
                     self.cont_local_data = pd.read_csv(insp_path + "_AI_aux_cont.csv")
                     # Replace empty rows with the existing information
@@ -1950,165 +1950,45 @@ class GUIMethods:
                 ]
                 # Loop for the number of image displayed selected with the option in the
                 # coordinates pop-up
-                for aux in range(self.n_images_local):
-                    # Load the image for drawing
-                    try:
-                        img_path = (
+                if self.n_images_local <= 3:
+                    for aux in range(self.n_images_local):
+                        # Load the image for drawing
+                        try:
+                            img_path = (
+                                self.ui.folder_path
+                                + "/"
+                                + str(self.data_building.iloc[self.old_local + aux, 0])
+                            )
+                        except (AttributeError, IndexError, TypeError):
+                            QMessageBox.warning(
+                                self.ui,
+                                "Input Error",
+                                "No further inspections are available",
+                            )
+
+                        aux_cropped_path = (
                             self.ui.folder_path
-                            + "/"
+                            + "/cropped_images/"
                             + str(self.data_building.iloc[self.old_local + aux, 0])
                         )
-                    except (AttributeError, IndexError, TypeError):
-                        QMessageBox.warning(
-                            self.ui,
-                            "Input Error",
-                            "No further inspections are available",
+                        cropped_path = (
+                            os.path.splitext(aux_cropped_path)[0] + "_cropped.jpg"
                         )
 
-                    aux_cropped_path = (
-                        self.ui.folder_path
-                        + "/cropped_images/"
-                        + str(self.data_building.iloc[self.old_local + aux, 0])
-                    )
-                    cropped_path = (
-                        os.path.splitext(aux_cropped_path)[0] + "_cropped.jpg"
-                    )
+                        aux_displayed_path = (
+                            self.ui.folder_path
+                            + "/displayed_images/"
+                            + str(self.data_building.iloc[self.old_local + aux, 0])
+                        )
+                        displayed_path = (
+                            os.path.splitext(aux_displayed_path)[0] + "_displayed.jpg"
+                        )
 
-                    aux_displayed_path = (
-                        self.ui.folder_path
-                        + "/displayed_images/"
-                        + str(self.data_building.iloc[self.old_local + aux, 0])
-                    )
-                    displayed_path = (
-                        os.path.splitext(aux_displayed_path)[0] + "_displayed.jpg"
-                    )
-
-                    # Display building image
-                    if os.path.exists(displayed_path):
-                        # Display an already isolated image
-                        building_pixmap = QtGui.QPixmap(displayed_path)
-                        # Selection of image frame using "aux" variable
-                        img_frames[aux].setPixmap(
-                            building_pixmap.scaled(
-                                img_frames[aux].width(),
-                                img_frames[aux].height(),
-                                QtCore.Qt.IgnoreAspectRatio,
-                                QtCore.Qt.SmoothTransformation,
-                            )
-                        )  # Ensure high-quality scaling
-                    else:
-                        # Display a new image
-                        if sw is True:
-                            # Star progress bar until 99%
-                            for i in range(100):
-                                time.sleep(0.0001)
-                                self.ui.progress_bar_method.setValue(i)
-                                self.ui.method_progress.setText(
-                                    "Isolating building ...."
-                                )
-                            sw = False
-                        # Check and/or create cropped folder
-                        if not os.path.exists(self.ui.folder_path + "/Cropped_images"):
-                            os.makedirs(self.ui.folder_path + "/Cropped_images")
-
-                        self.gap = None
-                        try:
-                            # Run inference
-                            results = model.predict(img_path, device=device)
-
-                            img_bgr = cv2.imread(img_path)
-                            if img_bgr is None:
-                                raise RuntimeError(f"Could not read image: {img_path}")
-
-                            _h0, _w0 = img_bgr.shape[:2]
-
-                            best_box = None
-                            best_score = 0.0
-
-                            for box in results[0].boxes:
-                                cls_id = int(box.cls)
-                                cls_name = class_names[cls_id]
-                                score = float(box.conf)
-
-                                if (
-                                    cls_name == target_class
-                                    and score > best_score
-                                    and score > 0.5
-                                ):
-                                    best_score = score
-                                    best_box = box
-
-                            # If no building detected, trigger your "overlay" logic
-                            if best_box is None:
-                                self.gap = 1
-                                raise RuntimeError(
-                                    "No building detected with confidence > 0.5"
-                                )
-
-                            x1, y1, x2, y2 = map(int, best_box.xyxy[0])
-
-                            cropped_image = img_bgr[y1:y2, x1:x2]
-                            cv2.imwrite(cropped_path, cropped_image)
-
-                            label_w = img_frames[aux].width()
-                            label_h = img_frames[aux].height()
-
-                            disp_bgr = self._prepare_display_with_bbox(
-                                img_bgr, (x1, y1, x2, y2), label_w, label_h
-                            )
-
-                            if not os.path.exists(
-                                self.ui.folder_path + "/displayed_images"
-                            ):
-                                os.makedirs(self.ui.folder_path + "/displayed_images")
-
-                            cv2.imwrite(displayed_path, disp_bgr)
-
-                            disp_rgb = cv2.cvtColor(disp_bgr, cv2.COLOR_BGR2RGB)
-                            h, w, ch = disp_rgb.shape
-                            bytes_per_line = ch * w
-                            qimage = QtGui.QImage(
-                                disp_rgb.data,
-                                w,
-                                h,
-                                bytes_per_line,
-                                QtGui.QImage.Format_RGB888,
-                            )
-
-                            building_pixmap = QtGui.QPixmap.fromImage(qimage)
-
-                        except (
-                            AttributeError,
-                            FileNotFoundError,
-                            IndexError,
-                            KeyError,
-                            OSError,
-                            RuntimeError,
-                            TypeError,
-                            ValueError,
-                            cv2.error,
-                        ):
-                            self.no_image = f"""
-                                            <b><u>No image found</u></b><br><br>
-                                            Please check that the image file exists<br>
-                                            at the specified path:<br>
-                                            <code>{img_path}</code>
-                                            """
-                            font = QtGui.QFont()
-                            font.setPointSize(int(12 * self.sf_font))
-                            font.setBold(True)
-                            font.setWeight(75)
-
-                            img_frames[aux].setFont(font)
-                            img_frames[aux].setTextFormat(
-                                QtCore.Qt.RichText
-                            )  # Enable rich text (HTML)
-                            img_frames[aux].setText(self.no_image)
-                            img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)
-                            img_frames[aux].setWordWrap(True)
-
-                        try:
-                            # Displayed image in corresponding frames
+                        # Display building image
+                        if os.path.exists(displayed_path):
+                            # Display an already isolated image
+                            building_pixmap = QtGui.QPixmap(displayed_path)
+                            # Selection of image frame using "aux" variable
                             img_frames[aux].setPixmap(
                                 building_pixmap.scaled(
                                     img_frames[aux].width(),
@@ -2117,37 +1997,133 @@ class GUIMethods:
                                     QtCore.Qt.SmoothTransformation,
                                 )
                             )  # Ensure high-quality scaling
-                        except (
-                                AttributeError,
-                                IndexError,
-                                TypeError,
-                                UnboundLocalError
-                                ):
-                            if self.gap is not None:
-                                # Displayed image in corresponding frames
-                                image_rgb = self.add_not_detected_overlay(
-                                    img_bgr, opacity=0.5
+                        else:
+                            # Display a new image
+                            if sw is True:
+                                # Star progress bar until 99%
+                                for i in range(100):
+                                    time.sleep(0.0001)
+                                    self.ui.progress_bar_method.setValue(i)
+                                    self.ui.method_progress.setText(
+                                        "Isolating building ...."
+                                    )
+                                sw = False
+                            # Check and/or create cropped folder
+                            if not os.path.exists(self.ui.folder_path
+                                                  + "/Cropped_images"):
+                                os.makedirs(self.ui.folder_path + "/Cropped_images")
+
+                            self.gap = None
+                            try:
+                                # Run inference
+                                results = model.predict(img_path, device=device)
+
+                                img_bgr = cv2.imread(img_path)
+                                if img_bgr is None:
+                                    raise RuntimeError("Could not read image:"
+                                                       + f"{img_path}")
+
+                                _h0, _w0 = img_bgr.shape[:2]
+
+                                best_box = None
+                                best_score = 0.0
+
+                                for box in results[0].boxes:
+                                    cls_id = int(box.cls)
+                                    cls_name = class_names[cls_id]
+                                    score = float(box.conf)
+
+                                    if (
+                                        cls_name == target_class
+                                        and score > best_score
+                                        and score > 0.5
+                                    ):
+                                        best_score = score
+                                        best_box = box
+
+                                # If no building detected, trigger your "overlay" logic
+                                if best_box is None:
+                                    self.gap = 1
+                                    raise RuntimeError(
+                                        "No building detected with confidence > 0.5"
+                                    )
+
+                                x1, y1, x2, y2 = map(int, best_box.xyxy[0])
+
+                                cropped_image = img_bgr[y1:y2, x1:x2]
+                                cv2.imwrite(cropped_path, cropped_image)
+
+                                label_w = img_frames[aux].width()
+                                label_h = img_frames[aux].height()
+
+                                disp_bgr = self._prepare_display_with_bbox(
+                                    img_bgr, (x1, y1, x2, y2), label_w, label_h
                                 )
 
-                                # Convert BGR image (OpenCV) to RGB format
-                                display_image_rgb = cv2.cvtColor(
-                                    image_rgb, cv2.COLOR_BGR2RGB
-                                )
-                                # display_image_rgb = image_rgb.copy()
-                                # Convert the RGB image to QImage
-                                height, width, _channel = display_image_rgb.shape
-                                bytes_per_line = 3 * width
+                                if not os.path.exists(
+                                    self.ui.folder_path + "/displayed_images"
+                                ):
+                                    os.makedirs(self.ui.folder_path
+                                                + "/displayed_images")
+
+                                cv2.imwrite(displayed_path, disp_bgr)
+
+                                disp_rgb = cv2.cvtColor(disp_bgr, cv2.COLOR_BGR2RGB)
+                                h, w, ch = disp_rgb.shape
+                                bytes_per_line = ch * w
                                 qimage = QtGui.QImage(
-                                    display_image_rgb.data,
-                                    width,
-                                    height,
+                                    disp_rgb.data,
+                                    w,
+                                    h,
                                     bytes_per_line,
                                     QtGui.QImage.Format_RGB888,
                                 )
 
-                                # Convert QImage to QPixmap
                                 building_pixmap = QtGui.QPixmap.fromImage(qimage)
 
+                            except (
+                                AttributeError,
+                                FileNotFoundError,
+                                IndexError,
+                                KeyError,
+                                OSError,
+                                RuntimeError,
+                                TypeError,
+                                ValueError,
+                                cv2.error,
+                            ):
+                                self.no_image = f"""
+                                                <b><u>No image found</u></b><br><br>
+                                                Please check that the image file
+                                                 exists<br>at the specified path:<br>
+                                                <code>{img_path}</code>
+                                                """
+                                # Check image extension as error source
+                                extension = os.path.splitext(img_path)[1].lower()
+                                if not extension:
+                                    QMessageBox.warning(
+                                        self.ui,
+                                        "Image Error",
+                                        (
+                                            "No extension, please check the input file."
+                                        ),
+                                    )
+
+                                font = QtGui.QFont()
+                                font.setPointSize(int(12 * self.sf_font))
+                                font.setBold(True)
+                                font.setWeight(75)
+
+                                img_frames[aux].setFont(font)
+                                img_frames[aux].setTextFormat(
+                                    QtCore.Qt.RichText
+                                )  # Enable rich text (HTML)
+                                img_frames[aux].setText(self.no_image)
+                                img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)
+                                img_frames[aux].setWordWrap(True)
+
+                            try:
+                                # Displayed image in corresponding frames
                                 img_frames[aux].setPixmap(
                                     building_pixmap.scaled(
                                         img_frames[aux].width(),
@@ -2156,7 +2132,66 @@ class GUIMethods:
                                         QtCore.Qt.SmoothTransformation,
                                     )
                                 )  # Ensure high-quality scaling
+                            except (
+                                    AttributeError,
+                                    IndexError,
+                                    TypeError,
+                                    UnboundLocalError
+                                    ):
+                                if self.gap is not None:
+                                    # Displayed image in corresponding frames
+                                    image_rgb = self.add_not_detected_overlay(
+                                        img_bgr, opacity=0.5
+                                    )
 
+                                    # Convert BGR image (OpenCV) to RGB format
+                                    display_image_rgb = cv2.cvtColor(
+                                        image_rgb, cv2.COLOR_BGR2RGB
+                                    )
+                                    # display_image_rgb = image_rgb.copy()
+                                    # Convert the RGB image to QImage
+                                    height, width, _channel = display_image_rgb.shape
+                                    bytes_per_line = 3 * width
+                                    qimage = QtGui.QImage(
+                                        display_image_rgb.data,
+                                        width,
+                                        height,
+                                        bytes_per_line,
+                                        QtGui.QImage.Format_RGB888,
+                                    )
+
+                                    # Convert QImage to QPixmap
+                                    building_pixmap = QtGui.QPixmap.fromImage(qimage)
+
+                                    img_frames[aux].setPixmap(
+                                        building_pixmap.scaled(
+                                            img_frames[aux].width(),
+                                            img_frames[aux].height(),
+                                            QtCore.Qt.IgnoreAspectRatio,
+                                            QtCore.Qt.SmoothTransformation,
+                                        )
+                                    )  # Ensure high-quality scaling
+                else:
+                    self.no_image = """ <b><u>Coordinate Error</u></b><br><br>
+                                     Please check the image coordinates.<br><br>
+                                     RUBIC-AI can process a maximum of three images
+                                     with the same coordinates at a time.<br><br>
+                                     If there are more than three images for the same
+                                     location, please introduce a small variation in
+                                     the coordinates in the input data.
+                                    """
+                    font = QtGui.QFont()
+                    font.setPointSize(int(12 * self.sf_font))
+                    font.setBold(True)
+                    font.setWeight(75)
+
+                    img_frames[aux].setFont(font)
+                    img_frames[aux].setTextFormat(
+                        QtCore.Qt.RichText
+                    )  # Enable rich text (HTML)
+                    img_frames[aux].setText(self.no_image)
+                    img_frames[aux].setAlignment(QtCore.Qt.AlignCenter)
+                    img_frames[aux].setWordWrap(True)
             # Chance progress bar to complete
             self.ui.progress_bar_method.setValue(100)
             self.ui.method_progress.setText("Done!")
@@ -2642,10 +2677,19 @@ class GUIMethods:
                     self.pred_roof_shape = self.ui.roof_shape_cb_1.currentData()
                     self.roof_mat_pred = self.ui.roof_material_cb_1.currentData()
                     self.code_level_pred = self.ui.age_cb_1.currentData()
+                    self.pred_occ_value = self.ui.occup_cb_1.currentData()
 
                     # LLRS adjusments based on material
                     if self.pred_mat_value == "MCF" or self.pred_mat_value == "MUR":
                         self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4])
+
+                    # Material and LLRS adjustment based on occupancy
+                    if self.pred_occ_value == "IND":
+                        if self.pred_mat_value in ("CR"):
+                            pass
+                        else:
+                            self.ui.material_cb_1.setCurrentText(self.class_mat[0])
+                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
 
                     # Roof material adjument based on roof shape
                     if self.pred_roof_shape == "RSH1":
