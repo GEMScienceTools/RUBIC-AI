@@ -6,6 +6,7 @@ prepares input images, and exposes prediction functions used by RUBIC-AI.
 
 from typing import Any
 
+import numpy as np
 import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
@@ -20,8 +21,8 @@ from torchvision import models
 # Module-level cache: weights_path -> {"model", "device"}
 _MODEL_CACHE: dict[str, dict[str, Any]] = {}
 
-# All models use the same image preprocessing pipeline.
-_SHARED_TRANSFORM = transforms.Compose(
+# ConvNeXt models were trained and evaluated with 256 x 256 images.
+_CONVNEXT_TRANSFORM_NS = transforms.Compose(
     [
         transforms.Resize((256, 256)),
         transforms.ToTensor(),
@@ -31,6 +32,35 @@ _SHARED_TRANSFORM = transforms.Compose(
         ),
     ]
 )
+
+# ConvNeXt models were trained and evaluated with 512 x 512 images.
+_CONVNEXT_TRANSFORM = transforms.Compose(
+    [
+        transforms.Resize((512, 512)),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+    ]
+)
+
+
+# Swin Transformer Tiny is commonly trained with 224x224 images.
+_SWIN_TRANSFORM = transforms.Compose(
+    [
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+    ]
+)
+
+# In-memory arrays produced by OpenCV use BGR channel order. Set this to False
+# only when the calling code already provides RGB NumPy arrays.
+_NUMPY_INPUT_IS_BGR = True
 
 
 def _resolve_image(image_path, insp_method: int, box_id):
@@ -55,12 +85,26 @@ def _resolve_image(image_path, insp_method: int, box_id):
         Image converted to RGB format.
     """
     if insp_method != 2 or box_id is not None:
-        return Image.fromarray(image_path).convert("RGB")
+        array = np.asarray(image_path)
+
+        if _NUMPY_INPUT_IS_BGR and array.ndim == 3:
+            if array.shape[2] == 3:
+                array = array[:, :, ::-1]
+            elif array.shape[2] == 4:
+                array = array[:, :, [2, 1, 0, 3]]
+
+        return Image.fromarray(array).convert("RGB")
 
     return Image.open(image_path).convert("RGB")
 
 
-def _run_inference(model, device, image, return_probs: bool = False):
+def _run_inference(
+    model,
+    device,
+    image,
+    image_transform,
+    return_probs: bool = False,
+):
     """Preprocess an image and run a model inference pass.
 
     Parameters
@@ -71,6 +115,8 @@ def _run_inference(model, device, image, return_probs: bool = False):
         Device on which inference is performed.
     image : PIL.Image.Image
         RGB image to classify.
+    image_transform : torchvision.transforms.Compose
+        Preprocessing pipeline associated with the loaded model.
     return_probs : bool, optional
         Return class probabilities instead of the predicted class index.
 
@@ -79,19 +125,16 @@ def _run_inference(model, device, image, return_probs: bool = False):
     int or list[float]
         Predicted class index or softmax probabilities.
     """
-    tensor = _SHARED_TRANSFORM(image).unsqueeze(0).to(device)
+    tensor = image_transform(image).unsqueeze(0).to(device)
 
-    with (
-        torch.no_grad(),
-        torch.autocast(
-            device_type=device.type,
-            enabled=device.type == "cuda",
-        ),
-    ):
+    # Use regular precision to reproduce the evaluation configuration used by
+    # the test-only scripts.
+    with torch.no_grad():
         output = model(tensor)
 
     if return_probs:
-        return torch.softmax(output, dim=1).squeeze().tolist()
+        probabilities = torch.softmax(output, dim=1)
+        return probabilities.squeeze(0).cpu().tolist()
 
     return torch.argmax(output, dim=1).item()
 
@@ -131,11 +174,15 @@ def _get_swin_tiny_bundle(weights_path: str, num_classes: int) -> dict[str, Any]
     )
 
     state_dict = torch.load(weights_path, map_location=device)
-    model.load_state_dict(state_dict)
+    model.load_state_dict(state_dict, strict=True)
     model.to(device)
     model.eval()
 
-    bundle = {"model": model, "device": device}
+    bundle = {
+        "model": model,
+        "device": device,
+        "transform": _SWIN_TRANSFORM,
+    }
     _MODEL_CACHE[weights_path] = bundle
     return bundle
 
@@ -165,20 +212,64 @@ def _get_convnext_bundle(weights_path: str, num_classes: int) -> dict[str, Any]:
     model = models.convnext_tiny(weights=None)
     in_features = model.classifier[2].in_features
     model.classifier[2] = nn.Sequential(
-        nn.Dropout(p=0.2),
+        nn.Dropout(p=0.5),
         nn.Linear(in_features, num_classes),
     )
 
     state_dict = torch.load(weights_path, map_location=device)
-    model.load_state_dict(state_dict)
+    model.load_state_dict(state_dict, strict=True)
     model.to(device)
     model.eval()
 
-    bundle = {"model": model, "device": device}
+    bundle = {
+        "model": model,
+        "device": device,
+        "transform": _CONVNEXT_TRANSFORM,
+    }
     _MODEL_CACHE[weights_path] = bundle
     return bundle
 
+def _get_convnext_bundle_ns(weights_path: str, num_classes: int) -> dict[str, Any]:
+    """Load or retrieve a cached ConvNeXt-Tiny model.
 
+    The final classifier layer is replaced by a dropout layer followed by a
+    linear layer with ``num_classes`` outputs.
+
+    Parameters
+    ----------
+    weights_path : str
+        Path to the trained model weights.
+    num_classes : int
+        Number of output classes.
+
+    Returns
+    -------
+    dict[str, object]
+        Dictionary containing the model and inference device.
+    """
+    if weights_path in _MODEL_CACHE:
+        return _MODEL_CACHE[weights_path]
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = models.convnext_tiny(weights=None)
+    in_features = model.classifier[2].in_features
+    model.classifier[2] = nn.Sequential(
+        nn.Dropout(p=0.5),
+        nn.Linear(in_features, num_classes),
+    )
+
+    state_dict = torch.load(weights_path, map_location=device)
+    model.load_state_dict(state_dict, strict=True)
+    model.to(device)
+    model.eval()
+
+    bundle = {
+        "model": model,
+        "device": device,
+        "transform": _CONVNEXT_TRANSFORM_NS,
+    }
+    _MODEL_CACHE[weights_path] = bundle
+    return bundle
 # -----------------------------------------------------------------------------
 # Public warm-up helper
 # -----------------------------------------------------------------------------
@@ -215,7 +306,7 @@ def warm_up_all_models() -> None:
         "dl_weights/convnext_tiny_code.pt",
         num_classes=4,
     )
-    _get_convnext_bundle(
+    _get_convnext_bundle_ns(
         "dl_weights/convnext_tiny_n_stories.pt",
         num_classes=9,
     )
@@ -271,6 +362,7 @@ def predict_material_img(
             bundle["model"],
             bundle["device"],
             image,
+            bundle["transform"],
             return_probs,
         )
     except Exception as error:
@@ -325,6 +417,7 @@ def predict_llrs_img(
             bundle["model"],
             bundle["device"],
             image,
+            bundle["transform"],
             return_probs,
         )
     except Exception as error:
@@ -372,6 +465,7 @@ def predict_block_position_img(
             bundle["model"],
             bundle["device"],
             image,
+            bundle["transform"],
             return_probs,
         )
     except Exception as error:
@@ -419,6 +513,7 @@ def predict_roof_shape_img(
             bundle["model"],
             bundle["device"],
             image,
+            bundle["transform"],
             return_probs,
         )
     except Exception as error:
@@ -466,6 +561,7 @@ def predict_roof_material_img(
             bundle["model"],
             bundle["device"],
             image,
+            bundle["transform"],
             return_probs,
         )
     except Exception as error:
@@ -513,6 +609,7 @@ def predict_code_img(
             bundle["model"],
             bundle["device"],
             image,
+            bundle["transform"],
             return_probs,
         )
     except Exception as error:
@@ -549,7 +646,7 @@ def predict_n_stories_img(
     int, list[float], or None
         Prediction result, or ``None`` if inference fails.
     """
-    bundle = _get_convnext_bundle(
+    bundle = _get_convnext_bundle_ns(
         "dl_weights/convnext_tiny_n_stories.pt",
         num_classes=9,
     )
@@ -560,6 +657,7 @@ def predict_n_stories_img(
             bundle["model"],
             bundle["device"],
             image,
+            bundle["transform"],
             return_probs,
         )
     except Exception as error:
@@ -607,6 +705,7 @@ def predict_occupancy_img(
             bundle["model"],
             bundle["device"],
             image,
+            bundle["transform"],
             return_probs,
         )
     except Exception as error:
