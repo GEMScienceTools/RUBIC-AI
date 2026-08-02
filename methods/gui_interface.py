@@ -1379,7 +1379,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.progress_bar_method = QtWidgets.QProgressBar(self.centralwidget)
         self.progress_bar_method.setGeometry(
             QtCore.QRect(
-                int(620 * sf_x), int(680 * sf_y), int(161 * sf_x), int(23 * sf_y)
+                int(580 * sf_x), int(680 * sf_y), int(161 * sf_x), int(23 * sf_y)
             )
         )
         font = QtGui.QFont()
@@ -1392,7 +1392,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.method_progress = QtWidgets.QLabel(self.centralwidget)
         self.method_progress.setGeometry(
             QtCore.QRect(
-                int(800 * sf_x), int(670 * sf_y), int(291 * sf_x), int(41 * sf_y)
+                int(750 * sf_x), int(670 * sf_y), int(291 * sf_x), int(41 * sf_y)
             )
         )
         font = QtGui.QFont()

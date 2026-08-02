@@ -2832,7 +2832,8 @@ class GUIMethods:
                         self.ui.country_value.text()
                     )
                     self.data_ai.loc[self.click_count, "city"] = self.ui.city_value.text()
-                    self.data_ai.loc[self.click_count, "review"] = "False"
+                    if self.data_ai.loc[self.click_count, "review"] != "TRUE":
+                        self.data_ai.loc[self.click_count, "review"] = "FALSE"
                     self.data_ai.loc[self.click_count, "material"] = (
                         self.ui.material_cb.currentData()
                     )
@@ -2936,7 +2937,8 @@ class GUIMethods:
                     self.data_ai.loc[self.old_local, "city"] = (
                         self.ui.city_value.text()
                     )  # City
-                    self.data_ai.loc[self.old_local, "review"] = "False"
+                    if self.data_ai.loc[self.old_local, "review"] != "TRUE":
+                        self.data_ai.loc[self.old_local, "review"] = "FALSE"
                     self.data_ai.loc[self.old_local, "material"] = (
                         self.ui.material_cb.currentData()
                     )  # LLRS Material
@@ -3132,9 +3134,19 @@ class GUIMethods:
     ############ Future revision due to lack of information for proper classification #####
     def building_review(self):
         if self.ui.insp_method in (0, 1):
-            self.data_ai.loc[self.click_count-1, "review"] = "True"
+            self.data_ai.loc[self.click_count, "review"] = "TRUE"
+            QMessageBox.information(
+                self.ui,
+                "Review Request",
+                ("Done! The building has been marked for future review."),
+            )
         elif self.ui.insp_method == 2:
-            self.data_ai.loc[self.old_local-1, "review"] = "True"
+            self.data_ai.loc[self.old_local, "review"] = "TRUE"
+            QMessageBox.information(
+                self.ui,
+                "Review Request",
+                ("Done! The building has been marked for future review."),
+            )
             
     ############ Saves the data from the inspections that were conducted #####
     def save_database(self):
