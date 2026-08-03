@@ -606,6 +606,7 @@ class GUIMethods:
                 "longitude",
                 "country",
                 "city",
+                "review",
                 "material",
                 "llrs",
                 "code_level",
@@ -619,7 +620,7 @@ class GUIMethods:
                 "n_bays",
                 "image_quality",
                 "taxonomy",
-                "image filename or link",
+                "image_filename_or_link",
             ]
 
             # Create an empty DataFrame for number of footprint available
@@ -2619,19 +2620,19 @@ class GUIMethods:
                     material_index = predict_material_img(
                         image_file, self.ui.insp_method, self.box_id, self
                     )
-                    self.ui.material_cb_1.setCurrentText(self.class_mat[material_index])
+                    self.ui.material_cb.setCurrentText(self.class_mat[material_index])
 
                     # LLRS building image prediction
                     llrs_index = predict_llrs_img(
                         image_file, self.ui.insp_method, self.box_id, self
                     )
-                    self.ui.llrs_cb_1.setCurrentText(self.class_llrs[llrs_index])
+                    self.ui.llrs_cb.setCurrentText(self.class_llrs[llrs_index])
 
                     # LLRS building image prediction
                     code_level_index = predict_code_img(
                         image_file, self.ui.insp_method, self.box_id, self
                     )
-                    self.ui.age_cb_1.setCurrentText(self.class_code[code_level_index])
+                    self.ui.code_level_cb.setCurrentText(self.class_code[code_level_index])
 
                     # LLRS building image prediction
                     n_stories_index = predict_n_stories_img(
@@ -2645,13 +2646,13 @@ class GUIMethods:
                     occupancy_index = predict_occupancy_img(
                         image_file, self.ui.insp_method, self.box_id, self
                     )
-                    self.ui.occup_cb_1.setCurrentText(self.class_occ[occupancy_index])
+                    self.ui.occup_cb.setCurrentText(self.class_occ[occupancy_index])
 
                     # block_position building image prediction
                     block_position_index = predict_block_position_img(
                         image_file, self.ui.insp_method, self.box_id, self
                     )
-                    self.ui.bck_pos_cb_1.setCurrentText(
+                    self.ui.bck_pos_cb.setCurrentText(
                         self.class_bp[block_position_index]
                     )
 
@@ -2659,7 +2660,7 @@ class GUIMethods:
                     roof_shape_index = predict_roof_shape_img(
                         image_file, self.ui.insp_method, self.box_id, self
                     )
-                    self.ui.roof_shape_cb_1.setCurrentText(
+                    self.ui.roof_shape_cb.setCurrentText(
                         self.class_r_shape[roof_shape_index]
                     )
 
@@ -2667,48 +2668,48 @@ class GUIMethods:
                     roof_material_index = predict_roof_material_img(
                         image_file, self.ui.insp_method, self.box_id, self
                     )
-                    self.ui.roof_material_cb_1.setCurrentText(
+                    self.ui.roof_material_cb.setCurrentText(
                         self.class_r_mat[roof_material_index]
                     )
 
                     # Taxonomy adjustments
-                    self.pred_mat_value = self.ui.material_cb_1.currentData()
-                    self.llrs_pred = self.ui.llrs_cb_1.currentData()
-                    self.pred_roof_shape = self.ui.roof_shape_cb_1.currentData()
-                    self.roof_mat_pred = self.ui.roof_material_cb_1.currentData()
-                    self.code_level_pred = self.ui.age_cb_1.currentData()
-                    self.pred_occ_value = self.ui.occup_cb_1.currentData()
+                    self.pred_mat_value = self.ui.material_cb.currentData()
+                    self.llrs_pred = self.ui.llrs_cb.currentData()
+                    self.pred_roof_shape = self.ui.roof_shape_cb.currentData()
+                    self.roof_mat_pred = self.ui.roof_material_cb.currentData()
+                    self.code_level_pred = self.ui.code_level_cb.currentData()
+                    self.pred_occ_value = self.ui.occup_cb.currentData()
 
                     # LLRS adjusments based on material
                     if self.pred_mat_value == "MCF" or self.pred_mat_value == "MUR":
-                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4])
+                        self.ui.llrs_cb.setCurrentText(self.class_llrs[4])
 
                     # Material and LLRS adjustment based on occupancy
                     if self.pred_occ_value == "IND":
                         if self.pred_mat_value in ("CR"):
                             pass
                         else:
-                            self.ui.material_cb_1.setCurrentText(self.class_mat[0])
-                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
+                            self.ui.material_cb.setCurrentText(self.class_mat[0])
+                            self.ui.llrs_cb.setCurrentText(self.class_llrs[2])
 
                     # Roof material adjument based on roof shape
                     if self.pred_roof_shape == "RSH1":
-                        self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[0])
+                        self.ui.roof_material_cb.setCurrentText(self.class_r_mat[0])
                     elif self.pred_roof_shape == "RSH7":
-                        self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[2])
+                        self.ui.roof_material_cb.setCurrentText(self.class_r_mat[2])
                     elif self.pred_roof_shape == "RSH2":
                         if self.roof_mat_pred in ("RMT1", "RMT6"):
                             pass
                         else:
                             # This depends on the country
-                            self.ui.roof_material_cb_1.setCurrentText(
+                            self.ui.roof_material_cb.setCurrentText(
                                 self.class_r_mat[2]
                             )
                     elif self.pred_roof_shape == "RSH3":
                         if self.roof_mat_pred in ("RMT1", "RMT6"):
                             pass
                         else:
-                            self.ui.roof_material_cb_1.setCurrentText(
+                            self.ui.roof_material_cb.setCurrentText(
                                 self.class_r_mat[1]
                             )
 
@@ -2717,7 +2718,7 @@ class GUIMethods:
                         if self.code_level_pred in ("CDL", "CDN"):
                             pass
                         else:
-                            self.ui.age_cb_1.setCurrentText(self.class_code[3])
+                            self.ui.code_level_cb.setCurrentText(self.class_code[3])
 
                     # For conditional within dl models
                     self.box_id = None
@@ -2818,54 +2819,62 @@ class GUIMethods:
                     )
 
                 if self.ui.insp_method == 0 or self.ui.insp_method == 1:
-                    self.data_ai.iloc[self.click_count, 0] = (
+                    self.data_ai.loc[self.click_count, "id"] = (
                         self.ui.img_id_value_1.text()[:-2]
                     )
-                    self.data_ai.iloc[self.click_count, 1] = self.data_building.loc[
+                    self.data_ai.loc[
+                        self.click_count, "latitude"
+                    ] = self.data_building.loc[
                         self.click_count, "latitude"
                     ]
-                    self.data_ai.iloc[self.click_count, 2] = self.data_building.loc[
+                    self.data_ai.loc[
+                        self.click_count, "longitude"
+                    ] = self.data_building.loc[
                         self.click_count, "longitude"
                     ]
-                    self.data_ai.iloc[self.click_count, 3] = (
+                    self.data_ai.loc[self.click_count, "country"] = (
                         self.ui.country_value.text()
                     )
-                    self.data_ai.iloc[self.click_count, 4] = self.ui.city_value.text()
-                    self.data_ai.iloc[self.click_count, 5] = (
-                        self.ui.material_cb_1.currentData()
+                    self.data_ai.loc[self.click_count, "city"] = (
+                        self.ui.city_value.text()
                     )
-                    self.data_ai.iloc[self.click_count, 6] = (
-                        self.ui.llrs_cb_1.currentData()
+                    if self.data_ai.loc[self.click_count, "review"] != "TRUE":
+                        self.data_ai.loc[self.click_count, "review"] = "FALSE"
+                    self.data_ai.loc[self.click_count, "material"] = (
+                        self.ui.material_cb.currentData()
                     )
-                    self.data_ai.iloc[self.click_count, 7] = (
-                        self.ui.age_cb_1.currentData()
+                    self.data_ai.loc[self.click_count, "llrs"] = (
+                        self.ui.llrs_cb.currentData()
                     )
-                    self.data_ai.iloc[self.click_count, 8] = (
+                    self.data_ai.loc[self.click_count, "code_level"] = (
+                        self.ui.code_level_cb.currentData()
+                    )
+                    self.data_ai.loc[self.click_count, "n_stories"] = (
                         self.ui.n_stories_value_1.currentData()
                     )
-                    self.data_ai.iloc[self.click_count, 9] = (
-                        self.ui.occup_cb_1.currentData()
+                    self.data_ai.loc[self.click_count, "occupancy"] = (
+                        self.ui.occup_cb.currentData()
                     )
-                    self.data_ai.iloc[self.click_count, 10] = (
-                        self.ui.bck_pos_cb_1.currentData()
+                    self.data_ai.loc[self.click_count, "block_position"] = (
+                        self.ui.bck_pos_cb.currentData()
                     )
-                    self.data_ai.iloc[self.click_count, 11] = (
-                        self.ui.epc_const_cb_1.currentText()
+                    self.data_ai.loc[self.click_count, "epoch_construction"] = (
+                        self.ui.epc_const_cb.currentText()
                     )
-                    self.data_ai.iloc[self.click_count, 12] = (
-                        self.ui.roof_shape_cb_1.currentData()
+                    self.data_ai.loc[self.click_count, "roof_shape"] = (
+                        self.ui.roof_shape_cb.currentData()
                     )
-                    self.data_ai.iloc[self.click_count, 13] = (
-                        self.ui.roof_material_cb_1.currentData()
+                    self.data_ai.loc[self.click_count, "roof_material"] = (
+                        self.ui.roof_material_cb.currentData()
                     )
-                    self.data_ai.iloc[self.click_count, 14] = (
+                    self.data_ai.loc[self.click_count, "v_irregularity"] = (
                         self.ui.irregularity_cb.currentData()
                     )
-                    self.data_ai.iloc[self.click_count, 15] = (
+                    self.data_ai.loc[self.click_count, "n_bays"] = (
                         self.ui.n_bay_cb.currentData()
                     )
-                    self.data_ai.iloc[self.click_count, 16] = (
-                        self.ui.img_q_cb_1.currentData()
+                    self.data_ai.loc[self.click_count, "image_quality"] = (
+                        self.ui.img_q_cb.currentData()
                     )
 
                     # Taxonomy (safe + partial)
@@ -2878,16 +2887,16 @@ class GUIMethods:
                             out.append(v)
 
                     parts = []
-                    _add(parts, self.ui.material_cb_1.currentData())
-                    _add(parts, self.ui.llrs_cb_1.currentData())
-                    _add(parts, self.ui.age_cb_1.currentData())
+                    _add(parts, self.ui.material_cb.currentData())
+                    _add(parts, self.ui.llrs_cb.currentData())
+                    _add(parts, self.ui.code_level_cb.currentData())
                     st = _s(self.ui.n_stories_value_1.currentText())
                     if st:
                         parts.append(f"H:{st}")
-                    _add(parts, self.ui.bck_pos_cb_1.currentData())
+                    _add(parts, self.ui.bck_pos_cb.currentData())
 
-                    roof_shape = _s(self.ui.roof_shape_cb_1.currentData())
-                    roof_mat = _s(self.ui.roof_material_cb_1.currentData())
+                    roof_shape = _s(self.ui.roof_shape_cb.currentData())
+                    roof_mat = _s(self.ui.roof_material_cb.currentData())
                     if roof_shape and roof_mat:
                         parts.append(f"{roof_shape}+{roof_mat}")
                     elif roof_shape:
@@ -2895,18 +2904,20 @@ class GUIMethods:
                     elif roof_mat:
                         parts.append(roof_mat)
 
-                    _add(parts, self.ui.occup_cb_1.currentData())
+                    _add(parts, self.ui.occup_cb.currentData())
 
                     tax = "/".join(parts)
-                    self.data_ai.iloc[self.click_count, 17] = tax
+                    self.data_ai.loc[self.click_count, "taxonomy"] = tax
                     if tax:
                         self.tax_check(tax)
 
                     if self.img_url[0] != "":
-                        self.data_ai.iloc[self.click_count, 18] = self.img_url[0]
+                        self.data_ai.loc[self.click_count,
+                                         "image_filename_or_link"] = self.img_url[0]
                     else:
                         if isinstance(heading, int):
-                            self.data_ai.iloc[self.click_count, 18] = (
+                            self.data_ai.loc[self.click_count,
+                                             "image_filename_or_link"] = (
                                 base_url
                                 + coord
                                 + "&heading="
@@ -2918,58 +2929,81 @@ class GUIMethods:
                 # Local images
                 # ==============================================================
                 elif self.ui.insp_method == 2:
-                    # Left building image
-                    self.data_ai.iloc[self.old_local, 0] = (
+                    # id
+                    self.data_ai.loc[self.old_local, "id"] = (
                         self.ui.img_id_value_1.text()[:-2]
-                    )  # ID
-                    self.data_ai.iloc[self.old_local, 1] = self.data_building.loc[
+                    )
+                    # latitude
+                    self.data_ai.loc[
                         self.old_local, "latitude"
-                    ]  # latitude
-                    self.data_ai.iloc[self.old_local, 2] = self.data_building.loc[
+                    ] = self.data_building.loc[
+                        self.old_local, "latitude"
+                    ]
+                    # longitude
+                    self.data_ai.loc[
                         self.old_local, "longitude"
-                    ]  # longitude
-                    self.data_ai.iloc[self.old_local, 3] = (
+                    ] = self.data_building.loc[
+                        self.old_local, "longitude"
+                    ]
+                    # Country
+                    self.data_ai.loc[self.old_local, "country"] = (
                         self.ui.country_value.text()
-                    )  # Country
-                    self.data_ai.iloc[self.old_local, 4] = (
+                    )
+                    # City
+                    self.data_ai.loc[self.old_local, "city"] = (
                         self.ui.city_value.text()
-                    )  # City
-                    self.data_ai.iloc[self.old_local, 5] = (
-                        self.ui.material_cb_1.currentData()
-                    )  # LLRS Material
-                    self.data_ai.iloc[self.old_local, 6] = (
-                        self.ui.llrs_cb_1.currentData()
-                    )  # LLRS
-                    self.data_ai.iloc[self.old_local, 7] = (
-                        self.ui.age_cb_1.currentData()
-                    )  # Code Level
-                    self.data_ai.iloc[self.old_local, 8] = (
+                    )
+                    # Review
+                    if self.data_ai.loc[self.old_local, "review"] != "TRUE":
+                        self.data_ai.loc[self.old_local, "review"] = "FALSE"
+                    # LLRS Material
+                    self.data_ai.loc[self.old_local, "material"] = (
+                        self.ui.material_cb.currentData()
+                    )
+                    # LLRS
+                    self.data_ai.loc[self.old_local, "llrs"] = (
+                        self.ui.llrs_cb.currentData()
+                    )
+                    # Code Level
+                    self.data_ai.loc[self.old_local, "code_level"] = (
+                        self.ui.code_level_cb.currentData()
+                    )
+                    # Number of Stories
+                    self.data_ai.loc[self.old_local, "n_stories"] = (
                         self.ui.n_stories_value_1.currentData()
-                    )  # Number of Stories
-                    self.data_ai.iloc[self.old_local, 9] = (
-                        self.ui.occup_cb_1.currentData()
-                    )  # Occupancy
-                    self.data_ai.iloc[self.old_local, 10] = (
-                        self.ui.bck_pos_cb_1.currentData()
-                    )  # Block Position
-                    self.data_ai.iloc[self.old_local, 11] = (
-                        self.ui.epc_const_cb_1.currentText()
-                    )  # Epoch of construction
-                    self.data_ai.iloc[self.old_local, 12] = (
-                        self.ui.roof_shape_cb_1.currentData()
-                    )  # Roof shape
-                    self.data_ai.iloc[self.old_local, 13] = (
-                        self.ui.roof_material_cb_1.currentData()
-                    )  # Roof material
-                    self.data_ai.iloc[self.old_local, 14] = (
+                    )
+                    # Occupancy
+                    self.data_ai.loc[self.old_local, "occupancy"] = (
+                        self.ui.occup_cb.currentData()
+                    )
+                    # Block Position
+                    self.data_ai.loc[self.old_local, "block_position"] = (
+                        self.ui.bck_pos_cb.currentData()
+                    )
+                    # Epoch of construction
+                    self.data_ai.loc[self.old_local, "epoch_construction"] = (
+                        self.ui.epc_const_cb.currentText()
+                    )
+                    # Roof shape
+                    self.data_ai.loc[self.old_local, "roof_shape"] = (
+                        self.ui.roof_shape_cb.currentData()
+                    )
+                    # Roof material
+                    self.data_ai.loc[self.old_local, "roof_material"] = (
+                        self.ui.roof_material_cb.currentData()
+                    )
+                    # Vertical irregularity
+                    self.data_ai.loc[self.old_local, "v_irregularity"] = (
                         self.ui.irregularity_cb.currentData()
-                    )  # Vertical irregularity
-                    self.data_ai.iloc[self.old_local, 15] = (
+                    )
+                    # Number of bays
+                    self.data_ai.loc[self.old_local, "n_bays"] = (
                         self.ui.n_bay_cb.currentData()
-                    )  # Vertical irregularity
-                    self.data_ai.iloc[self.old_local, 16] = (
-                        self.ui.img_q_cb_1.currentData()
-                    )  # Image Quality
+                    )
+                    # Image Quality
+                    self.data_ai.loc[self.old_local, "image_quality"] = (
+                        self.ui.img_q_cb.currentData()
+                    )
 
                     # Taxonomy (works with missing fields)
                     def _s(v):
@@ -2978,19 +3012,19 @@ class GUIMethods:
                     parts = []
 
                     for v in (
-                        _s(self.ui.material_cb_1.currentData()),
-                        _s(self.ui.llrs_cb_1.currentData()),
-                        _s(self.ui.age_cb_1.currentData()),
+                        _s(self.ui.material_cb.currentData()),
+                        _s(self.ui.llrs_cb.currentData()),
+                        _s(self.ui.code_level_cb.currentData()),
                         f"H:{_s(self.ui.n_stories_value_1.currentText())}"
                         if _s(self.ui.n_stories_value_1.currentText())
                         else "",
-                        _s(self.ui.bck_pos_cb_1.currentData()),
+                        _s(self.ui.bck_pos_cb.currentData()),
                     ):
                         if v:
                             parts.append(v)
 
-                    roof_shape = _s(self.ui.roof_shape_cb_1.currentData())
-                    roof_mat = _s(self.ui.roof_material_cb_1.currentData())
+                    roof_shape = _s(self.ui.roof_shape_cb.currentData())
+                    roof_mat = _s(self.ui.roof_material_cb.currentData())
                     if roof_shape and roof_mat:
                         parts.append(f"{roof_shape}+{roof_mat}")
                     elif roof_shape:
@@ -2998,16 +3032,18 @@ class GUIMethods:
                     elif roof_mat:
                         parts.append(roof_mat)
 
-                    occup = _s(self.ui.occup_cb_1.currentData())
+                    occup = _s(self.ui.occup_cb.currentData())
                     if occup:
                         parts.append(occup)
 
                     tax = "/".join(parts)
-                    self.data_ai.iloc[self.old_local, 17] = tax  # Taxonomy
+                    self.data_ai.loc[self.old_local, "taxonomy"] = tax  # Taxonomy
                     if tax:
                         self.tax_check(tax)
 
-                    self.data_ai.iloc[self.old_local, 18] = self.data_building.iloc[
+                    self.data_ai.loc[self.old_local,
+                        "image_filename_or_link"
+                    ] = self.data_building.iloc[
                         self.old_local, 0
                     ]
 
@@ -3016,11 +3052,15 @@ class GUIMethods:
         ##########################################################################
         elif self.ui.insp_method == 3:
             for i in range(self.data_ai.shape[0]):
-                self.data_ai.iloc[i, 0] = self.ui.coord_reference.loc[i, "id"]  # ID
-                self.data_ai.iloc[i, 1] = self.ui.coord_reference.loc[
+                self.data_ai.loc[i, "id"] = self.ui.coord_reference.loc[i, "id"]  # ID
+                self.data_ai.loc[i, "latitude"] = self.ui.coord_reference.loc[
                     i, "latitude"
                 ]  # Latitude
-                self.data_ai.iloc[i, 2] = self.ui.coord_reference.loc[i, "longitude"]
+                self.data_ai.loc[
+                    i, "longitude"
+                ] = self.ui.coord_reference.loc[
+                    i, "longitude"
+                ]
                 try:
                     image_file, url_gsv = self.object_detector_building(i)
                     if image_file is None:
@@ -3047,67 +3087,68 @@ class GUIMethods:
                         roof_shape_classes = ["RSH1", "RSH2", "RSH3", "RSH7"]
                         roof_material_classes = ["RMN", "RMT1", "RMT6"]
 
-                        self.data_ai.iloc[i, 3], self.data_ai.iloc[i, 4] = country, city
-                        self.data_ai.iloc[i, 5] = material_classes[
+                        self.data_ai.loc[i, "country"] = country
+                        self.data_ai.loc[i, "city"] = city
+                        self.data_ai.loc[i, "material"] = material_classes[
                             predict_material_img(
                                 image_file, self.ui.insp_method, None, self.ui
                             )
                         ]  # LLRS Material
-                        self.data_ai.iloc[i, 6] = llrs_classes[
+                        self.data_ai.loc[i, "llrs"] = llrs_classes[
                             predict_llrs_img(
                                 image_file, self.ui.insp_method, None, self.ui
                             )
                         ]  # LLRS
-                        self.data_ai.iloc[i, 7] = code_level_classes[
+                        self.data_ai.loc[i, "code_level"] = code_level_classes[
                             predict_code_img(
                                 image_file, self.ui.insp_method, None, self.ui
                             )
                         ]  # Code Level
-                        self.data_ai.iloc[i, 8] = ns_classes[
+                        self.data_ai.loc[i, "n_stories"] = ns_classes[
                             predict_n_stories_img(
                                 image_file, self.ui.insp_method, None, self.ui
                             )
                         ]  # Number of Stories
-                        self.data_ai.iloc[i, 9] = occupancy_class[
+                        self.data_ai.loc[i, "occupancy"] = occupancy_class[
                             predict_occupancy_img(
                                 image_file, self.ui.insp_method, None, self.ui
                             )
                         ]
-                        self.data_ai.iloc[i, 10] = block_position_classes[
+                        self.data_ai.loc[i, "block_position"] = block_position_classes[
                             predict_block_position_img(
                                 image_file, self.ui.insp_method, None, self.ui
                             )
                         ]  # Block Position
-                        self.data_ai.iloc[i, 12] = roof_shape_classes[
+                        self.data_ai.loc[i, "roof_shape"] = roof_shape_classes[
                             predict_roof_shape_img(
                                 image_file, self.ui.insp_method, None, self.ui
                             )
                         ]  # Roof shape
-                        self.data_ai.iloc[i, 13] = roof_material_classes[
+                        self.data_ai.loc[i, "roof_material"] = roof_material_classes[
                             predict_roof_material_img(
                                 image_file, self.ui.insp_method, None, self.ui
                             )
                         ]
 
-                        self.data_ai.iloc[i, 16] = (
-                            self.data_ai.iloc[i, 5]
+                        self.data_ai.loc[i, "taxonomy"] = (
+                            self.data_ai.loc[i, "material"]
                             + "/"
-                            + self.data_ai.iloc[i, 6]
+                            + self.data_ai.loc[i, "llrs"]
                             + "+"
-                            + self.data_ai.iloc[i, 7]
+                            + self.data_ai.loc[i, "code_level"]
                             + "/H:"
-                            + str(self.data_ai.iloc[i, 8])
+                            + str(self.data_ai.loc[i, "n_stories"])
                             + "/"
-                            + self.data_ai.iloc[i, 9]
+                            + self.data_ai.loc[i, "occupancy"]
                             + "/"
-                            + self.data_ai.iloc[i, 10]
+                            + self.data_ai.loc[i, "block_position"]
                             + "/"
-                            + self.data_ai.iloc[i, 12]
+                            + self.data_ai.loc[i, "roof_shape"]
                             + "+"
-                            + self.data_ai.iloc[i, 13]
+                            + self.data_ai.loc[i, "roof_material"]
                         )  # Taxonomy
 
-                        self.data_ai.iloc[i, 17] = url_gsv
+                        self.data_ai.loc[i, "image_filename_or_link"] = url_gsv
                 except (
                     AttributeError,
                     IndexError,
@@ -3125,6 +3166,24 @@ class GUIMethods:
                     + str(self.data_ai.shape[0])
                     + " -------------------------------------"
                 )
+
+    ### Future revision due to lack of information for proper classification ###
+    def building_review(self):
+        """Mark the current building for future review."""
+        if self.ui.insp_method in (0, 1):
+            self.data_ai.loc[self.click_count, "review"] = "TRUE"
+            QMessageBox.information(
+                self.ui,
+                "Review Request",
+                ("Done! The building has been marked for future review."),
+            )
+        elif self.ui.insp_method == 2:
+            self.data_ai.loc[self.old_local, "review"] = "TRUE"
+            QMessageBox.information(
+                self.ui,
+                "Review Request",
+                ("Done! The building has been marked for future review."),
+            )
 
     ############ Saves the data from the inspections that were conducted #####
     def save_database(self):
@@ -3221,7 +3280,7 @@ class GUIMethods:
                 ]
                 filtered_def = filtered_df.drop_duplicates(subset="id", keep="first")
                 filtered_def = filtered_def.drop_duplicates(
-                    subset="image filename or link", keep="first"
+                    subset="image_filename_or_link", keep="first"
                 )
                 filtered_def.to_csv(
                     self.ui.output_folder_value
@@ -3247,7 +3306,7 @@ class GUIMethods:
 
             lat_col = "latitude"
             lon_col = "longitude"
-            filename_col = "image filename or link"
+            filename_col = "image_filename_or_link"
             data_image_id_col = "id"
 
             # Check required columns
@@ -3390,45 +3449,46 @@ class GUIMethods:
             # ==============================================================
             # Material
             if (
-                self.data_ai.iloc[self.click_count, 5] is None
-                or pd.isna(self.data_ai.iloc[self.click_count, 5]) is True
+                self.data_ai.loc[self.click_count, "material"] is None
+                or pd.isna(self.data_ai.loc[self.click_count, "material"]) is True
             ):
-                self.ui.material_cb_1.setCurrentText("Select Material")
+                self.ui.material_cb.setCurrentText("Select Material")
             else:
                 self.setComboBoxByData(
-                    self.ui.material_cb_1, self.data_ai.iloc[self.click_count, 5]
+                    self.ui.material_cb, self.data_ai.loc[self.click_count, "material"]
                 )
 
             # LLRS
             if (
-                self.data_ai.iloc[self.click_count, 6] is None
-                or pd.isna(self.data_ai.iloc[self.click_count, 6]) is True
+                self.data_ai.loc[self.click_count, "llrs"] is None
+                or pd.isna(self.data_ai.loc[self.click_count, "llrs"]) is True
             ):
-                self.ui.llrs_cb_1.setCurrentText("Select LLRS")
+                self.ui.llrs_cb.setCurrentText("Select LLRS")
             else:
                 self.setComboBoxByData(
-                    self.ui.llrs_cb_1, self.data_ai.iloc[self.click_count, 6]
+                    self.ui.llrs_cb, self.data_ai.loc[self.click_count, "llrs"]
                 )
 
             # Code level
             if (
-                self.data_ai.iloc[self.click_count, 7] is None
-                or pd.isna(self.data_ai.iloc[self.click_count, 7]) is True
+                self.data_ai.loc[self.click_count, "code_level"] is None
+                or pd.isna(self.data_ai.loc[self.click_count, "code_level"]) is True
             ):
-                self.ui.age_cb_1.setCurrentText("Select Code Level")
+                self.ui.code_level_cb.setCurrentText("Select Code Level")
             else:
                 self.setComboBoxByData(
-                    self.ui.age_cb_1, self.data_ai.iloc[self.click_count, 7]
+                    self.ui.code_level_cb, self.data_ai.loc[
+                        self.click_count, "code_level"]
                 )
 
             # Number of stories
             if (
-                self.data_ai.iloc[self.click_count, 8] is None
-                or pd.isna(self.data_ai.iloc[self.click_count, 8]) is True
+                self.data_ai.loc[self.click_count, "n_stories"] is None
+                or pd.isna(self.data_ai.loc[self.click_count, "n_stories"]) is True
             ):
                 self.ui.n_stories_value_1.setCurrentText("Select Number of Stories")
             else:
-                n_value = self.data_ai.iloc[self.click_count, 8]
+                n_value = self.data_ai.loc[self.click_count, "n_stories"]
                 if n_value == "1.0" or n_value == 1.0:
                     n_value = "1"
                 elif n_value == "2.0" or n_value == 2.0:
@@ -3443,90 +3503,98 @@ class GUIMethods:
 
             # Occupancy
             if (
-                self.data_ai.iloc[self.click_count, 9] is None
-                or pd.isna(self.data_ai.iloc[self.click_count, 9]) is True
+                self.data_ai.loc[self.click_count, "occupancy"] is None
+                or pd.isna(self.data_ai.loc[self.click_count, "occupancy"]) is True
             ):
-                self.ui.occup_cb_1.setCurrentText("Select Occupancy Type")
+                self.ui.occup_cb.setCurrentText("Select Occupancy Type")
             else:
                 self.setComboBoxByData(
-                    self.ui.occup_cb_1, self.data_ai.iloc[self.click_count, 9]
+                    self.ui.occup_cb, self.data_ai.loc[self.click_count, "occupancy"]
                 )
 
             # Block Position
             if (
-                self.data_ai.iloc[self.click_count, 10] is None
-                or pd.isna(self.data_ai.iloc[self.click_count, 10]) is True
+                self.data_ai.loc[self.click_count, "block_position"] is None
+                or pd.isna(self.data_ai.loc[self.click_count,
+                                            "block_position"]) is True
             ):
-                self.ui.bck_pos_cb_1.setCurrentText("Select Block Position")
+                self.ui.bck_pos_cb.setCurrentText("Select Block Position")
             else:
                 self.setComboBoxByData(
-                    self.ui.bck_pos_cb_1, self.data_ai.iloc[self.click_count, 10]
+                    self.ui.bck_pos_cb, self.data_ai.loc[
+                        self.click_count, "block_position"]
                 )
 
             # Epoch of construction
             if (
-                self.data_ai.iloc[self.click_count, 11] is None
-                or pd.isna(self.data_ai.iloc[self.click_count, 11]) is True
+                self.data_ai.loc[self.click_count, "epoch_construction"] is None
+                or pd.isna(self.data_ai.loc[self.click_count,
+                                            "epoch_construction"]) is True
             ):
-                self.ui.epc_const_cb_1.setCurrentIndex(0)
+                self.ui.epc_const_cb.setCurrentIndex(0)
             else:
                 self.setComboBoxByData(
-                    self.ui.epc_const_cb_1, self.data_ai.iloc[self.click_count, 11]
+                    self.ui.epc_const_cb, self.data_ai.loc[
+                        self.click_count, "epoch_construction"]
                 )
 
             # Roof Shape
             if (
-                self.data_ai.iloc[self.click_count, 12] is None
-                or pd.isna(self.data_ai.iloc[self.click_count, 12]) is True
+                self.data_ai.loc[self.click_count, "roof_shape"] is None
+                or pd.isna(self.data_ai.loc[self.click_count, "roof_shape"]) is True
             ):
-                self.ui.roof_shape_cb_1.setCurrentText("Select Roof Shape")
+                self.ui.roof_shape_cb.setCurrentText("Select Roof Shape")
             else:
                 self.setComboBoxByData(
-                    self.ui.roof_shape_cb_1, self.data_ai.iloc[self.click_count, 12]
+                    self.ui.roof_shape_cb, self.data_ai.loc[
+                        self.click_count, "roof_shape"]
                 )
 
             # Roof Material
             if (
-                self.data_ai.iloc[self.click_count, 13] is None
-                or pd.isna(self.data_ai.iloc[self.click_count, 13]) is True
+                self.data_ai.loc[self.click_count, "roof_material"] is None
+                or pd.isna(self.data_ai.loc[self.click_count, "roof_material"]) is True
             ):
-                self.ui.roof_material_cb_1.setCurrentText("Select Roof Material")
+                self.ui.roof_material_cb.setCurrentText("Select Roof Material")
             else:
                 self.setComboBoxByData(
-                    self.ui.roof_material_cb_1, self.data_ai.iloc[self.click_count, 13]
+                    self.ui.roof_material_cb, self.data_ai.loc[
+                        self.click_count, "roof_material"]
                 )
 
             # Vertical irregularity
             if (
-                self.data_ai.iloc[self.click_count, 14] is None
-                or pd.isna(self.data_ai.iloc[self.click_count, 14]) is True
+                self.data_ai.loc[self.click_count, "v_irregularity"] is None
+                or pd.isna(self.data_ai.loc[self.click_count, "v_irregularity"]) is True
             ):
                 self.ui.irregularity_cb.setCurrentText("Select Irregularity")
             else:
                 self.setComboBoxByData(
-                    self.ui.irregularity_cb, self.data_ai.iloc[self.click_count, 14]
+                    self.ui.irregularity_cb, self.data_ai.loc[
+                        self.click_count, "v_irregularity"]
                 )
 
             # Number of bays
             if (
-                self.data_ai.iloc[self.click_count, 15] is None
-                or pd.isna(self.data_ai.iloc[self.click_count, 15]) is True
+                self.data_ai.loc[self.click_count, "n_bays"] is None
+                or pd.isna(self.data_ai.loc[self.click_count, "n_bays"]) is True
             ):
                 self.ui.n_bay_cb.setCurrentText("Select Number of Bays")
             else:
                 self.setComboBoxByData(
-                    self.ui.n_bay_cb, self.data_ai.iloc[self.click_count, 15]
+                    self.ui.n_bay_cb, self.data_ai.loc[self.click_count, "n_bays"]
                 )
 
             # Image quality
             if (
-                self.data_ai.iloc[self.click_count, 16] is None
-                or pd.isna(self.data_ai.iloc[self.click_count, 16]) is True
+                self.data_ai.loc[self.click_count, "image_quality"] is None
+                or pd.isna(self.data_ai.loc[self.click_count, "image_quality"]) is True
             ):
-                self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
+                self.ui.img_q_cb.setCurrentText("Select Image Quality")
             else:
                 self.setComboBoxByData(
-                    self.ui.img_q_cb_1, self.data_ai.iloc[self.click_count, 16]
+                    self.ui.img_q_cb, self.data_ai.loc[
+                        self.click_count, "image_quality"]
                 )
 
         elif self.ui.insp_method == 2:
@@ -3535,45 +3603,46 @@ class GUIMethods:
             # ==============================================================
             # Material
             if (
-                self.data_ai.iloc[self.old_local, 5] is None
-                or pd.isna(self.data_ai.iloc[self.old_local, 5]) is True
+                self.data_ai.loc[self.old_local, "material"] is None
+                or pd.isna(self.data_ai.loc[self.old_local, "material"]) is True
             ):
-                self.ui.material_cb_1.setCurrentText("Select Material")
+                self.ui.material_cb.setCurrentText("Select Material")
             else:
                 self.setComboBoxByData(
-                    self.ui.material_cb_1, self.data_ai.iloc[self.old_local, 5]
+                    self.ui.material_cb, self.data_ai.loc[self.old_local, "material"]
                 )
 
             # LLRS
             if (
-                self.data_ai.iloc[self.old_local, 6] is None
-                or pd.isna(self.data_ai.iloc[self.old_local, 6]) is True
+                self.data_ai.loc[self.old_local, "llrs"] is None
+                or pd.isna(self.data_ai.loc[self.old_local, "llrs"]) is True
             ):
-                self.ui.llrs_cb_1.setCurrentText("Select LLRS")
+                self.ui.llrs_cb.setCurrentText("Select LLRS")
             else:
                 self.setComboBoxByData(
-                    self.ui.llrs_cb_1, self.data_ai.iloc[self.old_local, 6]
+                    self.ui.llrs_cb, self.data_ai.loc[self.old_local, "llrs"]
                 )
 
             # Code level
             if (
-                self.data_ai.iloc[self.old_local, 7] is None
-                or pd.isna(self.data_ai.iloc[self.old_local, 7]) is True
+                self.data_ai.loc[self.old_local, "code_level"] is None
+                or pd.isna(self.data_ai.loc[self.old_local, "code_level"]) is True
             ):
-                self.ui.age_cb_1.setCurrentText("Select Code Level")
+                self.ui.code_level_cb.setCurrentText("Select Code Level")
             else:
                 self.setComboBoxByData(
-                    self.ui.age_cb_1, self.data_ai.iloc[self.old_local, 7]
+                    self.ui.code_level_cb, self.data_ai.loc[
+                        self.old_local, "code_level"]
                 )
 
             # Number of stories
             if (
-                self.data_ai.iloc[self.old_local, 8] is None
-                or pd.isna(self.data_ai.iloc[self.old_local, 8]) is True
+                self.data_ai.loc[self.old_local, "n_stories"] is None
+                or pd.isna(self.data_ai.loc[self.old_local, "n_stories"]) is True
             ):
                 self.ui.n_stories_value_1.setCurrentText("Select Number of Stories")
             else:
-                n_value = str(self.data_ai.iloc[self.old_local, 8])
+                n_value = str(self.data_ai.loc[self.old_local, "n_stories"])
                 if n_value == "1.0" or n_value == 1.0:
                     n_value = "1"
                 elif n_value == "2.0" or n_value == 2.0:
@@ -3588,90 +3657,97 @@ class GUIMethods:
 
             # Occupancy
             if (
-                self.data_ai.iloc[self.old_local, 9] is None
-                or pd.isna(self.data_ai.iloc[self.old_local, 9]) is True
+                self.data_ai.loc[self.old_local, "occupancy"] is None
+                or pd.isna(self.data_ai.loc[self.old_local, "occupancy"]) is True
             ):
-                self.ui.occup_cb_1.setCurrentText("Select Occupancy Type")
+                self.ui.occup_cb.setCurrentText("Select Occupancy Type")
             else:
                 self.setComboBoxByData(
-                    self.ui.occup_cb_1, self.data_ai.iloc[self.old_local, 9]
+                    self.ui.occup_cb, self.data_ai.loc[self.old_local, "occupancy"]
                 )
 
             # Block Position
             if (
-                self.data_ai.iloc[self.old_local, 10] is None
-                or pd.isna(self.data_ai.iloc[self.old_local, 10]) is True
+                self.data_ai.loc[self.old_local, "block_position"] is None
+                or pd.isna(self.data_ai.loc[self.old_local, "block_position"]) is True
             ):
-                self.ui.bck_pos_cb_1.setCurrentText("Select Block Position")
+                self.ui.bck_pos_cb.setCurrentText("Select Block Position")
             else:
                 self.setComboBoxByData(
-                    self.ui.bck_pos_cb_1, self.data_ai.iloc[self.old_local, 10]
+                    self.ui.bck_pos_cb, self.data_ai.loc[
+                        self.old_local, "block_position"]
                 )
 
             # Epoch of construction
             if (
-                self.data_ai.iloc[self.old_local, 11] is None
-                or pd.isna(self.data_ai.iloc[self.old_local, 11]) is True
+                self.data_ai.loc[self.old_local, "epoch_construction"] is None
+                or pd.isna(self.data_ai.loc[
+                    self.old_local, "epoch_construction"]) is True
             ):
-                self.ui.epc_const_cb_1.setCurrentIndex(0)
+                self.ui.epc_const_cb.setCurrentIndex(0)
             else:
                 self.setComboBoxByData(
-                    self.ui.epc_const_cb_1, str(self.data_ai.iloc[self.old_local, 11])
+                    self.ui.epc_const_cb, str(self.data_ai.loc[
+                        self.old_local, "epoch_construction"])
                 )
 
             # Roof Shape
             if (
-                self.data_ai.iloc[self.old_local, 12] is None
-                or pd.isna(self.data_ai.iloc[self.old_local, 12]) is True
+                self.data_ai.loc[self.old_local, "roof_shape"] is None
+                or pd.isna(self.data_ai.loc[self.old_local, "roof_shape"]) is True
             ):
-                self.ui.roof_shape_cb_1.setCurrentText("Select Roof Shape")
+                self.ui.roof_shape_cb.setCurrentText("Select Roof Shape")
             else:
                 self.setComboBoxByData(
-                    self.ui.roof_shape_cb_1, self.data_ai.iloc[self.old_local, 12]
+                    self.ui.roof_shape_cb, self.data_ai.loc[
+                        self.old_local, "roof_shape"]
                 )
 
             # Roof Material
             if (
-                self.data_ai.iloc[self.old_local, 13] is None
-                or pd.isna(self.data_ai.iloc[self.old_local, 13]) is True
+                self.data_ai.loc[self.old_local, "roof_material"] is None
+                or pd.isna(self.data_ai.loc[self.old_local, "roof_material"]) is True
             ):
-                self.ui.roof_material_cb_1.setCurrentText("Select Roof Material")
+                self.ui.roof_material_cb.setCurrentText("Select Roof Material")
             else:
                 self.setComboBoxByData(
-                    self.ui.roof_material_cb_1, self.data_ai.iloc[self.old_local, 13]
+                    self.ui.roof_material_cb, self.data_ai.loc[
+                        self.old_local, "roof_material"]
                 )
 
-            # Image quality
+            # Vertical Irregularity
             if (
-                self.data_ai.iloc[self.old_local, 14] is None
-                or pd.isna(self.data_ai.iloc[self.old_local, 14]) is True
+                self.data_ai.loc[self.old_local, "v_irregularity"] is None
+                or pd.isna(self.data_ai.loc[self.old_local, "v_irregularity"]) is True
             ):
                 self.ui.irregularity_cb.setCurrentText("Select Irregularity")
             else:
                 self.setComboBoxByData(
-                    self.ui.irregularity_cb, self.data_ai.iloc[self.old_local, 14]
+                    self.ui.irregularity_cb, self.data_ai.loc[
+                        self.old_local, "v_irregularity"]
                 )
 
-            # Image quality
+            # Number of Bays
             if (
-                self.data_ai.iloc[self.old_local, 15] is None
-                or pd.isna(self.data_ai.iloc[self.old_local, 15]) is True
+                self.data_ai.loc[self.old_local, "n_bays"] is None
+                or pd.isna(self.data_ai.loc[self.old_local, "n_bays"]) is True
             ):
                 self.ui.n_bay_cb.setCurrentText("Select Number of Bays")
             else:
                 self.setComboBoxByData(
-                    self.ui.n_bay_cb, self.data_ai.iloc[self.old_local, 15]
+                    self.ui.n_bay_cb, self.data_ai.loc[self.old_local, "n_bays"]
                 )
 
             # Image quality
             if (
-                self.data_ai.iloc[self.old_local, 16] is None
-                or pd.isna(self.data_ai.iloc[self.old_local, 16]) is True
+                self.data_ai.loc[self.old_local, "image_quality"] is None
+                or pd.isna(self.data_ai.loc[self.old_local, "image_quality"]) is True
             ):
-                self.ui.img_q_cb_1.setCurrentText("Select Image Quality")
+                self.ui.img_q_cb.setCurrentText("Select Image Quality")
             else:
                 self.setComboBoxByData(
-                    self.ui.img_q_cb_1, self.data_ai.iloc[self.old_local, 16]
+                    self.ui.img_q_cb, self.data_ai.loc[
+                        self.old_local, "image_quality"]
                 )
 
     ############ Deep learning model for predict the LLRS Material ################
@@ -3734,10 +3810,10 @@ class GUIMethods:
                         if material_index is None:
                             pass
                         else:
-                            self.ui.material_cb_1.setCurrentText(
+                            self.ui.material_cb.setCurrentText(
                                 self.class_mat[material_index]
                             )
-                            self.pred_mat_value = self.ui.material_cb_1.currentData()
+                            self.pred_mat_value = self.ui.material_cb.currentData()
 
                             # Progress bar update
                             self.ui.progress_bar_method.setValue(100)
@@ -3766,10 +3842,10 @@ class GUIMethods:
                     if material_index is None:
                         pass
                     else:
-                        self.ui.material_cb_1.setCurrentText(
+                        self.ui.material_cb.setCurrentText(
                             self.class_mat[material_index]
                         )
-                        self.pred_mat_value = self.ui.material_cb_1.currentData()
+                        self.pred_mat_value = self.ui.material_cb.currentData()
                         # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
@@ -3810,8 +3886,8 @@ class GUIMethods:
                 if material_index is None:
                     pass
                 else:
-                    self.ui.material_cb_1.setCurrentText(self.class_mat[material_index])
-                    self.pred_mat_value = self.ui.material_cb_1.currentData()
+                    self.ui.material_cb.setCurrentText(self.class_mat[material_index])
+                    self.pred_mat_value = self.ui.material_cb.currentData()
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
                     self.ui.method_progress.setText("Prediction complete!")
@@ -3860,23 +3936,23 @@ class GUIMethods:
                         if llrs_index is None:
                             pass
                         else:
-                            self.ui.llrs_cb_1.setCurrentText(
+                            self.ui.llrs_cb.setCurrentText(
                                 self.class_llrs[llrs_index]
                             )
-                            self.llrs_pred = self.ui.llrs_cb_1.currentData()
+                            self.llrs_pred = self.ui.llrs_cb.currentData()
 
                             # LLRS adjusments based on material
                             if (
                                 self.pred_mat_value == "MCF"
                                 or self.pred_mat_value == "MUR"
                             ):
-                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4])
+                                self.ui.llrs_cb.setCurrentText(self.class_llrs[4])
 
                             if self.pred_mat_value == "CR":
                                 if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
                                     pass
                                 else:
-                                    self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
+                                    self.ui.llrs_cb.setCurrentText(self.class_llrs[2])
                             # Progress bar update
                             self.ui.progress_bar_method.setValue(100)
                             self.ui.method_progress.setText("Prediction complete!")
@@ -3904,18 +3980,18 @@ class GUIMethods:
                     if llrs_index is None:
                         pass
                     else:
-                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[llrs_index])
-                        self.llrs_pred = self.ui.llrs_cb_1.currentData()
+                        self.ui.llrs_cb.setCurrentText(self.class_llrs[llrs_index])
+                        self.llrs_pred = self.ui.llrs_cb.currentData()
 
                         # LLRS adjusments based on material
                         if self.pred_mat_value == "MCF" or self.pred_mat_value == "MUR":
-                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4])
+                            self.ui.llrs_cb.setCurrentText(self.class_llrs[4])
 
                         if self.pred_mat_value == "CR":
                             if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
                                 pass
                             else:
-                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
+                                self.ui.llrs_cb.setCurrentText(self.class_llrs[2])
 
                         # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
@@ -3954,18 +4030,18 @@ class GUIMethods:
                 if llrs_index is None:
                     pass
                 else:
-                    self.ui.llrs_cb_1.setCurrentText(self.class_llrs[llrs_index])
-                    self.llrs_pred = self.ui.llrs_cb_1.currentData()
+                    self.ui.llrs_cb.setCurrentText(self.class_llrs[llrs_index])
+                    self.llrs_pred = self.ui.llrs_cb.currentData()
 
                     # LLRS adjusments based on material
                     if self.pred_mat_value == "MCF" or self.pred_mat_value == "MUR":
-                        self.ui.llrs_cb_1.setCurrentText(self.class_llrs[4])
+                        self.ui.llrs_cb.setCurrentText(self.class_llrs[4])
 
                     if self.pred_mat_value == "CR":
                         if self.llrs_pred in ("LDUAL", "LFM", "LFINF"):
                             pass
                         else:
-                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
+                            self.ui.llrs_cb.setCurrentText(self.class_llrs[2])
 
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
@@ -4015,17 +4091,17 @@ class GUIMethods:
                         if code_level_index is None:
                             pass
                         else:
-                            self.ui.age_cb_1.setCurrentText(
+                            self.ui.code_level_cb.setCurrentText(
                                 self.class_code[code_level_index]
                             )
-                            self.code_level_pred = self.ui.age_cb_1.currentData()
+                            self.code_level_pred = self.ui.code_level_cb.currentData()
 
                             # Code level adjustment based on material
                             if self.pred_mat_value == "MUR":
                                 if self.code_level_pred in ("CDL", "CDN"):
                                     pass
                                 else:
-                                    self.ui.age_cb_1.setCurrentText(self.class_code[3])
+                                    self.ui.code_level_cb.setCurrentText(self.class_code[3])
 
                             # Progress bar update
                             self.ui.progress_bar_method.setValue(100)
@@ -4054,17 +4130,17 @@ class GUIMethods:
                     if code_level_index is None:
                         pass
                     else:
-                        self.ui.age_cb_1.setCurrentText(
+                        self.ui.code_level_cb.setCurrentText(
                             self.class_code[code_level_index]
                         )
-                        self.code_level_pred = self.ui.age_cb_1.currentData()
+                        self.code_level_pred = self.ui.code_level_cb.currentData()
 
                         # Code level adjustment based on material
                         if self.pred_mat_value == "MUR":
                             if self.code_level_pred in ("CDL", "CDN"):
                                 pass
                             else:
-                                self.ui.age_cb_1.setCurrentText(self.class_code[3])
+                                self.ui.code_level_cb.setCurrentText(self.class_code[3])
 
                         # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
@@ -4103,15 +4179,15 @@ class GUIMethods:
                 if code_level_index is None:
                     pass
                 else:
-                    self.ui.age_cb_1.setCurrentText(self.class_code[code_level_index])
-                    self.code_level_pred = self.ui.age_cb_1.currentData()
+                    self.ui.code_level_cb.setCurrentText(self.class_code[code_level_index])
+                    self.code_level_pred = self.ui.code_level_cb.currentData()
 
                     # Code level adjustment based on material
                     if self.pred_mat_value == "MUR":
                         if self.code_level_pred in ("CDL", "CDN"):
                             pass
                         else:
-                            self.ui.age_cb_1.setCurrentText(self.class_code[3])
+                            self.ui.code_level_cb.setCurrentText(self.class_code[3])
 
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
@@ -4276,18 +4352,18 @@ class GUIMethods:
                         if occupancy_index is None:
                             pass
                         else:
-                            self.ui.occup_cb_1.setCurrentText(
+                            self.ui.occup_cb.setCurrentText(
                                 self.class_occ[occupancy_index]
                             )
 
-                            self.pred_occ_value = self.ui.occup_cb_1.currentData()
+                            self.pred_occ_value = self.ui.occup_cb.currentData()
                             # Material and LLRS adjustment based on occupancy
                             if self.pred_occ_value == "IND":
                                 if self.pred_mat_value in ("CR"):
                                     pass
                                 else:
-                                    self.ui.material_cb_1.setCurrentText(self.class_mat[0])
-                                    self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
+                                    self.ui.material_cb.setCurrentText(self.class_mat[0])
+                                    self.ui.llrs_cb.setCurrentText(self.class_llrs[2])
 
                             # Progress bar update
                             self.ui.progress_bar_method.setValue(100)
@@ -4316,18 +4392,18 @@ class GUIMethods:
                     if occupancy_index is None:
                         pass
                     else:
-                        self.ui.occup_cb_1.setCurrentText(
+                        self.ui.occup_cb.setCurrentText(
                             self.class_occ[occupancy_index]
                         )
 
-                        self.pred_occ_value = self.ui.occup_cb_1.currentData()
+                        self.pred_occ_value = self.ui.occup_cb.currentData()
                         # Material and LLRS adjustment based on occupancy
                         if self.pred_occ_value == "IND":
                             if self.pred_mat_value in ("CR"):
                                 pass
                             else:
-                                self.ui.material_cb_1.setCurrentText(self.class_mat[0])
-                                self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
+                                self.ui.material_cb.setCurrentText(self.class_mat[0])
+                                self.ui.llrs_cb.setCurrentText(self.class_llrs[2])
 
                         # Progress bar update
                         self.ui.progress_bar_method.setValue(100)
@@ -4366,16 +4442,16 @@ class GUIMethods:
                 if occupancy_index is None:
                     pass
                 else:
-                    self.ui.occup_cb_1.setCurrentText(self.class_occ[occupancy_index])
+                    self.ui.occup_cb.setCurrentText(self.class_occ[occupancy_index])
 
-                    self.pred_occ_value = self.ui.occup_cb_1.currentData()
+                    self.pred_occ_value = self.ui.occup_cb.currentData()
                     # Material and LLRS adjustment based on occupancy
                     if self.pred_occ_value == "IND":
                         if self.pred_mat_value in ("CR"):
                             pass
                         else:
-                            self.ui.material_cb_1.setCurrentText(self.class_mat[0])
-                            self.ui.llrs_cb_1.setCurrentText(self.class_llrs[2])
+                            self.ui.material_cb.setCurrentText(self.class_mat[0])
+                            self.ui.llrs_cb.setCurrentText(self.class_llrs[2])
 
                     # Progress bar update
                     self.ui.progress_bar_method.setValue(100)
@@ -4420,7 +4496,7 @@ class GUIMethods:
                         if block_position_index is None:
                             pass
                         else:
-                            self.ui.bck_pos_cb_1.setCurrentText(
+                            self.ui.bck_pos_cb.setCurrentText(
                                 self.class_bp[block_position_index]
                             )
                             # Progress bar update
@@ -4449,7 +4525,7 @@ class GUIMethods:
                     if block_position_index is None:
                         pass
                     else:
-                        self.ui.bck_pos_cb_1.setCurrentText(
+                        self.ui.bck_pos_cb.setCurrentText(
                             self.class_bp[block_position_index]
                         )
 
@@ -4495,7 +4571,7 @@ class GUIMethods:
                 if block_position_index is None:
                     pass
                 else:
-                    self.ui.bck_pos_cb_1.setCurrentText(
+                    self.ui.bck_pos_cb.setCurrentText(
                         self.class_bp[block_position_index]
                     )
 
@@ -4542,10 +4618,10 @@ class GUIMethods:
                         if roof_shape_index is None:
                             pass
                         else:
-                            self.ui.roof_shape_cb_1.setCurrentText(
+                            self.ui.roof_shape_cb.setCurrentText(
                                 self.class_r_shape[roof_shape_index]
                             )
-                            self.pred_roof_shape = self.ui.roof_shape_cb_1.currentData()
+                            self.pred_roof_shape = self.ui.roof_shape_cb.currentData()
                             # Progress bar update
                             self.ui.progress_bar_method.setValue(100)
                             self.ui.method_progress.setText("Prediction complete!")
@@ -4573,10 +4649,10 @@ class GUIMethods:
                     if roof_shape_index is None:
                         pass
                     else:
-                        self.ui.roof_shape_cb_1.setCurrentText(
+                        self.ui.roof_shape_cb.setCurrentText(
                             self.class_r_shape[roof_shape_index]
                         )
-                        self.pred_roof_shape = self.ui.roof_shape_cb_1.currentData()
+                        self.pred_roof_shape = self.ui.roof_shape_cb.currentData()
                         # Peogress bar update
                         self.ui.progress_bar_method.setValue(100)
                         self.ui.method_progress.setText("Prediction complete!")
@@ -4615,10 +4691,10 @@ class GUIMethods:
                 if roof_shape_index is None:
                     pass
                 else:
-                    self.ui.roof_shape_cb_1.setCurrentText(
+                    self.ui.roof_shape_cb.setCurrentText(
                         self.class_r_shape[roof_shape_index]
                     )
-                    self.pred_roof_shape = self.ui.roof_shape_cb_1.currentData()
+                    self.pred_roof_shape = self.ui.roof_shape_cb.currentData()
                     # Peogress bar update
                     self.ui.progress_bar_method.setValue(100)
                     self.ui.method_progress.setText("Prediction complete!")
@@ -4661,20 +4737,20 @@ class GUIMethods:
                         if roof_material_index is None:
                             pass
                         else:
-                            self.ui.roof_shape_cb_1.setCurrentText(
+                            self.ui.roof_shape_cb.setCurrentText(
                                 self.class_r_mat[roof_material_index]
                             )
                             self.roof_mat_pred = (
-                                self.ui.roof_material_cb_1.currentData()
+                                self.ui.roof_material_cb.currentData()
                             )
 
                             # Roof material adjument based on roof shape
                             if self.pred_roof_shape == "RSH1":
-                                self.ui.roof_material_cb_1.setCurrentText(
+                                self.ui.roof_material_cb.setCurrentText(
                                     self.class_r_mat[0]
                                 )
                             elif self.pred_roof_shape == "RSH7":
-                                self.ui.roof_material_cb_1.setCurrentText(
+                                self.ui.roof_material_cb.setCurrentText(
                                     self.class_r_mat[2]
                                 )
                             elif self.pred_roof_shape == "RSH2":
@@ -4682,14 +4758,14 @@ class GUIMethods:
                                     pass
                                 else:
                                     # This depends on the country
-                                    self.ui.roof_material_cb_1.setCurrentText(
+                                    self.ui.roof_material_cb.setCurrentText(
                                         self.class_r_mat[2]
                                     )
                             elif self.pred_roof_shape == "RSH3":
                                 if self.roof_mat_pred in ("RMT1", "RMT6"):
                                     pass
                                 else:
-                                    self.ui.roof_material_cb_1.setCurrentText(
+                                    self.ui.roof_material_cb.setCurrentText(
                                         self.class_r_mat[1]
                                     )
                             # Peogress bar update
@@ -4719,18 +4795,18 @@ class GUIMethods:
                     if roof_material_index is None:
                         pass
                     else:
-                        self.ui.roof_shape_cb_1.setCurrentText(
+                        self.ui.roof_shape_cb.setCurrentText(
                             self.class_r_mat[roof_material_index]
                         )
-                        self.roof_mat_pred = self.ui.roof_material_cb_1.currentData()
+                        self.roof_mat_pred = self.ui.roof_material_cb.currentData()
 
                         # Roof material adjument based on roof shape
                         if self.pred_roof_shape == "RSH1":
-                            self.ui.roof_material_cb_1.setCurrentText(
+                            self.ui.roof_material_cb.setCurrentText(
                                 self.class_r_mat[0]
                             )
                         elif self.pred_roof_shape == "RSH7":
-                            self.ui.roof_material_cb_1.setCurrentText(
+                            self.ui.roof_material_cb.setCurrentText(
                                 self.class_r_mat[2]
                             )
                         elif self.pred_roof_shape == "RSH2":
@@ -4738,14 +4814,14 @@ class GUIMethods:
                                 pass
                             else:
                                 # This depends on the country
-                                self.ui.roof_material_cb_1.setCurrentText(
+                                self.ui.roof_material_cb.setCurrentText(
                                     self.class_r_mat[2]
                                 )
                         elif self.pred_roof_shape == "RSH3":
                             if self.roof_mat_pred in ("RMT1", "RMT6"):
                                 pass
                             else:
-                                self.ui.roof_material_cb_1.setCurrentText(
+                                self.ui.roof_material_cb.setCurrentText(
                                     self.class_r_mat[1]
                                 )
 
@@ -4783,29 +4859,29 @@ class GUIMethods:
                 if roof_material_index is None:
                     pass
                 else:
-                    self.ui.roof_shape_cb_1.setCurrentText(
+                    self.ui.roof_shape_cb.setCurrentText(
                         self.class_r_mat[roof_material_index]
                     )
-                    self.roof_mat_pred = self.ui.roof_material_cb_1.currentData()
+                    self.roof_mat_pred = self.ui.roof_material_cb.currentData()
 
                     # Roof material adjument based on roof shape
                     if self.pred_roof_shape == "RSH1":
-                        self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[0])
+                        self.ui.roof_material_cb.setCurrentText(self.class_r_mat[0])
                     elif self.pred_roof_shape == "RSH7":
-                        self.ui.roof_material_cb_1.setCurrentText(self.class_r_mat[2])
+                        self.ui.roof_material_cb.setCurrentText(self.class_r_mat[2])
                     elif self.pred_roof_shape == "RSH2":
                         if self.roof_mat_pred in ("RMT1", "RMT6"):
                             pass
                         else:
                             # This depends on the country
-                            self.ui.roof_material_cb_1.setCurrentText(
+                            self.ui.roof_material_cb.setCurrentText(
                                 self.class_r_mat[2]
                             )
                     elif self.pred_roof_shape == "RSH3":
                         if self.roof_mat_pred in ("RMT1", "RMT6"):
                             pass
                         else:
-                            self.ui.roof_material_cb_1.setCurrentText(
+                            self.ui.roof_material_cb.setCurrentText(
                                 self.class_r_mat[1]
                             )
 
@@ -5060,7 +5136,7 @@ class GUIMethods:
                 if self.epoch_const is True:
                     self.epoch_const = False
                     for i in range(len(epoch)):
-                        self.ui.epc_const_cb_1.addItem(str(epoch.iloc[i, 0]),
+                        self.ui.epc_const_cb.addItem(str(epoch.iloc[i, 0]),
                                                        str(epoch.iloc[i, 0]))
 
             except (
@@ -5102,7 +5178,7 @@ class GUIMethods:
                 dialog.exec_()  # Open the pop-up
                 epoch = dialog.get_epochs()
                 for i in range(len(epoch)):
-                    self.ui.epc_const_cb_1.addItem(epoch[i])
+                    self.ui.epc_const_cb.addItem(epoch[i])
 
                 epoch = pd.DataFrame(epoch)
                 epoch.columns = ["Epochs"]
@@ -5866,10 +5942,10 @@ class GUIMethods:
             )
         else:
             if (
-                self.ui.material_cb_1.currentData() is None
-                or self.ui.llrs_cb_1.currentData() is None
+                self.ui.material_cb.currentData() is None
+                or self.ui.llrs_cb.currentData() is None
                 or self.ui.n_stories_value_1.currentData() is None
-                or self.ui.occup_cb_1.currentData() is None
+                or self.ui.occup_cb.currentData() is None
             ):
                 QMessageBox.warning(
                     self.ui,

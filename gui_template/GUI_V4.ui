@@ -105,7 +105,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>670</y>
+      <y>680</y>
       <width>171</width>
       <height>41</height>
      </rect>
@@ -707,7 +707,7 @@ background-color: rgb(102, 220, 255);</string>
     <property name="geometry">
      <rect>
       <x>210</x>
-      <y>670</y>
+      <y>680</y>
       <width>151</width>
       <height>41</height>
      </rect>
@@ -1000,7 +1000,7 @@ background-color: rgb(254, 255, 174);</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>660</y>
+      <y>670</y>
       <width>371</width>
       <height>61</height>
      </rect>
@@ -1535,6 +1535,26 @@ background-color: rgb(209, 170, 255);</string>
      <string/>
     </property>
    </widget>
+   <widget class="QPushButton" name="previous_buttom_2">
+    <property name="geometry">
+     <rect>
+      <x>1450</x>
+      <y>490</y>
+      <width>111</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Needs Review</string>
+    </property>
+   </widget>
    <zorder>label_3</zorder>
    <zorder>label_2</zorder>
    <zorder>frame_location</zorder>
@@ -1588,6 +1608,7 @@ background-color: rgb(209, 170, 255);</string>
    <zorder>vertical_irr_cb</zorder>
    <zorder>n_bay_label</zorder>
    <zorder>n_bay_cb</zorder>
+   <zorder>previous_buttom_2</zorder>
   </widget>
  </widget>
  <resources/>
