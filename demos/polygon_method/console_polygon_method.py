@@ -131,9 +131,31 @@ CLASS_NAMES = {
     ],
 }
 
-IMAGE_TRANSFORM = transforms.Compose(
+CONVNEXT_TRANSFORM = transforms.Compose(
+    [
+        transforms.Resize((512, 512)),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+    ]
+)
+
+CONVNEXT_NS_TRANSFORM = transforms.Compose(
     [
         transforms.Resize((256, 256)),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+    ]
+)
+
+SWIN_TRANSFORM = transforms.Compose(
+    [
+        transforms.Resize((224, 224)),
         transforms.ToTensor(),
         transforms.Normalize(
             mean=[0.485, 0.456, 0.406],
@@ -159,11 +181,12 @@ class PredictionModels:
 
 @dataclass(frozen=True)
 class ModelSpecification:
-    """Describe one classifier checkpoint."""
+    """Describe one classifier and its confirmed inference configuration."""
 
     attribute: str
     architecture: str
     weight_path: Path
+    transform_name: str
 
 
 MODEL_SPECIFICATIONS = [
@@ -171,41 +194,49 @@ MODEL_SPECIFICATIONS = [
         attribute="material",
         architecture="convnext_tiny",
         weight_path=DL_DIR / "convnext_tiny_material.pt",
+        transform_name="convnext",
     ),
     ModelSpecification(
         attribute="llrs",
         architecture="convnext_tiny",
         weight_path=DL_DIR / "convnext_tiny_llrs.pt",
+        transform_name="convnext",
     ),
     ModelSpecification(
         attribute="code_level",
         architecture="convnext_tiny",
         weight_path=DL_DIR / "convnext_tiny_code.pt",
+        transform_name="convnext",
     ),
     ModelSpecification(
         attribute="n_stories",
         architecture="convnext_tiny",
         weight_path=DL_DIR / "convnext_tiny_n_stories.pt",
+        transform_name="convnext_ns",
     ),
     ModelSpecification(
         attribute="occupancy",
         architecture="convnext_tiny",
         weight_path=DL_DIR / "convnext_tiny_occupancy.pt",
+        transform_name="convnext",
     ),
     ModelSpecification(
         attribute="block_position",
         architecture="swin_t",
         weight_path=DL_DIR / "swin_t_b_position.pt",
+        transform_name="swin",
     ),
     ModelSpecification(
         attribute="roof_shape",
         architecture="swin_t",
         weight_path=DL_DIR / "swin_t_roof_shape.pt",
+        transform_name="swin",
     ),
     ModelSpecification(
         attribute="roof_material",
         architecture="swin_t",
         weight_path=DL_DIR / "swin_t_roof_material.pt",
+        transform_name="swin",
     ),
 ]
 
@@ -885,94 +916,35 @@ def read_checkpoint(
     return extract_state_dict(checkpoint)
 
 
-def find_output_layer(
-    state_dict: dict[str, Tensor],
-    architecture: str,
-) -> tuple[str, int, bool]:
-    """Find the output layer key, class count, and head structure."""
-    if architecture == "convnext_tiny":
-        candidate_keys = (
-            "classifier.2.weight",
-            "classifier.2.1.weight",
-        )
-    elif architecture == "swin_t":
-        candidate_keys = (
-            "head.weight",
-            "head.1.weight",
-        )
-    else:
-        raise ValueError(f"Unsupported architecture: {architecture}")
-
-    for key in candidate_keys:
-        weight = state_dict.get(key)
-        if weight is not None and weight.ndim == 2:
-            uses_sequential_head = ".1.weight" in key
-            return key, int(weight.shape[0]), uses_sequential_head
-
-    expected_keys = ", ".join(candidate_keys)
-    raise KeyError(
-        "Unable to locate the classifier output layer. "
-        f"Expected one of: {expected_keys}"
-    )
-
-
 def create_classifier_model(
     specification: ModelSpecification,
 ) -> nn.Module:
-    """Create a model whose output head matches its checkpoint."""
-    state_dict = read_checkpoint(specification.weight_path)
-    output_key, checkpoint_classes, uses_sequential_head = (
-        find_output_layer(
-            state_dict,
-            specification.architecture,
-        )
-    )
-
+    """Create a classifier using the confirmed training configuration."""
     labels = CLASS_NAMES[specification.attribute]
-    expected_classes = len(labels)
-
-    if checkpoint_classes != expected_classes:
-        raise ValueError(
-            f"{specification.attribute}: checkpoint output layer "
-            f"'{output_key}' has {checkpoint_classes} classes, but "
-            f"{expected_classes} labels are configured: {labels}"
-        )
+    number_of_classes = len(labels)
 
     if specification.architecture == "convnext_tiny":
         model = models.convnext_tiny(weights=None)
         input_features = model.classifier[2].in_features
-
-        if uses_sequential_head:
-            model.classifier[2] = nn.Sequential(
-                nn.Dropout(p=0.2),
-                nn.Linear(input_features, checkpoint_classes),
-            )
-        else:
-            model.classifier[2] = nn.Linear(
-                input_features,
-                checkpoint_classes,
-            )
+        model.classifier[2] = nn.Sequential(
+            nn.Dropout(p=0.5),
+            nn.Linear(input_features, number_of_classes),
+        )
 
     elif specification.architecture == "swin_t":
         model = models.swin_t(weights=None)
         input_features = model.head.in_features
-
-        if uses_sequential_head:
-            model.head = nn.Sequential(
-                nn.Dropout(p=0.2),
-                nn.Linear(input_features, checkpoint_classes),
-            )
-        else:
-            model.head = nn.Linear(
-                input_features,
-                checkpoint_classes,
-            )
+        model.head = nn.Sequential(
+            nn.Dropout(p=0.2),
+            nn.Linear(input_features, number_of_classes),
+        )
 
     else:
         raise ValueError(
             f"Unsupported architecture: {specification.architecture}"
         )
 
+    state_dict = read_checkpoint(specification.weight_path)
     model.load_state_dict(state_dict, strict=True)
     model.to(DEVICE)
     model.eval()
@@ -980,7 +952,7 @@ def create_classifier_model(
     print(
         f"Loaded {specification.attribute}: "
         f"{specification.architecture}, "
-        f"{checkpoint_classes} classes"
+        f"{number_of_classes} classes"
     )
     return model
 
@@ -1013,23 +985,51 @@ def load_prediction_models() -> PredictionModels:
 
 def prepare_image(
     image_array: np.ndarray,
+    image_transform: transforms.Compose,
 ) -> Tensor:
-    """Convert an OpenCV BGR image to a normalized tensor."""
+    """Convert an OpenCV BGR image to a normalized model tensor."""
     rgb_image = cv2.cvtColor(
         image_array.astype(np.uint8),
         cv2.COLOR_BGR2RGB,
     )
     image = Image.fromarray(rgb_image)
-    return IMAGE_TRANSFORM(image).unsqueeze(0).to(DEVICE)
+    return image_transform(image).unsqueeze(0).to(DEVICE)
+
+
+def get_image_transform(attribute: str) -> transforms.Compose:
+    """Return the confirmed preprocessing transform for an attribute."""
+    specification = next(
+        spec
+        for spec in MODEL_SPECIFICATIONS
+        if spec.attribute == attribute
+    )
+
+    if specification.transform_name == "convnext":
+        return CONVNEXT_TRANSFORM
+
+    if specification.transform_name == "convnext_ns":
+        return CONVNEXT_NS_TRANSFORM
+
+    if specification.transform_name == "swin":
+        return SWIN_TRANSFORM
+
+    raise ValueError(
+        f"Unsupported transform: {specification.transform_name}"
+    )
 
 
 def predict_class(
     image_array: np.ndarray,
     model: nn.Module,
     class_names: list[str],
+    attribute: str,
 ) -> str:
-    """Predict one class label and validate the output dimension."""
-    image_tensor = prepare_image(image_array)
+    """Predict one class using its confirmed preprocessing configuration."""
+    image_transform = get_image_transform(attribute)
+    image_tensor = prepare_image(
+        image_array,
+        image_transform,
+    )
 
     with torch.inference_mode():
         output = model(image_tensor)
@@ -1155,6 +1155,7 @@ def inspect_buildings(
                     building_image,
                     prediction_models.material,
                     CLASS_NAMES["material"],
+                    "material",
                 )
             )
 
@@ -1162,6 +1163,7 @@ def inspect_buildings(
                 building_image,
                 prediction_models.llrs,
                 CLASS_NAMES["llrs"],
+                "llrs",
             )
             inspection_data.loc[row_index, "llrs"] = (
                 normalize_llrs_label(llrs_label)
@@ -1172,6 +1174,7 @@ def inspect_buildings(
                     building_image,
                     prediction_models.code_level,
                     CLASS_NAMES["code_level"],
+                    "code_level",
                 )
             )
             inspection_data.loc[row_index, "n_stories"] = (
@@ -1179,6 +1182,7 @@ def inspect_buildings(
                     building_image,
                     prediction_models.n_stories,
                     CLASS_NAMES["n_stories"],
+                    "n_stories",
                 )
             )
             inspection_data.loc[row_index, "occupancy"] = (
@@ -1186,6 +1190,7 @@ def inspect_buildings(
                     building_image,
                     prediction_models.occupancy,
                     CLASS_NAMES["occupancy"],
+                    "occupancy",
                 )
             )
             inspection_data.loc[row_index, "block_position"] = (
@@ -1193,6 +1198,7 @@ def inspect_buildings(
                     building_image,
                     prediction_models.block_position,
                     CLASS_NAMES["block_position"],
+                    "block_position",
                 )
             )
             inspection_data.loc[row_index, "roof_shape"] = (
@@ -1200,6 +1206,7 @@ def inspect_buildings(
                     building_image,
                     prediction_models.roof_shape,
                     CLASS_NAMES["roof_shape"],
+                    "roof_shape",
                 )
             )
             inspection_data.loc[row_index, "roof_material"] = (
@@ -1207,6 +1214,7 @@ def inspect_buildings(
                     building_image,
                     prediction_models.roof_material,
                     CLASS_NAMES["roof_material"],
+                    "roof_material",
                 )
             )
 
@@ -1274,6 +1282,7 @@ def main() -> None:
         / "demos/polygon_method/console_mode"
         / "example_prediction_result.csv"
     )
+    # Percentage of the population to be used
     sample_size = 0.15
 
     gsv_api_key = read_api_key(GSV_API_FILE)

@@ -2822,16 +2822,22 @@ class GUIMethods:
                     self.data_ai.loc[self.click_count, "id"] = (
                         self.ui.img_id_value_1.text()[:-2]
                     )
-                    self.data_ai.loc[self.click_count, "latitude"] = self.data_building.loc[
+                    self.data_ai.loc[
+                        self.click_count, "latitude"
+                    ] = self.data_building.loc[
                         self.click_count, "latitude"
                     ]
-                    self.data_ai.loc[self.click_count, "longitude"] = self.data_building.loc[
+                    self.data_ai.loc[
+                        self.click_count, "longitude"
+                    ] = self.data_building.loc[
                         self.click_count, "longitude"
                     ]
                     self.data_ai.loc[self.click_count, "country"] = (
                         self.ui.country_value.text()
                     )
-                    self.data_ai.loc[self.click_count, "city"] = self.ui.city_value.text()
+                    self.data_ai.loc[self.click_count, "city"] = (
+                        self.ui.city_value.text()
+                    )
                     if self.data_ai.loc[self.click_count, "review"] != "TRUE":
                         self.data_ai.loc[self.click_count, "review"] = "FALSE"
                     self.data_ai.loc[self.click_count, "material"] = (
@@ -2906,10 +2912,12 @@ class GUIMethods:
                         self.tax_check(tax)
 
                     if self.img_url[0] != "":
-                        self.data_ai.loc[self.click_count, "image_filename_or_link"] = self.img_url[0]
+                        self.data_ai.loc[self.click_count,
+                                         "image_filename_or_link"] = self.img_url[0]
                     else:
                         if isinstance(heading, int):
-                            self.data_ai.loc[self.click_count, "image_filename_or_link"] = (
+                            self.data_ai.loc[self.click_count,
+                                             "image_filename_or_link"] = (
                                 base_url
                                 + coord
                                 + "&heading="
@@ -2921,60 +2929,81 @@ class GUIMethods:
                 # Local images
                 # ==============================================================
                 elif self.ui.insp_method == 2:
-                    # Left building image
+                    # id
                     self.data_ai.loc[self.old_local, "id"] = (
                         self.ui.img_id_value_1.text()[:-2]
-                    )  # ID
-                    self.data_ai.loc[self.old_local, "latitude"] = self.data_building.loc[
+                    )
+                    # latitude
+                    self.data_ai.loc[
                         self.old_local, "latitude"
-                    ]  # latitude
-                    self.data_ai.loc[self.old_local, "longitude"] = self.data_building.loc[
+                    ] = self.data_building.loc[
+                        self.old_local, "latitude"
+                    ]
+                    # longitude
+                    self.data_ai.loc[
                         self.old_local, "longitude"
-                    ]  # longitude
+                    ] = self.data_building.loc[
+                        self.old_local, "longitude"
+                    ]
+                    # Country
                     self.data_ai.loc[self.old_local, "country"] = (
                         self.ui.country_value.text()
-                    )  # Country
+                    )
+                    # City
                     self.data_ai.loc[self.old_local, "city"] = (
                         self.ui.city_value.text()
-                    )  # City
+                    )
+                    # Review
                     if self.data_ai.loc[self.old_local, "review"] != "TRUE":
                         self.data_ai.loc[self.old_local, "review"] = "FALSE"
+                    # LLRS Material
                     self.data_ai.loc[self.old_local, "material"] = (
                         self.ui.material_cb.currentData()
-                    )  # LLRS Material
+                    )
+                    # LLRS
                     self.data_ai.loc[self.old_local, "llrs"] = (
                         self.ui.llrs_cb.currentData()
-                    )  # LLRS
+                    )
+                    # Code Level
                     self.data_ai.loc[self.old_local, "code_level"] = (
                         self.ui.code_level_cb.currentData()
-                    )  # Code Level
+                    )
+                    # Number of Stories
                     self.data_ai.loc[self.old_local, "n_stories"] = (
                         self.ui.n_stories_value_1.currentData()
-                    )  # Number of Stories
+                    )
+                    # Occupancy
                     self.data_ai.loc[self.old_local, "occupancy"] = (
                         self.ui.occup_cb.currentData()
-                    )  # Occupancy
+                    )
+                    # Block Position
                     self.data_ai.loc[self.old_local, "block_position"] = (
                         self.ui.bck_pos_cb.currentData()
-                    )  # Block Position
+                    )
+                    # Epoch of construction
                     self.data_ai.loc[self.old_local, "epoch_construction"] = (
                         self.ui.epc_const_cb.currentText()
-                    )  # Epoch of construction
+                    )
+                    # Roof shape
                     self.data_ai.loc[self.old_local, "roof_shape"] = (
                         self.ui.roof_shape_cb.currentData()
-                    )  # Roof shape
+                    )
+                    # Roof material
                     self.data_ai.loc[self.old_local, "roof_material"] = (
                         self.ui.roof_material_cb.currentData()
-                    )  # Roof material
+                    )
+                    # Vertical irregularity
                     self.data_ai.loc[self.old_local, "v_irregularity"] = (
                         self.ui.irregularity_cb.currentData()
-                    )  # Vertical irregularity
+                    )
+                    # Number of bays
                     self.data_ai.loc[self.old_local, "n_bays"] = (
                         self.ui.n_bay_cb.currentData()
-                    )  # Vertical irregularity
+                    )
+                    # Image Quality
                     self.data_ai.loc[self.old_local, "image_quality"] = (
                         self.ui.img_q_cb.currentData()
-                    )  # Image Quality
+                    )
 
                     # Taxonomy (works with missing fields)
                     def _s(v):
@@ -3012,7 +3041,9 @@ class GUIMethods:
                     if tax:
                         self.tax_check(tax)
 
-                    self.data_ai.loc[self.old_local, "image_filename_or_link"] = self.data_building.iloc[
+                    self.data_ai.loc[self.old_local,
+                        "image_filename_or_link"
+                    ] = self.data_building.iloc[
                         self.old_local, 0
                     ]
 
@@ -3025,7 +3056,11 @@ class GUIMethods:
                 self.data_ai.loc[i, "latitude"] = self.ui.coord_reference.loc[
                     i, "latitude"
                 ]  # Latitude
-                self.data_ai.loc[i, "longitude"] = self.ui.coord_reference.loc[i, "longitude"]
+                self.data_ai.loc[
+                    i, "longitude"
+                ] = self.ui.coord_reference.loc[
+                    i, "longitude"
+                ]
                 try:
                     image_file, url_gsv = self.object_detector_building(i)
                     if image_file is None:
@@ -3052,7 +3087,8 @@ class GUIMethods:
                         roof_shape_classes = ["RSH1", "RSH2", "RSH3", "RSH7"]
                         roof_material_classes = ["RMN", "RMT1", "RMT6"]
 
-                        self.data_ai.loc[i, "country"], self.data_ai.loc[i, "city"] = country, city
+                        self.data_ai.loc[i, "country"] = country
+                        self.data_ai.loc[i, "city"] = city
                         self.data_ai.loc[i, "material"] = material_classes[
                             predict_material_img(
                                 image_file, self.ui.insp_method, None, self.ui
@@ -3131,8 +3167,9 @@ class GUIMethods:
                     + " -------------------------------------"
                 )
 
-    ############ Future revision due to lack of information for proper classification #####
+    ### Future revision due to lack of information for proper classification ###
     def building_review(self):
+        """Mark the current building for future review."""
         if self.ui.insp_method in (0, 1):
             self.data_ai.loc[self.click_count, "review"] = "TRUE"
             QMessageBox.information(
@@ -3147,7 +3184,7 @@ class GUIMethods:
                 "Review Request",
                 ("Done! The building has been marked for future review."),
             )
-            
+
     ############ Saves the data from the inspections that were conducted #####
     def save_database(self):
         """Save the inspection database to CSV files.
@@ -3440,7 +3477,8 @@ class GUIMethods:
                 self.ui.code_level_cb.setCurrentText("Select Code Level")
             else:
                 self.setComboBoxByData(
-                    self.ui.code_level_cb, self.data_ai.loc[self.click_count, "code_level"]
+                    self.ui.code_level_cb, self.data_ai.loc[
+                        self.click_count, "code_level"]
                 )
 
             # Number of stories
@@ -3477,23 +3515,27 @@ class GUIMethods:
             # Block Position
             if (
                 self.data_ai.loc[self.click_count, "block_position"] is None
-                or pd.isna(self.data_ai.loc[self.click_count, "block_position"]) is True
+                or pd.isna(self.data_ai.loc[self.click_count,
+                                            "block_position"]) is True
             ):
                 self.ui.bck_pos_cb.setCurrentText("Select Block Position")
             else:
                 self.setComboBoxByData(
-                    self.ui.bck_pos_cb, self.data_ai.loc[self.click_count, "block_position"]
+                    self.ui.bck_pos_cb, self.data_ai.loc[
+                        self.click_count, "block_position"]
                 )
 
             # Epoch of construction
             if (
                 self.data_ai.loc[self.click_count, "epoch_construction"] is None
-                or pd.isna(self.data_ai.loc[self.click_count, "epoch_construction"]) is True
+                or pd.isna(self.data_ai.loc[self.click_count,
+                                            "epoch_construction"]) is True
             ):
                 self.ui.epc_const_cb.setCurrentIndex(0)
             else:
                 self.setComboBoxByData(
-                    self.ui.epc_const_cb, self.data_ai.loc[self.click_count, "epoch_construction"]
+                    self.ui.epc_const_cb, self.data_ai.loc[
+                        self.click_count, "epoch_construction"]
                 )
 
             # Roof Shape
@@ -3504,7 +3546,8 @@ class GUIMethods:
                 self.ui.roof_shape_cb.setCurrentText("Select Roof Shape")
             else:
                 self.setComboBoxByData(
-                    self.ui.roof_shape_cb, self.data_ai.loc[self.click_count, "roof_shape"]
+                    self.ui.roof_shape_cb, self.data_ai.loc[
+                        self.click_count, "roof_shape"]
                 )
 
             # Roof Material
@@ -3515,7 +3558,8 @@ class GUIMethods:
                 self.ui.roof_material_cb.setCurrentText("Select Roof Material")
             else:
                 self.setComboBoxByData(
-                    self.ui.roof_material_cb, self.data_ai.loc[self.click_count, "roof_material"]
+                    self.ui.roof_material_cb, self.data_ai.loc[
+                        self.click_count, "roof_material"]
                 )
 
             # Vertical irregularity
@@ -3526,7 +3570,8 @@ class GUIMethods:
                 self.ui.irregularity_cb.setCurrentText("Select Irregularity")
             else:
                 self.setComboBoxByData(
-                    self.ui.irregularity_cb, self.data_ai.loc[self.click_count, "v_irregularity"]
+                    self.ui.irregularity_cb, self.data_ai.loc[
+                        self.click_count, "v_irregularity"]
                 )
 
             # Number of bays
@@ -3548,7 +3593,8 @@ class GUIMethods:
                 self.ui.img_q_cb.setCurrentText("Select Image Quality")
             else:
                 self.setComboBoxByData(
-                    self.ui.img_q_cb, self.data_ai.loc[self.click_count, "image_quality"]
+                    self.ui.img_q_cb, self.data_ai.loc[
+                        self.click_count, "image_quality"]
                 )
 
         elif self.ui.insp_method == 2:
@@ -3585,7 +3631,8 @@ class GUIMethods:
                 self.ui.code_level_cb.setCurrentText("Select Code Level")
             else:
                 self.setComboBoxByData(
-                    self.ui.code_level_cb, self.data_ai.loc[self.old_local, "code_level"]
+                    self.ui.code_level_cb, self.data_ai.loc[
+                        self.old_local, "code_level"]
                 )
 
             # Number of stories
@@ -3627,18 +3674,21 @@ class GUIMethods:
                 self.ui.bck_pos_cb.setCurrentText("Select Block Position")
             else:
                 self.setComboBoxByData(
-                    self.ui.bck_pos_cb, self.data_ai.loc[self.old_local, "block_position"]
+                    self.ui.bck_pos_cb, self.data_ai.loc[
+                        self.old_local, "block_position"]
                 )
 
             # Epoch of construction
             if (
                 self.data_ai.loc[self.old_local, "epoch_construction"] is None
-                or pd.isna(self.data_ai.loc[self.old_local, "epoch_construction"]) is True
+                or pd.isna(self.data_ai.loc[
+                    self.old_local, "epoch_construction"]) is True
             ):
                 self.ui.epc_const_cb.setCurrentIndex(0)
             else:
                 self.setComboBoxByData(
-                    self.ui.epc_const_cb, str(self.data_ai.loc[self.old_local, "epoch_construction"])
+                    self.ui.epc_const_cb, str(self.data_ai.loc[
+                        self.old_local, "epoch_construction"])
                 )
 
             # Roof Shape
@@ -3649,7 +3699,8 @@ class GUIMethods:
                 self.ui.roof_shape_cb.setCurrentText("Select Roof Shape")
             else:
                 self.setComboBoxByData(
-                    self.ui.roof_shape_cb, self.data_ai.loc[self.old_local, "roof_shape"]
+                    self.ui.roof_shape_cb, self.data_ai.loc[
+                        self.old_local, "roof_shape"]
                 )
 
             # Roof Material
@@ -3660,7 +3711,8 @@ class GUIMethods:
                 self.ui.roof_material_cb.setCurrentText("Select Roof Material")
             else:
                 self.setComboBoxByData(
-                    self.ui.roof_material_cb, self.data_ai.loc[self.old_local, "roof_material"]
+                    self.ui.roof_material_cb, self.data_ai.loc[
+                        self.old_local, "roof_material"]
                 )
 
             # Vertical Irregularity
@@ -3671,7 +3723,8 @@ class GUIMethods:
                 self.ui.irregularity_cb.setCurrentText("Select Irregularity")
             else:
                 self.setComboBoxByData(
-                    self.ui.irregularity_cb, self.data_ai.loc[self.old_local, "v_irregularity"]
+                    self.ui.irregularity_cb, self.data_ai.loc[
+                        self.old_local, "v_irregularity"]
                 )
 
             # Number of Bays
@@ -3693,7 +3746,8 @@ class GUIMethods:
                 self.ui.img_q_cb.setCurrentText("Select Image Quality")
             else:
                 self.setComboBoxByData(
-                    self.ui.img_q_cb, self.data_ai.loc[self.old_local, "image_quality"]
+                    self.ui.img_q_cb, self.data_ai.loc[
+                        self.old_local, "image_quality"]
                 )
 
     ############ Deep learning model for predict the LLRS Material ################

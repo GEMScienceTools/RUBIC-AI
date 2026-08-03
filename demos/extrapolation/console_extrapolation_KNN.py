@@ -37,7 +37,18 @@ TARGET_CLASS = "building-xzyh"
 CONFIDENCE_THRESHOLD = 0.5
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-IMAGE_TRANSFORM = transforms.Compose(
+CONVNEXT_TRANSFORM = transforms.Compose(
+    [
+        transforms.Resize((512, 512)),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+    ]
+)
+
+CONVNEXT_N_STORIES_TRANSFORM = transforms.Compose(
     [
         transforms.Resize((256, 256)),
         transforms.ToTensor(),
@@ -47,6 +58,38 @@ IMAGE_TRANSFORM = transforms.Compose(
         ),
     ]
 )
+
+SWIN_TRANSFORM = transforms.Compose(
+    [
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+    ]
+)
+
+CLASS_NAMES = {
+    "material": ["CR", "MCF", "MUR"],
+    "llrs": ["LDUAL", "LFINF", "LFM", "LWAL", "LWAL"],
+    "code_level": ["CDH", "CDL", "CDM", "CDN"],
+    "n_stories": [
+        "10-12",
+        "13+",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6-7",
+        "8-9",
+    ],
+    "occupancy": ["COM", "IND", "MIX(RES;COM)", "RES"],
+    "block_position": ["BP1", "BP2", "BP3", "BPD"],
+    "roof_shape": ["RSH1", "RSH2", "RSH3", "RSH7"],
+    "roof_material": ["RMN", "RMT1", "RMT6"],
+}
 
 DATABASE_COLUMNS = [
     "id",
@@ -554,81 +597,92 @@ def get_city_name(
     return city, country
 
 
-def prepare_model(model: nn.Module, weight_path: Path) -> nn.Module:
+def prepare_model(
+    model: nn.Module,
+    weight_path: Path,
+    image_transform: transforms.Compose,
+) -> nn.Module:
     """Load model weights and prepare the model for inference."""
     state_dict = torch.load(
         weight_path,
         map_location=DEVICE,
     )
-    model.load_state_dict(state_dict)
+    model.load_state_dict(state_dict, strict=True)
     model.to(DEVICE)
     model.eval()
+    model._rubic_image_transform = image_transform
     return model
 
 
 def create_convnext_model(
     number_of_classes: int,
     weight_path: Path,
+    image_transform: transforms.Compose,
 ) -> nn.Module:
-    """Create and load a ConvNeXt Tiny classifier."""
+    """Create the ConvNeXt Tiny architecture used during training."""
     model = models.convnext_tiny(weights=None)
     input_features = model.classifier[2].in_features
-    model.classifier[2] = nn.Linear(
-        input_features,
-        number_of_classes,
+    model.classifier[2] = nn.Sequential(
+        nn.Dropout(p=0.5),
+        nn.Linear(input_features, number_of_classes),
     )
-    return prepare_model(model, weight_path)
+    return prepare_model(model, weight_path, image_transform)
 
 
 def create_swin_model(
     number_of_classes: int,
     weight_path: Path,
 ) -> nn.Module:
-    """Create and load a Swin Tiny classifier."""
+    """Create the Swin Tiny architecture used during training."""
     model = models.swin_t(weights=None)
     input_features = model.head.in_features
-    model.head = nn.Linear(
-        input_features,
-        number_of_classes,
+    model.head = nn.Sequential(
+        nn.Dropout(p=0.2),
+        nn.Linear(input_features, number_of_classes),
     )
-    return prepare_model(model, weight_path)
+    return prepare_model(model, weight_path, SWIN_TRANSFORM)
 
 
 def load_prediction_models() -> PredictionModels:
-    """Load all building-attribute prediction models."""
+    """Load all building-attribute models using their training setup."""
     print("Loading deep-learning models...")
 
     model_bundle = PredictionModels(
         material=create_convnext_model(
-            3,
+            len(CLASS_NAMES["material"]),
             DL_DIR / "convnext_tiny_material.pt",
+            CONVNEXT_TRANSFORM,
         ),
         llrs=create_convnext_model(
-            5,
+            len(CLASS_NAMES["llrs"]),
             DL_DIR / "convnext_tiny_llrs.pt",
+            CONVNEXT_TRANSFORM,
         ),
         code=create_convnext_model(
-            4,
+            len(CLASS_NAMES["code_level"]),
             DL_DIR / "convnext_tiny_code.pt",
+            CONVNEXT_TRANSFORM,
         ),
         n_stories=create_convnext_model(
-            9,
+            len(CLASS_NAMES["n_stories"]),
             DL_DIR / "convnext_tiny_n_stories.pt",
+            CONVNEXT_N_STORIES_TRANSFORM,
         ),
         occupancy=create_convnext_model(
-            4,
+            len(CLASS_NAMES["occupancy"]),
             DL_DIR / "convnext_tiny_occupancy.pt",
+            CONVNEXT_TRANSFORM,
         ),
         block_position=create_swin_model(
-            4,
+            len(CLASS_NAMES["block_position"]),
             DL_DIR / "swin_t_b_position.pt",
         ),
         roof_shape=create_swin_model(
-            4,
+            len(CLASS_NAMES["roof_shape"]),
             DL_DIR / "swin_t_roof_shape.pt",
         ),
         roof_material=create_swin_model(
-            3,
+            len(CLASS_NAMES["roof_material"]),
             DL_DIR / "swin_t_roof_material.pt",
         ),
     )
@@ -637,14 +691,17 @@ def load_prediction_models() -> PredictionModels:
     return model_bundle
 
 
-def prepare_image(image_array: np.ndarray) -> Tensor:
-    """Convert an OpenCV image to a normalized model tensor."""
+def prepare_image(
+    image_array: np.ndarray,
+    image_transform: transforms.Compose,
+) -> Tensor:
+    """Convert an OpenCV BGR image to a normalized model tensor."""
     rgb_image = cv2.cvtColor(
         image_array.astype(np.uint8),
         cv2.COLOR_BGR2RGB,
     )
     image = Image.fromarray(rgb_image)
-    return IMAGE_TRANSFORM(image).unsqueeze(0).to(DEVICE)
+    return image_transform(image).unsqueeze(0).to(DEVICE)
 
 
 def predict_class(
@@ -652,13 +709,25 @@ def predict_class(
     model: nn.Module,
     class_names: list[str],
 ) -> str:
-    """Predict one class label for an image."""
-    image_tensor = prepare_image(image_array)
+    """Predict one class label and validate the output dimension."""
+    image_transform = model._rubic_image_transform
+    image_tensor = prepare_image(image_array, image_transform)
 
     with torch.inference_mode():
         output = model(image_tensor)
-        prediction = int(torch.argmax(output, dim=1).item())
 
+    if output.ndim != 2 or output.shape[0] != 1:
+        raise ValueError(
+            f"Unexpected model output shape: {tuple(output.shape)}"
+        )
+
+    if output.shape[1] != len(class_names):
+        raise ValueError(
+            f"Model returned {output.shape[1]} outputs, but "
+            f"{len(class_names)} labels were provided."
+        )
+
+    prediction = int(torch.argmax(output, dim=1).item())
     return class_names[prediction]
 
 
@@ -705,27 +774,6 @@ def inspect_buildings(
     roads_api_key: str,
 ) -> pd.DataFrame:
     """Inspect each building and populate its predicted attributes."""
-    class_names = {
-        "material": ["CR", "MCF", "MUR"],
-        "llrs": ["LDUAL", "LFINF", "LFM", "LWAL", "LWAL"],
-        "code_level": ["CDH", "CDL", "CDM", "CDN"],
-        "n_stories": [
-            "10-12",
-            "13+",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6-7",
-            "8-9",
-        ],
-        "occupancy": ["COM", "IND", "MIX(RES;COM)", "RES"],
-        "block_position": ["BP1", "BP2", "BP3", "BPD"],
-        "roof_shape": ["RSH1", "RSH2", "RSH3", "RSH7"],
-        "roof_material": ["RMN", "RMT1", "RMT6"],
-    }
-
     for row_index, footprint in footprint_data.iterrows():
         building_id = footprint["id"]
         latitude = float(footprint["latitude"])
@@ -758,42 +806,42 @@ def inspect_buildings(
             inspection_data.loc[row_index, "material"] = predict_class(
                 image,
                 prediction_models.material,
-                class_names["material"],
+                CLASS_NAMES["material"],
             )
             inspection_data.loc[row_index, "llrs"] = predict_class(
                 image,
                 prediction_models.llrs,
-                class_names["llrs"],
+                CLASS_NAMES["llrs"],
             )
             inspection_data.loc[row_index, "code_level"] = predict_class(
                 image,
                 prediction_models.code,
-                class_names["code_level"],
+                CLASS_NAMES["code_level"],
             )
             inspection_data.loc[row_index, "n_stories"] = predict_class(
                 image,
                 prediction_models.n_stories,
-                class_names["n_stories"],
+                CLASS_NAMES["n_stories"],
             )
             inspection_data.loc[row_index, "occupancy"] = predict_class(
                 image,
                 prediction_models.occupancy,
-                class_names["occupancy"],
+                CLASS_NAMES["occupancy"],
             )
             inspection_data.loc[row_index, "block_position"] = predict_class(
                 image,
                 prediction_models.block_position,
-                class_names["block_position"],
+                CLASS_NAMES["block_position"],
             )
             inspection_data.loc[row_index, "roof_shape"] = predict_class(
                 image,
                 prediction_models.roof_shape,
-                class_names["roof_shape"],
+                CLASS_NAMES["roof_shape"],
             )
             inspection_data.loc[row_index, "roof_material"] = predict_class(
                 image,
                 prediction_models.roof_material,
-                class_names["roof_material"],
+                CLASS_NAMES["roof_material"],
             )
 
             taxonomy = build_taxonomy(inspection_data.loc[row_index])

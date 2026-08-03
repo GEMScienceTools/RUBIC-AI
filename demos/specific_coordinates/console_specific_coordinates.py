@@ -89,7 +89,7 @@ CLASS_NAMES = {
     "roof_material": ["RMN", "RMT1", "RMT6"],
 }
 
-IMAGE_TRANSFORM = transforms.Compose(
+CONVNEXT_TRANSFORM_NS = transforms.Compose(
     [
         transforms.Resize((256, 256)),
         transforms.ToTensor(),
@@ -100,28 +100,59 @@ IMAGE_TRANSFORM = transforms.Compose(
     ]
 )
 
+CONVNEXT_TRANSFORM = transforms.Compose(
+    [
+        transforms.Resize((512, 512)),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+    ]
+)
+
+SWIN_TRANSFORM = transforms.Compose(
+    [
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+        ),
+    ]
+)
+
+
+@dataclass
+class LoadedPredictionModel:
+    """Store a classifier together with its preprocessing transform."""
+
+    model: nn.Module
+    image_transform: transforms.Compose
+
 
 @dataclass
 class PredictionModels:
-    """Store all loaded building-attribute models."""
+    """Store all loaded building-attribute model bundles."""
 
-    material: nn.Module
-    llrs: nn.Module
-    code_level: nn.Module
-    n_stories: nn.Module
-    occupancy: nn.Module
-    block_position: nn.Module
-    roof_shape: nn.Module
-    roof_material: nn.Module
+    material: LoadedPredictionModel
+    llrs: LoadedPredictionModel
+    code_level: LoadedPredictionModel
+    n_stories: LoadedPredictionModel
+    occupancy: LoadedPredictionModel
+    block_position: LoadedPredictionModel
+    roof_shape: LoadedPredictionModel
+    roof_material: LoadedPredictionModel
 
 
 @dataclass(frozen=True)
 class ModelSpecification:
-    """Describe one classifier checkpoint."""
+    """Describe one classifier checkpoint and inference configuration."""
 
     attribute: str
     architecture: str
     weight_path: Path
+    image_transform: transforms.Compose
 
 
 MODEL_SPECIFICATIONS = [
@@ -129,41 +160,49 @@ MODEL_SPECIFICATIONS = [
         attribute="material",
         architecture="convnext_tiny",
         weight_path=DL_DIR / "convnext_tiny_material.pt",
+        image_transform=CONVNEXT_TRANSFORM,
     ),
     ModelSpecification(
         attribute="llrs",
         architecture="convnext_tiny",
         weight_path=DL_DIR / "convnext_tiny_llrs.pt",
+        image_transform=CONVNEXT_TRANSFORM,
     ),
     ModelSpecification(
         attribute="code_level",
         architecture="convnext_tiny",
         weight_path=DL_DIR / "convnext_tiny_code.pt",
+        image_transform=CONVNEXT_TRANSFORM,
     ),
     ModelSpecification(
         attribute="n_stories",
         architecture="convnext_tiny",
         weight_path=DL_DIR / "convnext_tiny_n_stories.pt",
+        image_transform=CONVNEXT_TRANSFORM_NS,
     ),
     ModelSpecification(
         attribute="occupancy",
         architecture="convnext_tiny",
         weight_path=DL_DIR / "convnext_tiny_occupancy.pt",
+        image_transform=CONVNEXT_TRANSFORM,
     ),
     ModelSpecification(
         attribute="block_position",
         architecture="swin_t",
         weight_path=DL_DIR / "swin_t_b_position.pt",
+        image_transform=SWIN_TRANSFORM,
     ),
     ModelSpecification(
         attribute="roof_shape",
         architecture="swin_t",
         weight_path=DL_DIR / "swin_t_roof_shape.pt",
+        image_transform=SWIN_TRANSFORM,
     ),
     ModelSpecification(
         attribute="roof_material",
         architecture="swin_t",
         weight_path=DL_DIR / "swin_t_roof_material.pt",
+        image_transform=SWIN_TRANSFORM,
     ),
 ]
 
@@ -550,89 +589,28 @@ def read_checkpoint(
     return extract_state_dict(checkpoint)
 
 
-def find_output_layer(
-    state_dict: dict[str, Tensor],
-    architecture: str,
-) -> tuple[str, int, bool]:
-    """Find the output layer key, class count, and head structure."""
-    if architecture == "convnext_tiny":
-        candidate_keys = (
-            "classifier.2.weight",
-            "classifier.2.1.weight",
-        )
-    elif architecture == "swin_t":
-        candidate_keys = (
-            "head.weight",
-            "head.1.weight",
-        )
-    else:
-        raise ValueError(f"Unsupported architecture: {architecture}")
-
-    for key in candidate_keys:
-        weight = state_dict.get(key)
-        if weight is not None and weight.ndim == 2:
-            uses_sequential_head = ".1.weight" in key
-            return key, int(weight.shape[0]), uses_sequential_head
-
-    expected_keys = ", ".join(candidate_keys)
-    raise KeyError(
-        "Unable to locate the classifier output layer. "
-        f"Expected one of: {expected_keys}"
-    )
-
-
 def create_classifier_model(
     specification: ModelSpecification,
-) -> nn.Module:
-    """Create a model whose output head matches its checkpoint."""
+) -> LoadedPredictionModel:
+    """Create a classifier using the confirmed RUBIC-AI configuration."""
     state_dict = read_checkpoint(specification.weight_path)
-    output_key, checkpoint_classes, uses_sequential_head = (
-        find_output_layer(
-            state_dict,
-            specification.architecture,
-        )
-    )
-
     labels = CLASS_NAMES[specification.attribute]
-    expected_classes = len(labels)
-
-    if checkpoint_classes != expected_classes:
-        raise ValueError(
-            f"{specification.attribute}: checkpoint output layer "
-            f"'{output_key}' has {checkpoint_classes} classes, but "
-            f"{expected_classes} labels are configured: {labels}"
-        )
+    num_classes = len(labels)
 
     if specification.architecture == "convnext_tiny":
         model = models.convnext_tiny(weights=None)
         input_features = model.classifier[2].in_features
-
-        if uses_sequential_head:
-            model.classifier[2] = nn.Sequential(
-                nn.Dropout(p=0.2),
-                nn.Linear(input_features, checkpoint_classes),
-            )
-        else:
-            model.classifier[2] = nn.Linear(
-                input_features,
-                checkpoint_classes,
-            )
-
+        model.classifier[2] = nn.Sequential(
+            nn.Dropout(p=0.5),
+            nn.Linear(input_features, num_classes),
+        )
     elif specification.architecture == "swin_t":
         model = models.swin_t(weights=None)
         input_features = model.head.in_features
-
-        if uses_sequential_head:
-            model.head = nn.Sequential(
-                nn.Dropout(p=0.2),
-                nn.Linear(input_features, checkpoint_classes),
-            )
-        else:
-            model.head = nn.Linear(
-                input_features,
-                checkpoint_classes,
-            )
-
+        model.head = nn.Sequential(
+            nn.Dropout(p=0.2),
+            nn.Linear(input_features, num_classes),
+        )
     else:
         raise ValueError(
             f"Unsupported architecture: {specification.architecture}"
@@ -644,10 +622,12 @@ def create_classifier_model(
 
     print(
         f"Loaded {specification.attribute}: "
-        f"{specification.architecture}, "
-        f"{checkpoint_classes} classes"
+        f"{specification.architecture}, {num_classes} classes"
     )
-    return model
+    return LoadedPredictionModel(
+        model=model,
+        image_transform=specification.image_transform,
+    )
 
 
 def load_prediction_models() -> PredictionModels:
@@ -678,26 +658,30 @@ def load_prediction_models() -> PredictionModels:
 
 def prepare_image(
     image_array: np.ndarray,
+    image_transform: transforms.Compose,
 ) -> Tensor:
-    """Convert an OpenCV BGR image to a normalized tensor."""
+    """Convert an OpenCV BGR image using the model-specific transform."""
     rgb_image = cv2.cvtColor(
         image_array.astype(np.uint8),
         cv2.COLOR_BGR2RGB,
     )
     image = Image.fromarray(rgb_image)
-    return IMAGE_TRANSFORM(image).unsqueeze(0).to(DEVICE)
+    return image_transform(image).unsqueeze(0).to(DEVICE)
 
 
 def predict_class(
     image_array: np.ndarray,
-    model: nn.Module,
+    model_bundle: LoadedPredictionModel,
     class_names: list[str],
 ) -> str:
-    """Predict one class label and validate the output dimension."""
-    image_tensor = prepare_image(image_array)
+    """Predict one class label using its training-time configuration."""
+    image_tensor = prepare_image(
+        image_array,
+        model_bundle.image_transform,
+    )
 
-    with torch.inference_mode():
-        output = model(image_tensor)
+    with torch.no_grad():
+        output = model_bundle.model(image_tensor)
 
     if output.ndim != 2 or output.shape[0] != 1:
         raise ValueError(
@@ -775,133 +759,152 @@ def inspect_buildings(
 ) -> pd.DataFrame:
     """Inspect sampled buildings and populate their attributes."""
     for row_index, footprint in footprint_data.iterrows():
-        building_id = footprint["id"]
-        latitude = float(footprint["latitude"])
-        longitude = float(footprint["longitude"])
-
-        inspection_data.loc[
-            row_index,
-            ["id", "latitude", "longitude"],
-        ] = [
-            building_id,
-            latitude,
-            longitude,
-        ]
-
         try:
-            building_image, maps_url = detect_building(
-                latitude,
-                longitude,
-                detector,
-                gsv_api_key,
-                roads_api_key,
-            )
+            building_id = footprint["id"]
+            latitude = float(footprint["latitude"])
+            longitude = float(footprint["longitude"])
 
-            if building_image is None:
-                print(
-                    f"No usable building image for ID {building_id}."
-                )
-                continue
-
-            city, country = get_city_name(
-                latitude,
-                longitude,
-            )
             inspection_data.loc[
                 row_index,
-                ["country", "city"],
+                ["id", "latitude", "longitude"],
             ] = [
-                country,
-                city,
+                building_id,
+                latitude,
+                longitude,
             ]
 
-            inspection_data.loc[row_index, "material"] = (
-                predict_class(
-                    building_image,
-                    prediction_models.material,
-                    CLASS_NAMES["material"],
+            try:
+                building_image, maps_url = detect_building(
+                    latitude,
+                    longitude,
+                    detector,
+                    gsv_api_key,
+                    roads_api_key,
                 )
-            )
 
-            llrs_label = predict_class(
-                building_image,
-                prediction_models.llrs,
-                CLASS_NAMES["llrs"],
-            )
-            inspection_data.loc[row_index, "llrs"] = (
-                normalize_llrs_label(llrs_label)
-            )
+                if building_image is None:
+                    print(
+                        f"No usable building image for ID {building_id}."
+                    )
+                    continue
 
-            inspection_data.loc[row_index, "code_level"] = (
-                predict_class(
-                    building_image,
-                    prediction_models.code_level,
-                    CLASS_NAMES["code_level"],
+                city, country = get_city_name(
+                    latitude,
+                    longitude,
                 )
-            )
-            inspection_data.loc[row_index, "n_stories"] = (
-                predict_class(
-                    building_image,
-                    prediction_models.n_stories,
-                    CLASS_NAMES["n_stories"],
-                )
-            )
-            inspection_data.loc[row_index, "occupancy"] = (
-                predict_class(
-                    building_image,
-                    prediction_models.occupancy,
-                    CLASS_NAMES["occupancy"],
-                )
-            )
-            inspection_data.loc[row_index, "block_position"] = (
-                predict_class(
-                    building_image,
-                    prediction_models.block_position,
-                    CLASS_NAMES["block_position"],
-                )
-            )
-            inspection_data.loc[row_index, "roof_shape"] = (
-                predict_class(
-                    building_image,
-                    prediction_models.roof_shape,
-                    CLASS_NAMES["roof_shape"],
-                )
-            )
-            inspection_data.loc[row_index, "roof_material"] = (
-                predict_class(
-                    building_image,
-                    prediction_models.roof_material,
-                    CLASS_NAMES["roof_material"],
-                )
-            )
+                inspection_data.loc[
+                    row_index,
+                    ["country", "city"],
+                ] = [
+                    country,
+                    city,
+                ]
 
-            taxonomy = build_taxonomy(
-                inspection_data.loc[row_index]
+                inspection_data.loc[row_index, "material"] = (
+                    predict_class(
+                        building_image,
+                        prediction_models.material,
+                        CLASS_NAMES["material"],
+                    )
+                )
+
+                llrs_label = predict_class(
+                    building_image,
+                    prediction_models.llrs,
+                    CLASS_NAMES["llrs"],
+                )
+                inspection_data.loc[row_index, "llrs"] = (
+                    normalize_llrs_label(llrs_label)
+                )
+
+                inspection_data.loc[row_index, "code_level"] = (
+                    predict_class(
+                        building_image,
+                        prediction_models.code_level,
+                        CLASS_NAMES["code_level"],
+                    )
+                )
+                inspection_data.loc[row_index, "n_stories"] = (
+                    predict_class(
+                        building_image,
+                        prediction_models.n_stories,
+                        CLASS_NAMES["n_stories"],
+                    )
+                )
+                inspection_data.loc[row_index, "occupancy"] = (
+                    predict_class(
+                        building_image,
+                        prediction_models.occupancy,
+                        CLASS_NAMES["occupancy"],
+                    )
+                )
+                inspection_data.loc[row_index, "block_position"] = (
+                    predict_class(
+                        building_image,
+                        prediction_models.block_position,
+                        CLASS_NAMES["block_position"],
+                    )
+                )
+                inspection_data.loc[row_index, "roof_shape"] = (
+                    predict_class(
+                        building_image,
+                        prediction_models.roof_shape,
+                        CLASS_NAMES["roof_shape"],
+                    )
+                )
+                inspection_data.loc[row_index, "roof_material"] = (
+                    predict_class(
+                        building_image,
+                        prediction_models.roof_material,
+                        CLASS_NAMES["roof_material"],
+                    )
+                )
+
+                taxonomy = build_taxonomy(
+                    inspection_data.loc[row_index]
+                )
+                inspection_data.loc[row_index, "taxonomy"] = (
+                    validate_taxonomy(taxonomy) or taxonomy
+                )
+                inspection_data.loc[
+                    row_index,
+                    "image filename or link",
+                ] = maps_url
+
+            except (
+                IndexError,
+                KeyError,
+                RuntimeError,
+                TypeError,
+                ValueError,
+            ) as error:
+                print(
+                    f"Error while processing building ID "
+                    f"{building_id}: {error}"
+                )
+
+            print(
+                f"Inspection: {row_index + 1}/"
+                f"{len(inspection_data)}"
             )
-            inspection_data.loc[row_index, "taxonomy"] = (
-                validate_taxonomy(taxonomy) or taxonomy
-            )
+        except ValueError:
+            building_id = footprint["id"]
+            latitude = footprint["latitude"]
+            longitude = footprint["longitude"]
             inspection_data.loc[
                 row_index,
-                "image filename or link",
-            ] = maps_url
+                ["id", "latitude", "longitude"],
+            ] = [
+                building_id,
+                latitude,
+                longitude,
+            ]
 
-        except (
-            IndexError,
-            KeyError,
-            RuntimeError,
-            TypeError,
-            ValueError,
-        ) as error:
             print(
-                f"Error while processing building ID "
-                f"{building_id}: {error}"
+                f"Inspection: {row_index + 1}/"
+                f"{len(inspection_data)}"
+                + " has failed"
             )
-
-        print(
-            f"Inspection: {row_index + 1}/"
-            f"{len(inspection_data)}"
-        )
 
     return inspection_data
 
@@ -915,7 +918,7 @@ def main() -> None:
     saved_path = (
         RUBICAI_ROOT
         / "demos/specific_coordinates/console_mode"
-        / "example_prediction_result.csv"
+        / "console_example_prediction_result.csv"
     )
 
     gsv_api_key = read_api_key(GSV_API_FILE)

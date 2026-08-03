@@ -170,7 +170,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.code_help.clicked.connect(self.methods.help_code)
         self.n_bay_help.clicked.connect(self.methods.help_n_bay)
         self.img_quality_help.clicked.connect(self.methods.help_image_quality)
-        
+
         # Building needs revision funtion
         self.need_review_button.clicked.connect(self.methods.building_review)
 
@@ -1714,12 +1714,12 @@ class GUIInterface(QtWidgets.QMainWindow):
                 background-color: rgba(0, 0, 0, 0.05);
             }
         """)
-        
+
         # ===========================
         # Need Review Button
         # ===========================
         self.need_review_button = QtWidgets.QPushButton(self.centralwidget)
-        
+
         self.need_review_button.setGeometry(
             QtCore.QRect(
                 int(1020 * sf_x),
@@ -1844,7 +1844,8 @@ class GUIInterface(QtWidgets.QMainWindow):
         )
         self.material_cb.setItemText(0, _translate("GUIInterface", "Select Material"))
         self.llrs_cb.setItemText(0, _translate("GUIInterface", "Select LLRS"))
-        self.code_level_cb.setItemText(0, _translate("GUIInterface", "Select Code Level"))
+        self.code_level_cb.setItemText(
+            0, _translate("GUIInterface", "Select Code Level"))
         self.occup_cb.setItemText(
             0, _translate("GUIInterface", "Select Occupancy Type")
         )
@@ -1866,4 +1867,4 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.n_bay_cb.setItemText(
             0, _translate("search_img_value", "Select Number of Bays")
         )
-        
+
