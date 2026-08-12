@@ -112,7 +112,7 @@ CLASS_NAMES = {
     "roof_material": [
         "RMN",
         "RMT1",
-        "RMT6",
+        "RMT2",
     ],
 }
 

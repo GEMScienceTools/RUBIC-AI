@@ -88,7 +88,7 @@ CLASS_NAMES = {
     "occupancy": ["COM", "IND", "MIX(RES;COM)", "RES"],
     "block_position": ["BP1", "BP2", "BP3", "BPD"],
     "roof_shape": ["RSH1", "RSH2", "RSH3", "RSH7"],
-    "roof_material": ["RMN", "RMT1", "RMT6"],
+    "roof_material": ["RMN", "RMT1", "RMT2"],
 }
 
 DATABASE_COLUMNS = [

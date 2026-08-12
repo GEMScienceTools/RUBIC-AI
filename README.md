@@ -339,7 +339,15 @@ To ensure consistency among feasible combinations of building attributes, RUBIC-
   
 # 🤝 Contributions
 
-[WIP]
+RUBIC-AI has benefited from collaboration with external organizations that have contributed to its development, testing, and application.
+
+### [SURA](https://www.sura.co/)
+
+<p align="left">
+  <a href="https://www.sura.co/">
+	<img src="help_img/sura-colombia-logo.png" alt="SURA logo" width="140">
+  </a>
+</p>
 
 # © License
 

@@ -2698,7 +2698,7 @@ class GUIMethods:
                     elif self.pred_roof_shape == "RSH7":
                         self.ui.roof_material_cb.setCurrentText(self.class_r_mat[2])
                     elif self.pred_roof_shape == "RSH2":
-                        if self.roof_mat_pred in ("RMT1", "RMT6"):
+                        if self.roof_mat_pred in ("RMT1", "RMT2"):
                             pass
                         else:
                             # This depends on the country
@@ -2706,7 +2706,7 @@ class GUIMethods:
                                 self.class_r_mat[2]
                             )
                     elif self.pred_roof_shape == "RSH3":
-                        if self.roof_mat_pred in ("RMT1", "RMT6"):
+                        if self.roof_mat_pred in ("RMT1", "RMT2"):
                             pass
                         else:
                             self.ui.roof_material_cb.setCurrentText(
@@ -3085,7 +3085,7 @@ class GUIMethods:
                         occupancy_class = ["COM", "IND", "MIX(RES;COM)", "RES"]
                         block_position_classes = ["BP1", "BP2", "BP3", "BPD"]
                         roof_shape_classes = ["RSH1", "RSH2", "RSH3", "RSH7"]
-                        roof_material_classes = ["RMN", "RMT1", "RMT6"]
+                        roof_material_classes = ["RMN", "RMT1", "RMT2"]
 
                         self.data_ai.loc[i, "country"] = country
                         self.data_ai.loc[i, "city"] = city
@@ -4754,7 +4754,7 @@ class GUIMethods:
                                     self.class_r_mat[2]
                                 )
                             elif self.pred_roof_shape == "RSH2":
-                                if self.roof_mat_pred in ("RMT1", "RMT6"):
+                                if self.roof_mat_pred in ("RMT1", "RMT2"):
                                     pass
                                 else:
                                     # This depends on the country
@@ -4762,7 +4762,7 @@ class GUIMethods:
                                         self.class_r_mat[2]
                                     )
                             elif self.pred_roof_shape == "RSH3":
-                                if self.roof_mat_pred in ("RMT1", "RMT6"):
+                                if self.roof_mat_pred in ("RMT1", "RMT2"):
                                     pass
                                 else:
                                     self.ui.roof_material_cb.setCurrentText(
@@ -4810,7 +4810,7 @@ class GUIMethods:
                                 self.class_r_mat[2]
                             )
                         elif self.pred_roof_shape == "RSH2":
-                            if self.roof_mat_pred in ("RMT1", "RMT6"):
+                            if self.roof_mat_pred in ("RMT1", "RMT2"):
                                 pass
                             else:
                                 # This depends on the country
@@ -4818,7 +4818,7 @@ class GUIMethods:
                                     self.class_r_mat[2]
                                 )
                         elif self.pred_roof_shape == "RSH3":
-                            if self.roof_mat_pred in ("RMT1", "RMT6"):
+                            if self.roof_mat_pred in ("RMT1", "RMT2"):
                                 pass
                             else:
                                 self.ui.roof_material_cb.setCurrentText(
@@ -4870,7 +4870,7 @@ class GUIMethods:
                     elif self.pred_roof_shape == "RSH7":
                         self.ui.roof_material_cb.setCurrentText(self.class_r_mat[2])
                     elif self.pred_roof_shape == "RSH2":
-                        if self.roof_mat_pred in ("RMT1", "RMT6"):
+                        if self.roof_mat_pred in ("RMT1", "RMT2"):
                             pass
                         else:
                             # This depends on the country
@@ -4878,7 +4878,7 @@ class GUIMethods:
                                 self.class_r_mat[2]
                             )
                     elif self.pred_roof_shape == "RSH3":
-                        if self.roof_mat_pred in ("RMT1", "RMT6"):
+                        if self.roof_mat_pred in ("RMT1", "RMT2"):
                             pass
                         else:
                             self.ui.roof_material_cb.setCurrentText(

@@ -831,7 +831,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.roof_material_cb.addItem("Select Roof Material")
         self.roof_material_cb.addItem("Concrete", "RMN")
         self.roof_material_cb.addItem("Clay or concrete tile", "RMT1")
-        self.roof_material_cb.addItem("Metal or asbestos sheets", "RMT6")
+        self.roof_material_cb.addItem("Metal or asbestos sheets", "RMT2")
         self.roof_material_cb.addItem("Wooden and asphalt shingles", "RMT7")
         self.roof_material_cb.addItem("Slate", "RMT4")
         self.roof_material_cb.addItem("Solar panelled roofs", "RMT10")
