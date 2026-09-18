@@ -589,12 +589,6 @@ def mapillary_image_source(
             image_type=image_type,
         )
 
-        if nearest is None:
-            raise RuntimeError(f"No Mapillary image found within {max_offset_m} m.")
-
-        if not nearest.get("is_pano"):
-            raise RuntimeError("The selected Mapillary image is not a 360/pano image.")
-
         image_id = nearest["image_id"]
         info["image_id"] = image_id
         info["building_to_preview_distance_m"] = nearest.get(

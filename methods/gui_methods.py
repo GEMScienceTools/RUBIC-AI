@@ -859,17 +859,21 @@ class GUIMethods:
                                 120,
                             )
                     else:
-                        self.img_original_1, self.year_left = ["", ""]
-                        self.img_original_2, self.year_center = ["", ""]
-                        self.img_original_3, self.year_right = ["", ""]
-                        # Error message
-                        QMessageBox.warning(
-                            self.ui,
-                            "API Key Error",
-                            (
-                                f"GSV API Error: {gsv_answer['error_message']}"
-                            ),
-                        )
+                        if aux == 0:
+                            self.img_original_1, self.year_left = ["", ""]
+                            self.img_original_2, self.year_center = ["", ""]
+                            self.img_original_3, self.year_right = ["", ""]
+                            # Error message
+                            try:
+                                error_message = f"GSV API Error: {gsv_answer['error_message']}"
+                            except (KeyError, TypeError):
+                                error_message = "GSV API Error"
+                        
+                            QMessageBox.warning(
+                                self.ui,
+                                "API Key Error",
+                                error_message,
+                            )
                     if gsv_answer['status'] == 'REQUEST_DENIED':
                         break
 
@@ -1870,12 +1874,10 @@ class GUIMethods:
                             ValueError,
                             cv2.error,
                         ):
-                            self.no_image = f"""
-                                            <b><u>No image found</u></b><br><br>
-                                            Please check that the image file exists<br>
-                                            at the specified path:<br>
-                                            <code>{img_path}</code>
-                                            """
+                            self.no_image = """
+                                <b><u>No image found</u></b><br><br>
+                                The building centroid is more than 50 m away from the closest Mapillary image.
+                            """
                             font = QtGui.QFont()
                             font.setPointSize(int(12 * self.sf_font))
                             font.setBold(True)
