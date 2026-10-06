@@ -290,17 +290,25 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.lat_label.setObjectName("lat_label")
 
         # Latitude value
-        self.lat_value = QtWidgets.QLabel(self.centralwidget)
+        self.lat_value = QtWidgets.QLineEdit(self.centralwidget)
         self.lat_value.setGeometry(
             QtCore.QRect(
-                int(720 * sf_x), int(50 * sf_y), int(171 * sf_x), int(31 * sf_y)
+                int(720 * sf_x),
+                int(50 * sf_y),
+                int(171 * sf_x),
+                int(31 * sf_y),
             )
         )
+
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.lat_value.setFont(font)
-        self.lat_value.setStyleSheet("background-color: rgb(255, 255, 255);")
-        self.lat_value.setFrameShape(QtWidgets.QFrame.Box)
+
+        self.lat_value.setStyleSheet(
+            "background-color: rgb(255, 255, 255);"
+        )
+
+        self.lat_value.setFrame(True)
         self.lat_value.setObjectName("lat_value")
 
         # Label of longitude
@@ -321,17 +329,25 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.lon_label.setObjectName("lon_label")
 
         # Longitude value
-        self.lon_value = QtWidgets.QLabel(self.centralwidget)
+        self.lon_value = QtWidgets.QLineEdit(self.centralwidget)
         self.lon_value.setGeometry(
             QtCore.QRect(
-                int(1000 * sf_x), int(50 * sf_y), int(171 * sf_x), int(31 * sf_y)
+                int(1000 * sf_x),
+                int(50 * sf_y),
+                int(171 * sf_x),
+                int(31 * sf_y),
             )
         )
+
         font = QtGui.QFont()
         font.setPointSize(int(10 * sf_font))
         self.lon_value.setFont(font)
-        self.lon_value.setStyleSheet("background-color: rgb(255, 255, 255);")
-        self.lon_value.setFrameShape(QtWidgets.QFrame.Box)
+
+        self.lon_value.setStyleSheet(
+            "background-color: rgb(255, 255, 255);"
+        )
+
+        self.lon_value.setFrame(True)
         self.lon_value.setObjectName("lon_value")
 
         """ Country and city elements """
@@ -709,22 +725,10 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.n_stories_value_1.addItem("3", "3")
         self.n_stories_value_1.addItem("4", "4")
         self.n_stories_value_1.addItem("5", "5")
-        self.n_stories_value_1.addItem("6", "6")
-        self.n_stories_value_1.addItem("7", "7")
-        self.n_stories_value_1.addItem("8", "8")
-        self.n_stories_value_1.addItem("9", "9")
-        self.n_stories_value_1.addItem("10", "10")
-        self.n_stories_value_1.addItem("11", "11")
-        self.n_stories_value_1.addItem("12", "12")
-        self.n_stories_value_1.addItem("13", "13")
-        self.n_stories_value_1.addItem("14", "14")
-        self.n_stories_value_1.addItem("15", "15")
-        self.n_stories_value_1.addItem("16", "16")
-        self.n_stories_value_1.addItem("17", "17")
-        self.n_stories_value_1.addItem("18", "18")
-        self.n_stories_value_1.addItem("19", "19")
-        self.n_stories_value_1.addItem("20", "20")
-        self.n_stories_value_1.addItem("21+", "21+")
+        self.n_stories_value_1.addItem("6-7", "6.0-7.0")
+        self.n_stories_value_1.addItem("8-9", "8.0-9.0")
+        self.n_stories_value_1.addItem("10-12", "10.0-12.0")
+        self.n_stories_value_1.addItem("13+", "13+")
         # Set default index
         self.n_stories_value_1.setCurrentIndex(0)
         # Scale dropdown width
