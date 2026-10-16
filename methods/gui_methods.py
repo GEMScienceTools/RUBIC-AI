@@ -4516,9 +4516,11 @@ class GUIMethods:
                         + str(self.click_count + 1)
                         + ".jpg"
                     )
-                    image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
-                    if image is None:
-                        raise FileNotFoundError("Unable to read image")
+                    
+                    try:
+                        image = cv2.imread(cropped_path, cv2.IMREAD_COLOR)
+                    except FileNotFoundError:
+                        image = None
 
                     block_position_index = predict_block_position_img(
                         image, self.ui.insp_method, self.box_id, self.ui
