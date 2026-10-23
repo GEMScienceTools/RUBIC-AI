@@ -125,6 +125,10 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.bounding_box_1.clicked.connect(self.methods.bounding_box)
         self.bounding_box_2.clicked.connect(self.methods.bounding_box)
         self.bounding_box_3.clicked.connect(self.methods.bounding_box)
+        
+        self.manual_blur_1.clicked.connect(self.methods.manual_blur_img_left)
+        self.manual_blur_2.clicked.connect(self.methods.manual_blur_img_central)
+        self.manual_blur_3.clicked.connect(self.methods.manual_blur_img_right)
 
         # GSV image angle setting
         self.set_angle_1.clicked.connect(self.methods.img_angle_left)
@@ -1752,6 +1756,47 @@ class GUIInterface(QtWidgets.QMainWindow):
         font.setWeight(75)
         self.need_review_button.setFont(font)
         self.need_review_button.setObjectName("need_review_button")
+        
+        
+        self.manual_blur_1 = QtWidgets.QPushButton(self.centralwidget)
+        self.manual_blur_1.setGeometry(
+            QtCore.QRect(
+                int(390 * sf_x), int(90 * sf_y), int(121 * sf_x), int(21 * sf_y)
+            )
+        )
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        font.setBold(True)
+        font.setWeight(75)
+        self.manual_blur_1.setFont(font)
+        self.manual_blur_1.setObjectName("manual_blur_1")
+        
+        self.manual_blur_2 = QtWidgets.QPushButton(self.centralwidget)
+        self.manual_blur_2.setGeometry(
+            QtCore.QRect(
+                int(910 * sf_x), int(90 * sf_y), int(121 * sf_x), int(21 * sf_y)
+            )
+        )
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        font.setBold(True)
+        font.setWeight(75)
+        self.manual_blur_2.setFont(font)
+        self.manual_blur_2.setObjectName("manual_blur_2")
+        
+        self.manual_blur_3 = QtWidgets.QPushButton(self.centralwidget)
+        self.manual_blur_3.setGeometry(
+            QtCore.QRect(
+                int(1430 * sf_x), int(90 * sf_y), int(121 * sf_x), int(21 * sf_y)
+            )
+        )
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        font.setBold(True)
+        font.setWeight(75)
+        self.manual_blur_3.setFont(font)
+        self.manual_blur_3.setObjectName("manual_blur_3")
+
 
         ################################################################################
         ################################################################################
@@ -1818,6 +1863,9 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.n_bay_label.raise_()
         self.n_bay_cb.raise_()
         self.need_review_button.raise_()
+        self.manual_blur_1.raise_()
+        self.manual_blur_2.raise_()
+        self.manual_blur_3.raise_()
 
         window.setCentralWidget(self.centralwidget)
 
@@ -1884,4 +1932,7 @@ class GUIInterface(QtWidgets.QMainWindow):
         self.n_bay_cb.setItemText(
             0, _translate("search_img_value", "Select Number of Bays")
         )
+        self.manual_blur_1.setText(_translate("search_img_value", "Manual blur"))
+        self.manual_blur_2.setText(_translate("search_img_value", "Manual blur"))
+        self.manual_blur_3.setText(_translate("search_img_value", "Manual blur"))
 

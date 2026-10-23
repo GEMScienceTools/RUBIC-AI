@@ -29,6 +29,7 @@ from PyQt5.QtWidgets import QApplication, QMessageBox
 from ultralytics import YOLO
 
 from methods.bounding_box_manual import BoundingBoxWindow
+from methods.manual_blur_window import ManualBlurWindow
 
 # *.py scripts with complex methods
 from methods.dl_prediction_models import (
@@ -42,8 +43,8 @@ from methods.dl_prediction_models import (
     predict_roof_shape_img,
 )
 from methods.epoch_construction import EpochSelectionDialog
-from methods.get_building_orientation import get_road_orientation, get_street_view_image
-from methods.gsv_image_angle import gsv_angle_setting
+from methods.get_building_orientation import get_street_view_image
+from methods.gsv_image_angle import GSVAngleSetting
 from methods.help_window import HelpDialog
 from methods.knn_extrapolation_feature import (
     compute_taxonomy_distribution_full_structure,
@@ -796,48 +797,24 @@ class GUIMethods:
                     if check_gsv is True:
                         # Get image from GSV
                         if aux == 0:
-                            try:
                                 (
                                     self.img_url[aux],
                                     self.img_original_1,
                                     self.year_left,
-                                    roads_api,
+                                    self.base_heading_left,
                                 ) = get_street_view_image(
                                     location,
                                     api_key,
                                     angle[aux],
                                     5,
                                     120,
-                                )
-
-                                if roads_api is True:
-                                    QMessageBox.warning(
-                                        self.ui,
-                                        "API Key Error",
-                                        (
-                                            "Roads API error: the API key is invalid. "
-                                            "Please check the console. The API key "
-                                            "may have been modified or deleted. "
-                                            "The images will be displayed, but with "
-                                            "a random orientation that may not match "
-                                            "the target building."
-                                        ),
-                                    )
-                            except FileNotFoundError as error:
-                                QMessageBox.warning(
-                                    self.ui,
-                                    "API Key Error",
-                                    (
-                                        "The Roads API key file is missing.\n\n"
-                                        f"Details: {error}"
-                                    ),
-                                )
+                                )  
                         elif aux == 1:
                             (
                                 self.img_url[aux],
                                 self.img_original_2,
                                 self.year_center,
-                                roads_api,
+                                self.base_heading_center,
                             ) = get_street_view_image(
                                 location,
                                 api_key,
@@ -850,7 +827,7 @@ class GUIMethods:
                                 self.img_url[aux],
                                 self.img_original_3,
                                 self.year_right,
-                                roads_api,
+                                self.base_heading_right,
                             ) = get_street_view_image(
                                 location,
                                 api_key,
@@ -1008,93 +985,123 @@ class GUIMethods:
             # 2: Mapillary (Free API is needed, but it provides less coverage and, in
             # some cases, lower image quality)
             if self.ui.img_source == 1:
+                # try:
+                    
+                    
+                    
+                    
+                    
+                # Building coordinates
+                location = (
+                    float(self.ui.lat_value.text()),
+                    float(self.ui.lon_value.text()),
+                )
+                # API key is required; without it, access to GSV is not possible
                 try:
-                    # Building coordinates
-                    location = (
-                        float(self.ui.lat_value.text()),
-                        float(self.ui.lon_value.text()),
-                    )
-                    # API key is required; without it, access to GSV is not possible
-                    try:
-                        with open("methods/gsv_api_key.txt") as f:
-                            api_key = f.read().strip()
-                    except FileNotFoundError:
-                        api_key = None
-                    app = QApplication.instance()  # Ensure PyQt instance exists
-                    if app is None:
-                        app = QApplication([])
+                    with open("methods/gsv_api_key.txt") as f:
+                        api_key = f.read().strip()
+                except FileNotFoundError:
+                    api_key = None
+                app = QApplication.instance()  # Ensure PyQt instance exists
+                if app is None:
+                    app = QApplication([])
 
-                    # Called function where the GSV image can be adjusted
-                    gsv_dialog = gsv_angle_setting(
+                # Called function where the GSV image can be adjusted
+                try:
+                    gsv_dialog = GSVAngleSetting(
+                        self.pitch_left, self.heading_left, self.fov_left, 
                         parent=self.ui, main_window=self.ui, gui_methods=self
                     )
-                    gsv_dialog.exec_()  # Open the pop-up
-
-                    # Get the feature values provide by the user
-                    self.pitch_left = gsv_dialog.pitch_value.value()
-                    self.heading_left = gsv_dialog.heading_value.value()
-                    self.fov_left = gsv_dialog.fov_value.value()
-
-                    # Left image identifier
-                    self.img_original_1 = get_street_view_image(
-                        location,
-                        api_key,
-                        self.heading_left,
-                        self.pitch_left,
-                        self.fov_left,
-                    )[1]
-                    self.sw_angle = 0
-
-                    # Prepare new image
-                    display_image_rgb = cv2.cvtColor(
-                        self.img_original_1, cv2.COLOR_BGR2RGB
+                except AttributeError:
+                    gsv_dialog = GSVAngleSetting(
+                        parent=self.ui, main_window=self.ui, gui_methods=self
                     )
-                    h, w, _ch = display_image_rgb.shape
-                    bytes_per_line = w * 3
-                    qimg = QtGui.QImage(
-                        display_image_rgb.data,
-                        w,
-                        h,
-                        bytes_per_line,
-                        QtGui.QImage.Format_RGB888,
-                    )
+                gsv_dialog.exec_()  # Open the pop-up
 
-                    # Plot new img in the GUI
-                    pixmap = QtGui.QPixmap.fromImage(qimg)
-                    img_frames = [
-                        self.ui.left_gsv_img,
-                        self.ui.central_gsv_img,
-                        self.ui.right_gsv_img,
-                    ]
-                    img_frames[0].setPixmap(
-                        pixmap.scaled(
-                            img_frames[0].width(),
-                            img_frames[0].height(),
-                            QtCore.Qt.IgnoreAspectRatio,
-                            QtCore.Qt.SmoothTransformation,
-                        )
-                    )
+                # Get the feature values provide by the user
+                self.pitch_left = gsv_dialog.pitch_value.value()
+                self.heading_left = gsv_dialog.heading_value.value()
+                self.fov_left = gsv_dialog.fov_value.value()
+                
+                base_url = (
+                    "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint="
+                )
+                coord = (
+                    str(self.ui.lat_value.text())
+                    + ","
+                    + str(self.ui.lon_value.text())
+                )
+  
+                self.data_ai.loc[self.click_count,
+                                 "image_filename_or_link"] = (
+                    base_url
+                    + coord
+                    + "&heading="
+                    + str((self.base_heading_left+self.heading_left) % 360)
+                    + "&pitch=" + str(self.pitch_left)
+                    + "&fov=" + str(self.fov_left)
+                )
 
-                    # Building detector function
-                    self.object_detector_building(None)
+                # Left image identifier
+                self.img_original_1 = get_street_view_image(
+                    location,
+                    api_key,
+                    self.heading_left,
+                    self.pitch_left,
+                    self.fov_left,
+                )[1]
+                self.sw_angle = 0
 
-                except (
-                    AttributeError,
-                    FileNotFoundError,
-                    IndexError,
-                    OSError,
-                    TypeError,
-                    ValueError,
-                    cv2.error,
-                ):
-                    QMessageBox.warning(
-                        self.ui,
-                        "Image Error",
-                        (
-                            "No image is currently displayed. Please click "
-                            "*Next Building* to load an image first."
-                        ),
+                # Prepare new image
+                display_image_rgb = cv2.cvtColor(
+                    self.img_original_1, cv2.COLOR_BGR2RGB
+                )
+                h, w, _ch = display_image_rgb.shape
+                bytes_per_line = w * 3
+                qimg = QtGui.QImage(
+                    display_image_rgb.data,
+                    w,
+                    h,
+                    bytes_per_line,
+                    QtGui.QImage.Format_RGB888,
+                )
+
+                # Plot new img in the GUI
+                pixmap = QtGui.QPixmap.fromImage(qimg)
+                img_frames = [
+                    self.ui.left_gsv_img,
+                    self.ui.central_gsv_img,
+                    self.ui.right_gsv_img,
+                ]
+                img_frames[0].setPixmap(
+                    pixmap.scaled(
+                        img_frames[0].width(),
+                        img_frames[0].height(),
+                        QtCore.Qt.IgnoreAspectRatio,
+                        QtCore.Qt.SmoothTransformation,
                     )
+                )
+
+                # Building detector function
+                self.object_detector_building(None)
+
+                # except (
+                #     AttributeError,
+                #     FileNotFoundError,
+                #     IndexError,
+                #     OSError,
+                #     TypeError,
+                #     ValueError,
+                #     cv2.error,
+                # ):
+                #     QMessageBox.warning(
+                #         self.ui,
+                #         "Image Error",
+                #         (
+                #             "No image is currently displayed. Please click "
+                #             "*Next Building* to load an image first."
+                #         ),
+                #     )
             else:
                 app = QApplication.instance()  # Ensure PyQt instance exists
                 if app is None:
@@ -1105,7 +1112,7 @@ class GUIMethods:
                 except FileNotFoundError:
                     mapillary_access_token = None
                 # Called function where the GSV image can be adjusted
-                gsv_dialog = gsv_angle_setting(
+                gsv_dialog = GSVAngleSetting(
                     parent=self.ui, main_window=self.ui, gui_methods=self
                 )
                 gsv_dialog.exec_()  # Open the pop-up
@@ -1202,7 +1209,7 @@ class GUIMethods:
 
                     # Called function where the user creates a manual bounding box by
                     # clicking four points, which is then displayed in the UI frame.
-                    gsv_dialog = gsv_angle_setting(
+                    gsv_dialog = GSVAngleSetting(
                         parent=self.ui, main_window=self.ui, gui_methods=self
                     )
                     gsv_dialog.exec_()  # Open the pop-up
@@ -1211,7 +1218,26 @@ class GUIMethods:
                     self.pitch_central = gsv_dialog.pitch_value.value()
                     self.heading_central = gsv_dialog.heading_value.value()
                     self.fov_central = gsv_dialog.fov_value.value()
-
+                    
+                    base_url = (
+                        "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint="
+                    )
+                    coord = (
+                        str(self.ui.lat_value.text())
+                        + ","
+                        + str(self.ui.lon_value.text())
+                    )
+      
+                    self.data_ai.loc[self.click_count,
+                                     "image_filename_or_link"] = (
+                        base_url
+                        + coord
+                        + "&heading="
+                        + str((self.base_heading_center+self.heading_central) % 360)
+                        + "&pitch=" + str(self.pitch_central)
+                        + "&fov=" + str(self.fov_central)
+                    )
+                                         
                     self.img_original_2 = get_street_view_image(
                         location,
                         api_key,
@@ -1300,7 +1326,7 @@ class GUIMethods:
 
                     # Called function where the user creates a manual bounding box by
                     # clicking four points, which is then displayed in the UI frame.
-                    gsv_dialog = gsv_angle_setting(
+                    gsv_dialog = GSVAngleSetting(
                         parent=self.ui, main_window=self.ui, gui_methods=self
                     )
                     gsv_dialog.exec_()  # Open the pop-up
@@ -1308,7 +1334,26 @@ class GUIMethods:
                     self.pitch_right = gsv_dialog.pitch_value.value()
                     self.heading_right = gsv_dialog.heading_value.value()
                     self.fov_right = gsv_dialog.fov_value.value()
-
+                    
+                    base_url = (
+                        "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint="
+                    )
+                    coord = (
+                        str(self.ui.lat_value.text())
+                        + ","
+                        + str(self.ui.lon_value.text())
+                    )
+      
+                    self.data_ai.loc[self.click_count,
+                                     "image_filename_or_link"] = (
+                        base_url
+                        + coord
+                        + "&heading="
+                        + str((self.base_heading_right+self.heading_right) % 360)
+                        + "&pitch=" + str(self.pitch_right)
+                        + "&fov=" + str(self.fov_right)
+                    )
+                                         
                     self.img_original_3 = get_street_view_image(
                         location,
                         api_key,
@@ -2753,6 +2798,79 @@ class GUIMethods:
             ):
                 pass
 
+    ############ Manual blur Selection ################
+    def manual_blur_img_left (self):
+        self.blur_path = (
+           self.ui.folder_path
+           + "/"
+           + str(self.data_building.iloc[self.old_local + 0, 0])
+           )
+        self.blur_frame = self.ui.left_gsv_img
+        self.manual_blur()
+        self.bounding_box_frame_left()
+        self.bounding_box()
+        
+    def manual_blur_img_central (self):
+        self.blur_path = (
+           self.ui.folder_path
+           + "/"
+           + str(self.data_building.iloc[self.old_local + 1, 0])
+           )
+        self.blur_frame = self.ui.central_gsv_img
+        self.manual_blur()
+        self.bounding_box_frame_central()
+        self.bounding_box()
+        
+    def manual_blur_img_right (self):
+        self.blur_path = (
+           self.ui.folder_path
+           + "/"
+           + str(self.data_building.iloc[self.old_local + 2, 0])
+           )
+        self.blur_frame = self.ui.right_gsv_img
+        self.manual_blur()
+        self.bounding_box_frame_right()
+        self.bounding_box()
+        
+    def manual_blur(self):
+        """Define a building bounding box manually.
+
+        When AI-powered mode is enabled, run the classification models,
+        update the interface, and apply engineering-based adjustments.
+        """
+        # Conditional to avoid executing the method if there is no project folder
+        if (
+            self.ui.output_folder_value == "-"
+            or self.ui.country_value.text() == "-"
+            or self.ui.city_value.text() == "-"
+        ):
+            QMessageBox.warning(
+                self.ui,
+                "File Error",
+                "This option is only available once the building image is displayed.",
+            )
+        else:
+            """Open the bounding box selection pop-up window."""
+            app = QApplication.instance()  # Ensure PyQt instance exists
+            if app is None:
+                app = QApplication([])
+
+            # Called function where the user creates a manual bounding box by clicking
+            # four points, which is then displayed in the UI frame.
+             
+            
+            dialog = ManualBlurWindow(
+                self.blur_path,
+                self.blur_frame,
+                self.ui.insp_method,
+                self.blur_path,
+                parent=self.ui,
+                main_window=self.ui,
+                gui_methods=self,
+            )
+
+            dialog.exec_()  # Open the pop-up
+            
     ############ Taxonomy check ################
     def tax_check(self, tax_value):
         """Validate a taxonomy string.
@@ -2804,21 +2922,6 @@ class GUIMethods:
                 # ==============================================================
                 # Polygon and Specific coordinates method
                 # ==============================================================
-                if self.ui.insp_method in (0, 1) and self.ui.img_source == 1:
-                    base_url = (
-                        "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint="
-                    )
-                    coord = (
-                        str(self.ui.lat_value.text())
-                        + ","
-                        + str(self.ui.lon_value.text())
-                    )
-                    heading = get_road_orientation(
-                        (
-                            float(self.ui.lat_value.text()),
-                            float(self.ui.lon_value.text()),
-                        )
-                    )
 
                 if self.ui.insp_method == 0 or self.ui.insp_method == 1:
                     self.data_ai.loc[self.click_count, "id"] = (
@@ -2913,19 +3016,11 @@ class GUIMethods:
                     if tax:
                         self.tax_check(tax)
 
-                    if self.img_url[0] != "":
-                        self.data_ai.loc[self.click_count,
-                                         "image_filename_or_link"] = self.img_url[0]
-                    else:
-                        if isinstance(heading, int):
+                    if self.data_ai.loc[self.click_count,"image_filename_or_link"] is None:
+                        if self.img_url[0] != "":
                             self.data_ai.loc[self.click_count,
-                                             "image_filename_or_link"] = (
-                                base_url
-                                + coord
-                                + "&heading="
-                                + str((heading + 180) % 360)
-                                + "&pitch=5&fov=120"
-                            )
+                                             "image_filename_or_link"] = self.img_url[0]
+                    
 
                 # ==============================================================
                 # Local images

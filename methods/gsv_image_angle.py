@@ -34,8 +34,11 @@ class GSVAngleSetting(QtWidgets.QDialog):
         Spin box containing the field-of-view value.
     """
 
-    def __init__(self, parent=None, main_window=None, gui_methods=None):
+    def __init__(self, saved_pitch=5, saved_heading=0, saved_fov=120, parent=None, main_window=None, gui_methods=None):
         super().__init__(parent)
+        self.saved_pitch = saved_pitch
+        self.saved_heading = saved_heading
+        self.saved_fov = saved_fov
         self.main_window = main_window
         self.gui_methods = gui_methods
 
@@ -196,7 +199,10 @@ class GSVAngleSetting(QtWidgets.QDialog):
         )
         self.pitch_value.setFont(self._make_font(10, font_scale))
         self.pitch_value.setRange(0, 60)
-        self.pitch_value.setValue(5)
+        try:
+            self.pitch_value.setValue(int(self.saved_pitch))
+        except AttributeError:
+            self.pitch_value.setValue(5)
         self.pitch_value.setObjectName("pitch_value")
 
         self.pitch_descrip = QtWidgets.QTextBrowser(self.gsv_angle_frame)
@@ -268,7 +274,10 @@ class GSVAngleSetting(QtWidgets.QDialog):
         )
         self.heading_value.setFont(self._make_font(10, font_scale))
         self.heading_value.setRange(-180, 180)
-        self.heading_value.setValue(0)
+        try:
+            self.heading_value.setValue(int(self.saved_heading))
+        except AttributeError:
+            self.heading_value.setValue(0)
         self.heading_value.setObjectName("heading_value")
 
         self.heading_descrip = QtWidgets.QTextBrowser(self.gsv_angle_frame)
@@ -325,7 +334,10 @@ class GSVAngleSetting(QtWidgets.QDialog):
         )
         self.fov_value.setFont(self._make_font(10, font_scale))
         self.fov_value.setRange(1, 120)
-        self.fov_value.setValue(120)
+        try:
+            self.fov_value.setValue(int(self.saved_fov))
+        except AttributeError:
+            self.fov_value.setValue(120)
         self.fov_value.setObjectName("fov_value")
 
         self.fov_descrip = QtWidgets.QTextBrowser(self.gsv_angle_frame)
@@ -388,7 +400,3 @@ class GSVAngleSetting(QtWidgets.QDialog):
     def save_and_close(self):
         """Accept the selected parameters and close the dialog."""
         self.accept()
-
-
-# Backward-compatible alias for existing imports in RUBIC-AI.
-gsv_angle_setting = GSVAngleSetting
