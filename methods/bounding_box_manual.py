@@ -1,4 +1,6 @@
 import sys
+import json
+from pathlib import Path
 
 import cv2
 import numpy as np
@@ -333,6 +335,73 @@ class BoundingBoxWindow(QDialog):
                 * (((i * (dash_length + gap_length)) + dash_length) / dist)
             )
             cv2.line(self.image, (start_x, start_y), (end_x, end_y), color, thickness)
+            
+            
+    # ================= SAVE MANUAL BOUNDING BOX =================
+    def save_bounding_box_json(self, sorted_pts_original_size):
+        """Save manually selected building coordinates to JSON."""
+    
+        # Original image dimensions
+        image_height, image_width = self.original_shape[:2]
+    
+        # Convert corner coordinates to integers
+        points = np.rint(sorted_pts_original_size).astype(int)
+    
+        # Calculate rectangular bounding box
+        x1 = int(np.min(points[:, 0]))
+        y1 = int(np.min(points[:, 1]))
+        x2 = int(np.max(points[:, 0]))
+        y2 = int(np.max(points[:, 1]))
+    
+        # Determine image filename and output folder
+        if self.insp_method == 2:
+            # Local images
+            image_name = Path(self.image_path).name
+            output_folder = Path(self.main_window.folder_path)
+    
+        elif self.main_window.img_source == 2:
+            # Mapillary images
+            image_name = f"{self.gui_methods.click_count + 1}.jpg"
+            output_folder = (
+                Path(self.main_window.output_folder_value) / "Mapillary"
+            )
+    
+        else:
+            # Other inspection methods
+            image_name = Path(self.cropped_img_path).name
+            output_folder = Path(self.cropped_img_path).parent
+    
+        # Create bounding_boxes folder
+        bbox_folder = output_folder / "bounding_boxes"
+        bbox_folder.mkdir(parents=True, exist_ok=True)
+    
+        json_path = bbox_folder / f"{Path(image_name).stem}.json"
+    
+        # Create JSON structure
+        bbox_data = {
+            "image_file": image_name,
+            "image_width": int(image_width),
+            "image_height": int(image_height),
+            "class": "building",
+            "confidence": None,
+            "bbox": {
+                "x1": x1,
+                "y1": y1,
+                "x2": x2,
+                "y2": y2
+            },
+            "polygon": {
+                "top_left": points[0].tolist(),
+                "top_right": points[1].tolist(),
+                "bottom_left": points[2].tolist(),
+                "bottom_right": points[3].tolist()
+            },
+            "detection_method": "manual"
+        }
+    
+        # Save JSON file
+        with open(json_path, "w", encoding="utf-8") as f:
+            json.dump(bbox_data, f, indent=4)
 
     # ================= CROP IMAGE =================
     def crop_image(self):
@@ -467,6 +536,9 @@ class BoundingBoxWindow(QDialog):
                 save_path, cv2.cvtColor(cropped_image_original, cv2.COLOR_RGB2BGR)
             )  # Convert RGB to BGR before saving
             self.prediction_img = cropped_image
+            
+        # Save the manual bounding box in JSON
+        self.save_bounding_box_json(sorted_pts_original_size)
 
         # Return the cropped image
         return cropped_image

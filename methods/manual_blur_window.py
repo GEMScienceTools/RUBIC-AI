@@ -33,7 +33,7 @@ class ManualBlurWindow(QDialog):
         parent=None, 
         main_window=None, 
         gui_methods=None, 
-        blur_kernel=51,
+        blur_kernel=101,
     ):
         super().__init__(parent)
         self.image_path = image_path

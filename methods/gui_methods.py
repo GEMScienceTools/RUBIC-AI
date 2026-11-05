@@ -9,6 +9,8 @@ import contextlib
 import os
 import re
 import sys
+import json
+from pathlib import Path
 
 # Utilities libraries
 import time
@@ -705,6 +707,7 @@ class GUIMethods:
                     self.cont_local_data.iloc[: self.cont_local_data.shape[0], :] = (
                         self.cont_local_data.iloc[: self.cont_local_data.shape[0], :]
                     )
+
                     print("Upload existing data sucessfully")
                     self.data_old = "OK"  # THERE IS EXISTING DATA
                     self.data_old_local = True
@@ -2097,6 +2100,37 @@ class GUIMethods:
                                     )
 
                                 x1, y1, x2, y2 = map(int, best_box.xyxy[0])
+                                
+                                # --------------------------------------------------
+                                # SAVE BOUNDING BOX TO JSON
+                                # --------------------------------------------------
+
+                                # Directory for JSON files
+                                bbox_folder = Path(self.ui.folder_path) / "bounding_boxes"
+                                bbox_folder.mkdir(parents=True, exist_ok=True)
+
+                                # JSON filename (same name as original image)
+                                image_name = Path(img_path).name
+                                json_path = bbox_folder / f"{Path(img_path).stem}.json"
+
+                                # Bounding box information
+                                bbox_data = {
+                                    "image_file": image_name,
+                                    "image_width": int(_w0),
+                                    "image_height": int(_h0),
+                                    "class": target_class,
+                                    "confidence": round(float(best_score), 4),
+                                    "bbox": {
+                                        "x1": int(x1),
+                                        "y1": int(y1),
+                                        "x2": int(x2),
+                                        "y2": int(y2)
+                                    }
+                                }
+
+                                # Save JSON
+                                with open(json_path, "w", encoding="utf-8") as f:
+                                    json.dump(bbox_data, f, indent=4)
 
                                 cropped_image = img_bgr[y1:y2, x1:x2]
                                 cv2.imwrite(cropped_path, cropped_image)
